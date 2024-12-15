@@ -1,0 +1,159 @@
+plugins {
+    id "cpp"
+    id "google-test-test-suite"
+    id "edu.wpi.first.GradleRIO" version "2024.3.1"
+    id 'com.diffplug.spotless' version '6.20.0'
+}
+
+// Define my targets (RoboRIO) and artifacts (deployable files)
+deploy {
+    println "Setting up deploy targets and artifacts..."
+    targets {
+        roborio(getTargetTypeClass('RoboRIO')) {
+            team = project.frc.getTeamNumber()
+            debug = project.frc.getDebugOrDefault(false)
+
+            println "Deploy team # set to ${team}."
+            println "Debug set to ${debug} (disabled by default).\n"
+
+
+            artifacts {
+                frcCpp(getArtifactTypeClass('FRCNativeArtifact')) {
+                }
+
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/y2025/deploy')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
+        }
+    }
+}
+
+def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
+
+// Set this to true to enable desktop support.
+def includeDesktopSupport = false
+
+// Set to true to run simulation in debug mode
+wpi.cpp.debugSimulation = false
+
+// Default enable simgui
+wpi.sim.addGui().defaultEnabled = false
+// Enable DS but not by default
+wpi.sim.addDriverstation()
+
+model {
+    components {
+        frcUserProgram(NativeExecutableSpec) {
+            println "Configuring frcUserProgram..."
+            targetPlatform wpi.platforms.roborio
+            if (includeDesktopSupport) {
+                targetPlatform wpi.platforms.desktop
+                binaries.all {
+                    cppCompiler.args << '-DNOMINMAX'
+                    println "Applied compiler argument NOMINMAX to allow for compilation on Windows platform."
+                }
+            }
+
+            sources.cpp {
+                source {
+                    srcDir 'src/frc846/cpp'
+                    srcDir 'src/y2025/cpp'
+                    include '**/*.cpp', '**/*.cc'
+                }
+                exportedHeaders {
+                    srcDir 'src/frc846/include'
+                    srcDir 'src/y2025/include'
+                }
+            }
+
+            // Set deploy task to deploy this component
+            deployArtifact.component = it
+
+            // Enable run tasks for this component
+            wpi.cpp.enableExternalTasks(it)
+
+            // Enable simulation for this component
+            wpi.sim.enable(it)
+            // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
+            wpi.cpp.vendor.cpp(it)
+            wpi.cpp.deps.wpilib(it)
+        }
+    }
+
+    // testSuites {
+    //     frcUserProgramTest(GoogleTestTestSuiteSpec) {
+    //         testing $.components.frcUserProgram
+
+    //         println "Configuring frcUserProgramTest..."
+    //         sources.cpp {
+    //             source {
+    //                 srcDir 'src/test/cpp'
+    //                 include '**/*.cpp'
+    //             }
+    //         }
+    //         binaries.all {
+    //             cppCompiler.args << '-DNOMINMAX'
+    //             println "Applied compiler argument NOMINMAX to allow for compilation on Windows platform."
+    //         }
+    //         wpi.cpp.enableExternalTasks(it)
+    //         wpi.cpp.vendor.cpp(it)
+    //         wpi.cpp.deps.wpilib(it)
+    //         wpi.cpp.deps.googleTest(it)
+    //     }
+    // }
+}
+
+spotless {
+    cpp {
+        target fileTree('.') {
+            include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        def selectedClangVersion = project.hasProperty('fromCI') ? '14.0.0-1ubuntu1.1' : '18.1.8'
+        clangFormat(selectedClangVersion).style('Google')
+    }
+    groovyGradle {
+        target fileTree('src') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+check.dependsOn spotlessApply
+
+task runCppcheck(type: Exec) {
+    def outputBuffer = new ByteArrayOutputStream()
+    commandLine 'cppcheck', '--enable=all', '--template=gcc',
+            '--force', '--suppress=missingIncludeSystem', '--suppress=missingInclude', '--check-level=exhaustive', 'src/'
+    standardOutput = outputBuffer
+    errorOutput = outputBuffer
+    doLast {
+        def cppcheckOutput = outputBuffer.toString("UTF-8")
+        def warnings = cppcheckOutput.readLines().findAll { it.contains("warning") && !it.contains("nofile:") }
+        def reportContent = warnings.isEmpty() ? "No warnings or errors found." : warnings.join("\n")
+        def cppcheckSection = """
+## CppCheck Warnings
+```
+${reportContent.trim()}
+```
+"""
+        def readmeFile = file('README.md')
+        def readmeContent = readmeFile.text
+        def cppcheckRegex = /## CppCheck Warnings\n```[\s\S]*?```/
+        if (readmeContent.find(cppcheckRegex)) {
+            readmeContent = readmeContent.replaceAll(cppcheckRegex, cppcheckSection.trim())
+        } else {
+            readmeContent += "\n" + cppcheckSection.trim()
+        }
+        readmeFile.text = readmeContent
+    }
+}
+
+check.dependsOn runCppcheck

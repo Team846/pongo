@@ -1,0 +1,5 @@
+h_fov:63.1
+v_fov:50.0
+h_frame:640
+v_frame:480
+camera_latency:0.01

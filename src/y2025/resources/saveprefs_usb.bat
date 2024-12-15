@@ -1,0 +1,2 @@
+scp lvuser@172.22.11.2:/home/lvuser/preferences.nform ./src/y2024/resources/preferences_backup.nform
+scp lvuser@172.22.11.2:/home/lvuser/preferences.changelog ./src/y2024/resources/preferences_cl_backup.nform
