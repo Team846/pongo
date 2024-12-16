@@ -1,6 +1,6 @@
 # 2025 Codebase for FRC Team 846
 
-[![Code Verification](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml/badge.svg)](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml)
+[![Code Verification](https://github.com/Team846/monkey_menace/actions/workflows/verify_code.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/verify_code.yaml)
 
 ## Overview
 
