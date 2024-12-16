@@ -1,6 +1,6 @@
 # 2025 Codebase for FRC Team 846
 
-<!-- [![CI - Code Verification](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml/badge.svg)](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml) -->
+[![Code Verification](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml/badge.svg)](https://github.com/Team846/howler_monkey/actions/workflows/verify_code.yaml)
 
 ## Overview
 
@@ -199,6 +199,7 @@ srcfrc846cppfrc846mathcollection.cc:52:0: warning: The function 'CoterminalSum' 
 ```
 
 ## CppCheck Warnings
+
 ```
 srcfrc846cppfrc846controlsimulationMCSimulator.cc:16:12: warning: The scope of the variable 'duty_cycle' can be reduced. [variableScope]
 srcfrc846cppfrc846controlsimulationMCSimulator.cc:21:14: warning: Local variable 'duty_cycle' shadows outer variable [shadowVariable]
