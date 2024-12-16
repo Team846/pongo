@@ -25,7 +25,9 @@ void HigherMotorController::SetLoad(units::newton_meter_t load) {
   load_ = load;
 }
 
-void HigherMotorController::WriteDC(double duty_cycle) { WriteDC(duty_cycle); }
+void HigherMotorController::WriteDC(double duty_cycle) {
+  MotorMonkey::WriteDC(slot_id_, duty_cycle);
+}
 
 void HigherMotorController::WriteCurrent(units::ampere_t current) {
   double dc_target =

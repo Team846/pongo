@@ -62,13 +62,13 @@ class Loggable {
 
   // Puts a unit entry on the smart dashboard.
   template <typename U>
-  void Graph(std::string key, U fallback) const {
+  void Graph(std::string key, U value) const {
     static_assert(units::traits::is_unit_t<U>(), "must be a unit type");
 
     std::string fullkey =
         fmt::format("{} ({})", name_ + "/" + key,
                     units::abbreviation(units::make_unit<U>(0)));
-    Graph(fullkey, fallback.template to<double>());
+    Graph(fullkey, value.template to<double>());
   }
 
   // Creates a unit-type preference.

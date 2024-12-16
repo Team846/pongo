@@ -14,7 +14,7 @@
 
 #include "frc2/command/ParallelDeadlineGroup.h"
 #include "frc2/command/WaitCommand.h"
-#include "frc846/base/loggable.h"
+#include "frc846/base/Loggable.h"
 #include "frc846/robot/GenericCommand.h"
 #include "frc846/wpilib/NTAction.h"
 #include "frc846/wpilib/time.h"
@@ -185,13 +185,14 @@ void GenericRobot::StartCompetition() {
     Graph("time_remaining", frc::DriverStation::GetMatchTime().to<int>());
     Graph("mode", static_cast<int>(mode));
 
-    Graph("battery_voltage", frc::DriverStation::GetBatteryVoltage());
+    Graph("ds_battery_voltage", frc::DriverStation::GetBatteryVoltage());
 
-    Graph("error_count", frc846::base::Loggable::GetErrorCount());
-    Graph("warn_count", frc846::base::Loggable::GetWarnCount());
+    Graph("error_count", (int)frc846::base::Loggable::GetErrorCount());
+    Graph("warn_count", (int)frc846::base::Loggable::GetWarnCount());
 
     Graph("can_bus_usage",
-          100 * frc::RobotController::GetCANStatus().percentBusUtilization);
+          (double)(100 *
+                   frc::RobotController::GetCANStatus().percentBusUtilization));
     Graph("can_bus_off_count",
           frc::RobotController::GetCANStatus().busOffCount);
     Graph("can_tx_error_count",

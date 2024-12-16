@@ -3,7 +3,9 @@
 #include <frc/Filesystem.h>
 
 #include <map>
+#include <variant>
 
+#include "frc846/base/Loggable.h"
 #include "frc846/math/fieldpoints.h"
 
 enum AutoFlipType { kNone, kMirror, kMirrorOnlyY };

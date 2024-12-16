@@ -7,7 +7,8 @@ namespace frc846::control::calculators {
 units::radians_per_second_t VelocityPositionEstimator::predict_velocity(
     units::radians_per_second_t current_velocity, units::newton_meter_t torque,
     units::second_t dt, unit_kg_m_sq rot_inertia) {
-  units::radians_per_second_squared_t acceleration = torque / rot_inertia;
+  units::radians_per_second_squared_t acceleration =
+      1_rad * torque / rot_inertia;
   return current_velocity + acceleration * dt;
 }
 
