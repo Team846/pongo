@@ -74,7 +74,7 @@ class MotorMonkey {
 
   /*
   ZeroEncoder()
-  
+
   Sets the position of the encoder to the specified value.
   */
   static void ZeroEncoder(size_t slot_id, units::radian_t position);
