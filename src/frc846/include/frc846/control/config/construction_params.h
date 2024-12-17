@@ -13,7 +13,7 @@ MotorConstructionParameters.
 
 Contains all parameters necessary to construct a motor controller.
 
-@param CANid: The CAN address of the motor controller.
+@param can_id: The CAN address of the motor controller.
 @param inverted: Whether the motor controller is inverted.
 @param brake_mode: Whether the motor controller is in brake mode.
 @param motor_current_limit: The current limit maintained onboard the ESC.
@@ -23,14 +23,15 @@ earlier.
 @param voltage_compensation: The voltage compensation of the motor controller.
 @param circuit_resistance: The circuit resistance leading upto motor controller.
 @param rotational_inertia: The rotational inertia of the system.
-@param on_ctre_bus: Whether the motor controller is on the CTRE bus (CANivore).
+@param bus: Use only if the motor controller is on the CTRE bus (CANivore).
+@param max_wait_time: The maximum time before a control message times out.
 
 @note Smart current limit is only applicable with custom control. Does not work
 with position or velocity control onboard the ESC.
 
 */
 struct MotorConstructionParameters {
-  unsigned int CANid;
+  int can_id;
 
   bool inverted;
 
@@ -46,7 +47,9 @@ struct MotorConstructionParameters {
 
   frc846::wpilib::unit_kg_m_sq rotational_inertia;
 
-  bool on_ctre_bus = false;
+  std::string bus = "rio";
+
+  units::millisecond_t max_wait_time = 20_ms;
 };
 
 }  // namespace frc846::control::config

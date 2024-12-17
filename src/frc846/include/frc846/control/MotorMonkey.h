@@ -10,7 +10,7 @@
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 
-#define MAX_CAPACITY_PER_CONTROLLER_REGISTRY 64
+#define CONTROLLER_REGISTRY_SIZE 64
 
 namespace frc846::control {
 
@@ -84,14 +84,13 @@ class MotorMonkey {
   static units::ampere_t GetCurrent(size_t slot_id);
 
  private:
-  static ctre::phoenix6::hardware::TalonFX*
-      talonFXRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-  static rev::CANSparkMax*
-      sparkMaxRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-  static rev::CANSparkFlex*
-      sparkFlexRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
+  static size_t slot_counter_;
+  static std::map<size_t, frc846::control::base::MotorMonkeyType>
+      slot_id_to_type_;
 
-  units::volt_t battery_voltage;
+  static void* controller_registry[CONTROLLER_REGISTRY_SIZE];
+
+  static units::volt_t battery_voltage;
 };
 
 }  // namespace frc846::control

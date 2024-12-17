@@ -1,23 +1,72 @@
 #include "frc846/control/MotorMonkey.h"
 
+#include <frc/RobotBase.h>
+#include <frc/RobotController.h>
+#include <rev/CANSparkFlex.h>
+#include <rev/CANSparkMax.h>
+
+#include <ctre/phoenix6/TalonFX.hpp>
+
 namespace frc846::control {
 
-ctre::phoenix6::hardware::TalonFX*
-    MotorMonkey::talonFXRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-rev::CANSparkMax*
-    MotorMonkey::sparkMaxRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-rev::CANSparkFlex*
-    MotorMonkey::sparkFlexRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
+size_t MotorMonkey::slot_counter_{0};
+std::map<size_t, frc846::control::base::MotorMonkeyType>
+    MotorMonkey::slot_id_to_type_{};
 
-void MotorMonkey::Tick() {}
+void* MotorMonkey::controller_registry[CONTROLLER_REGISTRY_SIZE]{};
+
+units::volt_t MotorMonkey::battery_voltage{0_V};
+
+void MotorMonkey::Tick() {
+  battery_voltage = frc::RobotController::GetBatteryVoltage();
+
+  for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
+    if (controller_registry[i] != nullptr) {
+      // TODO: DO STUFF HERE
+    }
+  }
+}
 
 size_t MotorMonkey::ConstructController(
     frc846::control::base::MotorMonkeyType type,
     frc846::control::config::MotorConstructionParameters params) {
-  return 0;
+  slot_counter_++;
+  slot_id_to_type_[slot_counter_] = type;
+
+  // if (frc::RobotBase::IsSimulation()) {
+  //   controller_registry[slot_counter_] = nullptr;  // TODO: implement
+  // } else if (frc846::control::base::MotorMonkeyTypeHelper::is_spark_flex(
+  //                type)) {
+  //   controller_registry[slot_counter_] = new rev::CANSparkFlex{
+  //       params.can_id,
+  //       rev::CANSparkLowLevel::MotorType::kBrushless};  // TODO: implement
+  // } else if
+  // (frc846::control::base::MotorMonkeyTypeHelper::is_spark_max(type)) {
+  //   controller_registry[slot_counter_] = new rev::CANSparkMax{
+  //       params.can_id,
+  //       rev::CANSparkLowLevel::MotorType::kBrushless};  // TODO: implement
+  // } else if (frc846::control::base::MotorMonkeyTypeHelper::is_talon_fx(type))
+  // {
+  //   controller_registry[slot_counter_] = new
+  //   ctre::phoenix6::hardware::TalonFX{
+  //       params.can_id, params.bus};  // TODO: implement
+  //   ctre::phoenix6::hardware::TalonFX* this_device =
+  //       static_cast<ctre::phoenix6::hardware::TalonFX*>(
+  //           controller_registry[slot_counter_]);
+
+  //   this_device->SetInverted(params.inverted);
+  //   this_device->SetNeutralMode(
+  //       params.brake_mode ? ctre::phoenix6::signals::NeutralModeValue::Brake
+  //                         :
+  //                         ctre::phoenix6::signals::NeutralModeValue::Coast);
+  // }
+
+  // TODO: Construct controller here
+
+  return slot_counter_;
 }
 
-units::volt_t MotorMonkey::GetBatteryVoltage() { return 0_V; }
+units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }
 
 void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {}
 
