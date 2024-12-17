@@ -36,22 +36,37 @@ void TalonFX_interm::SetNeutralMode(bool brake_mode) {
 }
 void TalonFX_interm::SetCurrentLimit(units::ampere_t current_limit,
                                      units::second_t threshold_time) {
-  // TODO: implement
+  ctre::phoenix6::configs::CurrentLimitsConfigs configs{};
+  configs.WithSupplyCurrentLimitEnable(true);
+  configs.WithSupplyCurrentLimit(current_limit.to<double>());
+  configs.WithSupplyTimeThreshold(threshold_time.to<double>());
+  last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
 void TalonFX_interm::SetSoftLimits(units::radian_t forward_limit,
                                    units::radian_t reverse_limit) {
-  // TODO: implement
+  ctre::phoenix6::configs::SoftwareLimitSwitchConfigs configs{};
+  configs.WithForwardSoftLimitEnable(true);
+  configs.WithForwardSoftLimitThreshold(forward_limit.to<double>());
+  configs.WithReverseSoftLimitEnable(true);
+  configs.WithReverseSoftLimitThreshold(reverse_limit.to<double>());
+  last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
 void TalonFX_interm::SetVoltageCompensation(
     units::volt_t voltage_compensation) {
-  // TODO: implement
+  ctre::phoenix6::configs::VoltageConfigs configs{};
+  configs.WithPeakForwardVoltage(voltage_compensation.to<double>());
+  configs.WithPeakReverseVoltage(-voltage_compensation.to<double>());
+  last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
 void TalonFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
-  // TODO: implement
+  ctre::phoenix6::configs::Slot0Configs configs{};
+  configs.WithKP(gains_.kP).WithKI(gains_.kI).WithKD(gains_.kD).WithKS(
+      gains_.kFF);
+  last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
 void TalonFX_interm::WriteDC(double duty_cycle) { last_command_ = duty_cycle; }

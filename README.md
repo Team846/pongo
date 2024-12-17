@@ -174,61 +174,7 @@ To undo the going back:
 - `git switch -` <-- goes back to latest commit
 
 ## CppCheck Warnings
-
 ```
-src/frc846/cpp/frc846/other/trajectory_generator.cc:68:18: warning: Consider using std::transform algorithm instead of a raw loop. [useStlAlgorithm]
-src/y2024/cpp/commands/teleop/drive_command.cc:67:8: warning: Condition 'is_robot_centric' is always false [knownConditionTrueFalse]
-src/frc846/cpp/frc846/util/math.cc:19:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src/frc846/cpp/frc846/util/math.cc:46:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
-```
-
-## CppCheck Warnings
-
-```
-srcfrc846cppfrc846ntinffstore.cc:287:27: warning: Consider using std::any_of algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppcommandsteleopdrive_command.cc:56:8: warning: Condition 'is_robot_centric' is always false [knownConditionTrueFalse]
-srcy2025cppfield.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
-srcy2025cppfield.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
-srcy2025cppfield.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:22:29: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:67:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:77:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:60:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcfrc846cppfrc846mathcollection.cc:7:0: warning: The function 'DEquals' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
-```
-
-## CppCheck Warnings
-
-```
-srcfrc846cppfrc846controlsimulationMCSimulator.cc:16:12: warning: The scope of the variable 'duty_cycle' can be reduced. [variableScope]
-srcfrc846cppfrc846controlsimulationMCSimulator.cc:21:14: warning: Local variable 'duty_cycle' shadows outer variable [shadowVariable]
-srcfrc846cppfrc846controlsimulationMCSimulator.cc:16:23: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
-srcfrc846cppfrc846controlsimulationMCSimulator.cc:18:18: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
-srcfrc846cppfrc846controlsimulationMCSimulator.cc:21:25: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
-srcy2025cppfield.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
-srcy2025cppfield.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
-srcy2025cppfield.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:22:29: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:67:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:77:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcy2025cppfield.cc:60:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-srcfrc846cppfrc846mathcollection.cc:7:0: warning: The function 'DEquals' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
-```
-
-## CppCheck Warnings
-
-```
-src/frc846/cpp/frc846/control/simulation/MCSimulator.cc:16:12: warning: The scope of the variable 'duty_cycle' can be reduced. [variableScope]
-src/frc846/cpp/frc846/control/simulation/MCSimulator.cc:21:14: warning: Local variable 'duty_cycle' shadows outer variable [shadowVariable]
-src/frc846/cpp/frc846/control/simulation/MCSimulator.cc:16:23: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
-src/frc846/cpp/frc846/control/simulation/MCSimulator.cc:18:18: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
-src/frc846/cpp/frc846/control/simulation/MCSimulator.cc:21:25: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
 src/y2025/cpp/field.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
 src/y2025/cpp/field.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
 src/y2025/cpp/field.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
