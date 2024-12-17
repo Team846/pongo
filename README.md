@@ -1,6 +1,7 @@
 # 2025 Codebase for FRC Team 846
 
-[![Code Verification](https://github.com/Team846/monkey_menace/actions/workflows/verify_code.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/verify_code.yaml)
+[![Compilation Check](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml)
+[![Formatting Check](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml)
 
 ## Overview
 
@@ -206,6 +207,22 @@ srcfrc846cppfrc846controlsimulationMCSimulator.cc:21:14: warning: Local variable
 srcfrc846cppfrc846controlsimulationMCSimulator.cc:16:23: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
 srcfrc846cppfrc846controlsimulationMCSimulator.cc:18:18: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
 srcfrc846cppfrc846controlsimulationMCSimulator.cc:21:25: warning: Variable 'duty_cycle' is assigned a value that is never used. [unreadVariable]
+srcy2025cppfield.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
+srcy2025cppfield.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
+srcy2025cppfield.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+srcy2025cppfield.cc:22:29: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+srcy2025cppfield.cc:67:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
+srcy2025cppfield.cc:77:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
+srcy2025cppfield.cc:60:10: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
+srcfrc846cppfrc846mathcollection.cc:7:0: warning: The function 'DEquals' is never used. [unusedFunction]
+srcfrc846cppfrc846mathcollection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
+srcfrc846cppfrc846mathcollection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
+srcfrc846cppfrc846mathcollection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
+srcfrc846cppfrc846mathcollection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
+```
+
+## CppCheck Warnings
+```
 srcy2025cppfield.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
 srcy2025cppfield.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
 srcy2025cppfield.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
