@@ -37,9 +37,9 @@ void TalonFX_interm::SetNeutralMode(bool brake_mode) {
 void TalonFX_interm::SetCurrentLimit(units::ampere_t current_limit,
                                      units::second_t threshold_time) {
   ctre::phoenix6::configs::CurrentLimitsConfigs configs{};
-  configs.WithSupplyCurrentLimitEnable(true);
-  configs.WithSupplyCurrentLimit(current_limit.to<double>());
-  configs.WithSupplyTimeThreshold(threshold_time.to<double>());
+  configs.WithSupplyCurrentLimitEnable(false);
+  configs.WithStatorCurrentLimitEnable(true);
+  configs.WithStatorCurrentLimit(current_limit.to<double>());
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
