@@ -111,7 +111,7 @@ spotless {
             include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
             exclude '**/build/**', '**/build-*/**'
         }
-        def selectedClangVersion = project.hasProperty('fromCI') ? '17.0.0' : '18.1.8'
+        def selectedClangVersion = project.hasProperty('fromCI') ? '17.0.6' : '18.1.8'
         clangFormat(selectedClangVersion).style('Google')
     }
     groovyGradle {
@@ -130,14 +130,34 @@ check.dependsOn spotlessApply
 
 task runCppcheck(type: Exec) {
     def outputBuffer = new ByteArrayOutputStream()
+
     commandLine 'cppcheck', '--enable=all', '--template=gcc',
-            '--force', '--suppress=missingIncludeSystem', '--suppress=missingInclude', '--check-level=exhaustive', 'src/'
+        '--force', '--suppress=missingIncludeSystem', '--suppress=missingInclude', '--check-level=exhaustive', 'src/'
+    
+    
     standardOutput = outputBuffer
     errorOutput = outputBuffer
     doLast {
         def cppcheckOutput = outputBuffer.toString("UTF-8")
         def warnings = cppcheckOutput.readLines().findAll { it.contains("warning") && !it.contains("nofile:") }
         def reportContent = warnings.isEmpty() ? "No warnings or errors found." : warnings.join("\n")
+
+        def criticalWarnings = cppcheckOutput.readLines().findAll {
+            it.contains("[error]") || it.contains("nullPointer") || it.contains("uninitVar")
+        }
+        println "Cppcheck completed. Total warnings: ${warnings.size()}. Critical issues: ${criticalWarnings.size()}."
+
+        
+        if (criticalWarnings.size() > 0 || warnings.size() > 15) {
+            println "Critical issues detected:\n${criticalWarnings.join('\n')}"
+
+            if (project.hasProperty('runningCppCheckTest')) {
+                throw new GradleException("Cppcheck failed with critical issues or too many warnings.")
+            } else {
+                println "Cppcheck failed with critical issues or too many warnings."
+            }
+        }
+
         def cppcheckSection = """
 ## CppCheck Warnings
 ```

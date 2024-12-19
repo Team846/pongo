@@ -9,7 +9,7 @@ on:
       - "**"
 
 jobs:
-  cppcheck:
+  compilation_check:
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2024-22.04
 
@@ -66,9 +66,14 @@ jobs:
       - name: Set Library Path
         run: echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/local.conf && sudo ldconfig
 
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run CppCheck
-        run: |
-          cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 src/
+      - name: Install Roborio Toolchain
+        run: ./gradlew installRoborioToolchain
+
+      - name: Compile code and run tests
+        run: ./gradlew runCppCheck -PfromCI -PrunningCppCheckTest
