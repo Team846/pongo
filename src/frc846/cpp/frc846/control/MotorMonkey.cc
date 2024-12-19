@@ -5,7 +5,7 @@
 #include <rev/CANSparkFlex.h>
 #include <rev/CANSparkMax.h>
 
-#include <ctre/phoenix6/TalonFX.hpp>
+#include "frc846/control/hardware/TalonFX_interm.h"
 
 namespace frc846::control {
 
@@ -13,7 +13,8 @@ size_t MotorMonkey::slot_counter_{0};
 std::map<size_t, frc846::control::base::MotorMonkeyType>
     MotorMonkey::slot_id_to_type_{};
 
-void* MotorMonkey::controller_registry[CONTROLLER_REGISTRY_SIZE]{};
+frc846::control::hardware::IntermediateController*
+    MotorMonkey::controller_registry[CONTROLLER_REGISTRY_SIZE]{};
 
 units::volt_t MotorMonkey::battery_voltage{0_V};
 
@@ -32,6 +33,19 @@ size_t MotorMonkey::ConstructController(
     frc846::control::config::MotorConstructionParameters params) {
   slot_counter_++;
   slot_id_to_type_[slot_counter_] = type;
+
+  if (frc::RobotBase::IsSimulation()) {
+  } else if (frc846::control::base::MotorMonkeyTypeHelper::is_talon_fx(type)) {
+    frc846::control::hardware::IntermediateController* this_controller =
+        controller_registry[slot_counter_] =
+            new frc846::control::hardware::TalonFX_interm{
+                params.can_id, params.bus, params.max_wait_time};
+
+    this_controller->SetInverted(params.inverted);
+    this_controller->SetNeutralMode(params.brake_mode);
+    this_controller->SetCurrentLimit(params.motor_current_limit);
+    this_controller->SetVoltageCompensation(params.voltage_compensation);
+  }
 
   // if (frc::RobotBase::IsSimulation()) {
   //   controller_registry[slot_counter_] = nullptr;  // TODO: implement

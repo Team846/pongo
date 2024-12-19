@@ -38,7 +38,6 @@ struct MotorConstructionParameters {
   bool brake_mode;
 
   units::ampere_t motor_current_limit;
-  units::second_t threshold_time;
   units::ampere_t smart_current_limit;
 
   units::volt_t voltage_compensation;

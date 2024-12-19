@@ -9,6 +9,7 @@
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
+#include "frc846/control/hardware/TalonFX_interm.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
 
@@ -88,7 +89,8 @@ class MotorMonkey {
   static std::map<size_t, frc846::control::base::MotorMonkeyType>
       slot_id_to_type_;
 
-  static void* controller_registry[CONTROLLER_REGISTRY_SIZE];
+  static frc846::control::hardware::IntermediateController*
+      controller_registry[CONTROLLER_REGISTRY_SIZE];
 
   static units::volt_t battery_voltage;
 };

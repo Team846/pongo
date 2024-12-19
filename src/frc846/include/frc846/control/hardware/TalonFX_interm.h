@@ -16,8 +16,7 @@ class TalonFX_interm : public IntermediateController {
 
   void SetInverted(bool inverted) override;
   void SetNeutralMode(bool brake_mode) override;
-  void SetCurrentLimit(units::ampere_t current_limit,
-                       units::second_t threshold_time) override;
+  void SetCurrentLimit(units::ampere_t current_limit) override;
   void SetSoftLimits(units::radian_t forward_limit,
                      units::radian_t reverse_limit) override;
 

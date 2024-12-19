@@ -36,8 +36,7 @@ class IntermediateController {
 
   virtual void SetInverted(bool inverted) = 0;
   virtual void SetNeutralMode(bool brake_mode) = 0;
-  virtual void SetCurrentLimit(units::ampere_t current_limit,
-                               units::second_t threshold_time) = 0;
+  virtual void SetCurrentLimit(units::ampere_t current_limit) = 0;
 
   virtual void SetSoftLimits(units::radian_t forward_limit,
                              units::radian_t reverse_limit) = 0;
