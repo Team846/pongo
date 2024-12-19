@@ -2,6 +2,7 @@
 
 [![Compilation Check](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml)
 [![Formatting Check](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml)
+[![CppCheck](https://github.com/Team846/monkey_menace/actions/workflows/cpp_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/cpp_check.yaml)
 
 ## Overview
 
@@ -174,6 +175,7 @@ To undo the going back:
 - `git switch -` <-- goes back to latest commit
 
 ## CppCheck Warnings
+
 ```
 src/y2025/cpp/field.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
 src/y2025/cpp/field.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
@@ -188,7 +190,9 @@ src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDe
 src/frc846/cpp/frc846/math/collection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```
+
 ## CppCheck Warnings
+
 ```
 srcy2025cppfield.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
 srcy2025cppfield.cc:21:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
