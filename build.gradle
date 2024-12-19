@@ -111,7 +111,7 @@ spotless {
             include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
             exclude '**/build/**', '**/build-*/**'
         }
-        def selectedClangVersion = project.hasProperty('fromCI') ? '14.0.0-1ubuntu1.1' : '18.1.8'
+        def selectedClangVersion = project.hasProperty('fromCI') ? '17.0.0' : '18.1.8'
         clangFormat(selectedClangVersion).style('Google')
     }
     groovyGradle {
