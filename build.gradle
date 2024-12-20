@@ -111,7 +111,7 @@ spotless {
             include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
             exclude '**/build/**', '**/build-*/**'
         }
-        def selectedClangVersion = project.hasProperty('fromCI') ? '17.0.6' : '18.1.8'
+        def selectedClangVersion = project.hasProperty('fromCI') ? '18.1.8' : '18.1.8'
 
         def styleFile = file('style.standard')
         def styleConfig = styleFile.text.trim()
@@ -152,8 +152,20 @@ task runCppcheck(type: Exec) {
         def warnings = cppcheckOutput.readLines().findAll { it.contains("warning") && !it.contains("nofile:") }
         def reportContent = warnings.isEmpty() ? "No warnings or errors found." : warnings.join("\n")
 
-        def criticalWarnings = cppcheckOutput.readLines().findAll {
-            it.contains("[error]") || it.contains("nullPointer") || it.contains("uninitVar")
+         def criticalWarnings = cppcheckOutput.readLines().findAll {
+            it.contains("error") ||
+            it.contains("nullPointer") ||    
+            it.contains("uninitVar") ||     
+            it.contains("outOfBounds") ||    
+            it.contains("divideByZero") ||  
+            it.contains("unreachableCode") ||
+            it.contains("memoryLeak") ||    
+            it.contains("useAfterFree") ||   
+            it.contains("doubleFree") ||    
+            it.contains("invalidMemcpy") ||  
+            it.contains("undefinedFunction") || 
+            it.contains("invalidInput") ||   
+            it.contains("invalidPointer")    
         }
         println "Cppcheck completed. Total warnings: ${warnings.size()}. Critical issues: ${criticalWarnings.size()}."
 

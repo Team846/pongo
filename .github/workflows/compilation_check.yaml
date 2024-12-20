@@ -67,7 +67,14 @@ jobs:
         run: echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/local.conf && sudo ldconfig
 
       - name: Install clang-format
-        run: sudo apt-get update && sudo apt-get install -y clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget lsb-release software-properties-common
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18
+          sudo apt-get install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/bin/clang-format
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

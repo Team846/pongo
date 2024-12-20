@@ -9,7 +9,7 @@ on:
       - "**"
 
 jobs:
-  compilation_check:
+  cpp_check:
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2024-22.04
 
