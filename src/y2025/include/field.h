@@ -20,7 +20,7 @@ struct AutoData {
 };
 
 class Field_nonstatic : public frc846::base::Loggable {
- public:
+public:
   std::vector<std::pair<std::string, frc846::math::FieldPoint>> points;
 
   std::vector<std::pair<std::string, std::vector<frc846::math::FieldPoint>>>
@@ -36,7 +36,7 @@ class Field_nonstatic : public frc846::base::Loggable {
 
   std::vector<AutoData> getAllAutoData();
 
- private:
+private:
   void addPoint(std::string name, frc846::math::FieldPoint point) {
     points.push_back(std::pair{name, point});
   }
@@ -59,7 +59,7 @@ class Field_nonstatic : public frc846::base::Loggable {
 };
 
 class Field {
- public:
+public:
   static frc846::math::FieldPoint getPoint(std::string name) {
     return instance.getPoint(name);
   }
@@ -74,6 +74,6 @@ class Field {
     return instance.getAllAutoData();
   }
 
- private:
+private:
   static Field_nonstatic instance;
 };

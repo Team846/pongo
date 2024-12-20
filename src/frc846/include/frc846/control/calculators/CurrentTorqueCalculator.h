@@ -21,7 +21,7 @@ This class includes static methods to:
 class CurrentTorqueCalculator {
   using unit_ohm = frc846::wpilib::unit_ohm;
 
- public:
+public:
   /*
   predict_current_draw()
 
@@ -34,15 +34,14 @@ class CurrentTorqueCalculator {
 
   @note rpm is the current speed of the motor, NOT the controlled mechanism.
   */
-  static units::ampere_t predict_current_draw(
-      double duty_cycle, units::revolutions_per_minute_t rpm,
-      units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs);
-  static units::ampere_t predict_current_draw(
-      double duty_cycle, units::revolutions_per_minute_t rpm,
-      units::volt_t v_supply, unit_ohm circuit_resistance,
-      MotorMonkeyType mmtype) {
+  static units::ampere_t predict_current_draw(double duty_cycle,
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorSpecs specs);
+  static units::ampere_t predict_current_draw(double duty_cycle,
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorMonkeyType mmtype) {
     return predict_current_draw(duty_cycle, rpm, v_supply, circuit_resistance,
-                                MotorSpecificationPresets::get(mmtype));
+        MotorSpecificationPresets::get(mmtype));
   }
 
   /*
@@ -57,15 +56,14 @@ class CurrentTorqueCalculator {
 
   @note rpm is the current speed of the motor, NOT the controlled mechanism.
   */
-  static units::newton_meter_t predict_torque(
-      double duty_cycle, units::revolutions_per_minute_t rpm,
-      units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs);
-  static units::newton_meter_t predict_torque(
-      double duty_cycle, units::revolutions_per_minute_t rpm,
-      units::volt_t v_supply, unit_ohm circuit_resistance,
-      MotorMonkeyType mmtype) {
+  static units::newton_meter_t predict_torque(double duty_cycle,
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorSpecs specs);
+  static units::newton_meter_t predict_torque(double duty_cycle,
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorMonkeyType mmtype) {
     return predict_torque(duty_cycle, rpm, v_supply, circuit_resistance,
-                          MotorSpecificationPresets::get(mmtype));
+        MotorSpecificationPresets::get(mmtype));
   }
 
   /*
@@ -73,10 +71,10 @@ class CurrentTorqueCalculator {
 
   Converts a torque value to required current draw, given MotorSpecs.
   */
-  static units::ampere_t torque_to_current(units::newton_meter_t torque,
-                                           MotorSpecs specs);
-  static units::ampere_t torque_to_current(units::newton_meter_t torque,
-                                           MotorMonkeyType mmtype) {
+  static units::ampere_t torque_to_current(
+      units::newton_meter_t torque, MotorSpecs specs);
+  static units::ampere_t torque_to_current(
+      units::newton_meter_t torque, MotorMonkeyType mmtype) {
     return torque_to_current(torque, MotorSpecificationPresets::get(mmtype));
   }
 
@@ -85,10 +83,10 @@ class CurrentTorqueCalculator {
 
   Converts a current draw to torque output, given MotorSpecs.
   */
-  static units::newton_meter_t current_to_torque(units::ampere_t current,
-                                                 MotorSpecs specs);
-  static units::newton_meter_t current_to_torque(units::ampere_t current,
-                                                 MotorMonkeyType mmtype) {
+  static units::newton_meter_t current_to_torque(
+      units::ampere_t current, MotorSpecs specs);
+  static units::newton_meter_t current_to_torque(
+      units::ampere_t current, MotorMonkeyType mmtype) {
     return current_to_torque(current, MotorSpecificationPresets::get(mmtype));
   }
 
@@ -100,16 +98,13 @@ class CurrentTorqueCalculator {
   possible current draw.
   */
   static double current_control(units::ampere_t target_current,
-                                units::revolutions_per_minute_t rpm,
-                                units::volt_t v_supply,
-                                unit_ohm circuit_resistance, MotorSpecs specs);
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorSpecs specs);
   static double current_control(units::ampere_t target_current,
-                                units::revolutions_per_minute_t rpm,
-                                units::volt_t v_supply,
-                                unit_ohm circuit_resistance,
-                                MotorMonkeyType mmtype) {
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorMonkeyType mmtype) {
     return current_control(target_current, rpm, v_supply, circuit_resistance,
-                           MotorSpecificationPresets::get(mmtype));
+        MotorSpecificationPresets::get(mmtype));
   }
 
   /*
@@ -120,16 +115,13 @@ class CurrentTorqueCalculator {
   maximum possible torque.
   */
   static double torque_control(units::newton_meter_t target_torque,
-                               units::revolutions_per_minute_t rpm,
-                               units::volt_t v_supply,
-                               unit_ohm circuit_resistance, MotorSpecs specs);
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorSpecs specs);
   static double torque_control(units::newton_meter_t target_torque,
-                               units::revolutions_per_minute_t rpm,
-                               units::volt_t v_supply,
-                               unit_ohm circuit_resistance,
-                               MotorMonkeyType mmtype) {
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      unit_ohm circuit_resistance, MotorMonkeyType mmtype) {
     return torque_control(target_torque, rpm, v_supply, circuit_resistance,
-                          MotorSpecificationPresets::get(mmtype));
+        MotorSpecificationPresets::get(mmtype));
   }
 };
 

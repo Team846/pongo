@@ -13,7 +13,7 @@ namespace frc846::robot {
 template <typename RobotContainer, typename Subclass>
 class GenericCommand : public frc2::CommandHelper<frc2::Command, Subclass>,
                        public frc846::base::Loggable {
- public:
+public:
   GenericCommand(RobotContainer& container, std::string name)
       : Loggable{name}, container_{container} {
     frc2::Command::SetName(name);
@@ -57,7 +57,7 @@ class GenericCommand : public frc2::CommandHelper<frc2::Command, Subclass>,
 
     if (elapsed_time > 1000_us) {
       Warn("Command {} periodic overrun. Took {} ms.", name(),
-           elapsed_time / 1000_us);
+          elapsed_time / 1000_us);
     }
 
     avg_periodic_time_ =
@@ -68,10 +68,10 @@ class GenericCommand : public frc2::CommandHelper<frc2::Command, Subclass>,
     num_periodic_loops_++;
   }
 
- protected:
+protected:
   RobotContainer& container_;
 
- private:
+private:
   units::microsecond_t avg_periodic_time_ = 0.0_us;
   int num_periodic_loops_ = 0;
 
@@ -81,13 +81,13 @@ class GenericCommand : public frc2::CommandHelper<frc2::Command, Subclass>,
 };
 
 template <typename RobotContainer, typename Subclass,
-          wpi::DecayedDerivedFrom<frc2::Command>... Commands>
+    wpi::DecayedDerivedFrom<frc2::Command>... Commands>
 class GenericCommandGroup
     : public frc2::CommandHelper<frc2::SequentialCommandGroup, Subclass>,
       public frc846::base::Loggable {
- public:
-  GenericCommandGroup(RobotContainer& container, std::string name,
-                      Commands&&... commands)
+public:
+  GenericCommandGroup(
+      RobotContainer& container, std::string name, Commands&&... commands)
       : Loggable{name}, container_{container} {
     frc2::Command::SetName(name);
 
@@ -99,11 +99,11 @@ class GenericCommandGroup
     Log("Constructing instance of command group {}.", name);
   }
 
- protected:
+protected:
   RobotContainer& container_;
   units::millisecond_t command_start_time_ = 0.0_ms;
 
- private:
+private:
   frc2::InstantCommand end_command_addition{[&] {
     Log("Command group ending. Took {} ms to complete.",
         (frc846::wpilib::CurrentFPGATime() - command_start_time_).to<double>());

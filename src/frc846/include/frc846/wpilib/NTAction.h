@@ -9,12 +9,12 @@ namespace frc846::wpilib {
 // Use with SmartDashboard::PutData to have buttons call functions on
 // Shuffleboard.
 class NTAction : public wpi::Sendable {
- public:
+public:
   NTAction(std::function<void()> callback);
 
   void InitSendable(wpi::SendableBuilder& builder);
 
- private:
+private:
   std::function<void()> callback_;
 };
 

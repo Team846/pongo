@@ -17,7 +17,7 @@ motorized system, with knowledge of the torque applied by the motor.
 class VelocityPositionEstimator {
   using unit_kg_m_sq = frc846::wpilib::unit_kg_m_sq;
 
- public:
+public:
   /*
   predict_velocity()
 

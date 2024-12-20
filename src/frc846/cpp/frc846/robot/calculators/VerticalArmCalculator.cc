@@ -20,12 +20,11 @@ double VerticalArmCalculator::calculate(VerticalArmInputs inputs) {
   units::degree_t position_error =
       inputs.target_arm_position - inputs.arm_position;
 
-  double duty_cycle = inputs.motor_gains.calculate(
-      position_error.to<double>(), 0.0, inputs.current_velocity.to<double>(),
-      gravity_torque.to<double>());
+  double duty_cycle = inputs.motor_gains.calculate(position_error.to<double>(),
+      0.0, inputs.current_velocity.to<double>(), gravity_torque.to<double>());
 
   return std::max(std::min(duty_cycle, configs_.peak_output_forward),
-                  configs_.peak_output_reverse);
+      configs_.peak_output_reverse);
 }
 
 }  // namespace frc846::robot::calculators

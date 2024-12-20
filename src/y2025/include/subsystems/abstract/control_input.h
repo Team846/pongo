@@ -18,8 +18,8 @@ struct ControlInputTarget {
 
 class ControlInputSubsystem
     : public frc846::robot::GenericSubsystem<ControlInputReadings,
-                                             ControlInputTarget> {
- public:
+          ControlInputTarget> {
+public:
   ControlInputSubsystem();
 
   void Setup() override;
@@ -30,7 +30,7 @@ class ControlInputSubsystem
 
   ControlInputReadings UpdateWithInput();
 
- private:
+private:
   ControlInputReadings previous_readings_{};
 
   frc846::robot::XboxReadings previous_driver_{};

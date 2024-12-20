@@ -5,7 +5,7 @@
 #include "subsystems/hardware/leds.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
- public:
+public:
   ControlInputSubsystem control_input_{};
   LEDsSubsystem leds_{};
 

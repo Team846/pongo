@@ -55,8 +55,7 @@ void GenericRobot::StartCompetition() {
 
   // Add dashboard buttons
 
-  frc::SmartDashboard::PutData(
-      "verify_hardware",
+  frc::SmartDashboard::PutData("verify_hardware",
       new frc846::wpilib::NTAction([this] { VerifyHardware(); }));
 
   frc::SmartDashboard::PutData(
@@ -67,9 +66,8 @@ void GenericRobot::StartCompetition() {
       }));
 
   frc::SmartDashboard::PutData("prune_prefs",
-                               new frc846::wpilib::NTAction([this] {
-                                 frc846::base::Loggable::PrunePreferences(this);
-                               }));
+      new frc846::wpilib::NTAction(
+          [this] { frc846::base::Loggable::PrunePreferences(this); }));
 
   // Verify robot hardware
   VerifyHardware();
@@ -97,9 +95,7 @@ void GenericRobot::StartCompetition() {
     auto time = HAL_WaitForNotifierAlarm(notifier_, &status);
     FRC_CheckErrorStatus(status, "{}", "WaitForNotifierAlarm");
 
-    if (time == 0x00 || status != 0x00) {
-      break;
-    }
+    if (time == 0x00 || status != 0x00) { break; }
 
     // Start loop timing
     auto loop_start_time = frc846::wpilib::CurrentFPGATime();
@@ -191,14 +187,14 @@ void GenericRobot::StartCompetition() {
     Graph("warn_count", (int)frc846::base::Loggable::GetWarnCount());
 
     Graph("can_bus_usage",
-          (double)(100 *
-                   frc::RobotController::GetCANStatus().percentBusUtilization));
-    Graph("can_bus_off_count",
-          frc::RobotController::GetCANStatus().busOffCount);
+        (double)(100 *
+                 frc::RobotController::GetCANStatus().percentBusUtilization));
+    Graph(
+        "can_bus_off_count", frc::RobotController::GetCANStatus().busOffCount);
     Graph("can_tx_error_count",
-          frc::RobotController::GetCANStatus().transmitErrorCount);
+        frc::RobotController::GetCANStatus().transmitErrorCount);
     Graph("can_rx_error_count",
-          frc::RobotController::GetCANStatus().receiveErrorCount);
+        frc::RobotController::GetCANStatus().receiveErrorCount);
 
     auto loop_time = frc846::wpilib::CurrentFPGATime() - loop_start_time;
     Graph("loop_time", loop_time);
@@ -206,7 +202,7 @@ void GenericRobot::StartCompetition() {
     // Check loop time
     if (loop_time > kPeriod * 0x03) {
       Warn("Loop overrun: {} (loop period: {})",
-           loop_time.convert<units::millisecond>(), kPeriod);
+          loop_time.convert<units::millisecond>(), kPeriod);
     }
   }
 }

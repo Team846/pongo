@@ -9,7 +9,7 @@ bool DEquals(double x, double y, double epsilon) {
 }
 
 double HorizontalDeadband(double input, double x_intercept, double max,
-                          double exponent, double sensitivity) {
+    double exponent, double sensitivity) {
   double y = 0;
 
   auto slope = max / (max - x_intercept);
@@ -23,7 +23,7 @@ double HorizontalDeadband(double input, double x_intercept, double max,
 }
 
 double VerticalDeadband(double input, double y_intercept, double max,
-                        double exponent, double sensitivity) {
+    double exponent, double sensitivity) {
   double y = 0;
 
   auto slope = (max - y_intercept) / max;
@@ -36,8 +36,8 @@ double VerticalDeadband(double input, double y_intercept, double max,
   return copysign(max * pow(y / max, exponent) * sensitivity, input);
 }
 
-units::degree_t CoterminalDifference(units::degree_t angle,
-                                     units::degree_t other_angle) {
+units::degree_t CoterminalDifference(
+    units::degree_t angle, units::degree_t other_angle) {
   const units::angle::degree_t difference =
       units::math::fmod(angle, 1_tr) - units::math::fmod(other_angle, 1_tr);
   if (difference > 0.5_tr) {
@@ -49,8 +49,8 @@ units::degree_t CoterminalDifference(units::degree_t angle,
   }
 }
 
-units::degree_t CoterminalSum(units::degree_t angle,
-                              units::degree_t other_angle) {
+units::degree_t CoterminalSum(
+    units::degree_t angle, units::degree_t other_angle) {
   const units::angle::degree_t difference =
       units::math::fmod(angle, 1_tr) + units::math::fmod(other_angle, 1_tr);
   if (difference > 0.5_tr) {

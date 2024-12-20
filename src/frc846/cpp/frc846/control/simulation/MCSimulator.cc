@@ -6,8 +6,8 @@
 namespace frc846::control::simulation {
 
 MCSimulator::MCSimulator(frc846::control::base::MotorSpecs specs,
-                         frc846::wpilib::unit_ohm circuit_resistance,
-                         frc846::wpilib::unit_kg_m_sq rotational_inertia)
+    frc846::wpilib::unit_ohm circuit_resistance,
+    frc846::wpilib::unit_kg_m_sq rotational_inertia)
     : specs(specs),
       circuit_resistance_{circuit_resistance},
       rotational_inertia_{rotational_inertia} {
@@ -15,8 +15,8 @@ MCSimulator::MCSimulator(frc846::control::base::MotorSpecs specs,
       std::chrono::system_clock::now().time_since_epoch());
 }
 
-void MCSimulator::Tick(units::volt_t battery_voltage,
-                       units::newton_meter_t load) {
+void MCSimulator::Tick(
+    units::volt_t battery_voltage, units::newton_meter_t load) {
   double duty_cycle = 0.0;
   if (auto* dc = std::get_if<double>(&control_message)) {
     duty_cycle = *dc;
@@ -25,8 +25,8 @@ void MCSimulator::Tick(units::volt_t battery_voltage,
     duty_cycle =
         gains.calculate(vel->to<double>(), 0.0, 0.0, load.to<double>());
   } else if (auto* pos = std::get_if<units::radian_t>(&control_message)) {
-    duty_cycle = gains.calculate(pos->to<double>(), 0.0, velocity_.to<double>(),
-                                 load.to<double>());
+    duty_cycle = gains.calculate(
+        pos->to<double>(), 0.0, velocity_.to<double>(), load.to<double>());
   }
 
   units::newton_meter_t torque_output =

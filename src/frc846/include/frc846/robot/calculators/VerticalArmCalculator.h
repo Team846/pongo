@@ -59,10 +59,9 @@ VerticalArmCalculator
 A class that calculates the duty cycle for achiving a target postion using
 characteristics of an arm.
 */
-class VerticalArmCalculator
-    : public frc846::math::Calculator<VerticalArmInputs, double,
-                                      VerticalArmConfigs> {
- public:
+class VerticalArmCalculator : public frc846::math::Calculator<VerticalArmInputs,
+                                  double, VerticalArmConfigs> {
+public:
   VerticalArmCalculator(VerticalArmConfigs& configs);
 
   /*
@@ -78,7 +77,7 @@ class VerticalArmCalculator
   */
   double calculate(VerticalArmInputs inputs) override;
 
- private:
+private:
   VerticalArmConfigs& configs_;
 };
 

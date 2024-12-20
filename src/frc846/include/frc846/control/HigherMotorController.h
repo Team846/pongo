@@ -16,9 +16,8 @@ A class that interfaces with MotorMonkey to provide higher-level control of
 motors.
 */
 class HigherMotorController {
- public:
-  HigherMotorController(
-      frc846::control::base::MotorMonkeyType mmtype,
+public:
+  HigherMotorController(frc846::control::base::MotorMonkeyType mmtype,
       frc846::control::config::MotorConstructionParameters params);
 
   // Sets up the motor. Gets a slot ID from MotorMonkey.
@@ -76,7 +75,7 @@ class HigherMotorController {
   // Zeroes the encoder to the specified value
   void SetPosition(units::radian_t position);
 
- private:
+private:
   frc846::control::base::MotorMonkeyType mmtype_;
   frc846::control::config::MotorConstructionParameters constr_params_;
 

@@ -43,7 +43,7 @@ struct LogMessage {
 };
 
 class FunkyLogSystem {
- public:
+public:
   /*
   Spawns a new logger thread
   @param rateLimit: maximum chars/second
@@ -71,7 +71,7 @@ class FunkyLogSystem {
     mtx.unlock();
   }
 
- private:
+private:
   static void LogThread(int rateLimit, std::string logFileName);
 
   static int gameState;
@@ -83,7 +83,7 @@ class FunkyLogSystem {
 };
 
 class FunkyLogger {
- private:
+private:
   std::string pname_;
 
   float format_dp(float num, int num_places = 2) const {
@@ -96,8 +96,8 @@ class FunkyLogger {
   sends to logging server.
   */
   template <typename... T>
-  void HandleLogMessage(int type, fmt::format_string<T...> fmt,
-                        T&&... args) const {
+  void HandleLogMessage(
+      int type, fmt::format_string<T...> fmt, T&&... args) const {
     LogMessage msg;
 
     msg.type = type;
@@ -121,7 +121,7 @@ class FunkyLogger {
     FunkyLogSystem::AddMessage(msg);
   }
 
- public:
+public:
   FunkyLogger(std::string pname) : pname_{pname} {};
 
   template <typename... T>

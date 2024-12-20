@@ -2,8 +2,8 @@
 
 namespace frc846::control::hardware {
 
-TalonFX_interm::TalonFX_interm(int can_id, std::string bus,
-                               units::millisecond_t max_wait_time)
+TalonFX_interm::TalonFX_interm(
+    int can_id, std::string bus, units::millisecond_t max_wait_time)
     : talon_(can_id, bus), max_wait_time_(max_wait_time) {}
 
 void TalonFX_interm::Tick() {
@@ -42,8 +42,8 @@ void TalonFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
-void TalonFX_interm::SetSoftLimits(units::radian_t forward_limit,
-                                   units::radian_t reverse_limit) {
+void TalonFX_interm::SetSoftLimits(
+    units::radian_t forward_limit, units::radian_t reverse_limit) {
   ctre::phoenix6::configs::SoftwareLimitSwitchConfigs configs{};
   configs.WithForwardSoftLimitEnable(true);
   configs.WithForwardSoftLimitThreshold(forward_limit.to<double>());
@@ -79,9 +79,7 @@ void TalonFX_interm::WritePosition(units::radian_t position) {
 void TalonFX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
   last_error_ = getErrorCode(talon_.OptimizeBusUtilization(max_wait_time_));
-  if (last_error_ != ControllerErrorCodes::kAllOK) {
-    return;
-  }
+  if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
   for (auto frame : frames) {
     ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
     if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
@@ -136,14 +134,13 @@ ControllerErrorCodes TalonFX_interm::GetLastErrorCode() { return last_error_; }
 frc846::control::hardware::ControllerErrorCodes TalonFX_interm::getErrorCode(
     ctre::phoenix::StatusCode code) {
   switch (code) {
-    case ctre::phoenix::StatusCode::OK:
-      return ControllerErrorCodes::kAllOK;
-    case ctre::phoenix::StatusCode::InvalidDeviceSpec:
-      return ControllerErrorCodes::kDeviceDisconnected;
-    case ctre::phoenix::StatusCode::ConfigFailed:
-      return ControllerErrorCodes::kConfigFailed;
-    case ctre::phoenix::StatusCode::ApiTooOld:
-      return ControllerErrorCodes::kVersionMismatch;
+  case ctre::phoenix::StatusCode::OK: return ControllerErrorCodes::kAllOK;
+  case ctre::phoenix::StatusCode::InvalidDeviceSpec:
+    return ControllerErrorCodes::kDeviceDisconnected;
+  case ctre::phoenix::StatusCode::ConfigFailed:
+    return ControllerErrorCodes::kConfigFailed;
+  case ctre::phoenix::StatusCode::ApiTooOld:
+    return ControllerErrorCodes::kVersionMismatch;
   }
 
   if (code.IsWarning()) {

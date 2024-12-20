@@ -21,10 +21,10 @@ A class that simulates a motor controller. Uses motor dynamics to simulate
 position and velocity accurately.
 */
 class MCSimulator {
- public:
+public:
   MCSimulator(frc846::control::base::MotorSpecs specs,
-              frc846::wpilib::unit_ohm circuit_resistance,
-              frc846::wpilib::unit_kg_m_sq rotational_inertia);
+      frc846::wpilib::unit_ohm circuit_resistance,
+      frc846::wpilib::unit_kg_m_sq rotational_inertia);
 
   /*
   Tick()
@@ -62,7 +62,7 @@ class MCSimulator {
 
   void SetGains(frc846::control::base::MotorGains gains);
 
- private:
+private:
   frc846::control::base::MotorSpecs specs;
   frc846::control::base::MotorGains gains;
 

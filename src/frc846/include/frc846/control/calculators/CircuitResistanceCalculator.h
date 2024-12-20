@@ -43,7 +43,7 @@ of a motor controller circuit.
 class CircuitResistanceCalculator {
   using unit_ohm = frc846::wpilib::unit_ohm;
 
- public:
+public:
   /*
   calculate()
 
@@ -54,8 +54,8 @@ class CircuitResistanceCalculator {
 
   @return The estimated resistance of the circuit.
   */
-  static unit_ohm calculate(units::foot_t wire_length, WireGauge gauge,
-                            unsigned int num_connectors);
+  static unit_ohm calculate(
+      units::foot_t wire_length, WireGauge gauge, unsigned int num_connectors);
 };
 
 }  // namespace frc846::control::calculators

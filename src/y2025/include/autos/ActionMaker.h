@@ -8,7 +8,7 @@
 #include "subsystems/robot_container.h"
 
 class ActionMaker {
- public:
-  static std::unique_ptr<frc2::Command> GetAction(std::string name,
-                                                  RobotContainer& container);
+public:
+  static std::unique_ptr<frc2::Command> GetAction(
+      std::string name, RobotContainer& container);
 };

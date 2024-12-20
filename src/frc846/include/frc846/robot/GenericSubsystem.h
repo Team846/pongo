@@ -17,7 +17,7 @@ namespace frc846::robot {
 
 // Non-templated subsystem base class.
 class SubsystemBase : public frc846::base::Loggable {
- public:
+public:
   SubsystemBase(std::string name) : Loggable{name} {}
   SubsystemBase(Loggable parent, std::string name) : Loggable{parent, name} {}
 
@@ -34,7 +34,7 @@ class SubsystemBase : public frc846::base::Loggable {
 // Base class for robot subsystems.
 template <class Readings, class Target>
 class GenericSubsystem : public frc2::SubsystemBase, public SubsystemBase {
- public:
+public:
   // Construct a new subsystem.
   explicit GenericSubsystem(std::string name)
       : frc846::robot::SubsystemBase{name} {}
@@ -57,10 +57,10 @@ class GenericSubsystem : public frc2::SubsystemBase, public SubsystemBase {
     init_ = true;
   }
 
- private:
+private:
   bool init_;
 
- public:
+public:
   // Get the zero state target.
   virtual Target ZeroTarget() const = 0;
 
@@ -91,11 +91,11 @@ class GenericSubsystem : public frc2::SubsystemBase, public SubsystemBase {
 
   auto GetTarget() { return target_; }
 
- private:
+private:
   Readings readings_;
   Target target_;
 
- protected:
+protected:
   // Fetches and return new readings.
   virtual Readings ReadFromHardware() = 0;
 

@@ -38,13 +38,13 @@ struct LoggingClient {
 };
 
 class LoggingServer {
- private:
+private:
   std::chrono::milliseconds getTime() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch());
   }
 
- public:
+public:
   LoggingServer() : messages{}, clients{} {
 #ifdef _WIN32
     /*
@@ -101,8 +101,8 @@ class LoggingServer {
         cli_mtx.lock();
         for (const auto &client : clients) {
           sendto(sockfd, reinterpret_cast<const char *>(msg.data()), msg.size(),
-                 0, reinterpret_cast<const struct sockaddr *>(&(client.addr)),
-                 sizeof(client.addr));
+              0, reinterpret_cast<const struct sockaddr *>(&(client.addr)),
+              sizeof(client.addr));
         }
         cli_mtx.unlock();
       }
@@ -113,7 +113,7 @@ class LoggingServer {
       std::chrono::milliseconds lastPruneTime{getTime()};
       for (std::chrono::milliseconds t{lastPruneTime};; t = getTime()) {
         if (recvfrom(sockfd, buffer, sizeof(buffer), 0,
-                     (struct sockaddr *)&cliaddr, &len) > 0) {
+                (struct sockaddr *)&cliaddr, &len) > 0) {
           bool exists = false;
           cli_mtx.lock();
           for (LoggingClient &client : clients) {
@@ -126,9 +126,7 @@ class LoggingServer {
               break;
             }
           }
-          if (!exists) {
-            clients.push_back({cliaddr, getTime()});
-          }
+          if (!exists) { clients.push_back({cliaddr, getTime()}); }
           cli_mtx.unlock();
         }
         if (t - lastPruneTime > std::chrono::milliseconds(500)) {
@@ -159,7 +157,7 @@ class LoggingServer {
     msg_mtx.unlock();
   }
 
- private:
+private:
   std::queue<std::vector<uint8_t>> messages;
   std::vector<LoggingClient> clients;
 

@@ -11,9 +11,7 @@ void NTAction::InitSendable(wpi::SendableBuilder& builder) {
   builder.AddBooleanProperty(
       "running", [] { return false; },
       [this](bool value) {
-        if (value) {
-          callback_();
-        }
+        if (value) { callback_(); }
       });
 }
 

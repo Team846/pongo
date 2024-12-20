@@ -4,9 +4,9 @@
 
 namespace frc846::control::calculators {
 
-units::ampere_t CurrentTorqueCalculator::predict_current_draw(
-    double duty_cycle, units::revolutions_per_minute_t rpm,
-    units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
+units::ampere_t CurrentTorqueCalculator::predict_current_draw(double duty_cycle,
+    units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+    unit_ohm circuit_resistance, MotorSpecs specs) {
   double pct_speed = rpm / specs.free_speed;
 
   unit_ohm winding_resistance =
@@ -21,9 +21,9 @@ units::ampere_t CurrentTorqueCalculator::predict_current_draw(
   return current_draw;
 }
 
-units::newton_meter_t CurrentTorqueCalculator::predict_torque(
-    double duty_cycle, units::revolutions_per_minute_t rpm,
-    units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
+units::newton_meter_t CurrentTorqueCalculator::predict_torque(double duty_cycle,
+    units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+    unit_ohm circuit_resistance, MotorSpecs specs) {
   units::ampere_t current_draw = predict_current_draw(
       duty_cycle, rpm, v_supply, circuit_resistance, specs);
 
@@ -39,9 +39,9 @@ units::newton_meter_t CurrentTorqueCalculator::current_to_torque(
   return (current / specs.stall_current) * specs.stall_torque;
 }
 
-double CurrentTorqueCalculator::current_control(
-    units::ampere_t target_current, units::revolutions_per_minute_t rpm,
-    units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
+double CurrentTorqueCalculator::current_control(units::ampere_t target_current,
+    units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+    unit_ohm circuit_resistance, MotorSpecs specs) {
   double pct_speed = rpm / specs.free_speed;
 
   unit_ohm winding_resistance =
@@ -60,7 +60,7 @@ double CurrentTorqueCalculator::torque_control(
     units::newton_meter_t target_torque, units::revolutions_per_minute_t rpm,
     units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
   return current_control(torque_to_current(target_torque, specs), rpm, v_supply,
-                         circuit_resistance, specs);
+      circuit_resistance, specs);
 }
 
 }  // namespace frc846::control::calculators

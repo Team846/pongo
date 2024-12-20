@@ -22,7 +22,7 @@ A class that provides higher level management for all motor controllers. Manages
 CAN utilization as well as power.
 */
 class MotorMonkey {
- public:
+public:
   /*
   Tick()
 
@@ -36,8 +36,7 @@ class MotorMonkey {
   Constructs a motor controller and returns a slot ID for it. This slot ID is
   used to refer to the motor controller in future calls.
   */
-  static size_t ConstructController(
-      frc846::control::base::MotorMonkeyType type,
+  static size_t ConstructController(frc846::control::base::MotorMonkeyType type,
       frc846::control::config::MotorConstructionParameters params);
 
   /*
@@ -63,8 +62,8 @@ class MotorMonkey {
   Writes a velocity setpoint to the motor controller. PID calculations performed
   onboard the motor controller.
   */
-  static void WriteVelocity(size_t slot_id,
-                            units::radians_per_second_t velocity);
+  static void WriteVelocity(
+      size_t slot_id, units::radians_per_second_t velocity);
   /*
   WritePosition()
 
@@ -84,7 +83,7 @@ class MotorMonkey {
   static units::radian_t GetPosition(size_t slot_id);
   static units::ampere_t GetCurrent(size_t slot_id);
 
- private:
+private:
   static size_t slot_counter_;
   static std::map<size_t, frc846::control::base::MotorMonkeyType>
       slot_id_to_type_;

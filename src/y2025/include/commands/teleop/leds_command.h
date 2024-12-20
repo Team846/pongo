@@ -5,7 +5,7 @@
 
 class LEDsCommand
     : public frc846::robot::GenericCommand<RobotContainer, LEDsCommand> {
- public:
+public:
   LEDsCommand(RobotContainer& container);
 
   void OnInit() override;

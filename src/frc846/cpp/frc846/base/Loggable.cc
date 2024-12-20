@@ -60,30 +60,22 @@ bool Loggable::CheckPreferenceKeyExists(std::string key) {
 }
 
 double Loggable::GetPreferenceValue_double(std::string key) {
-  if (!CheckPreferenceKeyExists(key)) {
-    return 0;
-  }
+  if (!CheckPreferenceKeyExists(key)) { return 0; }
   return frc::Preferences::GetDouble(name_ + "/" + key);
 }
 
 bool Loggable::GetPreferenceValue_bool(std::string key) {
-  if (!CheckPreferenceKeyExists(key)) {
-    return false;
-  }
+  if (!CheckPreferenceKeyExists(key)) { return false; }
   return frc::Preferences::GetBoolean(name_ + "/" + key);
 }
 
 int Loggable::GetPreferenceValue_int(std::string key) {
-  if (!CheckPreferenceKeyExists(key)) {
-    return 0;
-  }
+  if (!CheckPreferenceKeyExists(key)) { return 0; }
   return frc::Preferences::GetInt(name_ + "/" + key);
 }
 
 std::string Loggable::GetPreferenceValue_string(std::string key) {
-  if (!CheckPreferenceKeyExists(key)) {
-    return "";
-  }
+  if (!CheckPreferenceKeyExists(key)) { return ""; }
   return frc::Preferences::GetString(name_ + "/" + key);
 }
 

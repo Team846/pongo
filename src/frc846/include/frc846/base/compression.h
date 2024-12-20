@@ -5,7 +5,7 @@
 
 namespace frc846::base {
 class Compression {
- private:
+private:
   /*
   @param x input character
   @return pair of converted 6 bit value (stored in 8 bit type) of a character
@@ -18,7 +18,7 @@ class Compression {
   */
   static std::vector<uint8_t> pack_bytes(std::vector<uint8_t> conv);
 
- public:
+public:
   /*
   Compresses a string into a vector of bytes. Reduces string size by
   approximately 25%. Requires matching decrompression function.

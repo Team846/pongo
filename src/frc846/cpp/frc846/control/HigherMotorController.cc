@@ -11,8 +11,8 @@ HigherMotorController::HigherMotorController(
     : mmtype_(mmtype), constr_params_(params) {}
 
 void HigherMotorController::Setup() {
-  slot_id_ = frc846::control::MotorMonkey::ConstructController(mmtype_,
-                                                               constr_params_);
+  slot_id_ = frc846::control::MotorMonkey::ConstructController(
+      mmtype_, constr_params_);
   // TODO: Config here as well
 }
 
@@ -45,15 +45,14 @@ void HigherMotorController::WriteTorque(units::newton_meter_t torque) {
 
 void HigherMotorController::WriteVelocity(
     units::radians_per_second_t velocity) {
-  double dc_target = gains_.calculate((velocity - GetVelocity()).to<double>(),
-                                      0.0, 0.0, load_.to<double>());
+  double dc_target = gains_.calculate(
+      (velocity - GetVelocity()).to<double>(), 0.0, 0.0, load_.to<double>());
   WriteDC(dc_target);
 }
 
 void HigherMotorController::WritePosition(units::radian_t position) {
-  double dc_target =
-      gains_.calculate((position - GetPosition()).to<double>(), 0.0,
-                       GetVelocity().to<double>(), load_.to<double>());
+  double dc_target = gains_.calculate((position - GetPosition()).to<double>(),
+      0.0, GetVelocity().to<double>(), load_.to<double>());
   WriteDC(dc_target);
 }
 

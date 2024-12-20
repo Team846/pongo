@@ -23,7 +23,7 @@ Loggable
 A class that provides logging functionality to any class that inherits from it.
 */
 class Loggable {
- public:
+public:
   Loggable(const Loggable& parent_, std::string name)
       : name_{parent_.name() + "/" + name}, logger(name_) {
     Loggable(parent_.name() + "/" + name);
@@ -61,22 +61,18 @@ class Loggable {
   void Graph(std::string key, std::string value) const;
 
   // Puts a unit entry on the smart dashboard.
-  template <typename U>
-  void Graph(std::string key, U value) const {
+  template <typename U> void Graph(std::string key, U value) const {
     static_assert(units::traits::is_unit_t<U>(), "must be a unit type");
 
-    std::string fullkey =
-        fmt::format("{} ({})", name_ + "/" + key,
-                    units::abbreviation(units::make_unit<U>(0)));
+    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
+        units::abbreviation(units::make_unit<U>(0)));
     Graph(fullkey, value.template to<double>());
   }
 
   // Creates a unit-type preference.
-  template <typename U>
-  void RegisterPreference(std::string key, U fallback) {
-    std::string fullkey =
-        fmt::format("{} ({})", name_ + "/" + key,
-                    units::abbreviation(units::make_unit<U>(0)));
+  template <typename U> void RegisterPreference(std::string key, U fallback) {
+    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
+        units::abbreviation(units::make_unit<U>(0)));
     RegisterPreference(fullkey, fallback.template to<double>());
   }
 
@@ -93,11 +89,9 @@ class Loggable {
   void RegisterPreference(std::string key, std::string fallback);
 
   // Returns the value of the preference for a unit-type.
-  template <typename U>
-  U GetPreferenceValue_unit_type(std::string key) {
-    std::string fullkey =
-        fmt::format("{} ({})", name_ + "/" + key,
-                    units::abbreviation(units::make_unit<U>(0)));
+  template <typename U> U GetPreferenceValue_unit_type(std::string key) {
+    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
+        units::abbreviation(units::make_unit<U>(0)));
     return units::make_unit<U>(GetPreferenceValue_double(fullkey));
   }
 
@@ -114,13 +108,11 @@ class Loggable {
   std::string GetPreferenceValue_string(std::string key);
 
   // Sets but does NOT initialize the value of the preference for a unit-type.
-  template <typename U>
-  void SetPreferenceValue(std::string key, U value) {
+  template <typename U> void SetPreferenceValue(std::string key, U value) {
     static_assert(units::traits::is_unit_t<U>(), "must be a unit type");
 
-    std::string fullkey =
-        fmt::format("{} ({})", name_ + "/" + key,
-                    units::abbreviation(units::make_unit<U>(0)));
+    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
+        units::abbreviation(units::make_unit<U>(0)));
     SetPreferenceValue(fullkey, value.template to<double>());
   }
 
@@ -145,7 +137,7 @@ class Loggable {
 
   static void PrunePreferences(const Loggable* caller);
 
- private:
+private:
   bool CheckPreferenceKeyExists(std::string key);
 
   const std::string name_;

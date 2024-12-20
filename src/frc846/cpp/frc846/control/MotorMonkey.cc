@@ -84,13 +84,13 @@ units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }
 
 void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {}
 
-void MotorMonkey::SetGains(size_t slot_id,
-                           frc846::control::base::MotorGains gains) {}
+void MotorMonkey::SetGains(
+    size_t slot_id, frc846::control::base::MotorGains gains) {}
 
 void MotorMonkey::WriteDC(size_t slot_id, double duty_cycle) {}
 
-void MotorMonkey::WriteVelocity(size_t slot_id,
-                                units::radians_per_second_t velocity) {}
+void MotorMonkey::WriteVelocity(
+    size_t slot_id, units::radians_per_second_t velocity) {}
 
 void MotorMonkey::WritePosition(size_t slot_id, units::radian_t position) {}
 

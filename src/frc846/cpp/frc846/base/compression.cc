@@ -42,9 +42,7 @@ std::vector<uint8_t> Compression::pack_bytes(std::vector<uint8_t> conv) {
     }
   }
 
-  if (bitCount > 0) {
-    output.push_back((buffer >> 16) & 0xFF);
-  }
+  if (bitCount > 0) { output.push_back((buffer >> 16) & 0xFF); }
 
   return output;
 }
@@ -53,9 +51,7 @@ std::vector<uint8_t> Compression::compress(const std::string& data) {
   std::vector<uint8_t> conv;
   for (char c : data) {
     auto [val, is_upper] = char_conv(c);
-    if (is_upper) {
-      conv.push_back((uint8_t)63);
-    }
+    if (is_upper) { conv.push_back((uint8_t)63); }
     conv.push_back(val);
   }
   std::vector<uint8_t> packed = pack_bytes(conv);

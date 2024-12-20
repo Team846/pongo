@@ -23,34 +23,28 @@ MotorMonkeyTypeHelper
 Provides static methods to help determine the type of motor controller.
 */
 class MotorMonkeyTypeHelper {
- public:
+public:
   static bool is_talon_fx(MotorMonkeyType mmtype) {
     switch (mmtype) {
-      case TALON_FX_KRAKENX60:
-      case TALON_FX_KRAKENX44:
-        return true;
-      default:
-        return false;
+    case TALON_FX_KRAKENX60:
+    case TALON_FX_KRAKENX44: return true;
+    default: return false;
     }
   }
 
   static bool is_spark_max(MotorMonkeyType mmtype) {
     switch (mmtype) {
-      case SPARK_MAX_NEO:
-      case SPARK_MAX_NEO550:
-      case SPARK_MAX_VORTEX:
-        return true;
-      default:
-        return false;
+    case SPARK_MAX_NEO:
+    case SPARK_MAX_NEO550:
+    case SPARK_MAX_VORTEX: return true;
+    default: return false;
     }
   }
 
   static bool is_spark_flex(MotorMonkeyType mmtype) {
     switch (mmtype) {
-      case SPARK_FLEX_VORTEX:
-        return true;
-      default:
-        return false;
+    case SPARK_FLEX_VORTEX: return true;
+    default: return false;
     }
   }
 };

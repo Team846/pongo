@@ -28,7 +28,7 @@ enum ControllerErrorCodes {
 };
 
 class IntermediateController {
- public:
+public:
   IntermediateController() = default;
   ~IntermediateController() = default;
 
@@ -38,8 +38,8 @@ class IntermediateController {
   virtual void SetNeutralMode(bool brake_mode) = 0;
   virtual void SetCurrentLimit(units::ampere_t current_limit) = 0;
 
-  virtual void SetSoftLimits(units::radian_t forward_limit,
-                             units::radian_t reverse_limit) = 0;
+  virtual void SetSoftLimits(
+      units::radian_t forward_limit, units::radian_t reverse_limit) = 0;
 
   virtual void SetVoltageCompensation(units::volt_t voltage_compensation) = 0;
 

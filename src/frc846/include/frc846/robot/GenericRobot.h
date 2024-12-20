@@ -14,7 +14,7 @@ namespace frc846::robot {
 enum Mode { kNone, kDisabled, kAutonomous, kTeleop, kTest };
 
 class GenericRobot : public frc::RobotBase, public frc846::base::Loggable {
- public:
+public:
   static constexpr auto kPeriod = 20_ms;  // 50hz
 
   GenericRobot(GenericRobotContainer* container);
@@ -37,13 +37,13 @@ class GenericRobot : public frc::RobotBase, public frc846::base::Loggable {
 
   void AddAuto(std::string name, frc2::Command* command);
 
- private:
+private:
   hal::Handle<HAL_NotifierHandle> notifier_;
   units::microsecond_t next_loop_time_;
 
   Mode last_mode_;
 
- private:
+private:
   GenericRobotContainer* generic_robot_container_;
 
   frc2::Command* auto_command_ = nullptr;

@@ -5,7 +5,7 @@
 namespace frc846::robot {
 
 class GenericRobotContainer : public frc846::base::Loggable {
- public:
+public:
   GenericRobotContainer() : frc846::base::Loggable{"robot_container"} {}
 
   void RegisterSubsystems(
@@ -43,7 +43,7 @@ class GenericRobotContainer : public frc846::base::Loggable {
     }
   }
 
- private:
+private:
   std::vector<frc846::robot::SubsystemBase*> all_subsystems_{};
 };
 

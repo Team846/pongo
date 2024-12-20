@@ -14,9 +14,9 @@ A class which interacts with the phoenix API to control and get information from
 TalonFX hardware.
 */
 class TalonFX_interm : public IntermediateController {
- public:
+public:
   TalonFX_interm(int can_id, std::string bus = "rio",
-                 units::millisecond_t max_wait_time = 20_ms);
+      units::millisecond_t max_wait_time = 20_ms);
   /*
   Tick()
 
@@ -59,8 +59,8 @@ class TalonFX_interm : public IntermediateController {
   @param forward_limit The forward position limit in radians.
   @param reverse_limit The reverse position limit in radians.
   */
-  void SetSoftLimits(units::radian_t forward_limit,
-                     units::radian_t reverse_limit) override;
+  void SetSoftLimits(
+      units::radian_t forward_limit, units::radian_t reverse_limit) override;
 
   /*
   SetVoltageCompensation()
@@ -192,7 +192,7 @@ class TalonFX_interm : public IntermediateController {
   */
   ControllerErrorCodes GetLastErrorCode() override;
 
- private:
+private:
   frc846::control::hardware::ControllerErrorCodes getErrorCode(
       ctre::phoenix::StatusCode code);
 

@@ -7,7 +7,7 @@
 #include "subsystems/robot_container.h"
 
 class FunkyRobot : public frc846::robot::GenericRobot {
- public:
+public:
   FunkyRobot();
 
   void OnInitialize() override;
@@ -19,6 +19,6 @@ class FunkyRobot : public frc846::robot::GenericRobot {
   void InitTeleop() override;
   void InitTest() override;
 
- private:
+private:
   RobotContainer container_;
 };

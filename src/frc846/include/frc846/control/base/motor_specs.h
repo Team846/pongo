@@ -74,19 +74,17 @@ struct MotorSpecificationPresets {
 
   static MotorSpecs get(frc846::control::base::MotorMonkeyType type) {
     switch (type) {
-      case frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550:
-        return kNeo550;
-      case frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO:
-        return kNeo;
-      case frc846::control::base::MotorMonkeyType::SPARK_FLEX_VORTEX:
-      case frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX:
-        return kNeoVortex;
-      case frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60:
-        return kKrakenX60;
-      case frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44:
-        return kKrakenX44;
-      default:
-        return kNeo;
+    case frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550:
+      return kNeo550;
+    case frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO: return kNeo;
+    case frc846::control::base::MotorMonkeyType::SPARK_FLEX_VORTEX:
+    case frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX:
+      return kNeoVortex;
+    case frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60:
+      return kKrakenX60;
+    case frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44:
+      return kKrakenX44;
+    default: return kNeo;
     }
   }
 };

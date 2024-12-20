@@ -12,24 +12,23 @@
 #include "frc846/math/collection.h"
 
 namespace frc846::math {
-template <typename T, size_t N>
-class VectorND {
-  static_assert(N > 0,
-                "VectorND can not be created with less than one dimension.");
+template <typename T, size_t N> class VectorND {
+  static_assert(
+      N > 0, "VectorND can not be created with less than one dimension.");
   static_assert(units::traits::is_unit_t<T>(),
-                "VectorND can only be created with unit types.");
+      "VectorND can only be created with unit types.");
 
- private:
+private:
   std::vector<T> data;
 
- public:
+public:
   // Default constructor initializes with zeros
   VectorND() : data{N, T()} {}
 
   // Constructs an N-dimensional vector from N unit-type values
   VectorND(std::initializer_list<T> dims) : VectorND() {
-    assert(dims.size() == N &&
-           "VectorND must be constructed with N dimensions.");
+    assert(
+        dims.size() == N && "VectorND must be constructed with N dimensions.");
     std::copy(dims.begin(), dims.end(), data.begin());
   }
 
@@ -39,9 +38,7 @@ class VectorND {
   VectorND(T magnitude, units::degree_t theta, bool angleIsBearing = false)
       : VectorND() {
     assert(N == 2 && "Polar constructor can only be used with 2D vectors.");
-    if (angleIsBearing) {
-      theta = 90_deg - theta;
-    }
+    if (angleIsBearing) { theta = 90_deg - theta; }
     data[0] = magnitude * units::math::cos(theta);
     data[1] = magnitude * units::math::sin(theta);
   }
@@ -134,9 +131,7 @@ class VectorND {
   // Uses 'safe' double comparison
   bool operator==(const VectorND<T, N>& other) const {
     for (size_t i = 0; i < N; ++i) {
-      if (!frc846::math::DEquals(data[i], other[i])) {
-        return false;
-      }
+      if (!frc846::math::DEquals(data[i], other[i])) { return false; }
     }
     return true;
   }
@@ -144,9 +139,7 @@ class VectorND {
   // Returns a vector rotated by a given angle. Default is clockwise rotation.
   VectorND<T, N> rotate(units::degree_t angle, bool clockwise = true) const {
     static_assert(N == 2, "Rotation is only defined for 2D vectors.");
-    if (clockwise) {
-      angle = -angle;
-    }
+    if (clockwise) { angle = -angle; }
     return {
         data[0] * units::math::cos(angle) - data[1] * units::math::sin(angle),
         data[0] * units::math::sin(angle) + data[1] * units::math::cos(angle)};
@@ -166,8 +159,8 @@ class VectorND {
   VectorND<T, N> cross(const VectorND<T, N>& other) const {
     static_assert(N == 3, "Cross product is only defined for 3D vectors.");
     return {data[1] * other[2] - data[2] * other[1],
-            data[2] * other[0] - data[0] * other[2],
-            data[0] * other[1] - data[1] * other[0]};
+        data[2] * other[0] - data[0] * other[2],
+        data[0] * other[1] - data[1] * other[0]};
   }
 
   // Returns the magnitude of this vector
@@ -199,15 +192,13 @@ class VectorND {
   // Otherwise, 0_deg is +x and angles are measured counter-clockwise
   units::degree_t angle(bool angleIsBearing = false) const {
     assert(N == 2 && "Angle can only be calculated for 2D vectors.");
-    if (angleIsBearing) {
-      return units::math::atan2(data[0], data[1]);
-    }
+    if (angleIsBearing) { return units::math::atan2(data[0], data[1]); }
     return units::math::atan2(data[1], data[0]);
   }
 
   // Returns the angle between this vector and another
-  units::degree_t angleTo(const VectorND<T, N>& other,
-                          bool angleIsBearing = false) const {
+  units::degree_t angleTo(
+      const VectorND<T, N>& other, bool angleIsBearing = false) const {
     return other.angle(angleIsBearing) - angle(angleIsBearing);
   }
 
