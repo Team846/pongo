@@ -2,9 +2,11 @@
 
 namespace frc846::control::hardware {
 
-SparkMAX_interm::SparkMAX_interm(
-    int can_id, rev::CANSparkBase::MotorType motor_type)
-    : SparkMax_(can_id, motor_type) {}
+SparkMAX_interm::SparkMAX_interm(int can_id, units::millisecond_t max_wait_time,
+    rev::CANSparkBase::MotorType motor_type)
+    : SparkMax_(can_id, motor_type) {
+  SparkMax_.SetCANTimeout(max_wait_time.to<int>());
+}
 
 void SparkMAX_interm::Tick() {
   rev::REVLibError last_status_code = rev::REVLibError::kOk;

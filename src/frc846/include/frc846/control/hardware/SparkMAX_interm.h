@@ -16,8 +16,9 @@ SparkMAX hardware.
 */
 class SparkMAX_interm : public IntermediateController {
 public:
-  SparkMAX_interm(int can_id, rev::CANSparkBase::MotorType motor_type =
-                                  rev::CANSparkBase::MotorType::kBrushless);
+  SparkMAX_interm(int can_id, units::millisecond_t max_wait_time,
+      rev::CANSparkBase::MotorType motor_type =
+          rev::CANSparkBase::MotorType::kBrushless);
   /*
   Tick()
 
