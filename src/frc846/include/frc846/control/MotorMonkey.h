@@ -91,7 +91,8 @@ private:
   static frc846::control::hardware::IntermediateController*
       controller_registry[CONTROLLER_REGISTRY_SIZE];
 
-  static frc846::control::base::MotorGains gains_registry[CONTROLLER_REGISTRY_SIZE];
+  static frc846::control::base::MotorGains
+      gains_registry[CONTROLLER_REGISTRY_SIZE];
   static units::newton_meter_t load_registry[CONTROLLER_REGISTRY_SIZE];
 
   static frc846::control::hardware::ControllerErrorCodes
