@@ -3,6 +3,7 @@
 #include <rev/CANSparkFlex.h>
 #include <rev/CANSparkMax.h>
 #include <variant>
+#include <algorithm>
 
 #include "IntermediateController.h"
 

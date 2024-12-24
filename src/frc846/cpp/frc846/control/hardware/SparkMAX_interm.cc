@@ -77,21 +77,45 @@ void SparkMAX_interm::WritePosition(units::radian_t position) {
 void SparkMAX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
-  for (auto frame : frames) {
-    rev::REVLibError last_status_code = rev::REVLibError::kOk;
-    if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
-      last_status_code = SparkMax_.SetPeriodicFramePeriod(
-          rev::CANSparkLowLevel::PeriodicFrame::kStatus1, 100);
-    } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
-      last_status_code = SparkMax_.SetPeriodicFramePeriod(
-          rev::CANSparkLowLevel::PeriodicFrame::kStatus2, 20);
-    } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
-      last_status_code = SparkMax_.SetPeriodicFramePeriod(
-          rev::CANSparkLowLevel::PeriodicFrame::kStatus1, 20);
-    }
-    last_error_ = getErrorCode(last_status_code);
-    if (last_error_ != ControllerErrorCodes::kAllOK) return;
+  rev::REVLibError last_status_code = rev::REVLibError::kOk;
+  if (std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kLeader) != frames.end() &&
+      std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kFaultFrame) == frames.end()) {
+    last_status_code = SparkMax_.SetPeriodicFramePeriod(
+        rev::CANSparkLowLevel::PeriodicFrame::kStatus0, 20);
   }
+  last_error_ = getErrorCode(last_status_code);
+  if (last_error_ != ControllerErrorCodes::kAllOK) return;
+
+  if (std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kVelocityFrame) ==
+          frames.end() &&
+      std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kCurrentFrame) ==
+          frames.end()) {
+    last_status_code = SparkMax_.SetPeriodicFramePeriod(
+        rev::CANSparkLowLevel::PeriodicFrame::kStatus1, 20);
+  }
+  last_error_ = getErrorCode(last_status_code);
+  if (last_error_ != ControllerErrorCodes::kAllOK) return;
+
+  if (std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kPositionFrame) ==
+      frames.end()) {
+    last_status_code = SparkMax_.SetPeriodicFramePeriod(
+        rev::CANSparkLowLevel::PeriodicFrame::kStatus2, 20);
+  }
+  last_error_ = getErrorCode(last_status_code);
+  if (last_error_ != ControllerErrorCodes::kAllOK) return;
+
+  if (std::find(frames.begin(), frames.end(),
+          frc846::control::config::StatusFrame::kSensorFrame) == frames.end()) {
+    last_status_code = SparkMax_.SetPeriodicFramePeriod(
+        rev::CANSparkLowLevel::PeriodicFrame::kStatus3, 20);
+  }
+  last_error_ = getErrorCode(last_status_code);
+  if (last_error_ != ControllerErrorCodes::kAllOK) return;
 }
 
 bool SparkMAX_interm::IsDuplicateControlMessage(double duty_cycle) {
