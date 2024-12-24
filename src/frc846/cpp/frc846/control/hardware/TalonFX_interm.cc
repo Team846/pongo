@@ -131,6 +131,7 @@ units::ampere_t TalonFX_interm::GetCurrent() {
 
 ControllerErrorCodes TalonFX_interm::GetLastErrorCode() { return last_error_; }
 
+// TODO: Expand list of errors
 frc846::control::hardware::ControllerErrorCodes TalonFX_interm::getErrorCode(
     ctre::phoenix::StatusCode code) {
   switch (code) {

@@ -6,7 +6,7 @@
 #include <rev/CANSparkMax.h>
 
 #include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/control/hardware/SparkMAX_interm.h"
+#include "frc846/control/hardware/SparkMXFX_interm.h"
 
 #include "frc846/math/collection.h"
 

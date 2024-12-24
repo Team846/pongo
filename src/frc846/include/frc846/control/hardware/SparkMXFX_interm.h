@@ -10,16 +10,15 @@
 namespace frc846::control::hardware {
 
 /*
-SparkMAX_interm
+SparkMXFX_interm
 
 A class which interacts with the REV API to control and get information from
-SparkMAX hardware.
+SparkMAX or SparkFLEX hardware.
 */
-class SparkMAX_interm : public IntermediateController {
+class SparkMXFX_interm : public IntermediateController {
 public:
-  SparkMAX_interm(int can_id, units::millisecond_t max_wait_time,
-      rev::CANSparkBase::MotorType motor_type =
-          rev::CANSparkBase::MotorType::kBrushless);
+  SparkMXFX_interm(int can_id, units::millisecond_t max_wait_time,
+      bool is_controller_spark_flex);
   /*
   Tick()
 
@@ -203,11 +202,33 @@ private:
       last_command_;
   frc846::control::base::MotorGains gains_;
 
-  rev::CANSparkMax SparkMax_;
-  rev::SparkRelativeEncoder encoder_;
-  rev::SparkPIDController pid_controller_;
+  rev::CANSparkBase* esc_;
+  rev::SparkRelativeEncoder* encoder_;
+  rev::SparkPIDController* pid_controller_;
 
   frc846::control::hardware::ControllerErrorCodes last_error_;
+};
+
+/*
+SparkMAX_interm
+
+A class which interacts with the REV API to control and get information from
+SparkMAX hardware. Derives from SparkMXFX_interm.
+*/
+class SparkMAX_interm : public SparkMXFX_interm {
+public:
+  SparkMAX_interm(int can_id, units::millisecond_t max_wait_time);
+};
+
+/*
+SparkFLEX_interm
+
+A class which interacts with the REV API to control and get information from
+SparkFLEX hardware. Derives from SparkMXFX_interm.
+*/
+class SparkFLEX_interm : public SparkMXFX_interm {
+public:
+  SparkFLEX_interm(int can_id, units::millisecond_t max_wait_time);
 };
 
 }  // namespace frc846::control::hardware

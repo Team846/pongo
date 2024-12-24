@@ -18,6 +18,9 @@ frc846::wpilib::unit_ohm CircuitResistanceCalculator::calculate(
   case eighteen_gauge:
     resistance_per_meter = KnownResistances::kEighteenGaugeResistance;
     break;
+  default:
+    resistance_per_meter = KnownResistances::kEighteenGaugeResistance;
+    break;
   }
 
   frc846::wpilib::unit_ohm total_resistance =
