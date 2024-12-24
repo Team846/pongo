@@ -204,6 +204,8 @@ private:
   frc846::control::base::MotorGains gains_;
 
   rev::CANSparkMax SparkMax_;
+  rev::SparkRelativeEncoder encoder_;
+  rev::SparkPIDController pid_controller_;
 
   frc846::control::hardware::ControllerErrorCodes last_error_;
 };
