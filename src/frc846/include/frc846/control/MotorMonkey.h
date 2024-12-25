@@ -83,6 +83,9 @@ public:
   static units::radian_t GetPosition(size_t slot_id);
   static units::ampere_t GetCurrent(size_t slot_id);
 
+  static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
+      units::radian_t reverse_limit);
+
 private:
   static size_t slot_counter_;
   static std::map<size_t, frc846::control::base::MotorMonkeyType>

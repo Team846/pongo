@@ -13,7 +13,6 @@ HigherMotorController::HigherMotorController(
 void HigherMotorController::Setup() {
   slot_id_ = frc846::control::MotorMonkey::ConstructController(
       mmtype_, constr_params_);
-  // TODO: Config here as well
 }
 
 void HigherMotorController::SetGains(frc846::control::base::MotorGains gains) {
@@ -23,9 +22,13 @@ void HigherMotorController::SetGains(frc846::control::base::MotorGains gains) {
 
 void HigherMotorController::SetLoad(units::newton_meter_t load) {
   load_ = load;
+  frc846::control::MotorMonkey::SetLoad(slot_id_, load_);
 }
 
 void HigherMotorController::WriteDC(double duty_cycle) {
+  if (soft_limits_.has_value()) {
+    duty_cycle = soft_limits_.value().LimitDC(duty_cycle, GetPosition());
+  }
   MotorMonkey::WriteDC(slot_id_, duty_cycle);
 }
 
@@ -58,11 +61,17 @@ void HigherMotorController::WritePosition(units::radian_t position) {
 
 void HigherMotorController::WriteVelocityOnController(
     units::radians_per_second_t velocity) {
+  if (soft_limits_.has_value()) {
+    velocity = soft_limits_.value().LimitVelocity(velocity, GetPosition());
+  }
   frc846::control::MotorMonkey::WriteVelocity(slot_id_, velocity);
 }
 
 void HigherMotorController::WritePositionOnController(
     units::radian_t position) {
+  if (soft_limits_.has_value()) {
+    position = soft_limits_.value().LimitPosition(position);
+  }
   frc846::control::MotorMonkey::WritePosition(slot_id_, position);
 }
 
@@ -80,6 +89,17 @@ units::ampere_t HigherMotorController::GetCurrent() {
 
 void HigherMotorController::SetPosition(units::radian_t position) {
   frc846::control::MotorMonkey::ZeroEncoder(slot_id_, position);
+}
+
+void HigherMotorController::SetControllerSoftLimits(
+    units::radian_t forward_limit, units::radian_t reverse_limit) {
+  frc846::control::MotorMonkey::SetSoftLimits(
+      slot_id_, forward_limit, reverse_limit);
+}
+
+void HigherMotorController::SetSoftLimits(
+    frc846::control::config::SoftLimits soft_limits) {
+  soft_limits_ = soft_limits;
 }
 
 }  // namespace frc846::control

@@ -11,6 +11,9 @@
 #include "frc846/math/collection.h"
 
 // TODO: Add error handling
+// TODO: Add retries
+// TODO: Add dynamic can/power management
+// TODO: Error for invalid slot ID
 
 namespace frc846::control {
 
@@ -58,8 +61,12 @@ size_t MotorMonkey::ConstructController(
     this_controller = controller_registry[slot_counter_] =
         new frc846::control::hardware::SparkMAX_interm{
             params.can_id, params.max_wait_time};
+  } else if (frc846::control::base::MotorMonkeyTypeHelper::is_spark_flex(
+                 type)) {
+    this_controller = controller_registry[slot_counter_] =
+        new frc846::control::hardware::SparkFLEX_interm{
+            params.can_id, params.max_wait_time};
   }
-  // TODO: Handle spark_flex
 
   if (this_controller == nullptr) return slot_counter_;
 
@@ -142,6 +149,13 @@ units::ampere_t MotorMonkey::GetCurrent(size_t slot_id) {
     return controller_registry[slot_id]->GetCurrent();
   }
   return 0_A;
+}
+
+void MotorMonkey::SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
+    units::radian_t reverse_limit) {
+  if (controller_registry[slot_id] != nullptr) {
+    controller_registry[slot_id]->SetSoftLimits(forward_limit, reverse_limit);
+  }
 }
 
 }  // namespace frc846::control

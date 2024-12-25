@@ -168,8 +168,8 @@ task runCppcheck(type: Exec) {
             it.contains("invalidInput") ||   
             it.contains("invalidPointer")    
         }
+        println "\nCppcheck output:\n\n${cppcheckOutput}"
         println "Cppcheck completed. Total warnings: ${warnings.size()}. Critical issues: ${criticalWarnings.size()}."
-        println "Cppcheck output:\n${cppcheckOutput}"
 
         
         if (criticalWarnings.size() > 0 || warnings.size() > 15) {

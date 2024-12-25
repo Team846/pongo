@@ -7,6 +7,10 @@
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 
+#include "frc846/control/config/SoftLimitsHelper.h"
+
+#include <optional>
+
 namespace frc846::control {
 
 /*
@@ -75,6 +79,13 @@ public:
   // Zeroes the encoder to the specified value
   void SetPosition(units::radian_t position);
 
+  // Soft limits maintained by the motor controller
+  void SetControllerSoftLimits(
+      units::radian_t forward_limit, units::radian_t reverse_limit);
+
+  // Custom soft limits maintained by HigherMotorController
+  void SetSoftLimits(config::SoftLimits soft_limits);
+
 private:
   frc846::control::base::MotorMonkeyType mmtype_;
   frc846::control::config::MotorConstructionParameters constr_params_;
@@ -82,6 +93,8 @@ private:
   frc846::control::base::MotorGains gains_;
 
   units::newton_meter_t load_;
+
+  std::optional<config::SoftLimits> soft_limits_;
 
   size_t slot_id_ = 999;
 };
