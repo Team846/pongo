@@ -83,4 +83,4 @@ jobs:
         run: ./gradlew installRoborioToolchain
 
       - name: Compile code and run tests
-        run: ./gradlew build -PfromCI
+        run: ./gradlew build -PfromCI -PrunningSpotlessCpp

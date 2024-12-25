@@ -6,19 +6,21 @@
 
 frc846::math::FieldPoint Field_nonstatic::getPoint(std::string name) {
   if (!points.empty()) {
-    for (auto& point : points) {
-      if (point.first == name) { return point.second; }
-    }
+    auto it = std::find_if(points.begin(), points.end(),
+        [&](const auto& point) { return point.first == name; });
+    if (it != points.end()) { return it->second; }
   }
+
   Warn("Unable to access fieldpoint: {}.", name);
   return frc846::math::FieldPoint{{0_in, 0_in}, 0_deg, {0_fps, 0_fps}};
 }
 
 std::vector<frc846::math::FieldPoint> Field_nonstatic::getPath(
     std::string name) {
-  for (auto& path : paths) {
-    if (path.first == name) { return path.second; }
-  }
+  auto it = std::find_if(paths.begin(), paths.end(),
+      [&](const auto& path) { return path.first == name; });
+  if (it != paths.end()) { return it->second; }
+
   Warn("Unable to access path: {}.", name);
   return {};
 }
@@ -51,22 +53,18 @@ std::vector<std::string> Field_nonstatic::readLines(std::string filename) {
 
 std::string Field_nonstatic::fixPath(std::string path) {
 #ifdef _WIN32
-  for (char& ch : path) {
-    if (ch == '/') { ch = '\\'; }
-  }
-  return path;
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '/'; }, '\\');
 #else
-  for (char& ch : path) {
-    if (ch == '\\') { ch = '/'; }
-  }
-  return path;
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '\\'; }, '/');
 #endif
+  return path;
 }
 
 std::string Field_nonstatic::forceNormalPath(std::string path) {
-  for (char& ch : path) {
-    if (ch == '\\') { ch = '/'; }
-  }
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '\\'; }, '/');
   return path;
 }
 

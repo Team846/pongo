@@ -133,7 +133,7 @@ spotless {
 if (!project.hasProperty('fromCI')) {
     check.dependsOn spotlessApply
 }
-spotlessCppCheck.onlyIf { !project.hasProperty('fromCI') }
+spotlessCppCheck.onlyIf { !project.hasProperty('fromCI') || project.hasProperty('runningSpotlessCpp') }
 
 task runCppcheck(type: Exec) {
     def outputBuffer = new ByteArrayOutputStream()
@@ -169,6 +169,7 @@ task runCppcheck(type: Exec) {
             it.contains("invalidPointer")    
         }
         println "Cppcheck completed. Total warnings: ${warnings.size()}. Critical issues: ${criticalWarnings.size()}."
+        println "Cppcheck output:\n${cppcheckOutput}"
 
         
         if (criticalWarnings.size() > 0 || warnings.size() > 15) {

@@ -11,8 +11,8 @@ namespace frc846::control::hardware {
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
     units::millisecond_t max_wait_time, bool is_controller_spark_flex) {
   esc_ = is_controller_spark_flex
-             ? (rev::CANSparkBase*)new rev::CANSparkFlex{can_id,
-                   rev::CANSparkFlex::MotorType::kBrushless}
+             ? static_cast<rev::CANSparkBase*>(new rev::CANSparkFlex{
+                   can_id, rev::CANSparkFlex::MotorType::kBrushless})
              : new rev::CANSparkMax{
                    can_id, rev::CANSparkMax::MotorType::kBrushless};
 
@@ -95,7 +95,7 @@ void SparkMXFX_interm::WritePosition(units::radian_t position) {
 
 void SparkMXFX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
-  rev::REVLibError last_status_code = rev::REVLibError::kOk;
+  rev::REVLibError last_status_code;
 
   if (vector_has(frames, config::StatusFrame::kLeader) ||
       vector_has(frames, config::StatusFrame::kFaultFrame)) {
