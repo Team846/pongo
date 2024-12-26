@@ -9,8 +9,10 @@
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
+#include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/base/Loggable.h"
 
-#define MAX_CAPACITY_PER_CONTROLLER_REGISTRY 64
+#define CONTROLLER_REGISTRY_SIZE 64
 
 namespace frc846::control {
 
@@ -21,7 +23,7 @@ A class that provides higher level management for all motor controllers. Manages
 CAN utilization as well as power.
 */
 class MotorMonkey {
- public:
+public:
   /*
   Tick()
 
@@ -35,8 +37,7 @@ class MotorMonkey {
   Constructs a motor controller and returns a slot ID for it. This slot ID is
   used to refer to the motor controller in future calls.
   */
-  static size_t ConstructController(
-      frc846::control::base::MotorMonkeyType type,
+  static size_t ConstructController(frc846::control::base::MotorMonkeyType type,
       frc846::control::config::MotorConstructionParameters params);
 
   /*
@@ -62,8 +63,8 @@ class MotorMonkey {
   Writes a velocity setpoint to the motor controller. PID calculations performed
   onboard the motor controller.
   */
-  static void WriteVelocity(size_t slot_id,
-                            units::radians_per_second_t velocity);
+  static void WriteVelocity(
+      size_t slot_id, units::radians_per_second_t velocity);
   /*
   WritePosition()
 
@@ -83,15 +84,27 @@ class MotorMonkey {
   static units::radian_t GetPosition(size_t slot_id);
   static units::ampere_t GetCurrent(size_t slot_id);
 
- private:
-  static ctre::phoenix6::hardware::TalonFX*
-      talonFXRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-  static rev::CANSparkMax*
-      sparkMaxRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
-  static rev::CANSparkFlex*
-      sparkFlexRegistry[MAX_CAPACITY_PER_CONTROLLER_REGISTRY];
+  static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
+      units::radian_t reverse_limit);
 
-  units::volt_t battery_voltage;
+  static std::string parseError(
+      frc846::control::hardware::ControllerErrorCodes err);
+
+private:
+  static frc846::base::Loggable loggable_;
+
+  static size_t slot_counter_;
+  static std::map<size_t, frc846::control::base::MotorMonkeyType>
+      slot_id_to_type_;
+
+  static frc846::control::hardware::IntermediateController*
+      controller_registry[CONTROLLER_REGISTRY_SIZE];
+
+  static frc846::control::base::MotorGains
+      gains_registry[CONTROLLER_REGISTRY_SIZE];
+  static units::newton_meter_t load_registry[CONTROLLER_REGISTRY_SIZE];
+
+  static units::volt_t battery_voltage;
 };
 
 }  // namespace frc846::control

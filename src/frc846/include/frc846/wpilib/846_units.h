@@ -9,8 +9,8 @@ namespace frc846::wpilib {
 typedef units::unit_t<units::inverse<units::conductance::siemens>> unit_ohm;
 
 /* Unit of resistance per unit length */
-typedef units::unit_t<units::compound_unit<
-    units::inverse<units::meter>, units::inverse<units::conductance::siemens>>>
+typedef units::unit_t<units::compound_unit<units::inverse<units::meter>,
+    units::inverse<units::conductance::siemens>>>
     unit_ohms_per_meter;
 
 /* Unit for the rotational inertia of a system */

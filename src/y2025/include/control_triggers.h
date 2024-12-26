@@ -3,6 +3,6 @@
 #include "subsystems/robot_container.h"
 
 class ControlTriggerInitializer {
- public:
+public:
   static void InitTeleopTriggers(RobotContainer& container);
 };

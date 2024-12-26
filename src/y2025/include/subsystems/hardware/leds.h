@@ -27,7 +27,7 @@ struct LEDsTarget {
 
 class LEDsSubsystem
     : public frc846::robot::GenericSubsystem<LEDsReadings, LEDsTarget> {
- public:
+public:
   LEDsSubsystem();
 
   void Setup() override;
@@ -36,7 +36,7 @@ class LEDsSubsystem
 
   bool VerifyHardware() override;
 
- private:
+private:
   bool zeroSequence = false;
 
   // Number of LEDs.

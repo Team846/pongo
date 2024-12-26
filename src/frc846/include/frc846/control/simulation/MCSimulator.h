@@ -10,6 +10,7 @@
 
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
+#include "frc846/wpilib/846_units.h"
 
 namespace frc846::control::simulation {
 
@@ -20,18 +21,19 @@ A class that simulates a motor controller. Uses motor dynamics to simulate
 position and velocity accurately.
 */
 class MCSimulator {
- public:
-  MCSimulator(frc846::control::base::MotorSpecs specs);
+public:
+  MCSimulator(frc846::control::base::MotorSpecs specs,
+      frc846::wpilib::unit_ohm circuit_resistance,
+      frc846::wpilib::unit_kg_m_sq rotational_inertia);
 
   /*
   Tick()
 
   Uses the control message to update the motor state.
   */
-  void Tick(units::volt_t battery_voltage);
+  void Tick(units::volt_t battery_voltage, units::newton_meter_t load);
 
   void WriteDC(double duty_cycle);
-  void WriteTorque(units::newton_meter_t torque);
   void WriteVelocity(units::radians_per_second_t velocity);
   void WritePosition(units::radian_t position);
 
@@ -60,18 +62,22 @@ class MCSimulator {
 
   void SetGains(frc846::control::base::MotorGains gains);
 
- private:
+private:
   frc846::control::base::MotorSpecs specs;
   frc846::control::base::MotorGains gains;
+
+  frc846::wpilib::unit_ohm circuit_resistance_{0};
+  frc846::wpilib::unit_kg_m_sq rotational_inertia_{0};
 
   bool velocity_packet_enabled = true;
   bool position_packet_enabled = true;
 
-  units::radian_t position = 0_rad;
-  units::radians_per_second_t velocity = 0_rad_per_s;
+  std::chrono::microseconds last_tick_;
 
-  std::variant<double, units::newton_meter_t, units::radians_per_second_t,
-               units::radian_t>
+  units::radian_t position_ = 0_rad;
+  units::radians_per_second_t velocity_ = 0_rad_per_s;
+
+  std::variant<double, units::radians_per_second_t, units::radian_t>
       control_message = 0.0;
 };
 

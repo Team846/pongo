@@ -32,9 +32,9 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
 
 void ControlInputSubsystem::WriteToHardware(ControlInputTarget target) {
   driver_.SetRumble(frc::GenericHID::RumbleType::kBothRumble,
-                    target.driver_rumble ? 1.0 : 0.0);
+      target.driver_rumble ? 1.0 : 0.0);
   operator_.SetRumble(frc::GenericHID::RumbleType::kBothRumble,
-                      target.driver_rumble ? 1.0 : 0.0);
+      target.driver_rumble ? 1.0 : 0.0);
 }
 
 ControlInputReadings ControlInputSubsystem::UpdateWithInput() {

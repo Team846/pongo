@@ -25,7 +25,7 @@ struct MotorGains {
   @return The calculated output.
   */
   double calculate(double error, double integral, double derivative,
-                   double feedforward_multiplier) const {
+      double feedforward_multiplier) const {
     return kP * error + kI * integral + kD * derivative +
            kFF * feedforward_multiplier;
   }

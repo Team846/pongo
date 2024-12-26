@@ -6,29 +6,27 @@
 
 frc846::math::FieldPoint Field_nonstatic::getPoint(std::string name) {
   if (!points.empty()) {
-    for (auto& point : points) {
-      if (point.first == name) {
-        return point.second;
-      }
-    }
+    auto it = std::find_if(points.begin(), points.end(),
+        [&](const auto& point) { return point.first == name; });
+    if (it != points.end()) { return it->second; }
   }
+
   Warn("Unable to access fieldpoint: {}.", name);
   return frc846::math::FieldPoint{{0_in, 0_in}, 0_deg, {0_fps, 0_fps}};
 }
 
 std::vector<frc846::math::FieldPoint> Field_nonstatic::getPath(
     std::string name) {
-  for (auto& path : paths) {
-    if (path.first == name) {
-      return path.second;
-    }
-  }
+  auto it = std::find_if(paths.begin(), paths.end(),
+      [&](const auto& path) { return path.first == name; });
+  if (it != paths.end()) { return it->second; }
+
   Warn("Unable to access path: {}.", name);
   return {};
 }
 
-std::vector<std::string> Field_nonstatic::split(const std::string& s,
-                                                char delimiter) {
+std::vector<std::string> Field_nonstatic::split(
+    const std::string& s, char delimiter) {
   std::vector<std::string> tokens;
   std::string token;
   std::istringstream tokenStream(s);
@@ -55,28 +53,18 @@ std::vector<std::string> Field_nonstatic::readLines(std::string filename) {
 
 std::string Field_nonstatic::fixPath(std::string path) {
 #ifdef _WIN32
-  for (char& ch : path) {
-    if (ch == '/') {
-      ch = '\\';
-    }
-  }
-  return path;
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '/'; }, '\\');
 #else
-  for (char& ch : path) {
-    if (ch == '\\') {
-      ch = '/';
-    }
-  }
-  return path;
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '\\'; }, '/');
 #endif
+  return path;
 }
 
 std::string Field_nonstatic::forceNormalPath(std::string path) {
-  for (char& ch : path) {
-    if (ch == '\\') {
-      ch = '/';
-    }
-  }
+  std::replace_if(
+      path.begin(), path.end(), [](char ch) { return ch == '\\'; }, '/');
   return path;
 }
 
@@ -111,19 +99,15 @@ frc846::math::FieldPoint Field_nonstatic::parsePoint(std::string line) {
       if (tokens.size() == 6) v = std::stod(tokens[5]) * 1_fps;
 
       pt = {{std::stod(tokens[2]) * 1_in, std::stod(tokens[3]) * 1_in},
-            std::stod(tokens[4]) * 1_deg,
-            {v, 0_fps}};
+          std::stod(tokens[4]) * 1_deg, {v, 0_fps}};
     } else if (tokens[0] == "P") {
       auto v = 0_fps;
       if (tokens.size() == 5) v = std::stod(tokens[4]) * 1_fps;
 
       pt = {{std::stod(tokens[1]) * 1_in, std::stod(tokens[2]) * 1_in},
-            std::stod(tokens[3]) * 1_deg,
-            {v, 0_fps}};
+          std::stod(tokens[3]) * 1_deg, {v, 0_fps}};
     } else if (tokens[0] == "F") {
-      if (tokens.size() == 2) {
-        pt = getPoint(tokens[1]);
-      }
+      if (tokens.size() == 2) { pt = getPoint(tokens[1]); }
     } else {
       Warn("Unable to parse point from raw: {}.", line);
     }
@@ -153,9 +137,7 @@ void Field_nonstatic::readAllPaths() {
       if (entry.is_regular_file()) path_files.push_back(entry.path().string());
       Log("Found path file: {}.", entry.path().string());
     }
-  } catch (const std::exception& exc) {
-    (void)exc;
-  }
+  } catch (const std::exception& exc) { (void)exc; }
 
   for (const auto& filename : path_files) {
     auto path_us = readLines(filename);
@@ -187,9 +169,7 @@ std::vector<AutoData> Field_nonstatic::getAllAutoData() {
              Field_nonstatic::getFileDirectory() + "scripts")) {
       if (entry.is_regular_file()) auto_files.push_back(entry.path().string());
     }
-  } catch (const std::exception& exc) {
-    (void)exc;
-  }
+  } catch (const std::exception& exc) { (void)exc; }
 
   for (const auto& filename : auto_files) {
     auto auto_lines = readLines(filename);

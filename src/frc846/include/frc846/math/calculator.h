@@ -2,23 +2,22 @@
 
 namespace frc846::math {
 
-template <typename I, typename O, typename C>
-class Calculator {
- public:
+template <typename I, typename O, typename C> class Calculator {
+public:
   void setConstants(C constants) { constants_ = constants; }
 
   virtual O calculate(I input) = 0;
 
- protected:
+protected:
   C constants_;
 };
 
 template <typename I, typename O, typename C>
 class IterativeCalculator : public Calculator<I, O, C> {
- protected:
+protected:
   virtual O calculateIteration(I input, O prev_output) = 0;
 
- public:
+public:
   O calculate(I input) override final {
     O output = O{};
     for (int i = 0; i < max_iterations; i++) {
@@ -31,7 +30,7 @@ class IterativeCalculator : public Calculator<I, O, C> {
     this->max_iterations = max_iterations;
   }
 
- protected:
+protected:
   int max_iterations = 7;
 };
 

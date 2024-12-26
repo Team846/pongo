@@ -31,9 +31,7 @@ void FunkyLogSystem::LogThread(int rateLimit, std::string logFileName) {
     while (!FunkyLogSystem::messages.empty()) {
       LogMessage msg = FunkyLogSystem::messages.front();
       runningCharCounter += msg.char_count;
-      if (runningCharCounter > rateLimit) {
-        break;
-      }
+      if (runningCharCounter > rateLimit) { break; }
 
       logBundle += msg.pack() + "\n";
       FunkyLogSystem::messages.pop();

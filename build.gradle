@@ -111,8 +111,12 @@ spotless {
             include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
             exclude '**/build/**', '**/build-*/**'
         }
-        def selectedClangVersion = project.hasProperty('fromCI') ? '14.0.0-1ubuntu1.1' : '18.1.8'
-        clangFormat(selectedClangVersion).style('Google')
+        def selectedClangVersion = project.hasProperty('fromCI') ? '18.1.8' : '18.1.8'
+
+        def styleFile = file('style.standard')
+        def styleConfig = styleFile.text.trim()
+
+        clangFormat(selectedClangVersion).style(styleConfig)
     }
     groovyGradle {
         target fileTree('src') {
@@ -126,18 +130,58 @@ spotless {
     }
 }
 
-check.dependsOn spotlessApply
+if (!project.hasProperty('fromCI')) {
+    check.dependsOn spotlessApply
+}
+spotlessCppCheck.onlyIf { !project.hasProperty('fromCI') || project.hasProperty('runningSpotlessCpp') }
 
 task runCppcheck(type: Exec) {
     def outputBuffer = new ByteArrayOutputStream()
+
+    if (project.hasProperty('runningCppCheckTest')) {
+        println "Running cppcheck in CI mode - will fail on critical issues or too many warnings."
+    }
+
     commandLine 'cppcheck', '--enable=all', '--template=gcc',
-            '--force', '--suppress=missingIncludeSystem', '--suppress=missingInclude', '--check-level=exhaustive', 'src/'
+        '--force', '--suppress=missingIncludeSystem', '--suppress=missingInclude', '--check-level=exhaustive', 'src/'
+    
+    
     standardOutput = outputBuffer
     errorOutput = outputBuffer
     doLast {
         def cppcheckOutput = outputBuffer.toString("UTF-8")
         def warnings = cppcheckOutput.readLines().findAll { it.contains("warning") && !it.contains("nofile:") }
         def reportContent = warnings.isEmpty() ? "No warnings or errors found." : warnings.join("\n")
+
+         def criticalWarnings = cppcheckOutput.readLines().findAll {
+            it.contains("error") ||
+            it.contains("nullPointer") ||    
+            it.contains("uninitVar") ||     
+            it.contains("outOfBounds") ||    
+            it.contains("divideByZero") ||  
+            it.contains("unreachableCode") ||
+            it.contains("memoryLeak") ||    
+            it.contains("useAfterFree") ||   
+            it.contains("doubleFree") ||    
+            it.contains("invalidMemcpy") ||  
+            it.contains("undefinedFunction") || 
+            it.contains("invalidInput") ||   
+            it.contains("invalidPointer")    
+        }
+        println "\nCppcheck output:\n\n${cppcheckOutput}"
+        println "Cppcheck completed. Total warnings: ${warnings.size()}. Critical issues: ${criticalWarnings.size()}."
+
+        
+        if (criticalWarnings.size() > 0 || warnings.size() > 15) {
+            println "Critical issues detected:\n${criticalWarnings.join('\n')}"
+
+            if (project.hasProperty('runningCppCheckTest')) {
+                throw new GradleException("Cppcheck failed with critical issues or too many warnings.")
+            } else {
+                println "Cppcheck failed with critical issues or too many warnings."
+            }
+        }
+
         def cppcheckSection = """
 ## CppCheck Warnings
 ```
@@ -156,4 +200,9 @@ ${reportContent.trim()}
     }
 }
 
-check.dependsOn runCppcheck
+runCppcheck.onlyIf { !project.hasProperty('fromCI') }
+
+if (!project.hasProperty('fromCI')) {
+    check.dependsOn runCppcheck
+    runCppcheck.dependsOn spotlessApply
+}

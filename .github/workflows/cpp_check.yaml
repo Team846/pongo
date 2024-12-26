@@ -1,0 +1,79 @@
+name: CppCheck
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  cpp_check:
+    runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2024-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup cache directory for PCRE and CppCheck
+        id: cache-setup
+        run: |
+          echo "pcre-8.45" > cache-directory-2.txt
+          echo "cppcheck-2.12.1" >> cache-directory-2.txt
+
+      - name: Cache PCRE and CppCheck
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            /usr/local/bin/cppcheck
+            /usr/local/bin/cfg
+            /usr/local/lib/libpcre.so*
+          key: ${{ runner.os }}-build-${{ hashFiles('cache-directory-2.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Update package index
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: sudo apt-get update
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: sudo apt-get install -y wget build-essential
+
+      - name: Download and Install PCRE
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |
+          wget -O pcre-8.45.tar.gz https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz/download
+          tar -xzf pcre-8.45.tar.gz
+          cd pcre-8.45
+          ./configure
+          make
+          sudo make install
+
+      - name: Download and Install CppCheck
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |
+          wget -O cppcheck.tar.gz https://github.com/danmar/cppcheck/archive/refs/tags/2.12.1.tar.gz
+          tar -xzf cppcheck.tar.gz
+          cd cppcheck-2.12.1
+          make MATCHCOMPILER=yes HAVE_RULES=yes CFGDIR=cfg
+          sudo cp cppcheck /usr/local/bin/
+          sudo cp -r cfg /usr/local/bin/cfg
+
+      - name: Set Library Path
+        run: echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/local.conf && sudo ldconfig
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Install Roborio Toolchain
+        run: ./gradlew installRoborioToolchain
+
+      - name: Compile code and run tests
+        run: ./gradlew runCppCheck -PfromCI -PrunningCppCheckTest
