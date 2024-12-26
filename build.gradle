@@ -190,12 +190,12 @@ ${reportContent.trim()}
 """
         def readmeFile = file('README.md')
         def readmeContent = readmeFile.text
-        def cppcheckRegex = /## CppCheck Warnings\n```[\s\S]*?```/
-        if (readmeContent.find(cppcheckRegex)) {
-            readmeContent = readmeContent.replaceAll(cppcheckRegex, cppcheckSection.trim())
-        } else {
-            readmeContent += "\n" + cppcheckSection.trim()
+
+        if (readmeContent.contains("## CppCheck Warnings")) {
+            readmeContent = readmeContent.substring(0, readmeContent.indexOf("## CppCheck Warnings"))
         }
+
+        readmeContent += "\n" + cppcheckSection.trim()
         readmeFile.text = readmeContent
     }
 }
