@@ -10,6 +10,7 @@
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/base/Loggable.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
 
@@ -86,7 +87,12 @@ public:
   static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
       units::radian_t reverse_limit);
 
+  static std::string parseError(
+      frc846::control::hardware::ControllerErrorCodes err);
+
 private:
+  static frc846::base::Loggable loggable_;
+
   static size_t slot_counter_;
   static std::map<size_t, frc846::control::base::MotorMonkeyType>
       slot_id_to_type_;
@@ -97,9 +103,6 @@ private:
   static frc846::control::base::MotorGains
       gains_registry[CONTROLLER_REGISTRY_SIZE];
   static units::newton_meter_t load_registry[CONTROLLER_REGISTRY_SIZE];
-
-  static frc846::control::hardware::ControllerErrorCodes
-      last_error_registry[CONTROLLER_REGISTRY_SIZE];
 
   static units::volt_t battery_voltage;
 };

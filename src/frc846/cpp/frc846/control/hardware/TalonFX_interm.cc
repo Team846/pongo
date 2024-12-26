@@ -129,7 +129,11 @@ units::ampere_t TalonFX_interm::GetCurrent() {
   return talon_.GetSupplyCurrent().GetValue();
 }
 
-ControllerErrorCodes TalonFX_interm::GetLastErrorCode() { return last_error_; }
+ControllerErrorCodes TalonFX_interm::GetLastErrorCode() {
+  ControllerErrorCodes toReturn = last_error_;
+  last_error_ = ControllerErrorCodes::kAllOK;
+  return toReturn;
+}
 
 // TODO: Expand list of errors
 frc846::control::hardware::ControllerErrorCodes TalonFX_interm::getErrorCode(

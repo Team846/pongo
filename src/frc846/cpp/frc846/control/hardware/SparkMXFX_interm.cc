@@ -188,7 +188,9 @@ units::ampere_t SparkMXFX_interm::GetCurrent() {
 }
 
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {
-  return last_error_;
+  ControllerErrorCodes toReturn = last_error_;
+  last_error_ = ControllerErrorCodes::kAllOK;
+  return toReturn;
 }
 
 frc846::control::hardware::ControllerErrorCodes SparkMXFX_interm::getErrorCode(
