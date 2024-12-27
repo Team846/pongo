@@ -11,6 +11,7 @@
 #include "frc846/control/config/soft_limits.h"
 
 #include <optional>
+#include <vector>
 
 namespace frc846::control {
 

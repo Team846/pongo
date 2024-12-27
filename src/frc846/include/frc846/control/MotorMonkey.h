@@ -13,6 +13,8 @@
 #include "frc846/control/hardware/TalonFX_interm.h"
 #include "frc846/base/Loggable.h"
 
+#include <vector>
+
 #define CONTROLLER_REGISTRY_SIZE 64
 
 namespace frc846::control {
