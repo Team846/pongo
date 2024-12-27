@@ -123,6 +123,15 @@ size_t MotorMonkey::ConstructController(
   return slot_id;
 }
 
+void MotorMonkey::EnableStatusFrames(
+    size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(controller_registry[slot_id]->EnableStatusFrames(frames),
+      "EnableStatusFrames");
+  LOG_IF_ERROR("EnableStatusFrames");
+}
+
 units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }
 
 void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {

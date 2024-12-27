@@ -1,8 +1,11 @@
 #include "frc846/robot/swerve/swerve_module.h"
+#include "frc846/math/collection.h"
+
+#include <units/math.h>
 
 namespace frc846::robot::swerve {
 
-SwerveModule::SwerveModule(Loggable& parent, std::string loc,
+SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent, std::string loc,
     frc846::control::config::MotorConstructionParameters drive_params,
     frc846::control::config::MotorConstructionParameters steer_params,
     frc846::control::base::MotorMonkeyType motor_types, int cancoder_id,
@@ -16,39 +19,124 @@ SwerveModule::SwerveModule(Loggable& parent, std::string loc,
   drive_helper_.SetConversion(drive_reduction);
   steer_helper_.SetConversion(steer_reduction);
 
+  drive_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame});
+
+  steer_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame});
+
   drive_helper_.bind(&drive_);
   steer_helper_.bind(&steer_);
+
+  cancoder_.OptimizeBusUtilization();
+  cancoder_.GetAbsolutePosition().SetUpdateFrequency(20_Hz);
+
+  RegisterPreference("cancoder_offset_", 0.0_deg);
 }
 
-void SwerveModule::Setup() {
+void SwerveModuleSubsystem::Setup() {
   drive_.Setup();
   steer_.Setup();
 
-  // TODO: finish. Refer to howler_monkey.
+  ZeroWithCANcoder();
 }
 
-SwerveModuleTarget SwerveModule::ZeroTarget() const {
+SwerveModuleTarget SwerveModuleSubsystem::ZeroTarget() const {
   return SwerveModuleOLControlTarget{0.0, 0_deg};
 }
 
-bool SwerveModule::VerifyHardware() {
+bool SwerveModuleSubsystem::VerifyHardware() {
   bool ok = true;
   // TODO: Add a verify hardware to motor controllers.
   return ok;
 }
 
-SwerveModuleReadings SwerveModule::ReadFromHardware() {
+void SwerveModuleSubsystem::SetCANCoderOffset() {
+  SetCANCoderOffset(GetReadings().steer_pos);
+}
+void SwerveModuleSubsystem::SetCANCoderOffset(units::degree_t offset) {
+  SetPreferenceValue("cancoder_offset_", offset);
+}
+
+void SwerveModuleSubsystem::ZeroWithCANcoder() {
+  constexpr int kMaxAttempts = 5;
+  constexpr int kSleepTimeMs = 500;
+
+  for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
+    Log("CANCoder zero attempt {}/{}", attempts, kMaxAttempts);
+    auto position = cancoder_.GetAbsolutePosition();
+
+    if (position.IsAllGood()) {
+      steer_helper_.SetPosition(-position.GetValue());
+      Log("Zeroed to {}!", -position.GetValue());
+      break;
+    }
+
+    Warn("Unable to zero", attempts, kMaxAttempts);
+
+    if (attempts == kMaxAttempts) {
+      Error("Unable to zero after {} attempts", kMaxAttempts);
+    } else {
+      Log("Sleeping {}ms...", kSleepTimeMs);
+      std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
+    }
+  }
+}
+
+void SwerveModuleSubsystem::SetGains(frc846::control::base::MotorGains gains) {
+  drive_.SetGains(gains);
+  steer_.SetGains(gains);
+}
+
+SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   SwerveModuleReadings readings;
   readings.vel = drive_helper_.GetVelocity();
   readings.drive_pos = drive_helper_.GetPosition();
   readings.steer_pos = steer_helper_.GetPosition();
   return readings;
-
-  // TODO: recheck
 }
 
-void SwerveModule::WriteToHardware(SwerveModuleTarget target) {
-  // TODO: finish. Refer to howler_monkey for open-loop.
+void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
+  if (SwerveModuleOLControlTarget* ol_target =
+          std::get_if<SwerveModuleOLControlTarget>(&target)) {
+    auto [steer_dir, invert_drive] =
+        calculateSteerPosition(GetReadings().steer_pos, ol_target->steer);
+
+    units::dimensionless::scalar_t cosine_comp =
+        units::math::cos(frc846::math::CoterminalDifference(
+            GetReadings().steer_pos, ol_target->steer));
+
+    drive_helper_.WriteDC(
+        cosine_comp * (invert_drive ? -1 : 1) * ol_target->drive);
+
+    if (std::abs(ol_target->drive) > 0.002) {
+      steer_helper_.WritePosition(ol_target->steer);
+    }
+  } else if (SwerveModuleTorqueControlTarget* torque_target =
+                 std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
+    // TODO: finish torque control for drivetrain
+  } else {
+    throw std::runtime_error("SwerveModuleTarget was not of a valid type");
+  }
+}
+
+std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
+    units::degree_t target_norm, units::degree_t current) {
+  bool reverse = false;
+
+  units::degree_t diff =
+      frc846::math::CoterminalDifference(target_norm, current);
+
+  if (diff > 90_deg) {
+    diff -= 180_deg;
+    reverse = true;
+  } else if (diff < -90_deg) {
+    diff += 180_deg;
+    reverse = true;
+  }
+
+  return {current + diff, reverse};
 }
 
 }  // namespace frc846::robot::swerve

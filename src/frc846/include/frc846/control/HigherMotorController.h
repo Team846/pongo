@@ -6,6 +6,7 @@
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
+#include "frc846/control/config/status_frames.h"
 
 #include "frc846/control/config/soft_limits.h"
 
@@ -86,6 +87,9 @@ public:
   // Custom soft limits maintained by HigherMotorController
   void SetSoftLimits(config::SoftLimits soft_limits);
 
+  // Enables specific status frames and disables all others
+  void EnableStatusFrames(std::vector<config::StatusFrame> frames);
+
 private:
   frc846::control::base::MotorMonkeyType mmtype_;
   frc846::control::config::MotorConstructionParameters constr_params_;
@@ -97,6 +101,8 @@ private:
   std::optional<config::SoftLimits> soft_limits_;
 
   size_t slot_id_ = 999;
+
+  bool called_enable_status_frames_ = false;
 };
 
 }  // namespace frc846::control

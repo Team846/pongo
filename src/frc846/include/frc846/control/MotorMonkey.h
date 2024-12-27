@@ -9,6 +9,7 @@
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
+#include "frc846/control/config/status_frames.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
 #include "frc846/base/Loggable.h"
 
@@ -39,6 +40,14 @@ public:
   */
   static size_t ConstructController(frc846::control::base::MotorMonkeyType type,
       frc846::control::config::MotorConstructionParameters params);
+
+  /*
+  EnableStatusFrames()
+
+  Enables specific status frames for a motor controller. Disables all others.
+  */
+  static void EnableStatusFrames(
+      size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames);
 
   /*
   GetBatteryVoltage()
