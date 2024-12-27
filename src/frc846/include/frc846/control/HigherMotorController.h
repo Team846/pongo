@@ -7,7 +7,7 @@
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 
-#include "frc846/control/config/SoftLimitsHelper.h"
+#include "frc846/control/config/soft_limits.h"
 
 #include <optional>
 

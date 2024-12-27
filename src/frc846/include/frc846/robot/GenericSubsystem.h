@@ -57,6 +57,17 @@ public:
     init_ = true;
   }
 
+  /*
+  InitByParent()
+
+  Initializer function to be called by a parent subsystem only. Will not
+  register with WPILib.
+  */
+  void InitByParent() {
+    Log("Initializing subsystem (by parent)");
+    init_ = true;
+  }
+
 private:
   bool init_;
 

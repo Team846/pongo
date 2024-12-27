@@ -46,7 +46,7 @@ struct MotorConstructionParameters {
 
   frc846::wpilib::unit_kg_m_sq rotational_inertia;
 
-  std::string bus = "rio";
+  std::string bus = "";
 
   units::millisecond_t max_wait_time = 20_ms;
 };
