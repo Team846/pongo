@@ -11,7 +11,7 @@
 
 #include <variant>
 
-#include <ctre/phoenix6/CANCoder.hpp>
+#include <ctre/phoenix6/CANcoder.hpp>
 
 namespace frc846::robot::swerve {
 
