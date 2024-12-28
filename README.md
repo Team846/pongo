@@ -176,22 +176,8 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/y2025/cpp/field.cc:9:16: warning: Variable 'point' can be declared as reference to const [constVariableReference]
-src/y2025/cpp/field.cc:19:14: warning: Variable 'path' can be declared as reference to const [constVariableReference]
-src/y2025/cpp/field.cc:10:32: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-src/y2025/cpp/field.cc:20:29: warning: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
-src/y2025/cpp/field.cc:60:26: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-src/y2025/cpp/field.cc:68:26: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
-src/y2025/cpp/field.cc:55:25: warning: Consider using std::replace_if algorithm instead of a raw loop. [useStlAlgorithm]
 src/frc846/cpp/frc846/math/collection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
-```
-## CppCheck Warnings
-```
-srcfrc846cppfrc846mathcollection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
-srcfrc846cppfrc846mathcollection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```
