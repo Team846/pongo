@@ -70,18 +70,14 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
     if (position.IsAllGood()) {
       steer_helper_.SetPosition(-position.GetValue());
       Log("Zeroed to {}!", -position.GetValue());
-      break;
+      return;
     }
 
-    Warn("Unable to zero", attempts, kMaxAttempts);
+    Warn("Attempt to zero failed, sleeping {} ms...", kSleepTimeMs);
 
-    if (attempts == kMaxAttempts) {
-      Error("Unable to zero after {} attempts", kMaxAttempts);
-    } else {
-      Log("Sleeping {}ms...", kSleepTimeMs);
-      std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
-    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
+  Error("Unable to zero after {} attempts", kMaxAttempts);
 }
 
 void SwerveModuleSubsystem::SetGains(frc846::control::base::MotorGains gains) {
@@ -94,18 +90,34 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   readings.vel = drive_helper_.GetVelocity();
   readings.drive_pos = drive_helper_.GetPosition();
   readings.steer_pos = steer_helper_.GetPosition();
+
+  Graph("drive_motor_vel", readings.vel);
+  Graph("drive_motor_pos", readings.drive_pos);
+  Graph("steer_motor_pos", readings.steer_pos);
+
+  Graph("cancoder_pos",
+      units::degree_t(cancoder_.GetAbsolutePosition().GetValue()));
+
   return readings;
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   if (SwerveModuleOLControlTarget* ol_target =
           std::get_if<SwerveModuleOLControlTarget>(&target)) {
+    Graph("ol_drive_target", ol_target->drive);
+    Graph("ol_steer_target", ol_target->steer);
+
     auto [steer_dir, invert_drive] =
         calculateSteerPosition(GetReadings().steer_pos, ol_target->steer);
+
+    Graph("steer_dir", steer_dir);
+    Graph("invert_drive", invert_drive);
 
     units::dimensionless::scalar_t cosine_comp =
         units::math::cos(frc846::math::CoterminalDifference(
             GetReadings().steer_pos, ol_target->steer));
+
+    Graph("cosine_comp", cosine_comp.to<double>());
 
     drive_helper_.WriteDC(
         cosine_comp * (invert_drive ? -1 : 1) * ol_target->drive);
@@ -116,6 +128,8 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   } else if (SwerveModuleTorqueControlTarget* torque_target =
                  std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
     // TODO: finish torque control for drivetrain
+    Graph("torque_drive_target", torque_target->drive);
+    Graph("torque_steer_target", torque_target->steer);
   } else {
     throw std::runtime_error("SwerveModuleTarget was not of a valid type");
   }

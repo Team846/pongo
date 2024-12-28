@@ -92,8 +92,6 @@ private:
   std::pair<units::degree_t, bool> calculateSteerPosition(
       units::degree_t target_norm, units::degree_t current);
 
-  // TODO: add cancoder stuff
-
   frc846::control::HigherMotorController drive_;
   frc846::control::HigherMotorController steer_;
 
