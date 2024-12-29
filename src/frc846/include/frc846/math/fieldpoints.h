@@ -12,10 +12,10 @@
 namespace frc846::math {
 
 struct FieldPoint {
-  VectorND<units::foot_t, 2> point;
+  VectorND<units::foot, 2> point;
   units::degree_t bearing;
 
-  VectorND<units::feet_per_second_t, 2> velocity;
+  VectorND<units::feet_per_second, 2> velocity;
 
   // Returns a FieldPoint that is 'mirrored' across the field
   FieldPoint mirror(bool shouldMirror = true) const {

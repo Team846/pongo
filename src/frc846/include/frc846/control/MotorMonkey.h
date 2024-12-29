@@ -5,13 +5,13 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
+#include "frc846/base/Loggable.h"
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/config/status_frames.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/base/Loggable.h"
 
 #include <vector>
 

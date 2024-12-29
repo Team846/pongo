@@ -153,4 +153,8 @@ std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
   return {current + diff, reverse};
 }
 
+void SwerveModule::SetSteerGains(frc846::control::base::MotorGains gains) {
+  steer_.SetGains(gains);
+}
+
 }  // namespace frc846::robot::swerve

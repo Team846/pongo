@@ -1,4 +1,5 @@
 #include "frc846/control/hardware/SparkMXFX_interm.h"
+
 #include "frc846/wpilib/util.h"
 
 namespace frc846::control::hardware {

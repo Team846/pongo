@@ -1,17 +1,16 @@
 #pragma once
 
-#include "frc846/robot/GenericSubsystem.h"
-#include "frc846/control/HigherMotorController.h"
-#include "frc846/control/HMCHelper.h"
-
 #include <units/angle.h>
+#include <units/base.h>
 #include <units/torque.h>
 #include <units/velocity.h>
-#include <units/base.h>
-
-#include <variant>
 
 #include <ctre/phoenix6/CANcoder.hpp>
+#include <variant>
+
+#include "frc846/control/HMCHelper.h"
+#include "frc846/control/HigherMotorController.h"
+#include "frc846/robot/GenericSubsystem.h"
 
 namespace frc846::robot::swerve {
 
@@ -21,21 +20,13 @@ struct SwerveModuleReadings {
   units::degree_t steer_pos;
 };
 
-/*
-SwerveModuleTorqueControlTarget
-
-Allows to control drive and steer motors with torque control.
-*/
+// Allows for torque-based control by DrivetrainSubsystem
 struct SwerveModuleTorqueControlTarget {
   units::newton_meter_t drive;
   units::newton_meter_t steer;
 };
 
-/*
-SwerveModuleOLControlTarget
-
-Allows to control drive and steer motors with open loop control.
-*/
+// For open-loop control by DrivetrainSubsystem
 struct SwerveModuleOLControlTarget {
   double drive;
   units::degree_t steer;
@@ -50,6 +41,14 @@ SwerveModule
 A class that represents a swerve module. This subsystem should be a child of
 Drivetrain.
 */
+
+/*
+SwerveModuleSubsystem
+
+A class representing a single swerve module. Controls a drive and steer motor
+and a CANcoder. Meant to be constructed as a child subsystem of
+DrivetrainSubsystem.
+*/
 class SwerveModuleSubsystem
     : public frc846::robot::GenericSubsystem<SwerveModuleReadings,
           SwerveModuleTarget> {
@@ -58,6 +57,12 @@ class SwerveModuleSubsystem
       units::compound_unit<units::foot, units::inverse<units::turn>>>;
 
 public:
+  /*
+  SwerveModuleSubsystem()
+
+  Constructs a SwerveModuleSubsystem object with the given parameters. For use
+  by DrivetrainSubsystem.
+  */
   SwerveModuleSubsystem(Loggable& parent, std::string loc,
       frc846::control::config::MotorConstructionParameters drive_params,
       frc846::control::config::MotorConstructionParameters steer_params,
@@ -76,7 +81,13 @@ public:
 
   void ZeroWithCANcoder();
 
-  void SetGains(frc846::control::base::MotorGains gains);
+  /*
+  SetSteerGains()
+
+  Sets the gains for the steer motor controller. Should be called after
+  SwerveModuleSubsystem Setup, in DrivetrainSubsystem Setup.
+  */
+  void SetSteerGains(frc846::control::base::MotorGains gains);
 
 private:
   SwerveModuleReadings ReadFromHardware() override;
