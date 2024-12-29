@@ -2,14 +2,13 @@
 
 #include <units/torque.h>
 
+#include <optional>
+
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
-
 #include "frc846/control/config/soft_limits.h"
-
-#include <optional>
 
 namespace frc846::control {
 

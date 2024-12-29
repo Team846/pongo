@@ -12,11 +12,13 @@
 #include "frc846/math/collection.h"
 
 namespace frc846::math {
-template <typename T, size_t N> class VectorND {
+template <typename UT, size_t N> class VectorND {
   static_assert(
       N > 0, "VectorND can not be created with less than one dimension.");
-  static_assert(units::traits::is_unit_t<T>(),
-      "VectorND can only be created with unit types.");
+  static_assert(units::traits::is_unit<UT>(),
+      "VectorND can only be created with unit types. Unit_t is invalid.");
+
+  using T = units::unit_t<UT>;
 
 private:
   std::vector<T> data;
@@ -50,86 +52,86 @@ public:
   }
 
   // Copy constructor for VectorND
-  VectorND(const VectorND<T, N>& other) : VectorND() {
+  VectorND(const VectorND<UT, N>& other) : VectorND() {
     for (size_t i = 0; i < N; ++i) {
       data[i] = other[i];
     }
   }
 
-  // Adds VectorND<T, N> to this and returns result
-  VectorND<T, N> operator+(const VectorND<T, N>& other) const {
-    VectorND<T, N> result;
+  // Adds VectorND<UT, N> to this and returns result
+  VectorND<UT, N> operator+(const VectorND<UT, N>& other) const {
+    VectorND<UT, N> result;
     for (size_t i = 0; i < N; ++i) {
       result[i] = data[i] + other[i];
     }
     return result;
   }
 
-  // Subtracts VectorND<T, N> from this and returns result
-  VectorND<T, N> operator-(const VectorND<T, N>& other) const {
-    VectorND<T, N> result;
+  // Subtracts VectorND<UT, N> from this and returns result
+  VectorND<UT, N> operator-(const VectorND<UT, N>& other) const {
+    VectorND<UT, N> result;
     for (size_t i = 0; i < N; ++i) {
       result[i] = data[i] - other[i];
     }
     return result;
   }
 
-  VectorND<T, N> operator*(const double scalar) const {
-    VectorND<T, N> result;
+  VectorND<UT, N> operator*(const double scalar) const {
+    VectorND<UT, N> result;
     for (size_t i = 0; i < N; ++i) {
       result[i] = data[i] * scalar;
     }
     return result;
   }
 
-  friend double operator*(double lhs, const VectorND<T, N>& rhs) {
+  friend double operator*(double lhs, const VectorND<UT, N>& rhs) {
     return rhs * lhs;
   }
 
-  VectorND<T, N> operator/(const double scalar) const {
-    VectorND<T, N> result;
+  VectorND<UT, N> operator/(const double scalar) const {
+    VectorND<UT, N> result;
     for (size_t i = 0; i < N; ++i) {
       result[i] = data[i] / scalar;
     }
     return result;
   }
 
-  VectorND<T, N>& operator+=(const VectorND<T, N>& other) {
+  VectorND<UT, N>& operator+=(const VectorND<UT, N>& other) {
     for (size_t i = 0; i < N; ++i) {
       data[i] += other[i];
     }
     return *this;
   }
 
-  VectorND<T, N>& operator-=(const VectorND<T, N>& other) {
+  VectorND<UT, N>& operator-=(const VectorND<UT, N>& other) {
     for (size_t i = 0; i < N; ++i) {
       data[i] -= other[i];
     }
     return *this;
   }
 
-  VectorND<T, N>& operator*=(const double scalar) {
+  VectorND<UT, N>& operator*=(const double scalar) {
     for (size_t i = 0; i < N; ++i) {
       data[i] *= scalar;
     }
     return *this;
   }
 
-  VectorND<T, N>& operator/=(const double scalar) {
+  VectorND<UT, N>& operator/=(const double scalar) {
     for (size_t i = 0; i < N; ++i) {
       data[i] /= scalar;
     }
     return *this;
   }
 
-  void operator=(const VectorND<T, N>& other) {
+  void operator=(const VectorND<UT, N>& other) {
     for (size_t i = 0; i < N; ++i) {
       data[i] = other[i];
     }
   }
 
   // Uses 'safe' double comparison
-  bool operator==(const VectorND<T, N>& other) const {
+  bool operator==(const VectorND<UT, N>& other) const {
     for (size_t i = 0; i < N; ++i) {
       if (!frc846::math::DEquals(data[i], other[i])) { return false; }
     }
@@ -137,7 +139,7 @@ public:
   }
 
   // Returns a vector rotated by a given angle. Default is clockwise rotation.
-  VectorND<T, N> rotate(units::degree_t angle, bool clockwise = true) const {
+  VectorND<UT, N> rotate(units::degree_t angle, bool clockwise = true) const {
     static_assert(N == 2, "Rotation is only defined for 2D vectors.");
     if (clockwise) { angle = -angle; }
     return {
@@ -146,7 +148,7 @@ public:
   }
 
   // Returns the dot product of this vector and another
-  T dot(const VectorND<T, N>& other) const {
+  T dot(const VectorND<UT, N>& other) const {
     T result = T{};
     for (size_t i = 0; i < N; ++i) {
       result += data[i] * other[i].template to<double>();
@@ -156,7 +158,7 @@ public:
 
   // Returns the cross product of this vector and another
   // Cross product is only defined for 3D vectors
-  VectorND<T, N> cross(const VectorND<T, N>& other) const {
+  VectorND<UT, N> cross(const VectorND<UT, N>& other) const {
     static_assert(N == 3, "Cross product is only defined for 3D vectors.");
     return {data[1] * other[2] - data[2] * other[1],
         data[2] * other[0] - data[0] * other[2],
@@ -173,17 +175,17 @@ public:
   }
 
   // Returns the unit vector of this vector
-  VectorND<T, N> unit() const {
+  VectorND<UT, N> unit() const {
     return *this / magnitude().template to<double>();
   }
 
   // Projects this vector onto another and returns
-  VectorND<T, N> projectOntoAnother(const VectorND<T, N>& other) const {
+  VectorND<UT, N> projectOntoAnother(const VectorND<UT, N>& other) const {
     return other.projectOntoThis(*this);
   }
 
   // Projects another vector onto this and returns
-  VectorND<T, N> projectOntoThis(const VectorND<T, N>& other) const {
+  VectorND<UT, N> projectOntoThis(const VectorND<UT, N>& other) const {
     return unit() * dot(other).template to<double>();
   }
 
@@ -198,7 +200,7 @@ public:
 
   // Returns the angle between this vector and another
   units::degree_t angleTo(
-      const VectorND<T, N>& other, bool angleIsBearing = false) const {
+      const VectorND<UT, N>& other, bool angleIsBearing = false) const {
     return other.angle(angleIsBearing) - angle(angleIsBearing);
   }
 
@@ -227,10 +229,10 @@ public:
 // Commonly used vector types
 
 // 1D vector, units::inch_t
-using Vector1D = VectorND<units::inch_t, 1>;
+using Vector1D = VectorND<units::inch, 1>;
 // 2D vector, units::inch_t
-using Vector2D = VectorND<units::inch_t, 2>;
+using Vector2D = VectorND<units::inch, 2>;
 // 3D vector, units::inch_t
-using Vector3D = VectorND<units::inch_t, 3>;
+using Vector3D = VectorND<units::inch, 3>;
 
 }  // namespace frc846::math

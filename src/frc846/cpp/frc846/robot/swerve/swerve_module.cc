@@ -51,4 +51,8 @@ void SwerveModule::WriteToHardware(SwerveModuleTarget target) {
   // TODO: finish. Refer to howler_monkey for open-loop.
 }
 
+void SwerveModule::SetSteerGains(frc846::control::base::MotorGains gains) {
+  steer_.SetGains(gains);
+}
+
 }  // namespace frc846::robot::swerve

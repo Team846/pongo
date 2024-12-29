@@ -5,12 +5,11 @@
 #include <rev/CANSparkFlex.h>
 #include <rev/CANSparkMax.h>
 
-#include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/control/hardware/SparkMXFX_interm.h"
-
-#include "frc846/math/collection.h"
-
 #include <string>
+
+#include "frc846/control/hardware/SparkMXFX_interm.h"
+#include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/math/collection.h"
 
 // TODO: Add dynamic can/power management
 
