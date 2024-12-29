@@ -20,13 +20,6 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent, std::string loc,
   drive_helper_.SetConversion(drive_reduction);
   steer_helper_.SetConversion(steer_reduction);
 
-  drive_.EnableStatusFrames(
-      {frc846::control::config::StatusFrame::kPositionFrame,
-          frc846::control::config::StatusFrame::kVelocityFrame});
-
-  steer_.EnableStatusFrames(
-      {frc846::control::config::StatusFrame::kPositionFrame});
-
   drive_helper_.bind(&drive_);
   steer_helper_.bind(&steer_);
 
@@ -37,7 +30,16 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent, std::string loc,
 }
 
 void SwerveModuleSubsystem::Setup() {
+  drive_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame});
+
   drive_.Setup();
+  drive_helper_.SetPosition(0_ft);
+
+  steer_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame});
+
   steer_.Setup();
 
   ZeroWithCANcoder();
