@@ -100,6 +100,8 @@ public:
   static std::string parseError(
       frc846::control::hardware::ControllerErrorCodes err);
 
+  static bool VerifyConnected();
+
 private:
   static frc846::base::Loggable loggable_;
 

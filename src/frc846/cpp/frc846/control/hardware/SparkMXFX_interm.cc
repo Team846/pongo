@@ -9,6 +9,11 @@ namespace frc846::control::hardware {
   set_last_error(code);                \
   if (last_error_ != ControllerErrorCodes::kAllOK) return
 
+bool SparkMXFX_interm::VerifyConnected() {
+  esc_->GetFirmwareVersion();
+  return esc_->GetFirmwareVersion() != 0;
+}
+
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
     units::millisecond_t max_wait_time, bool is_controller_spark_flex) {
   esc_ = is_controller_spark_flex

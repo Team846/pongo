@@ -1,4 +1,4 @@
-#include "frc846/control/simulation/MCSimulator.h"
+#include "frc846/control/hardware/simulation/MCSimulator.h"
 
 #include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/calculators/VelocityPositionEstimator.h"

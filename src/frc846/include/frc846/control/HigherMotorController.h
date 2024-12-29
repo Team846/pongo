@@ -90,6 +90,9 @@ public:
   // Enables specific status frames and disables all others
   void EnableStatusFrames(std::vector<config::StatusFrame> frames);
 
+  // Verifies if the speed controller is connected and accessible
+  bool VerifyConnected();
+
 private:
   frc846::control::base::MotorMonkeyType mmtype_;
   frc846::control::config::MotorConstructionParameters constr_params_;
