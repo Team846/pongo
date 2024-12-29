@@ -70,7 +70,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
     steer_positions[i] = r.steer_pos;
 
     velocity += (frc846::math::VectorND<units::feet_per_second, 2>{
-        r.drive_pos, r.steer_pos + bearing, true});
+        r.vel, r.steer_pos + bearing, true});
   }
 
   velocity /= 4.0;
