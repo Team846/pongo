@@ -8,6 +8,7 @@
 
 #include <variant>
 
+#include "frc846/control/hardware/IntermediateController.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/wpilib/846_units.h"
@@ -20,7 +21,7 @@ MCSimulator
 A class that simulates a motor controller. Uses motor dynamics to simulate
 position and velocity accurately.
 */
-class MCSimulator {
+class MCSimulator : frc846::control::hardware::IntermediateController {
 public:
   MCSimulator(frc846::control::base::MotorSpecs specs,
       frc846::wpilib::unit_ohm circuit_resistance,
@@ -33,19 +34,19 @@ public:
   */
   void Tick(units::volt_t battery_voltage, units::newton_meter_t load);
 
-  void WriteDC(double duty_cycle);
-  void WriteVelocity(units::radians_per_second_t velocity);
-  void WritePosition(units::radian_t position);
+  void WriteDC(double duty_cycle) override;
+  void WriteVelocity(units::radians_per_second_t velocity) override;
+  void WritePosition(units::radian_t position) override;
 
-  units::radian_t GetPosition();
-  units::radians_per_second_t GetVelocity();
+  units::radian_t GetPosition() override;
+  units::radians_per_second_t GetVelocity() override;
 
   /*
   ZeroEncoder()
 
   Sets the motor's position to specified value.
   */
-  void ZeroEncoder(units::radian_t position = 0_rad);
+  void ZeroEncoder(units::radian_t position = 0_rad) override;
 
   /*
   DisablePositionPacket()
@@ -60,7 +61,7 @@ public:
   */
   void DisableVelocityPacket();
 
-  void SetGains(frc846::control::base::MotorGains gains);
+  void SetGains(frc846::control::base::MotorGains gains) override;
 
 private:
   frc846::control::base::MotorSpecs specs;

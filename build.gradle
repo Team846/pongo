@@ -182,12 +182,7 @@ task runCppcheck(type: Exec) {
             }
         }
 
-        def cppcheckSection = """
-## CppCheck Warnings
-```
-${reportContent.trim()}
-```
-"""
+        def cppcheckSection = """## CppCheck Warnings\n```\n${reportContent.trim()}\n```\n"""
         def readmeFile = file('README.md')
         def readmeContent = readmeFile.text
 

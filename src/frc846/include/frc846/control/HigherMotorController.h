@@ -86,6 +86,9 @@ public:
   // Custom soft limits maintained by HigherMotorController
   void SetSoftLimits(config::SoftLimits soft_limits);
 
+  // verify's if the hardware is connected
+  bool VerifyConnected();
+
 private:
   frc846::control::base::MotorMonkeyType mmtype_;
   frc846::control::config::MotorConstructionParameters constr_params_;
