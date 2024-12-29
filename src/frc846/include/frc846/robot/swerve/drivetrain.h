@@ -57,7 +57,7 @@ private:
   void WriteToHardware(DrivetrainTarget target) override;
 
   DrivetrainConfigs configs_;
-  std::array<SwerveModule*, 4> modules_;
+  std::array<SwerveModuleSubsystem*, 4> modules_;
 };
 
 }  // namespace frc846::robot::swerve

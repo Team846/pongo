@@ -1,7 +1,8 @@
 #include "frc846/robot/swerve/swerve_module.h"
-#include "frc846/math/collection.h"
 
 #include <units/math.h>
+
+#include "frc846/math/collection.h"
 
 namespace frc846::robot::swerve {
 
@@ -80,11 +81,6 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
   Error("Unable to zero after {} attempts", kMaxAttempts);
 }
 
-void SwerveModuleSubsystem::SetGains(frc846::control::base::MotorGains gains) {
-  drive_.SetGains(gains);
-  steer_.SetGains(gains);
-}
-
 SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   SwerveModuleReadings readings;
   readings.vel = drive_helper_.GetVelocity();
@@ -153,7 +149,8 @@ std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
   return {current + diff, reverse};
 }
 
-void SwerveModule::SetSteerGains(frc846::control::base::MotorGains gains) {
+void SwerveModuleSubsystem::SetSteerGains(
+    frc846::control::base::MotorGains gains) {
   steer_.SetGains(gains);
 }
 
