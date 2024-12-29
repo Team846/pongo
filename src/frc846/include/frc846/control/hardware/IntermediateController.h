@@ -64,6 +64,8 @@ public:
   virtual units::ampere_t GetCurrent() = 0;
 
   virtual ControllerErrorCodes GetLastErrorCode() = 0;
+
+  virtual bool VerifyConnected() = 0;  // changed
 };
 
 }  // namespace frc846::control::hardware

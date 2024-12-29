@@ -74,6 +74,15 @@ void MotorMonkey::Tick() {
   }
 }
 
+bool MotorMonkey::VerifyConnected() {
+  for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
+    if (controller_registry[i] != nullptr) {
+      if (!controller_registry[i]->VerifyConnected()) { return false; }
+    }
+  }
+  return true;
+}
+
 size_t MotorMonkey::ConstructController(
     frc846::control::base::MotorMonkeyType type,
     frc846::control::config::MotorConstructionParameters params) {

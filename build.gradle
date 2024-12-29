@@ -111,7 +111,7 @@ spotless {
             include '**/*.cpp', '**/*.cc', '**/*.h', '**/*.hpp'
             exclude '**/build/**', '**/build-*/**'
         }
-        def selectedClangVersion = project.hasProperty('fromCI') ? '18.1.8' : '18.1.8'
+        def selectedClangVersion = project.hasProperty('fromCI') ? '19.1.5' : '18.1.8' 
 
         def styleFile = file('style.standard')
         def styleConfig = styleFile.text.trim()

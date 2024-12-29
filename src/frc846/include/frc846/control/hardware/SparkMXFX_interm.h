@@ -159,6 +159,15 @@ public:
   void ZeroEncoder(units::radian_t position) override;
 
   /*
+  VerifyHardware()
+
+  Checks the TalonFX hardware and verifies it is functioning correctly.
+
+  @return boolean indicating whether the hardware is verified successfully.
+  */
+  bool VerifyConnected() override;  // added
+
+  /*
   GetVelocity()
 
   Gets the motor's current velocity.

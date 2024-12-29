@@ -15,6 +15,10 @@ void HigherMotorController::Setup() {
       mmtype_, constr_params_);
 }
 
+bool HigherMotorController::VerifyConnected() {
+  return frc846::control::MotorMonkey::VerifyConnected();
+}
+
 void HigherMotorController::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
   frc846::control::MotorMonkey::SetGains(slot_id_, gains_);
