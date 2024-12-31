@@ -35,12 +35,28 @@ struct SwerveModuleOLControlTarget {
 using SwerveModuleTarget =
     std::variant<SwerveModuleTorqueControlTarget, SwerveModuleOLControlTarget>;
 
-/*
-SwerveModule
+struct SwerveModuleUniqueConfig {
+  std::string loc;
 
-A class that represents a swerve module. This subsystem should be a child of
-Drivetrain.
-*/
+  int cancoder_id;
+  int drive_id;
+  int steer_id;
+};
+
+using steer_conv_unit = units::dimensionless::scalar_t;
+using drive_conv_unit = units::unit_t<
+    units::compound_unit<units::foot, units::inverse<units::turn>>>;
+
+struct SwerveModuleCommonConfig {
+  frc846::control::config::MotorConstructionParameters drive_params;
+  frc846::control::config::MotorConstructionParameters steer_params;
+
+  frc846::control::base::MotorMonkeyType motor_types;
+  steer_conv_unit steer_reduction;
+  drive_conv_unit drive_reduction;
+
+  std::string bus = "";
+};
 
 /*
 SwerveModuleSubsystem
@@ -52,10 +68,6 @@ DrivetrainSubsystem.
 class SwerveModuleSubsystem
     : public frc846::robot::GenericSubsystem<SwerveModuleReadings,
           SwerveModuleTarget> {
-  using steer_conv_unit = units::dimensionless::scalar_t;
-  using drive_conv_unit = units::unit_t<
-      units::compound_unit<units::foot, units::inverse<units::turn>>>;
-
 public:
   /*
   SwerveModuleSubsystem()
@@ -63,12 +75,9 @@ public:
   Constructs a SwerveModuleSubsystem object with the given parameters. For use
   by DrivetrainSubsystem.
   */
-  SwerveModuleSubsystem(Loggable& parent, std::string loc,
-      frc846::control::config::MotorConstructionParameters drive_params,
-      frc846::control::config::MotorConstructionParameters steer_params,
-      frc846::control::base::MotorMonkeyType motor_types, int cancoder_id,
-      steer_conv_unit steer_reduction, drive_conv_unit drive_reduction,
-      std::string cancoder_bus = "");
+  SwerveModuleSubsystem(Loggable& parent,
+      SwerveModuleUniqueConfig unique_config,
+      SwerveModuleCommonConfig common_config);
 
   void Setup() override;
 

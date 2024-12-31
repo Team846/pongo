@@ -6,14 +6,11 @@
 
 namespace frc846::robot::swerve {
 
-SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent, std::string loc,
-    frc846::control::config::MotorConstructionParameters drive_params,
-    frc846::control::config::MotorConstructionParameters steer_params,
-    frc846::control::base::MotorMonkeyType motor_types, int cancoder_id,
-    steer_conv_unit steer_reduction, drive_conv_unit drive_reduction,
-    std::string cancoder_bus)
+SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
+    SwerveModuleUniqueConfig unique_config,
+    SwerveModuleCommonConfig common_config)
     : frc846::robot::GenericSubsystem<SwerveModuleReadings, SwerveModuleTarget>(
-          parent, loc),
+          parent, unique_config.loc),
       drive_{motor_types, drive_params},
       steer_{motor_types, steer_params},
       cancoder_{cancoder_id, cancoder_bus} {
@@ -112,13 +109,13 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
     Graph("invert_drive", invert_drive);
 
     units::dimensionless::scalar_t cosine_comp =
-        units::math::cos(frc846::math::CoterminalDifference(
-            GetReadings().steer_pos, ol_target->steer));
+        units::math::cos(steer_dir - GetReadings().steer_pos);
 
     Graph("cosine_comp", cosine_comp.to<double>());
 
     drive_helper_.WriteDC(
-        cosine_comp * (invert_drive ? -1 : 1) * ol_target->drive);
+        cosine_comp *
+        ol_target->drive);  // Ignore invert_drive, cosine comp should handle it
 
     if (std::abs(ol_target->drive) > 0.002) {
       steer_helper_.WritePosition(ol_target->steer);

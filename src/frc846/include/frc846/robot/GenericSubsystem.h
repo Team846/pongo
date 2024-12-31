@@ -62,6 +62,7 @@ public:
   register with WPILib.
   */
   void InitByParent() {
+    SetName(name());
     Log("Initializing subsystem (by parent)");
     init_ = true;
   }

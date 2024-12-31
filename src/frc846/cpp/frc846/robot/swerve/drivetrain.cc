@@ -4,19 +4,23 @@ namespace frc846::robot::swerve {
 
 DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"}, configs_{configs}, modules_{} {
-  if (configs_.navX_connection_mode == NavX_connection_type::kSPI) {
-    navX_ = new AHRS{frc::SPI::Port::kMXP};
-  } else if (configs_.navX_connection_mode == NavX_connection_type::kSerial) {
-    navX_ = new AHRS{frc::SerialPort::Port::kMXP};
-  } else {
-    throw std::runtime_error("Invalid navX connection mode");
-  }
+  // if (configs_.navX_connection_mode == NavX_connection_type::kSPI) {
+  //   navX_ = new AHRS{frc::SPI::Port::kMXP};
+  // } else if (configs_.navX_connection_mode == NavX_connection_type::kSerial)
+  // {
+  //   navX_ = new AHRS{frc::SerialPort::Port::kMXP};
+  // } else {
+  //   throw std::runtime_error("Invalid navX connection mode");
+  // }
 
   // TODO: finish
 
+  std::array<std::string, 4> locations{"FR", "FL", "BL", "BR"};
+  std::array<int, 4> can_ids {}
+
   for (int i = 0; i < 4; i++) {
-    // modules_[i] =
-    //     new SwerveModuleSubsystem{*this, "Module" + std::to_string(i)};
+    modules_[i] =
+        new SwerveModuleSubsystem{*this, "Module" + std::to_string(i)};
   }
 
   RegisterPreference("steer_gains/kP", 0.3);
