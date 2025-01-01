@@ -24,21 +24,11 @@ Contains all configs related to the specific drivetrain in use.
 struct DrivetrainConfigs {
   NavX_connection_type navX_connection_mode;
 
-  int FRD_id;
-  int FRS_id;
-  int FRC_id;
+  SwerveModuleCommonConfig module_common_config;
+  std::array<SwerveModuleUniqueConfig, 4> module_unique_configs;
 
-  int FLD_id;
-  int FLS_id;
-  int FLC_id;
-
-  int BLD_id;
-  int BLS_id;
-  int BLC_id;
-
-  int BRD_id;
-  int BRS_id;
-  int BRC_id;
+  units::inch_t wheelbase_horizontal_dim;
+  units::inch_t wheelbase_forward_dim;
 };
 
 struct DrivetrainReadings {
@@ -84,7 +74,7 @@ private:
   DrivetrainConfigs configs_;
   std::array<SwerveModuleSubsystem*, 4> modules_;
 
-  AHRS* navX_ = new AHRS{frc::SerialPort::Port::kMXP};
+  AHRS navX_;
 
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
 };

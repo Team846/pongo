@@ -1,8 +1,8 @@
 #pragma once
 
 #include "frc846/robot/GenericRobotContainer.h"
-#include "frc846/robot/swerve/drivetrain.h"
 #include "subsystems/abstract/control_input.h"
+#include "subsystems/hardware/DrivetrainConstructor.h"
 #include "subsystems/hardware/leds.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
@@ -10,7 +10,7 @@ public:
   ControlInputSubsystem control_input_{};
   LEDsSubsystem leds_{};
   frc846::robot::swerve::DrivetrainSubsystem drivetrain_{
-      {frc846::robot::swerve::NavX_connection_type::kSerial}};
+      DrivetrainConstructor::getDrivetrainConfigs()};
 
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);

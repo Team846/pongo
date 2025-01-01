@@ -11,11 +11,13 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
     SwerveModuleCommonConfig common_config)
     : frc846::robot::GenericSubsystem<SwerveModuleReadings, SwerveModuleTarget>(
           parent, unique_config.loc),
-      drive_{motor_types, drive_params},
-      steer_{motor_types, steer_params},
-      cancoder_{cancoder_id, cancoder_bus} {
-  drive_helper_.SetConversion(drive_reduction);
-  steer_helper_.SetConversion(steer_reduction);
+      drive_{common_config.motor_types,
+          getMotorParams(unique_config, common_config).first},
+      steer_{common_config.motor_types,
+          getMotorParams(unique_config, common_config).second},
+      cancoder_{unique_config.cancoder_id, common_config.bus} {
+  drive_helper_.SetConversion(common_config.drive_reduction);
+  steer_helper_.SetConversion(common_config.steer_reduction);
 
   drive_helper_.bind(&drive_);
   steer_helper_.bind(&steer_);
@@ -24,6 +26,27 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
   cancoder_.GetAbsolutePosition().SetUpdateFrequency(20_Hz);
 
   RegisterPreference("cancoder_offset_", 0.0_deg);
+}
+
+std::pair<frc846::control::config::MotorConstructionParameters,
+    frc846::control::config::MotorConstructionParameters>
+SwerveModuleSubsystem::getMotorParams(SwerveModuleUniqueConfig unique_config,
+    SwerveModuleCommonConfig common_config) {
+  frc846::control::config::MotorConstructionParameters drive_params =
+      common_config.drive_params;
+  frc846::control::config::MotorConstructionParameters steer_params =
+      common_config.steer_params;
+
+  drive_params.can_id = unique_config.drive_id;
+  steer_params.can_id = unique_config.steer_id;
+
+  drive_params.bus = common_config.bus;
+  steer_params.bus = common_config.bus;
+
+  drive_params.circuit_resistance = unique_config.circuit_resistance;
+  steer_params.circuit_resistance = unique_config.circuit_resistance;
+
+  return {drive_params, steer_params};
 }
 
 void SwerveModuleSubsystem::Setup() {
@@ -48,7 +71,8 @@ SwerveModuleTarget SwerveModuleSubsystem::ZeroTarget() const {
 
 bool SwerveModuleSubsystem::VerifyHardware() {
   bool ok = true;
-  // TODO: Add a verify hardware to motor controllers.
+  FRC846_VERIFY(drive_.VerifyConnected(), ok, "Could not verify drive motor");
+  FRC846_VERIFY(steer_.VerifyConnected(), ok, "Could not verify steer motor");
   return ok;
 }
 
@@ -86,11 +110,11 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   readings.drive_pos = drive_helper_.GetPosition();
   readings.steer_pos = steer_helper_.GetPosition();
 
-  Graph("drive_motor_vel", readings.vel);
-  Graph("drive_motor_pos", readings.drive_pos);
-  Graph("steer_motor_pos", readings.steer_pos);
+  Graph("readings/drive_motor_vel", readings.vel);
+  Graph("readings/drive_motor_pos", readings.drive_pos);
+  Graph("readings/steer_motor_pos", readings.steer_pos);
 
-  Graph("cancoder_pos",
+  Graph("readings/cancoder_pos",
       units::degree_t(cancoder_.GetAbsolutePosition().GetValue()));
 
   return readings;
@@ -99,19 +123,19 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   if (SwerveModuleOLControlTarget* ol_target =
           std::get_if<SwerveModuleOLControlTarget>(&target)) {
-    Graph("ol_drive_target", ol_target->drive);
-    Graph("ol_steer_target", ol_target->steer);
+    Graph("target/ol_drive_target", ol_target->drive);
+    Graph("target/ol_steer_target", ol_target->steer);
 
     auto [steer_dir, invert_drive] =
         calculateSteerPosition(GetReadings().steer_pos, ol_target->steer);
 
-    Graph("steer_dir", steer_dir);
-    Graph("invert_drive", invert_drive);
+    Graph("target/steer_dir", steer_dir);
+    Graph("target/invert_drive", invert_drive);
 
     units::dimensionless::scalar_t cosine_comp =
         units::math::cos(steer_dir - GetReadings().steer_pos);
 
-    Graph("cosine_comp", cosine_comp.to<double>());
+    Graph("target/cosine_comp", cosine_comp.to<double>());
 
     drive_helper_.WriteDC(
         cosine_comp *
@@ -123,8 +147,8 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   } else if (SwerveModuleTorqueControlTarget* torque_target =
                  std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
     // TODO: finish torque control for drivetrain
-    Graph("torque_drive_target", torque_target->drive);
-    Graph("torque_steer_target", torque_target->steer);
+    Graph("target/torque_drive_target", torque_target->drive);
+    Graph("target/torque_steer_target", torque_target->steer);
   } else {
     throw std::runtime_error("SwerveModuleTarget was not of a valid type");
   }

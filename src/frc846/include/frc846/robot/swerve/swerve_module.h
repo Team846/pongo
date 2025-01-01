@@ -41,6 +41,8 @@ struct SwerveModuleUniqueConfig {
   int cancoder_id;
   int drive_id;
   int steer_id;
+
+  frc846::wpilib::unit_ohm circuit_resistance;
 };
 
 using steer_conv_unit = units::dimensionless::scalar_t;
@@ -99,6 +101,17 @@ public:
   void SetSteerGains(frc846::control::base::MotorGains gains);
 
 private:
+  /*
+  getMotorParams()
+
+  Static helper function modifies the drive and steer motor parameters provided
+  in the common configuration using the unique configuration.
+  */
+  static std::pair<frc846::control::config::MotorConstructionParameters,
+      frc846::control::config::MotorConstructionParameters>
+  getMotorParams(SwerveModuleUniqueConfig unique_config,
+      SwerveModuleCommonConfig common_config);
+
   SwerveModuleReadings ReadFromHardware() override;
 
   void WriteToHardware(SwerveModuleTarget target) override;

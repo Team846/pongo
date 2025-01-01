@@ -17,8 +17,6 @@ Contains all parameters necessary to construct a motor controller.
 @param inverted: Whether the motor controller is inverted.
 @param brake_mode: Whether the motor controller is in brake mode.
 @param motor_current_limit: The current limit maintained onboard the ESC.
-@param threshold_time: The time threshold for the current limit specified
-earlier.
 @param smart_current_limit: The smart current limit for the motor controller.
 @param voltage_compensation: The voltage compensation of the motor controller.
 @param circuit_resistance: The circuit resistance leading upto motor controller.
