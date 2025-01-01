@@ -5,12 +5,12 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
+#include "frc846/base/Loggable.h"
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/base/Loggable.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
 
@@ -98,6 +98,7 @@ private:
   static size_t slot_counter_;
   static std::map<size_t, frc846::control::base::MotorMonkeyType>
       slot_id_to_type_;
+  static std::map<size_t, bool> slot_id_to_sim_;
 
   static frc846::control::hardware::IntermediateController*
       controller_registry[CONTROLLER_REGISTRY_SIZE];
