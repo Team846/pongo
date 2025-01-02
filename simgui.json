@@ -1,0 +1,13 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/get_prune_list": "Command",
+      "/SmartDashboard/prune_prefs": "Command",
+      "/SmartDashboard/verify_hardware": "Command"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

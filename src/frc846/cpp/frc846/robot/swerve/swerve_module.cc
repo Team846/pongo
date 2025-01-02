@@ -50,17 +50,15 @@ SwerveModuleSubsystem::getMotorParams(SwerveModuleUniqueConfig unique_config,
 }
 
 void SwerveModuleSubsystem::Setup() {
+  drive_.Setup();
   drive_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame});
-
-  drive_.Setup();
   drive_helper_.SetPosition(0_ft);
 
+  steer_.Setup();
   steer_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame});
-
-  steer_.Setup();
 
   ZeroWithCANcoder();
 }

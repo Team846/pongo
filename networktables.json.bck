@@ -1,0 +1,58 @@
+[
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_current_limit (A)",
+    "type": "double",
+    "value": 120.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_current_limit (A)",
+    "type": "double",
+    "value": 120.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_smart_current_limit (A)",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_smart_current_limit (A)",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_voltage_compensation (V)",
+    "type": "double",
+    "value": 12.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/FR/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

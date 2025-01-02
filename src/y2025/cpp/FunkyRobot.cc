@@ -63,7 +63,7 @@ void FunkyRobot::InitTest() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
-  // configureSignalHandlers();
+  if (frc::RobotBase::IsSimulation()) configureSignalHandlers();
   return frc::StartRobot<FunkyRobot>();
 }
 #endif
