@@ -45,7 +45,7 @@ void handler(int sig) {
   } else {
     std::cerr << "? Unknown Exception Occured" << std::endl;
   }
-  // exit(1);
+  exit(1);
 }
 #endif
 

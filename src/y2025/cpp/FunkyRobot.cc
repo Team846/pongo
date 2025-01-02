@@ -10,7 +10,7 @@
 #include <frc2/command/button/Trigger.h>
 #include <hal/Notifier.h>
 
-// #include "commands/teleop/drive_command.h"
+#include "commands/teleop/drive_command.h"
 #include "commands/teleop/leds_command.h"
 #include "control_triggers.h"
 #include "field.h"
@@ -32,13 +32,12 @@ void FunkyRobot::OnInitialize() {
   // }
 
   // // Add dashboard buttons
-  // frc::SmartDashboard::PutData(
-  //     "zero_modules", new frc846::ntinf::NTAction(
-  //                         [this] { container_.drivetrain_.ZeroModules(); }));
-  // frc::SmartDashboard::PutData("zero_bearing",
-  //                              new frc846::ntinf::NTAction([this] {
-  //                                container_.drivetrain_.SetBearing(0_deg);
-  //                              }));
+  frc::SmartDashboard::PutData("set_cancoder_offsets",
+      new frc846::wpilib::NTAction(
+          [this] { container_.drivetrain_.SetCANCoderOffsets(); }));
+  frc::SmartDashboard::PutData(
+      "zero_bearing", new frc846::wpilib::NTAction(
+                          [this] { container_.drivetrain_.ZeroBearing(); }));
 
   // frc::SmartDashboard::PutData(
   //     "zero_odometry", new frc846::ntinf::NTAction(
@@ -51,7 +50,7 @@ void FunkyRobot::OnDisable() {
 }
 
 void FunkyRobot::InitTeleop() {
-  // container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
+  container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
   container_.leds_.SetDefaultCommand(LEDsCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
@@ -63,7 +62,7 @@ void FunkyRobot::InitTest() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
-  // configureSignalHandlers();
+  if (frc::RobotBase::IsSimulation()) configureSignalHandlers();
   return frc::StartRobot<FunkyRobot>();
 }
 #endif

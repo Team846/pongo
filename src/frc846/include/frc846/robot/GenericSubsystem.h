@@ -7,13 +7,11 @@
 
 namespace frc846::robot {
 
-#define FRC846_VERIFY(expr, ok, fail_msg)         \
-  do {                                            \
-    if (!(expr)) {                                \
-      ok = false;                                 \
-      Error("Verification failed: {}", fail_msg); \
-    }                                             \
-  } while (0)
+#define FRC846_VERIFY(expr, ok, fail_msg)       \
+  if (!(expr)) {                                \
+    ok = false;                                 \
+    Error("Verification failed: {}", fail_msg); \
+  }
 
 // Non-templated subsystem base class.
 class SubsystemBase : public frc846::base::Loggable {
@@ -54,6 +52,18 @@ public:
   void Init() {
     SetName(name());
     Log("Initializing subsystem");
+    init_ = true;
+  }
+
+  /*
+  InitByParent()
+
+  Initializer function to be called by a parent subsystem only. Will not
+  register with WPILib.
+  */
+  void InitByParent() {
+    SetName(name());
+    Log("Initializing subsystem (by parent)");
     init_ = true;
   }
 

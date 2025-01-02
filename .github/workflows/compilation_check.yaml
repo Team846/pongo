@@ -82,5 +82,8 @@ jobs:
       - name: Install Roborio Toolchain
         run: ./gradlew installRoborioToolchain
 
+      - name: Clear build directory
+        run: ./gradlew clean
+
       - name: Compile code and run tests
-        run: ./gradlew build -PfromCI -PrunningSpotlessCpp
+        run: ./gradlew build -PfromCI --refresh-dependencies
