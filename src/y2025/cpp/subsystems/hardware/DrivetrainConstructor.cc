@@ -1,6 +1,7 @@
 #include "subsystems/hardware/DrivetrainConstructor.h"
 
 #include "frc846/control/calculators/CircuitResistanceCalculator.h"
+#include "frc846/math/constants.h"
 #include "ports.h"
 
 DrivetrainConstructor::DrivetrainConstructor()
@@ -39,7 +40,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BR = 3;
 
   frc846::robot::swerve::drive_conv_unit drive_reduction =
-      (M_PI * wheel_diameter) / 6.12_tr;
+      (frc846::math::constants::geometry::pi * wheel_diameter) / 6.12_tr;
   frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
 
   configs.wheelbase_forward_dim = 26_in;

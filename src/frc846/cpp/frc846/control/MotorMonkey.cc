@@ -17,10 +17,11 @@
 
 namespace frc846::control {
 
-#define CHECK_SLOT_ID()                        \
-  if (slot_id >= CONTROLLER_REGISTRY_SIZE ||   \
-      controller_registry[slot_id] == nullptr) \
-  throw std::runtime_error("Invalid MotorMonkey slot ID")
+#define CHECK_SLOT_ID()                                                      \
+  if (controller_registry[slot_id] == nullptr)                               \
+    throw std::runtime_error(                                                \
+        "Invalid MotorMonkey slot ID: " + std::to_string(slot_id) + " in " + \
+        "[" + __func__ + "]");
 
 #define LOG_IF_ERROR(action_name)                                          \
   {                                                                        \
@@ -35,20 +36,22 @@ namespace frc846::control {
 #define NUM_RETRIES 5
 #define INITIAL_RETRY_DELAY_MS 10
 
-#define SMART_RETRY(action, action_name)                                  \
-  for (int i = 0; i < NUM_RETRIES; i++) {                                 \
-    action;                                                               \
-    hardware::ControllerErrorCodes err =                                  \
-        controller_registry[slot_id]->GetLastErrorCode();                 \
-    if (err == hardware::ControllerErrorCodes::kAllOK)                    \
-      break;                                                              \
-    else {                                                                \
-      loggable_.Warn(                                                     \
-          "Error [{}] while attempting [{}] for slot ID {}. Retrying...", \
-          parseError(err), action_name, slot_id);                         \
-      std::this_thread::sleep_for(                                        \
-          std::chrono::milliseconds(INITIAL_RETRY_DELAY_MS * (1 << i)));  \
-    }                                                                     \
+#define SMART_RETRY(action, action_name)                                    \
+  for (int i = 0; i < NUM_RETRIES; i++) {                                   \
+    action;                                                                 \
+    hardware::ControllerErrorCodes err =                                    \
+        controller_registry[slot_id]->GetLastErrorCode();                   \
+    if (err == hardware::ControllerErrorCodes::kAllOK)                      \
+      break;                                                                \
+    else if (i == NUM_RETRIES - 1) {                                        \
+      loggable_.Error("Failed [{}] for slot ID {}.", action_name, slot_id); \
+    } else {                                                                \
+      loggable_.Warn(                                                       \
+          "Error [{}] while attempting [{}] for slot ID {}. Retrying...",   \
+          parseError(err), action_name, slot_id);                           \
+      std::this_thread::sleep_for(                                          \
+          std::chrono::milliseconds(INITIAL_RETRY_DELAY_MS * (1 << i)));    \
+    }                                                                       \
   }
 
 frc846::base::Loggable MotorMonkey::loggable_{"MotorMonkey"};
@@ -106,7 +109,10 @@ size_t MotorMonkey::ConstructController(
   frc846::control::hardware::IntermediateController* this_controller = nullptr;
 
   if (frc::RobotBase::IsSimulation() &&
-      MOTOR_SIM_LEVEL == MOTOR_SIM_LEVEL_SIM_HARDWARE) {
+      MOTOR_SIM_LEVEL == MOTOR_SIM_LEVEL_SIM_PHYSICS) {
+    std::cout << "Constructing simulation controller" << std::endl;
+    loggable_.Log(
+        "Constructing physics simulation controller for slot ID {}.", slot_id);
     slot_id_to_sim_[slot_id] = true;
     this_controller = controller_registry[slot_id] =
         new frc846::control::simulation::MCSimulator{
@@ -126,9 +132,13 @@ size_t MotorMonkey::ConstructController(
     this_controller = controller_registry[slot_id] =
         new frc846::control::hardware::SparkFLEX_interm{
             params.can_id, params.max_wait_time};
+  } else {
+    throw std::runtime_error("Invalid MotorMonkeyType [" +
+                             std::to_string((int)type) +
+                             "]: not constructing controller");
   }
 
-  if (this_controller == nullptr) return slot_id;
+  if (this_controller == nullptr) { return slot_id; }
 
   SMART_RETRY(this_controller->SetInverted(params.inverted), "SetInverted");
   LOG_IF_ERROR("SetInverted");

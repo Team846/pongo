@@ -104,8 +104,6 @@ private:
   std::optional<config::SoftLimits> soft_limits_;
 
   size_t slot_id_ = 999;
-
-  bool called_enable_status_frames_ = false;
 };
 
 }  // namespace frc846::control
