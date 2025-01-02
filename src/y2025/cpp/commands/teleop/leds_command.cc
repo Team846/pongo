@@ -9,8 +9,6 @@ LEDsCommand::LEDsCommand(RobotContainer &container)
 void LEDsCommand::OnInit() {}
 
 void LEDsCommand::Periodic() {
-  ControlInputReadings ci_readings_{container_.control_input_.GetReadings()};
-
   LEDsState lstate{};
 
   container_.leds_.SetTarget({lstate});

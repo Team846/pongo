@@ -4,12 +4,14 @@
 #include <rev/CANSparkMax.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <vector>
 
 #include "frc846/base/Loggable.h"
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
+#include "frc846/control/config/status_frames.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
@@ -39,6 +41,14 @@ public:
   */
   static size_t ConstructController(frc846::control::base::MotorMonkeyType type,
       frc846::control::config::MotorConstructionParameters params);
+
+  /*
+  EnableStatusFrames()
+
+  Enables specific status frames for a motor controller. Disables all others.
+  */
+  static void EnableStatusFrames(
+      size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames);
 
   /*
   GetBatteryVoltage()

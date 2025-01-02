@@ -11,7 +11,7 @@
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/hardware/IntermediateController.h"
-#include "frc846/wpilib/846_units.h"
+#include "frc846/wpilib/units.h"
 
 namespace frc846::control::simulation {
 

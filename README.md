@@ -75,7 +75,7 @@ If unfamiliar with GitHub, go through tutorials in the [Using Git](#using-git) s
 
 #### CppCheck
 
-- Download [CppCheck](https://sourceforge.net/projects/cppcheck/files/1.86/cppcheck-1.86-x64-Setup.msi/download).
+- Download [CppCheck](https://github.com/danmar/cppcheck/releases/download/2.16.0/cppcheck-2.16.0-x64-Setup.msi).
 - If "Add CppCheck to Path" is an option during setup process, select YES.
   - If not, add `C:\Program Files\Cppcheck` to PATH
   - Read [this](https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho) for more information on adding files to PATH.
@@ -178,9 +178,9 @@ To undo the going back:
 
 
 ## CppCheck Warnings
+
 ```
-src\frc846\cpp\frc846\math\collection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
+src\frc846\cpp\frc846\robot\swerve\drivetrain.cc:152:64: warning: Variable 'accel_target' is assigned a value that is never used. [unreadVariable]
 src\frc846\cpp\frc846\math\collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src\frc846\cpp\frc846\math\collection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
 src\frc846\cpp\frc846\math\collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```

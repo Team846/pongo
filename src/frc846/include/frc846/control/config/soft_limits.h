@@ -1,6 +1,7 @@
 #pragma once
 
 #include <units/angular_velocity.h>
+
 #include <cassert>
 
 namespace frc846::control::config {
