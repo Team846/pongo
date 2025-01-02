@@ -9,8 +9,10 @@ class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
   ControlInputSubsystem control_input_{};
   LEDsSubsystem leds_{};
+
+  DrivetrainConstructor drivetrain_constructor_{};
   frc846::robot::swerve::DrivetrainSubsystem drivetrain_{
-      DrivetrainConstructor::getDrivetrainConfigs()};
+      drivetrain_constructor_.getDrivetrainConfigs()};
 
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
