@@ -5,6 +5,7 @@
 #include <units/angular_acceleration.h>
 
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
 #include "frc846/robot/swerve/swerve_module.h"
@@ -29,6 +30,8 @@ struct DrivetrainConfigs {
 
   units::inch_t wheelbase_horizontal_dim;
   units::inch_t wheelbase_forward_dim;
+
+  units::feet_per_second_t max_speed;
 };
 
 struct DrivetrainReadings {
@@ -38,6 +41,7 @@ struct DrivetrainReadings {
 // Open-loop control, for use during teleop
 struct DrivetrainOLControlTarget {
   frc846::math::VectorND<units::feet_per_second, 2> velocity;
+  units::degrees_per_second_t angular_velocity;
 };
 
 // Allows for acceleration-based control of the drivetrain
@@ -66,6 +70,10 @@ public:
 
   bool VerifyHardware() override;
 
+  void ZeroBearing();
+
+  void SetCANCoderOffsets();
+
 private:
   DrivetrainReadings ReadFromHardware() override;
 
@@ -77,6 +85,7 @@ private:
   AHRS navX_;
 
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
+  frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;
 };
 
 }  // namespace frc846::robot::swerve

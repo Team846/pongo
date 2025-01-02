@@ -195,7 +195,9 @@ public:
   units::degree_t angle(bool angleIsBearing = false) const {
     assert(N == 2 && "Angle can only be calculated for 2D vectors.");
     if (angleIsBearing) { return units::math::atan2(data[0], data[1]); }
-    return units::math::atan2(data[1], data[0]);
+    try {
+      return units::math::atan2(data[1], data[0]);
+    } catch (std::exception& exc) { return 0_deg; }
   }
 
   // Returns the angle between this vector and another

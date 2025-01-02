@@ -180,9 +180,7 @@ To undo the going back:
 ## CppCheck Warnings
 
 ```
-src\frc846\cpp\frc846\robot\swerve\drivetrain.cc:94:44: warning: Variable 'ol_target' is assigned a value that is never used. [unreadVariable]
-src\frc846\cpp\frc846\robot\swerve\drivetrain.cc:108:64: warning: Variable 'accel_target' is assigned a value that is never used. [unreadVariable]
-src\frc846\cpp\frc846\math\collection.cc:11:0: warning: The function 'HorizontalDeadband' is never used. [unusedFunction]
+src\frc846\cpp\frc846\robot\swerve\drivetrain.cc:152:64: warning: Variable 'accel_target' is assigned a value that is never used. [unreadVariable]
 src\frc846\cpp\frc846\math\collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src\frc846\cpp\frc846\math\collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```

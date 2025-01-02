@@ -1,5 +1,6 @@
 #include "frc846/robot/swerve/drivetrain.h"
 
+#include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
 namespace frc846::robot::swerve {
@@ -18,6 +19,15 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/kI", 0.0);
   RegisterPreference("steer_gains/kD", 0.0);
   RegisterPreference("steer_gains/kF", 0.0);
+
+  RegisterPreference("max_speed", 15_fps);
+  RegisterPreference("max_omega", units::degrees_per_second_t{180});
+
+  odometry_.setConstants({});
+  ol_calculator_.setConstants({
+      .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
+      .wheelbase_forward_dim = configs.wheelbase_forward_dim,
+  });
 }
 
 void DrivetrainSubsystem::Setup() {
@@ -35,7 +45,7 @@ void DrivetrainSubsystem::Setup() {
 }
 
 DrivetrainTarget DrivetrainSubsystem::ZeroTarget() const {
-  return DrivetrainOLControlTarget{{0_fps, 0_fps}};
+  return DrivetrainOLControlTarget{{0_fps, 0_fps}, 0_deg_per_s};
 }
 
 bool DrivetrainSubsystem::VerifyHardware() {
@@ -45,6 +55,36 @@ bool DrivetrainSubsystem::VerifyHardware() {
   }
   FRC846_VERIFY(ok, ok, "At least one module failed verification");
   return ok;
+}
+
+void DrivetrainSubsystem::ZeroBearing() {
+  if (!is_initialized()) return;
+
+  constexpr int kMaxAttempts = 5;
+  constexpr int kSleepTimeMs = 500;
+  for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
+    Log("Gyro zero attempt {}/{}", attempts, kMaxAttempts);
+    if (navX_.IsConnected() && !navX_.IsCalibrating()) {
+      navX_.ZeroYaw();
+      Log("Zeroed bearing");
+
+      for (SwerveModuleSubsystem* module : modules_) {
+        module->ZeroWithCANcoder();
+      }
+      return;
+    }
+
+    Warn("Attempt to zero failed, sleeping {} ms...", kSleepTimeMs);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
+  }
+  Error("Unable to zero after {} attempts", kMaxAttempts);
+}
+
+void DrivetrainSubsystem::SetCANCoderOffsets() {
+  for (SwerveModuleSubsystem* module : modules_) {
+    module->SetCANCoderOffset();
+  }
 }
 
 DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
@@ -90,26 +130,37 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 }
 
 void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
-  // TODO: finish
   if (DrivetrainOLControlTarget* ol_target =
           std::get_if<DrivetrainOLControlTarget>(&target)) {
+    Graph("target/ol_velocity_x", ol_target->velocity[0]);
+    Graph("target/ol_velocity_y", ol_target->velocity[1]);
+    Graph("target/ol_angular_velocity", ol_target->angular_velocity);
+
     units::degree_t bearing = navX_.GetAngle() * 1_deg;
 
-    /*
-    TODO: For each module, find the target direction and speed based on velocity
-    and turn speed. Then, construct a SwerveModuleOLControlTarget and write it
-    to the module.
-    */
+    auto ol_calc_outputs = ol_calculator_.calculate({ol_target->velocity,
+        ol_target->angular_velocity,
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed")});
 
     for (int i = 0; i < 4; i++) {
-      // modules_[i]->SetTarget(module_target);
-      // modules_[i]->UpdateHardware();
+      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/kP"),
+          GetPreferenceValue_double("steer_gains/kI"),
+          GetPreferenceValue_double("steer_gains/kD"),
+          GetPreferenceValue_double("steer_gains/kF")});
+
+      SwerveModuleOLControlTarget module_target{
+          .drive = ol_calc_outputs.drive_outputs[i],
+          .steer = ol_calc_outputs.steer_outputs[i] - bearing};
+      modules_[i]->SetTarget(module_target);
     }
   } else if (DrivetrainAccelerationControlTarget* accel_target =
                  std::get_if<DrivetrainAccelerationControlTarget>(&target)) {
     throw std::runtime_error("Acceleration control not yet implemented");
-    // TODO: finish later
+    // TODO: implement acceleration control for drivetrain
   }
+
+  for (int i = 0; i < 4; i++)
+    modules_[i]->UpdateHardware();
 }
 
 }  // namespace frc846::robot::swerve

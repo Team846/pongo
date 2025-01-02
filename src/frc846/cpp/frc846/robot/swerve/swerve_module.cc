@@ -26,6 +26,11 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
   cancoder_.GetAbsolutePosition().SetUpdateFrequency(20_Hz);
 
   RegisterPreference("cancoder_offset_", 0.0_deg);
+
+  max_speed_ = frc846::control::base::MotorSpecificationPresets::get(
+                   common_config.motor_types)
+                   .free_speed *
+               common_config.drive_reduction;
 }
 
 std::pair<frc846::control::config::MotorConstructionParameters,
@@ -64,7 +69,7 @@ void SwerveModuleSubsystem::Setup() {
 }
 
 SwerveModuleTarget SwerveModuleSubsystem::ZeroTarget() const {
-  return SwerveModuleOLControlTarget{0.0, 0_deg};
+  return SwerveModuleOLControlTarget{0.0_fps, 0_deg};
 }
 
 bool SwerveModuleSubsystem::VerifyHardware() {
@@ -75,7 +80,7 @@ bool SwerveModuleSubsystem::VerifyHardware() {
 }
 
 void SwerveModuleSubsystem::SetCANCoderOffset() {
-  SetCANCoderOffset(GetReadings().steer_pos);
+  SetCANCoderOffset(cancoder_.GetAbsolutePosition().GetValue());
 }
 void SwerveModuleSubsystem::SetCANCoderOffset(units::degree_t offset) {
   SetPreferenceValue("cancoder_offset_", offset);
@@ -135,12 +140,12 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 
     Graph("target/cosine_comp", cosine_comp.to<double>());
 
-    drive_helper_.WriteDC(
-        cosine_comp *
-        ol_target->drive);  // Ignore invert_drive, cosine comp should handle it
+    double drive_duty_cycle = ol_target->drive / max_speed_;
 
-    if (std::abs(ol_target->drive) > 0.002) {
-      steer_helper_.WritePosition(ol_target->steer);
+    drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
+
+    if (std::abs(drive_duty_cycle) > 0.002) {
+      steer_helper_.WritePositionOnController(ol_target->steer);
     }
   } else if (SwerveModuleTorqueControlTarget* torque_target =
                  std::get_if<SwerveModuleTorqueControlTarget>(&target)) {

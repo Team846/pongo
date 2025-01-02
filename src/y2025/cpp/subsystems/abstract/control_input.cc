@@ -6,6 +6,12 @@ ControlInputSubsystem::ControlInputSubsystem()
 
 void ControlInputSubsystem::Setup() {
   RegisterPreference("trigger_threshold", 0.3);
+
+  RegisterPreference("translation_deadband", 0.07);
+  RegisterPreference("translation_exponent", 2);
+
+  RegisterPreference("rotation_deadband", 0.07);
+  RegisterPreference("rotation_exponent", 2);
 }
 
 ControlInputTarget ControlInputSubsystem::ZeroTarget() const {

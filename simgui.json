@@ -4,10 +4,21 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/get_prune_list": "Command",
       "/SmartDashboard/prune_prefs": "Command",
-      "/SmartDashboard/verify_hardware": "Command"
+      "/SmartDashboard/set_cancoder_offsets": "Command",
+      "/SmartDashboard/verify_hardware": "Command",
+      "/SmartDashboard/zero_bearing": "Command"
     }
   },
   "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
+    },
     "visible": true
   }
 }

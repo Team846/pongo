@@ -28,7 +28,7 @@ struct SwerveModuleTorqueControlTarget {
 
 // For open-loop control by DrivetrainSubsystem
 struct SwerveModuleOLControlTarget {
-  double drive;
+  units::feet_per_second_t drive;
   units::degree_t steer;
 };
 
@@ -132,6 +132,8 @@ private:
   frc846::control::HMCHelper<units::degree> steer_helper_;
 
   ctre::phoenix6::hardware::CANcoder cancoder_;
+
+  units::feet_per_second_t max_speed_;
 };
 
 }  // namespace frc846::robot::swerve
