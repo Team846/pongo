@@ -9,6 +9,8 @@
 
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/control/hardware/simulation/MCSimulator.h"
+#include "frc846/control/hardware/simulation/SIMLEVEL.h"
 #include "frc846/math/collection.h"
 
 // TODO: Add dynamic can/power management
@@ -54,6 +56,7 @@ frc846::base::Loggable MotorMonkey::loggable_{"MotorMonkey"};
 size_t MotorMonkey::slot_counter_{0};
 std::map<size_t, frc846::control::base::MotorMonkeyType>
     MotorMonkey::slot_id_to_type_{};
+std::map<size_t, bool> MotorMonkey::slot_id_to_sim_{};
 
 frc846::control::hardware::IntermediateController*
     MotorMonkey::controller_registry[CONTROLLER_REGISTRY_SIZE]{};
@@ -67,9 +70,18 @@ units::volt_t MotorMonkey::battery_voltage{0_V};
 
 void MotorMonkey::Tick() {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
+  // TODO: Improve battery voltage estimation for simulation
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
-    if (controller_registry[i] != nullptr) { controller_registry[i]->Tick(); }
+    if (controller_registry[i] != nullptr) {
+      controller_registry[i]->Tick();
+      if (slot_id_to_sim_[i]) {
+        simulation::MCSimulator* sim =
+            dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
+        sim->SetBatteryVoltage(battery_voltage);
+        sim->SetLoad(load_registry[i]);
+      }
+    }
   }
 }
 
@@ -89,11 +101,17 @@ size_t MotorMonkey::ConstructController(
 
   size_t slot_id = slot_counter_;
   slot_id_to_type_[slot_id] = type;
+  slot_id_to_sim_[slot_id] = false;
 
   frc846::control::hardware::IntermediateController* this_controller = nullptr;
 
-  if (frc::RobotBase::IsSimulation()) {
-    // TODO: implement sim controllers
+  if (frc::RobotBase::IsSimulation() &&
+      MOTOR_SIM_LEVEL == MOTOR_SIM_LEVEL_SIM_HARDWARE) {
+    slot_id_to_sim_[slot_id] = true;
+    this_controller = controller_registry[slot_id] =
+        new frc846::control::simulation::MCSimulator{
+            frc846::control::base::MotorSpecificationPresets::get(type),
+            params.circuit_resistance, params.rotational_inertia};
   } else if (frc846::control::base::MotorMonkeyTypeHelper::is_talon_fx(type)) {
     this_controller = controller_registry[slot_id] =
         new frc846::control::hardware::TalonFX_interm{
@@ -146,11 +164,6 @@ void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {
   CHECK_SLOT_ID();
 
   load_registry[slot_id] = load;
-
-  if (controller_registry[slot_id] != nullptr) {
-    // TODO: If is MCSim, cast then set load
-    // controller_registry[slot_id]->SetLoad(load);
-  }
 }
 
 void MotorMonkey::SetGains(

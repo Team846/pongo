@@ -108,6 +108,7 @@ private:
   static size_t slot_counter_;
   static std::map<size_t, frc846::control::base::MotorMonkeyType>
       slot_id_to_type_;
+  static std::map<size_t, bool> slot_id_to_sim_;
 
   static frc846::control::hardware::IntermediateController*
       controller_registry[CONTROLLER_REGISTRY_SIZE];
