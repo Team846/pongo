@@ -2,14 +2,15 @@
 
 #include <units/torque.h>
 
+#include <optional>
+#include <vector>
+
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
 #include "frc846/control/config/construction_params.h"
-
-#include "frc846/control/config/SoftLimitsHelper.h"
-
-#include <optional>
+#include "frc846/control/config/soft_limits.h"
+#include "frc846/control/config/status_frames.h"
 
 namespace frc846::control {
 
@@ -86,7 +87,10 @@ public:
   // Custom soft limits maintained by HigherMotorController
   void SetSoftLimits(config::SoftLimits soft_limits);
 
-  // verify's if the hardware is connected
+  // Enables specific status frames and disables all others
+  void EnableStatusFrames(std::vector<config::StatusFrame> frames);
+
+  // Verifies if the speed controller is connected and accessible
   bool VerifyConnected();
 
 private:
@@ -100,6 +104,8 @@ private:
   std::optional<config::SoftLimits> soft_limits_;
 
   size_t slot_id_ = 999;
+
+  bool called_enable_status_frames_ = false;
 };
 
 }  // namespace frc846::control

@@ -11,6 +11,10 @@ HigherMotorController::HigherMotorController(
     : mmtype_(mmtype), constr_params_(params) {}
 
 void HigherMotorController::Setup() {
+  if (!called_enable_status_frames_) {
+    throw std::runtime_error(
+        "HigherMotorController: Call EnableStatusFrames before Setup");
+  }
   slot_id_ = frc846::control::MotorMonkey::ConstructController(
       mmtype_, constr_params_);
 }
@@ -104,6 +108,12 @@ void HigherMotorController::SetControllerSoftLimits(
 void HigherMotorController::SetSoftLimits(
     frc846::control::config::SoftLimits soft_limits) {
   soft_limits_ = soft_limits;
+}
+
+void HigherMotorController::EnableStatusFrames(
+    std::vector<frc846::control::config::StatusFrame> frames) {
+  frc846::control::MotorMonkey::EnableStatusFrames(slot_id_, frames);
+  called_enable_status_frames_ = true;
 }
 
 }  // namespace frc846::control

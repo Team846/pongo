@@ -1,4 +1,4 @@
-#include "frc846/control/config/SoftLimitsHelper.h"
+#include "frc846/control/config/soft_limits.h"
 
 namespace frc846::control::config {
 

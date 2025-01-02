@@ -15,7 +15,7 @@ TalonFX hardware.
 */
 class TalonFX_interm : public IntermediateController {
 public:
-  TalonFX_interm(int can_id, std::string bus = "rio",
+  TalonFX_interm(int can_id, std::string bus = "",
       units::millisecond_t max_wait_time = 20_ms);
   /*
   Tick()

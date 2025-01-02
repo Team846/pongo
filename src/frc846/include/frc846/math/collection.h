@@ -21,11 +21,11 @@ double HorizontalDeadband(double input, double x_intercept, double max,
 double VerticalDeadband(double input, double y_intercept, double max,
     double exponent = 1, double sensitivity = 1);
 
-// Returns the smallest difference between two angles
+// Returns the smallest difference between angle to other_angle.
 units::degree_t CoterminalDifference(
     units::degree_t angle, units::degree_t other_angle);
 
-// Returns the smallest sum between two angles.
+// Returns the smallest sum of two angles.
 units::degree_t CoterminalSum(
     units::degree_t angle, units::degree_t other_angle);
 
