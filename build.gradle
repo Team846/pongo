@@ -182,16 +182,15 @@ task runCppcheck(type: Exec) {
             }
         }
 
-        def cppcheckSection = """## CppCheck Warnings\n```\n${reportContent.trim()}\n```\n"""
+        def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.trim()}\n```"
         def readmeFile = file('README.md')
-        def readmeContent = readmeFile.text
+        def readmeContent = readmeFile.text.trim()
 
         if (readmeContent.contains("## CppCheck Warnings")) {
-            readmeContent = readmeContent.substring(0, readmeContent.indexOf("## CppCheck Warnings"))
+            readmeContent = readmeContent.substring(0, readmeContent.indexOf("## CppCheck Warnings")).trim()
         }
 
-        readmeContent += "\n" + cppcheckSection.trim()
-        readmeFile.text = readmeContent
+        readmeFile.text = readmeContent + "\n\n" + cppcheckSection
     }
 }
 

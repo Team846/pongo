@@ -32,6 +32,8 @@ public:
   */
   static void Tick();
 
+  static void WriteMessages();
+
   /*
   ConstructController()
 

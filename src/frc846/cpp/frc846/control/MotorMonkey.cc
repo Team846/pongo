@@ -73,60 +73,55 @@ std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 
 void MotorMonkey::Tick() {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
-  double scale_factor = 1.0;
-  units::ampere_t total_current = 0.0_A;
-  frc846::wpilib::unit_ohm total_resistance{0.0};
-  std::queue<MotorMessage> temp_control = control_messages;
+  WriteMessages();
 
-  while (!temp_control.empty()) {
-    const auto& msg = temp_control.front();
+  for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
+    if (controller_registry[i] != nullptr) { controller_registry[i]->Tick(); }
+  }
+}
+
+void MotorMonkey::WriteMessages() {
+  frc846::wpilib::unit_ohm total_resistance{0.0};
+  units::ampere_t total_current = 0.0_A;
+  std::queue<MotorMessage> temp_messages = control_messages;
+  double scale_factor = 1.0;
+
+  while (!temp_messages.empty()) {
+    const auto& msg = temp_messages.front();
     auto type = slot_id_to_type_[msg.slot_id];
+    auto velocity = controller_registry[msg.slot_id]->GetVelocity();
+    double load = load_registry[msg.slot_id].to<double>();
+    auto gains = gains_registry[msg.slot_id];
     total_resistance += circuit_resistance_registry[msg.slot_id];
+    double duty_cycle = 0.0;
 
     switch (msg.type) {
-    case MotorMessage::Type::DC: {
-      double duty_cycle = std::get<double>(msg.value);
-      total_current += frc846::control::calculators::CurrentTorqueCalculator::
-          predict_current_draw(duty_cycle,
-              controller_registry[msg.slot_id]->GetVelocity(), battery_voltage,
-              circuit_resistance_registry[msg.slot_id], type);
+    case MotorMessage::Type::DC:
+      duty_cycle = std::get<double>(msg.value);
       break;
-    }
     case MotorMessage::Type::Position: {
-      double duty_cycle = std::clamp(
-          (controller_registry[msg.slot_id]->GetPosition() -
-              std::get<units::angle::radian_t>(msg.value))
-                      .to<double>() *
-                  gains_registry[msg.slot_id].kP +
-              controller_registry[msg.slot_id]->GetVelocity().to<double>() *
-                  gains_registry[msg.slot_id].kD,
+      duty_cycle = std::clamp(
+          gains.calculate((controller_registry[msg.slot_id]->GetPosition() -
+                              std::get<units::radian_t>(msg.value))
+                              .to<double>(),
+              0.0, velocity.to<double>(), load),
           -1.0, 1.0);
-      total_current += frc846::control::calculators::CurrentTorqueCalculator::
-          predict_current_draw(duty_cycle,
-              controller_registry[msg.slot_id]->GetVelocity(), battery_voltage,
-              circuit_resistance_registry[msg.slot_id], type);
       break;
     }
     case MotorMessage::Type::Velocity: {
-      double duty_cycle = std::clamp(
-          (controller_registry[msg.slot_id]->GetVelocity() -
-              std::get<units::angular_velocity::radians_per_second_t>(
-                  msg.value))
-                      .to<double>() *
-                  gains_registry[msg.slot_id].kP +
-              gains_registry[msg.slot_id].kFF *
-                  std::get<units::angular_velocity::radians_per_second_t>(
-                      msg.value)
-                      .to<double>(),
+      duty_cycle = std::clamp(
+          gains.calculate(
+              (velocity - std::get<units::radians_per_second_t>(msg.value))
+                  .to<double>(),
+              0.0, 0.0, load),
           -1.0, 1.0);
-      total_current += frc846::control::calculators::CurrentTorqueCalculator::
-          predict_current_draw(duty_cycle,
-              controller_registry[msg.slot_id]->GetVelocity(), battery_voltage,
-              circuit_resistance_registry[msg.slot_id], type);
       break;
     }
     }
-    temp_control.pop();
+    total_current += frc846::control::calculators::CurrentTorqueCalculator::
+        predict_current_draw(duty_cycle, velocity, battery_voltage,
+            circuit_resistance_registry[msg.slot_id], type);
+    temp_messages.pop();
   }
 
   units::volt_t voltage_drop = total_current * total_resistance;
@@ -138,33 +133,36 @@ void MotorMonkey::Tick() {
 
   while (!control_messages.empty()) {
     const auto& msg = control_messages.front();
+    auto* controller = controller_registry[msg.slot_id];
     [&, slot_id = msg.slot_id]() {
       switch (msg.type) {
       case MotorMessage::Type::DC: {
-        double duty_cycle = std::get<double>(msg.value) * scale_factor;
-        controller_registry[slot_id]->WriteDC(duty_cycle);
-        LOG_IF_ERROR("WriteDC");
+        double dc = std::get<double>(msg.value) * scale_factor;
+        if (!controller->IsDuplicateControlMessage(dc)) {
+          controller->WriteDC(dc);
+          LOG_IF_ERROR("WriteDC");
+        }
         break;
       }
       case MotorMessage::Type::Position: {
-        controller_registry[slot_id]->WritePosition(
-            std::get<units::radian_t>(msg.value));
-        LOG_IF_ERROR("WritePosition");
+        auto pos = std::get<units::radian_t>(msg.value);
+        if (!controller->IsDuplicateControlMessage(pos)) {
+          controller->WritePosition(pos);
+          LOG_IF_ERROR("WritePosition");
+        }
         break;
       }
       case MotorMessage::Type::Velocity: {
-        controller_registry[slot_id]->WriteVelocity(
-            std::get<units::radians_per_second_t>(msg.value));
-        LOG_IF_ERROR("WriteVelocity");
+        auto vel = std::get<units::radians_per_second_t>(msg.value);
+        if (!controller->IsDuplicateControlMessage(vel)) {
+          controller->WriteVelocity(vel);
+          LOG_IF_ERROR("WriteVelocity");
+        }
         break;
       }
       }
     }();
     control_messages.pop();
-  }
-
-  for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
-    if (controller_registry[i] != nullptr) { controller_registry[i]->Tick(); }
   }
 }
 
@@ -259,17 +257,20 @@ void MotorMonkey::SetGains(
 
 void MotorMonkey::WriteDC(size_t slot_id, double duty_cycle) {
   CHECK_SLOT_ID();
+
   control_messages.push({slot_id, MotorMessage::Type::DC, duty_cycle});
 }
 
 void MotorMonkey::WriteVelocity(
     size_t slot_id, units::radians_per_second_t velocity) {
   CHECK_SLOT_ID();
+
   control_messages.push({slot_id, MotorMessage::Type::Velocity, velocity});
 }
 
 void MotorMonkey::WritePosition(size_t slot_id, units::radian_t position) {
   CHECK_SLOT_ID();
+
   control_messages.push({slot_id, MotorMessage::Type::Position, position});
 }
 
