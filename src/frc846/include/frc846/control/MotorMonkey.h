@@ -5,13 +5,13 @@
 
 #include <ctre/phoenix6/TalonFX.hpp>
 
-#include "frc846/control/calculators/CurrentTorqueCalculator.h"
+#include "frc846/base/Loggable.h"
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
+#include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/base/Loggable.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
 
@@ -30,9 +30,15 @@ public:
 
   Updates all motor controllers. Should be called each loop.
   */
-  static void Tick();
+  static void Tick(units::ampere_t max_draw);
 
-  static void WriteMessages();
+  /*
+  WriteMessages()
+
+  Writes all messages in the message queue to the motor controllers. Also,
+  dynamically manages current draw and drops redundant messages.
+  */
+  static void WriteMessages(units::ampere_t max_draw);
 
   /*
   ConstructController()

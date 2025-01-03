@@ -5,12 +5,11 @@
 #include <rev/CANSparkFlex.h>
 #include <rev/CANSparkMax.h>
 
-#include "frc846/control/hardware/TalonFX_interm.h"
-#include "frc846/control/hardware/SparkMXFX_interm.h"
-
-#include "frc846/math/collection.h"
-
 #include <string>
+
+#include "frc846/control/hardware/SparkMXFX_interm.h"
+#include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/math/collection.h"
 
 // TODO: Add dynamic can/power management
 
@@ -71,28 +70,34 @@ units::volt_t MotorMonkey::battery_voltage{0_V};
 
 std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 
-void MotorMonkey::Tick() {
+void MotorMonkey::Tick(units::ampere_t max_draw) {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
-  WriteMessages();
+  loggable_.Graph("battery_voltage", battery_voltage.to<double>());
+
+  WriteMessages(max_draw);
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
     if (controller_registry[i] != nullptr) { controller_registry[i]->Tick(); }
   }
 }
 
-void MotorMonkey::WriteMessages() {
-  frc846::wpilib::unit_ohm total_resistance{0.0};
+void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   units::ampere_t total_current = 0.0_A;
-  std::queue<MotorMessage> temp_messages = control_messages;
+  std::queue<MotorMessage> temp_messages{control_messages};
+
   double scale_factor = 1.0;
 
   while (!temp_messages.empty()) {
-    const auto& msg = temp_messages.front();
-    auto type = slot_id_to_type_[msg.slot_id];
-    auto velocity = controller_registry[msg.slot_id]->GetVelocity();
-    double load = load_registry[msg.slot_id].to<double>();
-    auto gains = gains_registry[msg.slot_id];
-    total_resistance += circuit_resistance_registry[msg.slot_id];
+    const MotorMessage& msg = temp_messages.front();
+
+    frc846::control::base::MotorMonkeyType motor_type =
+        slot_id_to_type_[msg.slot_id];
+
+    units::feet_per_second_t velocity =
+        controller_registry[msg.slot_id]->GetVelocity();
+
+    frc846::control::base::MotorGains gains = gains_registry[msg.slot_id];
+
     double duty_cycle = 0.0;
 
     switch (msg.type) {
@@ -100,68 +105,81 @@ void MotorMonkey::WriteMessages() {
       duty_cycle = std::get<double>(msg.value);
       break;
     case MotorMessage::Type::Position: {
-      duty_cycle = std::clamp(
-          gains.calculate((controller_registry[msg.slot_id]->GetPosition() -
-                              std::get<units::radian_t>(msg.value))
+      duty_cycle =
+          gains.calculate((std::get<units::radian_t>(msg.value) -
+                              controller_registry[msg.slot_id]->GetPosition())
                               .to<double>(),
-              0.0, velocity.to<double>(), load),
-          -1.0, 1.0);
+              0.0, velocity.to<double>(), 0.0);
+      duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
       break;
     }
     case MotorMessage::Type::Velocity: {
-      duty_cycle = std::clamp(
-          gains.calculate(
-              (velocity - std::get<units::radians_per_second_t>(msg.value))
-                  .to<double>(),
-              0.0, 0.0, load),
-          -1.0, 1.0);
+      duty_cycle = gains.calculate(
+          (std::get<units::radians_per_second_t>(msg.value) - velocity)
+              .to<double>(),
+          0.0, 0.0, 0.0);
+      duty_cycle +=
+          gains.kFF *
+          (std::get<units::radians_per_second_t>(msg.value) /
+              frc846::control::base::MotorSpecificationPresets::get(motor_type)
+                  .free_speed);
+      duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
       break;
     }
+    default:
+      throw std::runtime_error(
+          "Unsupported MotorMessage type in MotorMonkey WriteMessages");
     }
     total_current += frc846::control::calculators::CurrentTorqueCalculator::
         predict_current_draw(duty_cycle, velocity, battery_voltage,
-            circuit_resistance_registry[msg.slot_id], type);
+            circuit_resistance_registry[msg.slot_id], motor_type);
     temp_messages.pop();
   }
 
-  units::volt_t voltage_drop = total_current * total_resistance;
-  units::volt_t predicted_voltage = battery_voltage - voltage_drop;
-
-  if (voltage_drop > 0.0_V && predicted_voltage < 7.0_V) {
-    scale_factor = (battery_voltage - 7_V) / voltage_drop;
+  if (total_current > max_draw && max_draw > 0.0_A) {
+    scale_factor = max_draw / total_current;
+    loggable_.Warn("Brownout predicted. Rescaling outputs by {} to resolve.",
+        scale_factor);
   }
+
+  loggable_.Graph("pred_current_draw", total_current.to<double>());
+  loggable_.Graph("current_scale_factor", scale_factor);
+
+  loggable_.Graph("num_control_messages", control_messages.size());
 
   while (!control_messages.empty()) {
     const auto& msg = control_messages.front();
     auto* controller = controller_registry[msg.slot_id];
-    [&, slot_id = msg.slot_id]() {
-      switch (msg.type) {
-      case MotorMessage::Type::DC: {
-        double dc = std::get<double>(msg.value) * scale_factor;
-        if (!controller->IsDuplicateControlMessage(dc)) {
-          controller->WriteDC(dc);
-          LOG_IF_ERROR("WriteDC");
-        }
-        break;
+
+    size_t slot_id = msg.slot_id;
+
+    switch (msg.type) {
+    case MotorMessage::Type::DC: {
+      double duty_cycle_ = std::get<double>(msg.value) * scale_factor;
+      if (!controller->IsDuplicateControlMessage(duty_cycle_)) {
+        controller->WriteDC(duty_cycle_);
+        LOG_IF_ERROR("WriteDC");
       }
-      case MotorMessage::Type::Position: {
-        auto pos = std::get<units::radian_t>(msg.value);
-        if (!controller->IsDuplicateControlMessage(pos)) {
-          controller->WritePosition(pos);
-          LOG_IF_ERROR("WritePosition");
-        }
-        break;
+      break;
+    }
+    case MotorMessage::Type::Position: {
+      auto pos = std::get<units::radian_t>(msg.value);
+      if (!controller->IsDuplicateControlMessage(pos)) {
+        controller->WritePosition(pos);
+        LOG_IF_ERROR("WritePosition");
       }
-      case MotorMessage::Type::Velocity: {
-        auto vel = std::get<units::radians_per_second_t>(msg.value);
-        if (!controller->IsDuplicateControlMessage(vel)) {
-          controller->WriteVelocity(vel);
-          LOG_IF_ERROR("WriteVelocity");
-        }
-        break;
+      break;
+    }
+    case MotorMessage::Type::Velocity: {
+      auto vel = std::get<units::radians_per_second_t>(msg.value);
+      if (!controller->IsDuplicateControlMessage(vel)) {
+        controller->WriteVelocity(vel);
+        LOG_IF_ERROR("WriteVelocity");
       }
-      }
-    }();
+      break;
+    }
+    }
+
     control_messages.pop();
   }
 }

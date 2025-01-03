@@ -15,6 +15,7 @@
 #include "frc2/command/ParallelDeadlineGroup.h"
 #include "frc2/command/WaitCommand.h"
 #include "frc846/base/Loggable.h"
+#include "frc846/control/MotorMonkey.h"
 #include "frc846/robot/GenericCommand.h"
 #include "frc846/wpilib/NTAction.h"
 #include "frc846/wpilib/time.h"
@@ -30,6 +31,8 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
   FRC_CheckErrorStatus(status, "{}", "InitializeNotifier");
 
   HAL_SetNotifierName(notifier_, "Robot", &status);
+
+  RegisterPreference("permissible_current_draw", 300_A);
 }
 
 GenericRobot::~GenericRobot() {
@@ -172,6 +175,11 @@ void GenericRobot::StartCompetition() {
 
     // Update subsystem hardware
     generic_robot_container_->UpdateHardware();
+
+    // Tick MotorMonkey
+    frc846::control::MotorMonkey::Tick(
+        GetPreferenceValue_unit_type<units::ampere_t>(
+            "permissible_current_draw"));
 
     // Update dashboards
     frc::SmartDashboard::UpdateValues();
