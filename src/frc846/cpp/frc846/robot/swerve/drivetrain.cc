@@ -15,13 +15,15 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
 
-  RegisterPreference("steer_gains/_kP", 0.5);
+  RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
+
+  RegisterPreference("odom_fudge_factor", 0.875);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -32,10 +34,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
 void DrivetrainSubsystem::Setup() {
   frc846::control::base::MotorGains steer_gains{
-      GetPreferenceValue_double("steer_gains/0kP"),
-      GetPreferenceValue_double("steer_gains/0kI"),
-      GetPreferenceValue_double("steer_gains/0kD"),
-      GetPreferenceValue_double("steer_gains/0kF")};
+      GetPreferenceValue_double("steer_gains/_kP"),
+      GetPreferenceValue_double("steer_gains/_kI"),
+      GetPreferenceValue_double("steer_gains/_kD"),
+      GetPreferenceValue_double("steer_gains/_kF")};
   for (SwerveModuleSubsystem* module : modules_) {
     module->InitByParent();
     module->Setup();
@@ -115,11 +117,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_.calculate({bearing, steer_positions, drive_positions})
-              .position,
+      .position = odometry_
+                      .calculate({bearing, steer_positions, drive_positions,
+                          GetPreferenceValue_double("odom_fudge_factor")})
+                      .position,
       .bearing = bearing,
-      .velocity = velocity};
+      .velocity = velocity,
+  };
 
   // TODO: consider bearing simulation
 
@@ -143,10 +147,10 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
         GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed")});
 
     for (int i = 0; i < 4; i++) {
-      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/0kP"),
-          GetPreferenceValue_double("steer_gains/0kI"),
-          GetPreferenceValue_double("steer_gains/0kD"),
-          GetPreferenceValue_double("steer_gains/0kF")});
+      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/_kP"),
+          GetPreferenceValue_double("steer_gains/_kI"),
+          GetPreferenceValue_double("steer_gains/_kD"),
+          GetPreferenceValue_double("steer_gains/_kF")});
 
       SwerveModuleOLControlTarget module_target{
           .drive = ol_calc_outputs.drive_outputs[i],

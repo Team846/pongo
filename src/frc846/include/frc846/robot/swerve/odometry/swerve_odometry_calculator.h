@@ -16,6 +16,7 @@ struct SwerveOdometryInputs {
   units::degree_t bearing;
   std::array<units::degree_t, 4> steer_pos;
   frc846::math::VectorND<units::inch, 4> drive_pos;
+  double odom_ff_;
 };
 
 struct SwerveOdometryOutput {
