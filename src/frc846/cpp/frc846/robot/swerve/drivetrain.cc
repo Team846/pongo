@@ -15,10 +15,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
 
-  RegisterPreference("steer_gains/kP", 0.3);
-  RegisterPreference("steer_gains/kI", 0.0);
-  RegisterPreference("steer_gains/kD", 0.0);
-  RegisterPreference("steer_gains/kF", 0.0);
+  RegisterPreference("steer_gains/_kP", 0.5);
+  RegisterPreference("steer_gains/_kI", 0.0);
+  RegisterPreference("steer_gains/_kD", 0.0);
+  RegisterPreference("steer_gains/_kF", 0.0);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
@@ -32,10 +32,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
 void DrivetrainSubsystem::Setup() {
   frc846::control::base::MotorGains steer_gains{
-      GetPreferenceValue_double("steer_gains/kP"),
-      GetPreferenceValue_double("steer_gains/kI"),
-      GetPreferenceValue_double("steer_gains/kD"),
-      GetPreferenceValue_double("steer_gains/kF")};
+      GetPreferenceValue_double("steer_gains/0kP"),
+      GetPreferenceValue_double("steer_gains/0kI"),
+      GetPreferenceValue_double("steer_gains/0kD"),
+      GetPreferenceValue_double("steer_gains/0kF")};
   for (SwerveModuleSubsystem* module : modules_) {
     module->InitByParent();
     module->Setup();
@@ -139,18 +139,18 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
     units::degree_t bearing = navX_.GetAngle() * 1_deg;
 
     auto ol_calc_outputs = ol_calculator_.calculate({ol_target->velocity,
-        ol_target->angular_velocity,
+        ol_target->angular_velocity, bearing,
         GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed")});
 
     for (int i = 0; i < 4; i++) {
-      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/kP"),
-          GetPreferenceValue_double("steer_gains/kI"),
-          GetPreferenceValue_double("steer_gains/kD"),
-          GetPreferenceValue_double("steer_gains/kF")});
+      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/0kP"),
+          GetPreferenceValue_double("steer_gains/0kI"),
+          GetPreferenceValue_double("steer_gains/0kD"),
+          GetPreferenceValue_double("steer_gains/0kF")});
 
       SwerveModuleOLControlTarget module_target{
           .drive = ol_calc_outputs.drive_outputs[i],
-          .steer = ol_calc_outputs.steer_outputs[i] - bearing};
+          .steer = ol_calc_outputs.steer_outputs[i]};
       modules_[i]->SetTarget(module_target);
     }
   } else if (DrivetrainAccelerationControlTarget* accel_target =
