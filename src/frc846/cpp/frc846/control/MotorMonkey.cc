@@ -81,7 +81,7 @@ void MotorMonkey::Tick(units::ampere_t max_draw) {
   loggable_.Graph("battery_voltage", battery_voltage.to<double>());
 
   WriteMessages(max_draw);
-  
+
   // TODO: Improve battery voltage estimation for simulation
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
@@ -219,7 +219,6 @@ size_t MotorMonkey::ConstructController(
   slot_id_to_type_[slot_id] = type;
   slot_id_to_sim_[slot_id] = false;
   circuit_resistance_registry[slot_id] = params.circuit_resistance;
-
 
   frc846::control::hardware::IntermediateController* this_controller = nullptr;
 
