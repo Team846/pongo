@@ -20,6 +20,7 @@ struct SwerveOpenLoopCalculatorConstants {
 struct SwerveOpenLoopCalculatorInputs {
   frc846::math::VectorND<units::feet_per_second, 2> translation_target;
   units::degrees_per_second_t rotation_target;
+  units::degree_t bearing;
   units::feet_per_second_t max_speed;
 };
 

@@ -82,17 +82,17 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           num_connectors_BR)};
 
   frc846::robot::swerve::SwerveModuleUniqueConfig FR_config{"FR",
-      ports::drivetrain_::kFRDrive_CANID, ports::drivetrain_::kFRSteer_CANID,
-      ports::drivetrain_::kFRCANCoder_CANID, wire_resistance_FR};
+      ports::drivetrain_::kFRCANCoder_CANID, ports::drivetrain_::kFRDrive_CANID,
+      ports::drivetrain_::kFRSteer_CANID, wire_resistance_FR};
   frc846::robot::swerve::SwerveModuleUniqueConfig FL_config{"FL",
-      ports::drivetrain_::kFLDrive_CANID, ports::drivetrain_::kFLSteer_CANID,
-      ports::drivetrain_::kFLCANCoder_CANID, wire_resistance_FL};
+      ports::drivetrain_::kFLCANCoder_CANID, ports::drivetrain_::kFLDrive_CANID,
+      ports::drivetrain_::kFLSteer_CANID, wire_resistance_FL};
   frc846::robot::swerve::SwerveModuleUniqueConfig BL_config{"BL",
-      ports::drivetrain_::kBLDrive_CANID, ports::drivetrain_::kBLSteer_CANID,
-      ports::drivetrain_::kBLCANCoder_CANID, wire_resistance_BL};
+      ports::drivetrain_::kBLCANCoder_CANID, ports::drivetrain_::kBLDrive_CANID,
+      ports::drivetrain_::kBLSteer_CANID, wire_resistance_BL};
   frc846::robot::swerve::SwerveModuleUniqueConfig BR_config{"BR",
-      ports::drivetrain_::kBRDrive_CANID, ports::drivetrain_::kBRSteer_CANID,
-      ports::drivetrain_::kBRCANCoder_CANID, wire_resistance_BR};
+      ports::drivetrain_::kBRCANCoder_CANID, ports::drivetrain_::kBRDrive_CANID,
+      ports::drivetrain_::kBRSteer_CANID, wire_resistance_BR};
 
   frc846::control::config::MotorConstructionParameters drive_params{
       .can_id = 999,  // overriden by unique config
@@ -128,7 +128,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           steer_params,
           frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
           steer_reduction, drive_reduction, ""};
-  configs.module_unique_configs = {FR_config, FL_config, BR_config, BL_config};
+  configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   return configs;
 }

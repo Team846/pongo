@@ -22,7 +22,7 @@ SwerveOpenLoopCalculatorOutput SwerveOpenLoopCalculator::calculate(
         kModuleLocationSigns[i].first * constants_.wheelbase_horizontal_dim,
         kModuleLocationSigns[i].second * constants_.wheelbase_forward_dim};
 
-    units::degree_t rot_direction = location.angle(false);
+    units::degree_t rot_direction = location.angle(false) - 90_deg;
 
     frc846::math::VectorND<units::feet_per_second, 2> rotation{
         inputs.rotation_target * units::math::cos(rot_direction) * radius /
@@ -30,7 +30,8 @@ SwerveOpenLoopCalculatorOutput SwerveOpenLoopCalculator::calculate(
         inputs.rotation_target * units::math::sin(rot_direction) * radius /
             1_rad};
 
-    module_targets[i] = inputs.translation_target + rotation;
+    module_targets[i] =
+        inputs.translation_target.rotate(-inputs.bearing, true) + rotation;
   }
 
   units::feet_per_second_t max_mag = 0_fps;

@@ -95,8 +95,11 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
     auto position = cancoder_.GetAbsolutePosition();
 
     if (position.IsAllGood()) {
-      steer_helper_.SetPosition(-position.GetValue());
-      Log("Zeroed to {}!", -position.GetValue());
+      units::degree_t position_zero =
+          -position.GetValue() +
+          GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
+      steer_helper_.SetPosition(position_zero);
+      Log("Zeroed to {}!", position_zero);
       return;
     }
 
@@ -130,13 +133,13 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
     Graph("target/ol_steer_target", ol_target->steer);
 
     auto [steer_dir, invert_drive] =
-        calculateSteerPosition(GetReadings().steer_pos, ol_target->steer);
+        calculateSteerPosition(ol_target->steer, GetReadings().steer_pos);
 
     Graph("target/steer_dir", steer_dir);
     Graph("target/invert_drive", invert_drive);
 
     units::dimensionless::scalar_t cosine_comp =
-        units::math::cos(steer_dir - GetReadings().steer_pos);
+        units::math::cos(ol_target->steer - GetReadings().steer_pos);
 
     Graph("target/cosine_comp", cosine_comp.to<double>());
 
@@ -145,7 +148,7 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
     drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
 
     if (std::abs(drive_duty_cycle) > 0.002) {
-      steer_helper_.WritePositionOnController(ol_target->steer);
+      steer_helper_.WritePositionOnController(steer_dir);
     }
   } else if (SwerveModuleTorqueControlTarget* torque_target =
                  std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
@@ -159,20 +162,20 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 
 std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
     units::degree_t target_norm, units::degree_t current) {
-  bool reverse = false;
+  bool invert = false;
 
-  units::degree_t diff =
-      frc846::math::CoterminalDifference(target_norm, current);
+  units::degree_t target = target_norm;
 
-  if (diff > 90_deg) {
-    diff -= 180_deg;
-    reverse = true;
-  } else if (diff < -90_deg) {
-    diff += 180_deg;
-    reverse = true;
+  while ((target - current) > 90_deg) {
+    target -= 180_deg;
+    invert = !invert;
+  }
+  while ((target - current) < -90_deg) {
+    target += 180_deg;
+    invert = !invert;
   }
 
-  return {current + diff, reverse};
+  return {target, invert};
 }
 
 void SwerveModuleSubsystem::SetSteerGains(
