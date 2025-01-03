@@ -93,7 +93,7 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
     frc846::control::base::MotorMonkeyType motor_type =
         slot_id_to_type_[msg.slot_id];
 
-    units::feet_per_second_t velocity =
+    units::radians_per_second_t velocity =
         controller_registry[msg.slot_id]->GetVelocity();
 
     frc846::control::base::MotorGains gains = gains_registry[msg.slot_id];
@@ -122,7 +122,8 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
           gains.kFF *
           (std::get<units::radians_per_second_t>(msg.value) /
               frc846::control::base::MotorSpecificationPresets::get(motor_type)
-                  .free_speed);
+                  .free_speed)
+              .to<double>();
       duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
       break;
     }
@@ -145,7 +146,7 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   loggable_.Graph("pred_current_draw", total_current.to<double>());
   loggable_.Graph("current_scale_factor", scale_factor);
 
-  loggable_.Graph("num_control_messages", control_messages.size());
+  loggable_.Graph("num_control_messages", (int)control_messages.size());
 
   while (!control_messages.empty()) {
     const auto& msg = control_messages.front();
