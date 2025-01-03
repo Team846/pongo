@@ -10,6 +10,7 @@
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/base/motor_specs.h"
+#include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/config/status_frames.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
@@ -31,7 +32,15 @@ public:
 
   Updates all motor controllers. Should be called each loop.
   */
-  static void Tick();
+  static void Tick(units::ampere_t max_draw);
+
+  /*
+  WriteMessages()
+
+  Writes all messages in the message queue to the motor controllers. Also,
+  dynamically manages current draw and drops redundant messages.
+  */
+  static void WriteMessages(units::ampere_t max_draw);
 
   /*
   ConstructController()
@@ -117,7 +126,19 @@ private:
       gains_registry[CONTROLLER_REGISTRY_SIZE];
   static units::newton_meter_t load_registry[CONTROLLER_REGISTRY_SIZE];
 
+  static frc846::wpilib::unit_ohm
+      circuit_resistance_registry[CONTROLLER_REGISTRY_SIZE];
+
   static units::volt_t battery_voltage;
+
+  struct MotorMessage {
+    enum class Type { DC, Position, Velocity };
+    size_t slot_id;
+    Type type;
+    std::variant<double, units::radian_t, units::radians_per_second_t> value;
+  };
+
+  static std::queue<MotorMessage> control_messages;
 };
 
 }  // namespace frc846::control

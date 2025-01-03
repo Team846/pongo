@@ -31,6 +31,8 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
   FRC_CheckErrorStatus(status, "{}", "InitializeNotifier");
 
   HAL_SetNotifierName(notifier_, "Robot", &status);
+
+  RegisterPreference("permissible_current_draw", 300_A);
 }
 
 GenericRobot::~GenericRobot() {
@@ -174,8 +176,10 @@ void GenericRobot::StartCompetition() {
     // Update subsystem hardware
     generic_robot_container_->UpdateHardware();
 
-    // Tick Motor Monkey
-    frc846::control::MotorMonkey::Tick();
+    // Tick MotorMonkey
+    frc846::control::MotorMonkey::Tick(
+        GetPreferenceValue_unit_type<units::ampere_t>(
+            "permissible_current_draw"));
 
     // Update dashboards
     frc::SmartDashboard::UpdateValues();
