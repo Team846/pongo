@@ -36,7 +36,7 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 def includeDesktopSupport = false
 
 // Set to true to run simulation in debug mode
-wpi.cpp.debugSimulation = false
+wpi.cpp.debugSimulation = true
 
 // Default enable simgui
 wpi.sim.addGui().defaultEnabled = false
@@ -183,6 +183,7 @@ task runCppcheck(type: Exec) {
         }
 
         def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.trim()}\n```"
+
         def readmeFile = file('README.md')
         def readmeContent = readmeFile.text.trim()
 

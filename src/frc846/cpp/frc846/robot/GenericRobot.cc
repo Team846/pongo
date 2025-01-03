@@ -72,12 +72,12 @@ void GenericRobot::StartCompetition() {
       new frc846::wpilib::NTAction(
           [this] { frc846::base::Loggable::PrunePreferences(this); }));
 
-  // Verify robot hardware
-  VerifyHardware();
-
   // Setup all subsystems and set initial targets to zero.
   generic_robot_container_->Setup();
   generic_robot_container_->ZeroTargets();
+
+  // Verify robot hardware
+  VerifyHardware();
 
   OnInitialize();
 

@@ -94,7 +94,7 @@ public:
   void SetSoftLimits(bool using_limits, pos_unit forward_limit = pos_unit(0),
       pos_unit reverse_limit = pos_unit(0),
       pos_unit forward_reduce = pos_unit(0),
-      pos_unit reverse_reduce = pos_unit(0), double reduce_max_dc = double) {
+      pos_unit reverse_reduce = pos_unit(0), double reduce_max_dc = 0.0) {
     hmc_->SetSoftLimits(config::SoftLimitsHelper<T>::CreateSoftLimits(conv_,
         using_limits, forward_limit, reverse_limit, forward_reduce,
         reverse_reduce, reduce_max_dc));

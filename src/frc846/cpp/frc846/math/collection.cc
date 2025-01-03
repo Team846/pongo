@@ -51,14 +51,14 @@ units::degree_t CoterminalDifference(
 
 units::degree_t CoterminalSum(
     units::degree_t angle, units::degree_t other_angle) {
-  const units::angle::degree_t difference =
+  const units::angle::degree_t sum =
       units::math::fmod(angle, 1_tr) + units::math::fmod(other_angle, 1_tr);
-  if (difference > 0.5_tr) {
-    return difference - 1_tr;
-  } else if (difference < -0.5_tr) {
-    return difference + 1_tr;
+  if (sum > 0.5_tr) {
+    return sum - 1_tr;
+  } else if (sum < -0.5_tr) {
+    return sum + 1_tr;
   } else {
-    return difference;
+    return sum;
   }
 }
 

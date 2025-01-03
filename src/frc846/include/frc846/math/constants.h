@@ -9,7 +9,7 @@ struct constants {
     static constexpr units::feet_per_second_squared_t g{32.17405};
   };
   struct geometry {
-    static constexpr double pi = 3.14159265;
+    static constexpr double pi = 3.14159265358979323846;
   };
 };
 

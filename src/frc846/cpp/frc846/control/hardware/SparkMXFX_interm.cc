@@ -1,4 +1,5 @@
 #include "frc846/control/hardware/SparkMXFX_interm.h"
+
 #include "frc846/wpilib/util.h"
 
 namespace frc846::control::hardware {
@@ -9,6 +10,7 @@ namespace frc846::control::hardware {
   if (last_error_ != ControllerErrorCodes::kAllOK) return
 
 bool SparkMXFX_interm::VerifyConnected() {
+  if (esc_ == nullptr) return false;
   esc_->GetFirmwareVersion();
   return esc_->GetFirmwareVersion() != 0;
 }

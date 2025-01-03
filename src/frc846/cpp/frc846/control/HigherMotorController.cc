@@ -106,4 +106,9 @@ void HigherMotorController::SetSoftLimits(
   soft_limits_ = soft_limits;
 }
 
+void HigherMotorController::EnableStatusFrames(
+    std::vector<frc846::control::config::StatusFrame> frames) {
+  frc846::control::MotorMonkey::EnableStatusFrames(slot_id_, frames);
+}
+
 }  // namespace frc846::control

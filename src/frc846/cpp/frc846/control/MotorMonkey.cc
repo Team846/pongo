@@ -9,16 +9,19 @@
 
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/control/hardware/simulation/MCSimulator.h"
+#include "frc846/control/hardware/simulation/SIMLEVEL.h"
 #include "frc846/math/collection.h"
 
 // TODO: Add dynamic can/power management
 
 namespace frc846::control {
 
-#define CHECK_SLOT_ID()                        \
-  if (slot_id >= CONTROLLER_REGISTRY_SIZE ||   \
-      controller_registry[slot_id] == nullptr) \
-  throw std::runtime_error("Invalid MotorMonkey slot ID")
+#define CHECK_SLOT_ID()                                                      \
+  if (controller_registry[slot_id] == nullptr)                               \
+    throw std::runtime_error(                                                \
+        "Invalid MotorMonkey slot ID: " + std::to_string(slot_id) + " in " + \
+        "[" + __func__ + "]");
 
 #define LOG_IF_ERROR(action_name)                                          \
   {                                                                        \
@@ -33,20 +36,22 @@ namespace frc846::control {
 #define NUM_RETRIES 5
 #define INITIAL_RETRY_DELAY_MS 10
 
-#define SMART_RETRY(action, action_name)                                  \
-  for (int i = 0; i < NUM_RETRIES; i++) {                                 \
-    action;                                                               \
-    hardware::ControllerErrorCodes err =                                  \
-        controller_registry[slot_id]->GetLastErrorCode();                 \
-    if (err == hardware::ControllerErrorCodes::kAllOK)                    \
-      break;                                                              \
-    else {                                                                \
-      loggable_.Warn(                                                     \
-          "Error [{}] while attempting [{}] for slot ID {}. Retrying...", \
-          parseError(err), action_name, slot_id);                         \
-      std::this_thread::sleep_for(                                        \
-          std::chrono::milliseconds(INITIAL_RETRY_DELAY_MS * (1 << i)));  \
-    }                                                                     \
+#define SMART_RETRY(action, action_name)                                    \
+  for (int i = 0; i < NUM_RETRIES; i++) {                                   \
+    action;                                                                 \
+    hardware::ControllerErrorCodes err =                                    \
+        controller_registry[slot_id]->GetLastErrorCode();                   \
+    if (err == hardware::ControllerErrorCodes::kAllOK)                      \
+      break;                                                                \
+    else if (i == NUM_RETRIES - 1) {                                        \
+      loggable_.Error("Failed [{}] for slot ID {}.", action_name, slot_id); \
+    } else {                                                                \
+      loggable_.Warn(                                                       \
+          "Error [{}] while attempting [{}] for slot ID {}. Retrying...",   \
+          parseError(err), action_name, slot_id);                           \
+      std::this_thread::sleep_for(                                          \
+          std::chrono::milliseconds(INITIAL_RETRY_DELAY_MS * (1 << i)));    \
+    }                                                                       \
   }
 
 frc846::base::Loggable MotorMonkey::loggable_{"MotorMonkey"};
@@ -54,6 +59,7 @@ frc846::base::Loggable MotorMonkey::loggable_{"MotorMonkey"};
 size_t MotorMonkey::slot_counter_{0};
 std::map<size_t, frc846::control::base::MotorMonkeyType>
     MotorMonkey::slot_id_to_type_{};
+std::map<size_t, bool> MotorMonkey::slot_id_to_sim_{};
 
 frc846::control::hardware::IntermediateController*
     MotorMonkey::controller_registry[CONTROLLER_REGISTRY_SIZE]{};
@@ -75,9 +81,19 @@ void MotorMonkey::Tick(units::ampere_t max_draw) {
   loggable_.Graph("battery_voltage", battery_voltage.to<double>());
 
   WriteMessages(max_draw);
+  
+  // TODO: Improve battery voltage estimation for simulation
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
-    if (controller_registry[i] != nullptr) { controller_registry[i]->Tick(); }
+    if (controller_registry[i] != nullptr) {
+      controller_registry[i]->Tick();
+      if (slot_id_to_sim_[i]) {
+        simulation::MCSimulator* sim =
+            dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
+        sim->SetBatteryVoltage(battery_voltage);
+        sim->SetLoad(load_registry[i]);
+      }
+    }
   }
 }
 
@@ -201,12 +217,22 @@ size_t MotorMonkey::ConstructController(
 
   size_t slot_id = slot_counter_;
   slot_id_to_type_[slot_id] = type;
+  slot_id_to_sim_[slot_id] = false;
   circuit_resistance_registry[slot_id] = params.circuit_resistance;
+
 
   frc846::control::hardware::IntermediateController* this_controller = nullptr;
 
-  if (frc::RobotBase::IsSimulation()) {
-    // TODO: implement sim controllers
+  if (frc::RobotBase::IsSimulation() &&
+      MOTOR_SIM_LEVEL == MOTOR_SIM_LEVEL_SIM_PHYSICS) {
+    std::cout << "Constructing simulation controller" << std::endl;
+    loggable_.Log(
+        "Constructing physics simulation controller for slot ID {}.", slot_id);
+    slot_id_to_sim_[slot_id] = true;
+    this_controller = controller_registry[slot_id] =
+        new frc846::control::simulation::MCSimulator{
+            frc846::control::base::MotorSpecificationPresets::get(type),
+            params.circuit_resistance, params.rotational_inertia};
   } else if (frc846::control::base::MotorMonkeyTypeHelper::is_talon_fx(type)) {
     this_controller = controller_registry[slot_id] =
         new frc846::control::hardware::TalonFX_interm{
@@ -221,9 +247,13 @@ size_t MotorMonkey::ConstructController(
     this_controller = controller_registry[slot_id] =
         new frc846::control::hardware::SparkFLEX_interm{
             params.can_id, params.max_wait_time};
+  } else {
+    throw std::runtime_error("Invalid MotorMonkeyType [" +
+                             std::to_string((int)type) +
+                             "]: not constructing controller");
   }
 
-  if (this_controller == nullptr) return slot_id;
+  if (this_controller == nullptr) { return slot_id; }
 
   SMART_RETRY(this_controller->SetInverted(params.inverted), "SetInverted");
   LOG_IF_ERROR("SetInverted");
@@ -244,17 +274,21 @@ size_t MotorMonkey::ConstructController(
   return slot_id;
 }
 
+void MotorMonkey::EnableStatusFrames(
+    size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(controller_registry[slot_id]->EnableStatusFrames(frames),
+      "EnableStatusFrames");
+  LOG_IF_ERROR("EnableStatusFrames");
+}
+
 units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }
 
 void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {
   CHECK_SLOT_ID();
 
   load_registry[slot_id] = load;
-
-  if (controller_registry[slot_id] != nullptr) {
-    // TODO: If is MCSim, cast then set load
-    // controller_registry[slot_id]->SetLoad(load);
-  }
 }
 
 void MotorMonkey::SetGains(
