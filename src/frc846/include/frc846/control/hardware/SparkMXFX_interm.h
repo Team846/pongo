@@ -1,7 +1,7 @@
 #pragma once
 
-#include <rev/CANSparkFlex.h>
-#include <rev/CANSparkMax.h>
+#include <rev/SparkFlex.h>
+#include <rev/SparkMax.h>
 
 #include <algorithm>
 #include <variant>
@@ -212,9 +212,9 @@ private:
       last_command_;
   frc846::control::base::MotorGains gains_;
 
-  rev::CANSparkBase* esc_;
-  rev::SparkRelativeEncoder* encoder_;
-  rev::SparkPIDController* pid_controller_;
+  rev::spark::SparkBase* esc_;
+  rev::spark::SparkRelativeEncoder* encoder_;
+  rev::spark::SparkClosedLoopController* pid_controller_;
 
   frc846::control::hardware::ControllerErrorCodes last_error_;
 };

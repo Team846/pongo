@@ -2,8 +2,8 @@
 
 #include <frc/RobotBase.h>
 #include <frc/RobotController.h>
-#include <rev/CANSparkFlex.h>
-#include <rev/CANSparkMax.h>
+#include <rev/SparkFlex.h>
+#include <rev/SparkMax.h>
 
 #include <string>
 

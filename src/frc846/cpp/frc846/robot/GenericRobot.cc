@@ -38,7 +38,7 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
 GenericRobot::~GenericRobot() {
   int32_t status = 0x00;
   HAL_StopNotifier(notifier_, &status);
-  HAL_CleanNotifier(notifier_, &status);
+  HAL_CleanNotifier(notifier_);
 }
 
 void GenericRobot::StartCompetition() {
