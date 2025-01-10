@@ -10,8 +10,8 @@ on:
 
 jobs:
   formatting_check:
-    runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2024-22.04
+    runs-on: ubuntu-22.04
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
 
     steps:
       - name: Checkout code
