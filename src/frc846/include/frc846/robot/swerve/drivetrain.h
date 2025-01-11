@@ -1,6 +1,5 @@
 #pragma once
 
-#include <AHRS.h>
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
 
@@ -9,6 +8,7 @@
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
 #include "frc846/robot/swerve/swerve_module.h"
+#include "studica/AHRS.h"
 
 namespace frc846::robot::swerve {
 
@@ -82,7 +82,7 @@ private:
   DrivetrainConfigs configs_;
   std::array<SwerveModuleSubsystem*, 4> modules_;
 
-  AHRS navX_;
+  studica::AHRS navX_;
 
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
   frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;

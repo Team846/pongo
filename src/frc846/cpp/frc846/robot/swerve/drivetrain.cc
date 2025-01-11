@@ -9,7 +9,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"},
       configs_{configs},
       modules_{},
-      navX_{frc::SerialPort::kMXP} {
+      navX_{studica::AHRS::NavXComType::kMXP_SPI} {
   for (int i = 0; i < 4; i++) {
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};

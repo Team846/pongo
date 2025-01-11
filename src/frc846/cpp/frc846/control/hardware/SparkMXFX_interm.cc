@@ -5,9 +5,16 @@
 namespace frc846::control::hardware {
 
 #define set_last_error(code) last_error_ = getErrorCode(code)
-#define set_last_error_and_break(code) \
-  set_last_error(code);                \
-  if (last_error_ != ControllerErrorCodes::kAllOK) return
+
+#define CONFIG_RESET rev::spark::SparkBase::ResetMode::kResetSafeParameters
+#define NO_CONFIG_RESET rev::spark::SparkBase::ResetMode::kNoResetSafeParameters
+
+#define PERSIST_PARAMS rev::spark::SparkBase::PersistMode::kPersistParameters
+#define NO_PERSIST_PARAMS \
+  rev::spark::SparkBase::PersistMode::kNoPersistParameters
+
+#define APPLY_CONFIG_NO_RESET() \
+  set_last_error(esc_->Configure(configs, NO_CONFIG_RESET, NO_PERSIST_PARAMS))
 
 bool SparkMXFX_interm::VerifyConnected() {
   if (esc_ == nullptr) return false;
@@ -18,76 +25,77 @@ bool SparkMXFX_interm::VerifyConnected() {
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
     units::millisecond_t max_wait_time, bool is_controller_spark_flex) {
   esc_ = is_controller_spark_flex
-             ? static_cast<rev::CANSparkBase*>(new rev::CANSparkFlex{
-                   can_id, rev::CANSparkFlex::MotorType::kBrushless})
-             : new rev::CANSparkMax{
-                   can_id, rev::CANSparkMax::MotorType::kBrushless};
+             ? static_cast<rev::spark::SparkBase*>(new rev::spark::SparkFlex{
+                   can_id, rev::spark::SparkFlex::MotorType::kBrushless})
+             : new rev::spark::SparkMax{
+                   can_id, rev::spark::SparkMax::MotorType::kBrushless};
+  encoder_ = new rev::spark::SparkRelativeEncoder{esc_->GetEncoder()};
+  pid_controller_ = new rev::spark::SparkClosedLoopController{
+      esc_->GetClosedLoopController()};
 
-  encoder_ = new rev::SparkRelativeEncoder{
-      esc_->GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor,
-          is_controller_spark_flex ? 7168 : 42)};
-  pid_controller_ = new rev::SparkPIDController{esc_->GetPIDController()};
-
-  esc_->SetCANTimeout(max_wait_time.to<int>());
+  set_last_error(esc_->Configure(configs, CONFIG_RESET, NO_PERSIST_PARAMS));
+  set_last_error(esc_->SetCANTimeout(max_wait_time.to<int>()));
 }
 
 void SparkMXFX_interm::Tick() {
   rev::REVLibError last_status_code = rev::REVLibError::kOk;
   if (double* dc = std::get_if<double>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
-        *dc, rev::CANSparkBase::ControlType::kDutyCycle);
+        *dc, rev::spark::SparkBase::ControlType::kDutyCycle);
   } else if (units::radians_per_second_t* vel =
                  std::get_if<units::radians_per_second_t>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
-        vel->to<double>(), rev::CANSparkBase::ControlType::kVelocity);
+        vel->to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
   } else if (units::radian_t* pos =
                  std::get_if<units::radian_t>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
-        pos->to<double>(), rev::CANSparkBase::ControlType::kPosition);
+        pos->to<double>(), rev::spark::SparkBase::ControlType::kPosition);
   }
   set_last_error(last_status_code);
 }
 
 void SparkMXFX_interm::SetInverted(bool inverted) {
-  esc_->SetInverted(inverted);
+  configs.Inverted(inverted);
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetNeutralMode(bool brake_mode) {
-  set_last_error(
-      esc_->SetIdleMode(brake_mode ? rev::CANSparkBase::IdleMode::kBrake
-                                   : rev::CANSparkBase::IdleMode::kCoast));
+  configs.SetIdleMode(brake_mode
+                          ? rev::spark::SparkBaseConfig::IdleMode::kBrake
+                          : rev::spark::SparkBaseConfig::IdleMode::kCoast);
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
-  set_last_error(esc_->SetSmartCurrentLimit(current_limit.to<int>()));
+  configs.SmartCurrentLimit(current_limit.to<int>());
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetSoftLimits(
     units::radian_t forward_limit, units::radian_t reverse_limit) {
-  set_last_error_and_break(esc_->EnableSoftLimit(
-      rev::CANSparkBase::SoftLimitDirection::kForward, true));
-  set_last_error_and_break(
-      esc_->SetSoftLimit(rev::CANSparkBase::SoftLimitDirection::kForward,
-          forward_limit.to<double>()));
-  set_last_error_and_break(esc_->EnableSoftLimit(
-      rev::CANSparkBase::SoftLimitDirection::kReverse, true));
-  set_last_error_and_break(
-      esc_->SetSoftLimit(rev::CANSparkBase::SoftLimitDirection::kReverse,
-          reverse_limit.to<double>()));
+  configs.softLimit.ForwardSoftLimitEnabled(true)
+      .ForwardSoftLimit(forward_limit.to<double>())
+      .ReverseSoftLimitEnabled(true)
+      .ReverseSoftLimit(reverse_limit.to<double>());
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetVoltageCompensation(
     units::volt_t voltage_compensation) {
-  set_last_error(
-      esc_->EnableVoltageCompensation(voltage_compensation.to<double>()));
+  configs.VoltageCompensation(voltage_compensation.to<double>());
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
-  set_last_error_and_break(pid_controller_->SetP(gains_.kP));
-  set_last_error_and_break(pid_controller_->SetI(gains_.kI));
-  set_last_error_and_break(pid_controller_->SetD(gains_.kD));
-  set_last_error_and_break(pid_controller_->SetFF(gains_.kFF));
+  configs.closedLoop.Pidf(gains_.kP, gains_.kI, gains_.kD, gains_.kFF);
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::WriteDC(double duty_cycle) {
@@ -102,61 +110,41 @@ void SparkMXFX_interm::WritePosition(units::radian_t position) {
 
 void SparkMXFX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
-  rev::REVLibError last_status_code;
-
   if (vector_has(frames, config::StatusFrame::kLeader) ||
       vector_has(frames, config::StatusFrame::kFaultFrame)) {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus0, 20);
+    configs.signals.FaultsPeriodMs(20);
+    configs.signals.FaultsAlwaysOn(true);
   } else {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus0, 32767);
+    configs.signals.FaultsPeriodMs(32767);
+    configs.signals.FaultsAlwaysOn(false);
   }
-
-  set_last_error_and_break(last_status_code);
 
   if (vector_has(frames, config::StatusFrame::kVelocityFrame) ||
       vector_has(frames, config::StatusFrame::kCurrentFrame)) {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus1, 20);
+    configs.signals.PrimaryEncoderVelocityPeriodMs(20);
+    configs.signals.PrimaryEncoderVelocityAlwaysOn(true);
   } else {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus1, 32767);
+    configs.signals.PrimaryEncoderVelocityPeriodMs(32767);
+    configs.signals.PrimaryEncoderVelocityAlwaysOn(false);
   }
-
-  set_last_error_and_break(last_status_code);
 
   if (vector_has(frames, config::StatusFrame::kPositionFrame)) {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus2, 20);
+    configs.signals.PrimaryEncoderPositionPeriodMs(20);
+    configs.signals.PrimaryEncoderPositionAlwaysOn(true);
   } else {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus2, 32767);
+    configs.signals.PrimaryEncoderPositionPeriodMs(32767);
+    configs.signals.PrimaryEncoderPositionAlwaysOn(false);
   }
-
-  set_last_error_and_break(last_status_code);
 
   if (vector_has(frames, config::StatusFrame::kSensorFrame)) {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus3, 20);
+    configs.signals.AnalogPositionPeriodMs(20);
+    configs.signals.AnalogPositionAlwaysOn(true);
   } else {
-    last_status_code = esc_->SetPeriodicFramePeriod(
-        rev::CANSparkLowLevel::PeriodicFrame::kStatus3, 32767);
+    configs.signals.AnalogPositionPeriodMs(32767);
+    configs.signals.AnalogPositionAlwaysOn(false);
   }
 
-  set_last_error_and_break(last_status_code);
-
-  set_last_error_and_break(esc_->SetPeriodicFramePeriod(
-      rev::CANSparkLowLevel::PeriodicFrame::kStatus4, 32767));
-
-  set_last_error_and_break(esc_->SetPeriodicFramePeriod(
-      rev::CANSparkLowLevel::PeriodicFrame::kStatus5, 32767));
-
-  set_last_error_and_break(esc_->SetPeriodicFramePeriod(
-      rev::CANSparkLowLevel::PeriodicFrame::kStatus6, 32767));
-
-  set_last_error_and_break(esc_->SetPeriodicFramePeriod(
-      rev::CANSparkLowLevel::PeriodicFrame::kStatus7, 32767));
+  APPLY_CONFIG_NO_RESET();
 }
 
 bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {

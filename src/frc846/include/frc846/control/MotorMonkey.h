@@ -1,7 +1,7 @@
 #pragma once
 
-#include <rev/CANSparkFlex.h>
-#include <rev/CANSparkMax.h>
+#include <rev/SparkFlex.h>
+#include <rev/SparkMax.h>
 
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <vector>

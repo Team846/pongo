@@ -29,18 +29,23 @@ void TalonFX_interm::Tick() {
 }
 
 void TalonFX_interm::SetInverted(bool inverted) {
-  talon_.SetInverted(inverted);
+  ctre::phoenix6::configs::MotorOutputConfigs motor_output_config{};
+  motor_output_config.WithInverted(inverted);
+  last_error_ =
+      getErrorCode(talon_.GetConfigurator().Apply(motor_output_config));
 }
+
 void TalonFX_interm::SetNeutralMode(bool brake_mode) {
   talon_.SetNeutralMode(brake_mode
                             ? ctre::phoenix6::signals::NeutralModeValue::Brake
                             : ctre::phoenix6::signals::NeutralModeValue::Coast);
 }
+
 void TalonFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
   ctre::phoenix6::configs::CurrentLimitsConfigs configs{};
   configs.WithSupplyCurrentLimitEnable(false);
   configs.WithStatorCurrentLimitEnable(true);
-  configs.WithStatorCurrentLimit(current_limit.to<double>());
+  configs.WithStatorCurrentLimit(current_limit);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
@@ -48,17 +53,17 @@ void TalonFX_interm::SetSoftLimits(
     units::radian_t forward_limit, units::radian_t reverse_limit) {
   ctre::phoenix6::configs::SoftwareLimitSwitchConfigs configs{};
   configs.WithForwardSoftLimitEnable(true);
-  configs.WithForwardSoftLimitThreshold(forward_limit.to<double>());
+  configs.WithForwardSoftLimitThreshold(forward_limit);
   configs.WithReverseSoftLimitEnable(true);
-  configs.WithReverseSoftLimitThreshold(reverse_limit.to<double>());
+  configs.WithReverseSoftLimitThreshold(reverse_limit);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
 void TalonFX_interm::SetVoltageCompensation(
     units::volt_t voltage_compensation) {
   ctre::phoenix6::configs::VoltageConfigs configs{};
-  configs.WithPeakForwardVoltage(voltage_compensation.to<double>());
-  configs.WithPeakReverseVoltage(-voltage_compensation.to<double>());
+  configs.WithPeakForwardVoltage(voltage_compensation);
+  configs.WithPeakReverseVoltage(-voltage_compensation);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }
 
@@ -80,14 +85,16 @@ void TalonFX_interm::WritePosition(units::radian_t position) {
 
 void TalonFX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
-  last_error_ = getErrorCode(talon_.OptimizeBusUtilization(max_wait_time_));
+  last_error_ =
+      getErrorCode(talon_.OptimizeBusUtilization(0_Hz, max_wait_time_));
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
   for (auto frame : frames) {
     ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
     if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
       last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(10_Hz);
     } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
-      last_status_code = talon_.GetPosition().SetUpdateFrequency(50_Hz);
+      last_status_code =
+          talon_.GetPosition().SetUpdateFrequency(50_Hz, max_wait_time_);
     } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
       last_status_code = talon_.GetVelocity().SetUpdateFrequency(50_Hz);
     }
