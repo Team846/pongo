@@ -211,6 +211,8 @@ private:
 
   ctre::phoenix6::hardware::TalonFX talon_;
 
+  ctre::phoenix6::configs::TalonFXConfiguration config{};
+
   frc846::control::hardware::ControllerErrorCodes last_error_;
 
   units::millisecond_t max_wait_time_;

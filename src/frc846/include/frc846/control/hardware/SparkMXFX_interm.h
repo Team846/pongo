@@ -208,6 +208,8 @@ private:
   frc846::control::hardware::ControllerErrorCodes getErrorCode(
       rev::REVLibError code);
 
+  rev::spark::SparkBaseConfig configs{};
+
   std::variant<units::radian_t, units::radians_per_second_t, double>
       last_command_;
   frc846::control::base::MotorGains gains_;

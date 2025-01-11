@@ -29,7 +29,6 @@ void TalonFX_interm::Tick() {
 }
 
 void TalonFX_interm::SetInverted(bool inverted) {
-  ctre::phoenix6::configs::TalonFXConfiguration config{};
   config.MotorOutput.Inverted = inverted;
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(config));
 }
