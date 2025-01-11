@@ -24,8 +24,10 @@ deploy {
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/y2025/deploy')
                     directory = '/home/lvuser/deploy'
-                    deleteOldFiles = false  // Change to true to delete files on roboRIO that no
-                                            // longer exist in deploy directory of this project
+
+
+                    // Set deleteOldFiles to true to clear files in deploy/ on RIO that aren't in this project
+                    deleteOldFiles = true  
                 }
             }
         }
@@ -115,7 +117,7 @@ spotless {
         }
         def selectedClangVersion = project.hasProperty('fromCI') ? '18.1.8' : '18.1.8'
 
-        def styleFile = file('style.standard')
+        def styleFile = file('.clang-format')
         def styleConfig = styleFile.text.trim()
 
         clangFormat(selectedClangVersion).style(styleConfig)

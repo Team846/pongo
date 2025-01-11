@@ -5,26 +5,22 @@
 namespace frc846::control::hardware {
 
 #define set_last_error(code) last_error_ = getErrorCode(code)
-#define set_last_error_and_break(code) \
-  set_last_error(code);                \
-  if (last_error_ != ControllerErrorCodes::kAllOK) return
+
+#define CONFIG_RESET rev::spark::SparkBase::ResetMode::kResetSafeParameters
+#define NO_CONFIG_RESET rev::spark::SparkBase::ResetMode::kNoResetSafeParameters
+
+#define PERSIST_PARAMS rev::spark::SparkBase::PersistMode::kPersistParameters
+#define NO_PERSIST_PARAMS \
+  rev::spark::SparkBase::PersistMode::kNoPersistParameters
+
+#define APPLY_CONFIG_NO_RESET() \
+  set_last_error(esc_->Configure(configs, NO_CONFIG_RESET, NO_PERSIST_PARAMS))
 
 bool SparkMXFX_interm::VerifyConnected() {
   if (esc_ == nullptr) return false;
   esc_->GetFirmwareVersion();
   return esc_->GetFirmwareVersion() != 0;
 }
-
-// This will make all soft configs reset
-#define RESET rev::spark::SparkBase::ResetMode::kResetSafeParameters
-// This will make all soft configs not reset
-#define DONT_RESET rev::spark::SparkBase::ResetMode::kNoResetSafeParameters
-
-// This will make configs persist through power cycles
-#define PERSIST_PARAMS rev::spark::SparkBase::PersistMode::kPersistParameters
-// Configs will not persist through power cycles
-#define DONT_PERSIST_PARAMS \
-  rev::spark::SparkBase::PersistMode::kNoPersistParameters
 
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
     units::millisecond_t max_wait_time, bool is_controller_spark_flex) {
@@ -36,8 +32,9 @@ SparkMXFX_interm::SparkMXFX_interm(int can_id,
   encoder_ = new rev::spark::SparkRelativeEncoder{esc_->GetEncoder()};
   pid_controller_ = new rev::spark::SparkClosedLoopController{
       esc_->GetClosedLoopController()};
-  esc_->Configure(configs, RESET, PERSIST_PARAMS);
-  esc_->SetCANTimeout(max_wait_time.to<int>());
+
+  set_last_error(esc_->Configure(configs, CONFIG_RESET, NO_PERSIST_PARAMS));
+  set_last_error(esc_->SetCANTimeout(max_wait_time.to<int>()));
 }
 
 void SparkMXFX_interm::Tick() {
@@ -59,19 +56,22 @@ void SparkMXFX_interm::Tick() {
 
 void SparkMXFX_interm::SetInverted(bool inverted) {
   configs.Inverted(inverted);
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetNeutralMode(bool brake_mode) {
   configs.SetIdleMode(brake_mode
                           ? rev::spark::SparkBaseConfig::IdleMode::kBrake
                           : rev::spark::SparkBaseConfig::IdleMode::kCoast);
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
   configs.SmartCurrentLimit(current_limit.to<int>());
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetSoftLimits(
@@ -80,19 +80,22 @@ void SparkMXFX_interm::SetSoftLimits(
       .ForwardSoftLimit(forward_limit.to<double>())
       .ReverseSoftLimitEnabled(true)
       .ReverseSoftLimit(reverse_limit.to<double>());
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetVoltageCompensation(
     units::volt_t voltage_compensation) {
   configs.VoltageCompensation(voltage_compensation.to<double>());
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
   configs.closedLoop.Pidf(gains_.kP, gains_.kI, gains_.kD, gains_.kFF);
-  set_last_error(esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+
+  APPLY_CONFIG_NO_RESET();
 }
 
 void SparkMXFX_interm::WriteDC(double duty_cycle) {
@@ -107,8 +110,6 @@ void SparkMXFX_interm::WritePosition(units::radian_t position) {
 
 void SparkMXFX_interm::EnableStatusFrames(
     std::vector<frc846::control::config::StatusFrame> frames) {
-  rev::REVLibError last_status_code;
-
   if (vector_has(frames, config::StatusFrame::kLeader) ||
       vector_has(frames, config::StatusFrame::kFaultFrame)) {
     configs.signals.FaultsPeriodMs(20);
@@ -143,8 +144,7 @@ void SparkMXFX_interm::EnableStatusFrames(
     configs.signals.AnalogPositionAlwaysOn(false);
   }
 
-  set_last_error_and_break(
-      esc_->Configure(configs, DONT_RESET, PERSIST_PARAMS));
+  APPLY_CONFIG_NO_RESET();
 }
 
 bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {

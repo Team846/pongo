@@ -29,14 +29,18 @@ void TalonFX_interm::Tick() {
 }
 
 void TalonFX_interm::SetInverted(bool inverted) {
-  config.MotorOutput.Inverted = inverted;
-  last_error_ = getErrorCode(talon_.GetConfigurator().Apply(config));
+  ctre::phoenix6::configs::MotorOutputConfigs motor_output_config{};
+  motor_output_config.WithInverted(inverted);
+  last_error_ =
+      getErrorCode(talon_.GetConfigurator().Apply(motor_output_config));
 }
+
 void TalonFX_interm::SetNeutralMode(bool brake_mode) {
   talon_.SetNeutralMode(brake_mode
                             ? ctre::phoenix6::signals::NeutralModeValue::Brake
                             : ctre::phoenix6::signals::NeutralModeValue::Coast);
 }
+
 void TalonFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
   ctre::phoenix6::configs::CurrentLimitsConfigs configs{};
   configs.WithSupplyCurrentLimitEnable(false);
