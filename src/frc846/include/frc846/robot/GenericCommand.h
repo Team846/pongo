@@ -106,7 +106,8 @@ protected:
 private:
   frc2::InstantCommand end_command_addition{[&] {
     Log("Command group ending. Took {} ms to complete.",
-        (frc846::wpilib::CurrentFPGATime() - command_start_time_).to<double>());
+        (frc846::wpilib::CurrentFPGATime() - command_start_time_)
+            .template to<double>());
   }};
 
   frc2::InstantCommand start_command_addition{[&] {
