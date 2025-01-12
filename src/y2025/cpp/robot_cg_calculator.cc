@@ -16,28 +16,16 @@ RobotCGCalculator::RobotCGCalculator() {
   base_state_.velocity = {0_fps, 0_fps, 0_fps};
 }
 
-RobotCGCalculator::SubsystemState RobotCGCalculator::GetElevatorState() const {
-  return elevator_state_;
+void RobotCGCalculator::SetElevatorHeight(units::inch_t height) {
+  elevator_state_.position[2] = height;
 }
 
-RobotCGCalculator::SubsystemState RobotCGCalculator::GetTelescopeState() const {
-  return telescope_state_;
+void RobotCGCalculator::SetTelescopeHeight(units::inch_t height) {
+  telescope_state_.position[2] = height;
 }
 
-RobotCGCalculator::SubsystemState RobotCGCalculator::GetBaseState() const {
-  return base_state_;
-}
-
-void RobotCGCalculator::SetElevatorPosition(frc846::math::Vector3D pos) {
-  elevator_state_.position = pos;
-}
-
-void RobotCGCalculator::SetTelescopePosition(frc846::math::Vector3D pos) {
-  telescope_state_.position = pos;
-}
-
-void RobotCGCalculator::SetBasePosition(frc846::math::Vector3D pos) {
-  base_state_.position = pos;
+void RobotCGCalculator::SetBaseHeight(units::inch_t height) {
+  base_state_.position[2] = height;
 }
 
 void RobotCGCalculator::SetElevatorVelocity(

@@ -29,19 +29,15 @@ public:
 
   RobotCGCalculator();
 
-  SubsystemState GetElevatorState() const;
-  SubsystemState GetTelescopeState() const;
-  SubsystemState GetBaseState() const;
-
-  void SetElevatorPosition(frc846::math::Vector3D pos);
+  void SetElevatorHeight(units::inch_t height);
   void SetElevatorVelocity(
       frc846::math::VectorND<units::feet_per_second, 3> vel);
 
-  void SetTelescopePosition(frc846::math::Vector3D pos);
+  void SetTelescopeHeight(units::inch_t height);
   void SetTelescopeVelocity(
       frc846::math::VectorND<units::feet_per_second, 3> vel);
 
-  void SetBasePosition(frc846::math::Vector3D pos);
+  void SetBaseHeight(units::inch_t height);
   void SetBaseVelocity(frc846::math::VectorND<units::feet_per_second, 3> vel);
 
   /*
