@@ -1,5 +1,7 @@
 #include "frc846/control/calculators/CurrentTorqueCalculator.h"
 
+#include <units/math.h>
+
 #include <algorithm>
 
 namespace frc846::control::calculators {
@@ -28,6 +30,31 @@ units::newton_meter_t CurrentTorqueCalculator::predict_torque(double duty_cycle,
       duty_cycle, rpm, v_supply, circuit_resistance, specs);
 
   return current_to_torque(current_draw, specs);
+}
+
+double CurrentTorqueCalculator::scale_current_draw(double scale_factor,
+    double duty_cycle, units::revolutions_per_minute_t rpm,
+    units::volt_t v_supply, MotorMonkeyType mmtype) {
+  MotorSpecs specs = MotorSpecificationPresets::get(mmtype);
+  double pct_speed = rpm / specs.free_speed;
+  unit_ohm winding_resistance =
+      12_V / (specs.stall_current - specs.free_current);
+  units::volt_t back_emf = pct_speed * v_supply;
+  units::volt_t voltage_difference = duty_cycle * v_supply - back_emf;
+  units::volt_t output = voltage_difference * scale_factor + back_emf;
+  return output / v_supply;
+}
+
+double CurrentTorqueCalculator::limit_current_draw(double duty_cycle,
+    units::ampere_t current_limit, units::revolutions_per_minute_t rpm,
+    units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
+  units::ampere_t current_draw = units::math::abs(predict_current_draw(
+      duty_cycle, rpm, v_supply, circuit_resistance, specs));
+  if (current_draw > current_limit) {
+    return current_control(
+        current_limit, rpm, v_supply, circuit_resistance, specs);
+  }
+  return duty_cycle;
 }
 
 units::ampere_t CurrentTorqueCalculator::torque_to_current(
