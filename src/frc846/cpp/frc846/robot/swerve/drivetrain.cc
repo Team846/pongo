@@ -9,7 +9,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"},
       configs_{configs},
       modules_{},
-      navX_{studica::AHRS::NavXComType::kMXP_SPI} {
+      navX_{configs.navX_connection_mode} {
   for (int i = 0; i < 4; i++) {
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};
@@ -118,9 +118,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
