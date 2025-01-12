@@ -15,7 +15,7 @@ enum Mode { kNone, kDisabled, kAutonomous, kTeleop, kTest };
 
 class GenericRobot : public frc::RobotBase, public frc846::base::Loggable {
 public:
-  static constexpr auto kPeriod = 20_ms;  // 50hz
+  static constexpr auto kPeriod = 10_ms;  // 100Hz
 
   GenericRobot(GenericRobotContainer* container);
 
