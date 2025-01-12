@@ -44,6 +44,13 @@ public:
         MotorSpecificationPresets::get(mmtype));
   }
 
+  static double scale_current_draw(double scale_factor, double duty_cycle,
+      units::revolutions_per_minute_t rpm, units::volt_t v_supply,
+      MotorMonkeyType mmtype);
+
+  static double limit_current_draw(double duty_cycle,
+      units::ampere_t current_limit, units::revolutions_per_minute_t rpm,
+      units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs);
   /*
   predict_torque()
 

@@ -147,9 +147,10 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
       throw std::runtime_error(
           "Unsupported MotorMessage type in MotorMonkey WriteMessages");
     }
-    total_current += frc846::control::calculators::CurrentTorqueCalculator::
-        predict_current_draw(duty_cycle, velocity, battery_voltage,
-            circuit_resistance_registry[msg.slot_id], motor_type);
+    total_current +=
+        units::math::abs(frc846::control::calculators::CurrentTorqueCalculator::
+                predict_current_draw(duty_cycle, velocity, battery_voltage,
+                    circuit_resistance_registry[msg.slot_id], motor_type));
     temp_messages.pop();
   }
 
@@ -168,20 +169,33 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
     const auto& msg = control_messages.front();
     auto* controller = controller_registry[msg.slot_id];
 
+    units::radians_per_second_t velocity =
+        controller_registry[msg.slot_id]->GetVelocity();
+
+    frc846::control::base::MotorMonkeyType motor_type =
+        slot_id_to_type_[msg.slot_id];
+
     size_t slot_id = msg.slot_id;
 
     switch (msg.type) {
     case MotorMessage::Type::DC: {
-      double duty_cycle_ = std::get<double>(msg.value) * scale_factor;
-      if (!controller->IsDuplicateControlMessage(duty_cycle_)) {
-        controller->WriteDC(duty_cycle_);
+      double scaled_duty_cycle =
+          frc846::control::calculators::CurrentTorqueCalculator::
+              scale_current_draw(scale_factor, std::get<double>(msg.value),
+                  velocity, battery_voltage, motor_type);
+      if (!controller->IsDuplicateControlMessage(scaled_duty_cycle) ||
+          controller->GetLastErrorCode() !=
+              frc846::control::hardware::ControllerErrorCodes::kAllOK) {
+        controller->WriteDC(scaled_duty_cycle);
         LOG_IF_ERROR("WriteDC");
       }
       break;
     }
     case MotorMessage::Type::Position: {
       auto pos = std::get<units::radian_t>(msg.value);
-      if (!controller->IsDuplicateControlMessage(pos)) {
+      if (!controller->IsDuplicateControlMessage(pos) ||
+          controller->GetLastErrorCode() !=
+              frc846::control::hardware::ControllerErrorCodes::kAllOK) {
         controller->WritePosition(pos);
         LOG_IF_ERROR("WritePosition");
       }
@@ -189,7 +203,9 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
     }
     case MotorMessage::Type::Velocity: {
       auto vel = std::get<units::radians_per_second_t>(msg.value);
-      if (!controller->IsDuplicateControlMessage(vel)) {
+      if (!controller->IsDuplicateControlMessage(vel) ||
+          controller->GetLastErrorCode() !=
+              frc846::control::hardware::ControllerErrorCodes::kAllOK) {
         controller->WriteVelocity(vel);
         LOG_IF_ERROR("WriteVelocity");
       }

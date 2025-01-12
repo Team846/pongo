@@ -1,5 +1,7 @@
 #include "frc846/control/hardware/simulation/MCSimulator.h"
 
+#include <units/math.h>
+
 #include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/calculators/VelocityPositionEstimator.h"
 
@@ -68,7 +70,9 @@ void MCSimulator::WritePosition(units::radian_t position) {
   control_message = position;
 }
 
-units::ampere_t MCSimulator::GetCurrent() { return pred_current_; }
+units::ampere_t MCSimulator::GetCurrent() {
+  return units::math::abs(pred_current_);
+}
 units::radian_t MCSimulator::GetPosition() { return position_; }
 units::radians_per_second_t MCSimulator::GetVelocity() { return velocity_; }
 
