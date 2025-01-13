@@ -1,5 +1,7 @@
 #include "robot_cg_calculator.h"
 
+#include <units/force.h>
+
 namespace y2025 {
 
 RobotCGCalculator::RobotCGCalculator() {
@@ -14,6 +16,11 @@ RobotCGCalculator::RobotCGCalculator() {
   elevator_state_.velocity = {0_fps, 0_fps, 0_fps};
   telescope_state_.velocity = {0_fps, 0_fps, 0_fps};
   base_state_.velocity = {0_fps, 0_fps, 0_fps};
+}
+
+units::feet_per_second_t RobotCGCalculator::CalculateMaxAcceleration(units::inch_t distance_from_wheels) {
+  frc846::math::VectorND<units::inch, 3> cg = CalculateRobotCG();
+  return frc846::math::constants::physics::g * distance_from_wheels / cg[2] / 2;
 }
 
 void RobotCGCalculator::SetElevatorHeight(units::inch_t height) {

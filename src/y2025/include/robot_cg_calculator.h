@@ -40,6 +40,8 @@ public:
   void SetBaseHeight(units::inch_t height);
   void SetBaseVelocity(frc846::math::VectorND<units::feet_per_second, 3> vel);
 
+  units::feet_per_second_t CalculateMaxAcceleration(units::inch_t distance_from_wheels);
+
   /*
   CalculateRobotCG()
 
