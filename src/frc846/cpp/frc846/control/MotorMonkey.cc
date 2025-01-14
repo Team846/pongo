@@ -13,8 +13,6 @@
 #include "frc846/control/hardware/simulation/SIMLEVEL.h"
 #include "frc846/math/collection.h"
 
-// TODO: Add dynamic can/power management
-
 namespace frc846::control {
 
 #define CHECK_SLOT_ID()                                                      \
@@ -74,15 +72,63 @@ frc846::wpilib::unit_ohm
 
 units::volt_t MotorMonkey::battery_voltage{0_V};
 
+units::volt_t MotorMonkey::last_disabled_voltage{0_V};
+
+frc846::math::DoubleSyncBuffer MotorMonkey::sync_buffer{50U, 15};
+
+units::ampere_t MotorMonkey::max_draw_{0.0_A};
+
 std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 
-void MotorMonkey::Tick(units::ampere_t max_draw) {
+void MotorMonkey::Setup() {
+  loggable_.RegisterPreference("voltage_min", 7.5_V);
+  loggable_.RegisterPreference("recal_voltage_thresh", 9.5_V);
+  loggable_.RegisterPreference("default_max_draw", 150.0_A);
+  loggable_.RegisterPreference("battery_cc", 600_A);
+
+  max_draw_ = loggable_.GetPreferenceValue_unit_type<units::ampere_t>(
+      "default_max_draw");
+}
+
+void MotorMonkey::RecalculateMaxDraw() {
+  auto sy_trough = sync_buffer.GetTrough();
+  units::ampere_t cc_current{sy_trough.first};
+  units::ampere_t current_draw =
+      loggable_.GetPreferenceValue_unit_type<units::ampere_t>("battery_cc") -
+      cc_current;
+  units::volt_t voltage{sy_trough.second};
+
+  units::volt_t voltage_min =
+      loggable_.GetPreferenceValue_unit_type<units::volt_t>("voltage_min");
+  units::volt_t recal_voltage_thresh =
+      loggable_.GetPreferenceValue_unit_type<units::volt_t>(
+          "recal_voltage_thresh");
+
+  if (voltage > recal_voltage_thresh) return;
+
+  max_draw_ = current_draw * (last_disabled_voltage - voltage_min) /
+              (last_disabled_voltage - voltage);
+}
+
+void MotorMonkey::Tick(bool disabled) {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
-  loggable_.Graph("battery_voltage", battery_voltage.to<double>());
+  loggable_.Graph("battery_voltage", battery_voltage);
+  loggable_.Graph("last_disabled_voltage", last_disabled_voltage);
 
-  WriteMessages(max_draw);
+  if (disabled) {
+    last_disabled_voltage = battery_voltage;
+    return;
+  }
 
-  // TODO: Improve battery voltage estimation for simulation
+  units::ampere_t total_pred_draw = WriteMessages(max_draw_);
+  units::ampere_t cc_current =
+      loggable_.GetPreferenceValue_unit_type<units::ampere_t>("battery_cc") -
+      total_pred_draw;
+  sync_buffer.Add(cc_current.to<double>(), battery_voltage.to<double>());
+
+  RecalculateMaxDraw();
+
+  loggable_.Graph("max_draw", max_draw_);
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
     if (controller_registry[i] != nullptr) {
@@ -97,7 +143,7 @@ void MotorMonkey::Tick(units::ampere_t max_draw) {
   }
 }
 
-void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
+units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   units::ampere_t total_current = 0.0_A;
   std::queue<MotorMessage> temp_messages{control_messages};
 
@@ -215,6 +261,7 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
 
     control_messages.pop();
   }
+  return total_current;
 }
 
 bool MotorMonkey::VerifyConnected() {

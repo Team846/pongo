@@ -14,6 +14,7 @@
 #include "frc846/control/config/construction_params.h"
 #include "frc846/control/config/status_frames.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
+#include "frc846/math/DoubleSyncBuffer.h"
 
 #define CONTROLLER_REGISTRY_SIZE 64
 
@@ -28,19 +29,27 @@ CAN utilization as well as power.
 class MotorMonkey {
 public:
   /*
+  Setup()
+
+  Sets up the preferences used by MotorMonkey.
+  */
+  static void Setup();
+
+  /*
   Tick()
 
   Updates all motor controllers. Should be called each loop.
   */
-  static void Tick(units::ampere_t max_draw);
+  static void Tick(bool disabled);
 
   /*
   WriteMessages()
 
   Writes all messages in the message queue to the motor controllers. Also,
   dynamically manages current draw and drops redundant messages.
+  Returns predicted total current draw.
   */
-  static void WriteMessages(units::ampere_t max_draw);
+  static units::ampere_t WriteMessages(units::ampere_t max_draw);
 
   /*
   ConstructController()
@@ -112,6 +121,8 @@ public:
   static bool VerifyConnected();
 
 private:
+  static void RecalculateMaxDraw();
+
   static frc846::base::Loggable loggable_;
 
   static size_t slot_counter_;
@@ -130,6 +141,11 @@ private:
       circuit_resistance_registry[CONTROLLER_REGISTRY_SIZE];
 
   static units::volt_t battery_voltage;
+  static units::volt_t last_disabled_voltage;
+
+  static frc846::math::DoubleSyncBuffer sync_buffer;
+
+  static units::ampere_t max_draw_;
 
   struct MotorMessage {
     enum class Type { DC, Position, Velocity };

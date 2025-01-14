@@ -134,5 +134,53 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_speed (fps)",
+    "type": "double",
+    "value": 15.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_omega (deg_per_s)",
+    "type": "double",
+    "value": 180.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/translation_deadband",
+    "type": "double",
+    "value": 0.07,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/translation_exponent",
+    "type": "int",
+    "value": 2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/rotation_deadband",
+    "type": "double",
+    "value": 0.07,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/rotation_exponent",
+    "type": "int",
+    "value": 2,
+    "properties": {
+      "persistent": true
+    }
   }
 ]
