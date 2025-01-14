@@ -9,8 +9,8 @@ XboxReadings::XboxReadings(frc::XboxController& xbox, double trigger_threshold)
       right_stick_y(-xbox.GetRightY()),  // negated so + is up
       left_trigger(xbox.GetLeftTriggerAxis() >= trigger_threshold),
       right_trigger(xbox.GetRightTriggerAxis() >= trigger_threshold),
-      left_bumper(xbox.GetLeftBumper()),
-      right_bumper(xbox.GetRightBumper()),
+      left_bumper(xbox.GetLeftBumperButton()),
+      right_bumper(xbox.GetRightBumperButton()),
       back_button(xbox.GetBackButton()),
       start_button(xbox.GetStartButton()),
       rsb(xbox.GetRightStickButton()),
