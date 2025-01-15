@@ -182,5 +182,77 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kP",
+    "type": "double",
+    "value": 2.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
+    "type": "double",
+    "value": 0.875,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/voltage_min (V)",
+    "type": "double",
+    "value": 7.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/recal_voltage_thresh (V)",
+    "type": "double",
+    "value": 9.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/default_max_draw (A)",
+    "type": "double",
+    "value": 150.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/battery_cc (A)",
+    "type": "double",
+    "value": 600.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

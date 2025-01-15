@@ -13,8 +13,6 @@
 #include "frc846/control/hardware/simulation/SIMLEVEL.h"
 #include "frc846/math/collection.h"
 
-// TODO: Add dynamic can/power management
-
 namespace frc846::control {
 
 #define CHECK_SLOT_ID()                                                      \
@@ -74,15 +72,88 @@ frc846::wpilib::unit_ohm
 
 units::volt_t MotorMonkey::battery_voltage{0_V};
 
+units::volt_t MotorMonkey::last_disabled_voltage{0_V};
+
+frc846::math::DoubleSyncBuffer MotorMonkey::sync_buffer{50U, 15};
+
+units::ampere_t MotorMonkey::max_draw_{0.0_A};
+
 std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 
-void MotorMonkey::Tick(units::ampere_t max_draw) {
+void MotorMonkey::Setup() {
+  loggable_.RegisterPreference("voltage_min", 7.5_V);
+  loggable_.RegisterPreference("recal_voltage_thresh", 10.5_V);
+  loggable_.RegisterPreference("default_max_draw", 150.0_A);
+  loggable_.RegisterPreference("min_max_draw", 40_A);
+  loggable_.RegisterPreference("max_max_draw", 300_A);
+  loggable_.RegisterPreference("battery_cc", 400_A);
+
+  max_draw_ = loggable_.GetPreferenceValue_unit_type<units::ampere_t>(
+      "default_max_draw");
+}
+
+void MotorMonkey::RecalculateMaxDraw() {
+  if (!sync_buffer.IsValid()) return;
+
+  sync_buffer.Sync();
+  loggable_.Graph("sync_diff_", sync_buffer.GetSyncDiff());
+
+  auto sy_trough = sync_buffer.GetTrough();
+  units::ampere_t cc_current{sy_trough.first};
+
+  loggable_.Graph("cc_current", cc_current);
+
+  units::ampere_t current_draw =
+      loggable_.GetPreferenceValue_unit_type<units::ampere_t>("battery_cc") -
+      cc_current;
+  units::volt_t voltage{sy_trough.second};
+
+  units::volt_t voltage_min =
+      loggable_.GetPreferenceValue_unit_type<units::volt_t>("voltage_min");
+  units::volt_t recal_voltage_thresh =
+      loggable_.GetPreferenceValue_unit_type<units::volt_t>(
+          "recal_voltage_thresh");
+
+  if (voltage > recal_voltage_thresh) return;
+
+  units::ampere_t temp_max_draw_ = current_draw *
+                                   (last_disabled_voltage - voltage_min) /
+                                   (last_disabled_voltage - voltage);
+
+  if (temp_max_draw_ <
+      loggable_.GetPreferenceValue_unit_type<units::ampere_t>("min_max_draw")) {
+    return;
+  } else if (temp_max_draw_ >
+             loggable_.GetPreferenceValue_unit_type<units::ampere_t>(
+                 "max_max_draw")) {
+    return;
+  } else {
+    max_draw_ = temp_max_draw_;
+  }
+}
+
+void MotorMonkey::Tick(bool disabled) {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
-  loggable_.Graph("battery_voltage", battery_voltage.to<double>());
+  loggable_.Graph("battery_voltage", battery_voltage);
+  loggable_.Graph("last_disabled_voltage", last_disabled_voltage);
 
-  WriteMessages(max_draw);
+  if (disabled) {
+    last_disabled_voltage = battery_voltage;
+    return;
+  }
 
-  // TODO: Improve battery voltage estimation for simulation
+  units::ampere_t total_pred_draw = WriteMessages(max_draw_);
+
+  loggable_.Graph("total_pred_draw", total_pred_draw);
+
+  units::ampere_t cc_current =
+      loggable_.GetPreferenceValue_unit_type<units::ampere_t>("battery_cc") -
+      total_pred_draw;
+  sync_buffer.Add(cc_current.to<double>(), battery_voltage.to<double>());
+
+  RecalculateMaxDraw();
+
+  loggable_.Graph("max_draw", max_draw_);
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
     if (controller_registry[i] != nullptr) {
@@ -97,8 +168,9 @@ void MotorMonkey::Tick(units::ampere_t max_draw) {
   }
 }
 
-void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
+units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   units::ampere_t total_current = 0.0_A;
+  units::ampere_t second_total_current = 0.0_A;
   std::queue<MotorMessage> temp_messages{control_messages};
 
   double scale_factor = 1.0;
@@ -112,8 +184,6 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
     units::radians_per_second_t velocity =
         controller_registry[msg.slot_id]->GetVelocity();
 
-    frc846::control::base::MotorGains gains = gains_registry[msg.slot_id];
-
     double duty_cycle = 0.0;
 
     switch (msg.type) {
@@ -121,36 +191,25 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
       duty_cycle = std::get<double>(msg.value);
       break;
     case MotorMessage::Type::Position: {
-      duty_cycle =
-          gains.calculate((std::get<units::radian_t>(msg.value) -
-                              controller_registry[msg.slot_id]->GetPosition())
-                              .to<double>(),
-              0.0, velocity.to<double>(), 0.0);
-      duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
+      // Onboard control should only be used with low-current draw systems
+      duty_cycle = 0.0;
       break;
     }
     case MotorMessage::Type::Velocity: {
-      duty_cycle = gains.calculate(
-          (std::get<units::radians_per_second_t>(msg.value) - velocity)
-              .to<double>(),
-          0.0, 0.0, 0.0);
-      duty_cycle +=
-          gains.kFF *
-          (std::get<units::radians_per_second_t>(msg.value) /
-              frc846::control::base::MotorSpecificationPresets::get(motor_type)
-                  .free_speed)
-              .to<double>();
-      duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
+      // Onboard control should only be used with low-current draw systems
+      duty_cycle = 0.0;
       break;
     }
     default:
       throw std::runtime_error(
           "Unsupported MotorMessage type in MotorMonkey WriteMessages");
     }
-    total_current +=
-        units::math::abs(frc846::control::calculators::CurrentTorqueCalculator::
-                predict_current_draw(duty_cycle, velocity, battery_voltage,
-                    circuit_resistance_registry[msg.slot_id], motor_type));
+    units::ampere_t pred_draw =
+        frc846::control::calculators::CurrentTorqueCalculator::
+            predict_current_draw(duty_cycle, velocity, battery_voltage,
+                circuit_resistance_registry[msg.slot_id], motor_type);
+    second_total_current += units::math::max(0_A, pred_draw);
+    total_current += units::math::abs(pred_draw);
     temp_messages.pop();
   }
 
@@ -215,6 +274,7 @@ void MotorMonkey::WriteMessages(units::ampere_t max_draw) {
 
     control_messages.pop();
   }
+  return second_total_current;
 }
 
 bool MotorMonkey::VerifyConnected() {
