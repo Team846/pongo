@@ -30,4 +30,8 @@ struct ports {
   struct leds_ {  // TODO: Confirm LED ports
     static constexpr int kLEDStrip1 = 6;
   };
+
+  struct elevator_ {
+    static constexpr int kElevatorOne_CANID = 15;
+  };
 };
