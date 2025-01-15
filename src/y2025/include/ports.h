@@ -34,4 +34,8 @@ struct ports {
   struct elevator_ {
     static constexpr int kElevatorOne_CANID = 15;
   };
+
+  struct telescope_ {
+    static constexpr int kTelescopeOne_CANID = 16;
+  };
 };
