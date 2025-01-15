@@ -1,18 +1,13 @@
 #pragma once
 
-#include <units/angle.h>
-#include <units/constants.h>
 #include <units/length.h>
 #include <units/math.h>
-#include <units/torque.h>
-#include <units/velocity.h>
 
 #include "frc846/base/Loggable.h"
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/config/construction_params.h"
-#include "frc846/control/config/soft_limits.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/wpilib/units.h"
 #include "ports.h"
@@ -47,6 +42,7 @@ public:
 private:
   bool hasZeroed = false;
 
+  // TODO: Set to correct reduction later
   elevator_pos_conv_t elevator_reduction_ = 1.0_in / 1.0_tr;
 
   frc846::control::config::MotorConstructionParameters motor_configs;

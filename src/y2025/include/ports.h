@@ -34,4 +34,8 @@ struct ports {
   struct elevator_ {
     static constexpr int kElevatorOne_CANID = 15;
   };
+
+  struct algae_pivot_ {
+    static constexpr int kAlgaePivotOne_CANID = 18;
+  };
 };

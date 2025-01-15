@@ -3,8 +3,7 @@
 #include <units/current.h>
 #include <units/voltage.h>
 
-#include "frc846/control/base/motor_gains.h"
-#include "frc846/control/config/construction_params.h"
+#include "frc846/base/Loggable.h"
 
 #define REGISTER_MOTOR_CONFIG(subsystem_path, inverted, brake_mode,    \
     current_limit, smart_current_limit, voltage_compensation)          \

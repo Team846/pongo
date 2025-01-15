@@ -10,7 +10,7 @@ ElevatorSubsystem::ElevatorSubsystem()
           frc846::wpilib::unit_kg_m_sq{0.0})),
       elevator_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
           motor_configs) {
-  RegisterPreference("elevator/elevator_tolerance_", 0.25_in);
+  RegisterPreference("elevator_tolerance_", 0.25_in);
 
   REGISTER_MOTOR_CONFIG(
       "elevator/elevator_one_", false, true, 40_A, 40_A, 16.0_V);
@@ -52,7 +52,7 @@ bool ElevatorSubsystem::VerifyHardware() {
 ElevatorReadings ElevatorSubsystem::ReadFromHardware() {
   ElevatorReadings readings;
   readings.height = motor_helper_.GetPosition();
-  Graph("readings/elevator_pos", readings.height);
+  Graph("readings/elevator_position", readings.height);
   return readings;
 }
 
