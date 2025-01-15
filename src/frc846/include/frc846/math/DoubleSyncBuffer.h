@@ -25,10 +25,12 @@ public:
 
   Adds a value to each contained buffer. The values may be unsynced. Sync() will
   be called automatically.
-
   The second signal may be time delayed.
   */
   void Add(double val1, double val2);
+
+  // Computes the sync difference between the two buffers
+  void Sync();
 
   bool IsValid();
 
@@ -38,9 +40,6 @@ public:
   std::pair<double, double> GetTrough();
 
 private:
-  // Computes the sync difference between the two buffers
-  void Sync();
-
   std::vector<double> m_buffer_1;
   std::vector<double> m_buffer_2;
 

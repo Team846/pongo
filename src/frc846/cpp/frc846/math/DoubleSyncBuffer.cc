@@ -1,5 +1,6 @@
 #include "frc846/math/DoubleSyncBuffer.h"
 
+#include <iostream>
 #include <stdexcept>
 
 namespace frc846::math {
@@ -18,8 +19,6 @@ void DoubleSyncBuffer::Add(double val1, double val2) {
     m_buffer_1.erase(m_buffer_1.begin());
     m_buffer_2.erase(m_buffer_2.begin());
   }
-
-  if (IsValid()) Sync();
 }
 
 bool DoubleSyncBuffer::IsValid() {
@@ -42,7 +41,7 @@ void DoubleSyncBuffer::Sync() {
   for (int shift = 0; shift < max_sync_diff_; shift++) {
     double correlation = 0.0;
     for (size_t i = 0; i < m_buffer_1.size(); i++) {
-      correlation += m_buffer_1[i] * m_buffer_2[i + max_sync_diff_];
+      correlation += m_buffer_1[i] * m_buffer_2[i + shift];
     }
     if (correlation > max_correlation) {
       max_correlation = correlation;
