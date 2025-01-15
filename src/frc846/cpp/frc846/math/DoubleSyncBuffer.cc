@@ -40,9 +40,11 @@ void DoubleSyncBuffer::Sync() {
 
   for (int shift = 0; shift < max_sync_diff_; shift++) {
     double correlation = 0.0;
-    for (size_t i = 0; i < m_buffer_1.size(); i++) {
+    size_t sz = m_buffer_2.size() - shift;
+    for (size_t i = 0; i < sz; i++) {
       correlation += m_buffer_1[i] * m_buffer_2[i + shift];
     }
+    correlation /= sz;
     if (correlation > max_correlation) {
       max_correlation = correlation;
       sync_diff_ = shift;
