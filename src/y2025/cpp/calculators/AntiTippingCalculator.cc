@@ -48,8 +48,10 @@ frc846::math::VectorND<units::feet_per_second_squared, 2>
 AntiTippingCalculator::LimitAcceleration(
     frc846::math::VectorND<units::feet_per_second_squared, 2> accel,
     units::degree_t bearing) {
-  frc846::math::VectorND<units::feet_per_second_squared, 2> accel_dir =
-      accel.unit();
+  frc846::math::VectorND<units::feet_per_second_squared, 2> inertial =
+      accel.rotate(180_deg, true);
+  frc846::math::VectorND<units::feet_per_second_squared, 2> inertial_dir =
+      inertial.unit();
 
   frc846::math::Vector3D robot_cg = CalculateRobotCG();
 
@@ -74,7 +76,8 @@ AntiTippingCalculator::LimitAcceleration(
   units::degree_t closest_angle = 360_deg;
 
   for (size_t i = 0; i < 4; i++) {
-    units::degree_t angle = units::math::abs(accel_dir.angleTo(wheel_vecs[i]));
+    units::degree_t angle =
+        units::math::abs(inertial_dir.angleTo(wheel_vecs[i]));
     if (angle < closest_angle) {
       closest_angle = angle;
       closest_wheel_vec = i;
@@ -84,7 +87,7 @@ AntiTippingCalculator::LimitAcceleration(
   frc846::math::Vector2D closest_wheel = wheel_vecs[closest_wheel_vec];
 
   frc846::math::Vector2D effective_wheel_vec =
-      accel_dir.projectOntoThis<units::inch>(closest_wheel);
+      inertial_dir.projectOntoThis<units::inch>(closest_wheel);
   frc846::math::Vector3D effective_wheel_vec_3d{
       effective_wheel_vec[0], effective_wheel_vec[1], 0_in};
 
@@ -96,16 +99,18 @@ AntiTippingCalculator::LimitAcceleration(
 
   // TODO: Check all signs
 
-  units::newton_meter_t torque_accel =
+  units::newton_meter_t torque_inertial =
       r_vec
           .cross(frc846::math::VectorND<units::newtons, 3>{
-              accel[0] * robot_constants::total_weight,
-              accel[1] * robot_constants::total_weight, 0_N})
+              inertial[0] * robot_constants::total_weight,
+              inertial[1] * robot_constants::total_weight, 0_N})
           .magnitude();
 
-  if (torque_accel < torque_grav || torque_accel == 0.0_Nm) { return accel; }
+  if (torque_inertial < torque_grav || torque_inertial == 0.0_Nm) {
+    return accel;
+  }
 
-  double rescale_factor = torque_grav / torque_accel;
+  double rescale_factor = torque_grav / torque_inertial;
 
   return accel * rescale_factor;
 }
