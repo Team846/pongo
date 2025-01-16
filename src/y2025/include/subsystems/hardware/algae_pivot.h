@@ -8,6 +8,7 @@
 #include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/config/construction_params.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/calculators/VerticalArmCalculator.h"
 #include "frc846/wpilib/units.h"
 #include "ports.h"
 
@@ -49,6 +50,8 @@ private:
   frc846::control::config::MotorConstructionParameters motor_configs;
   frc846::control::HigherMotorController pivot_;
   frc846::control::HMCHelper<units::degree> motor_helper_;
+
+  frc846::robot::calculators::VerticalArmCalculator arm_calculator_;
 
   AlgaePivotReadings ReadFromHardware() override;
 

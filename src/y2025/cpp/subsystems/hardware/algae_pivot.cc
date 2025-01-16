@@ -24,6 +24,8 @@ AlgaePivotSubsystem::AlgaePivotSubsystem()
 
   motor_helper_.SetConversion(algae_pivot_reduction_);
 
+  arm_calculator_.setConstants({20.0_kg, 3.0_in, 0.0_deg, -1.0, 1.0});
+
   // motor_helper_.SetSoftLimits(
   //     using_limits, 90_deg, 0.0_deg, 80_deg, 5_deg, reduce_max_dc);
 
@@ -58,5 +60,7 @@ AlgaePivotReadings AlgaePivotSubsystem::ReadFromHardware() {
 
 void AlgaePivotSubsystem::WriteToHardware(AlgaePivotTarget target) {
   pivot_.SetGains(GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_"));
-  motor_helper_.WritePosition(target.position);
+  motor_helper_.WriteDC(arm_calculator_.calculate({motor_helper_.GetPosition(),
+      target.position, motor_helper_.GetVelocity(),
+      GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_")}));
 }

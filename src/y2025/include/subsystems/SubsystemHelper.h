@@ -28,10 +28,10 @@
       circuit_resistance, rotational_inertia}
 
 #define REGISTER_PIDF_CONFIG(subsystem_path, p, i, d, f) \
-  RegisterPreference(#subsystem_path "/kP", p);          \
-  RegisterPreference(#subsystem_path "/kI", i);          \
-  RegisterPreference(#subsystem_path "/kD", d);          \
-  RegisterPreference(#subsystem_path "/kF", f)
+  RegisterPreference(#subsystem_path "/_kP", p);         \
+  RegisterPreference(#subsystem_path "/_kI", i);         \
+  RegisterPreference(#subsystem_path "/_kD", d);         \
+  RegisterPreference(#subsystem_path "/_kF", f)
 
 #define GET_PIDF_GAINS(subsystem_path)                   \
   {GetPreferenceValue_double(#subsystem_path "/_kP"),    \
