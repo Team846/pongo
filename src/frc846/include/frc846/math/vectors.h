@@ -147,18 +147,22 @@ public:
         data[0] * units::math::sin(angle) + data[1] * units::math::cos(angle)};
   }
 
-  // Returns the dot product of this vector and another
-  T dot(const VectorND<UT, N>& other) const {
-    T result = T{};
+  // Returns the dot product of this vector and another with the units of the
+  // other vector
+  template <typename UT2>
+  units::unit_t<UT2> dot(const VectorND<UT2, N>& other) const {
+    units::unit_t<UT2> result{};
     for (size_t i = 0; i < N; ++i) {
-      result += data[i] * other[i].template to<double>();
+      result += data[i].template to<double>() * other[i];
     }
     return result;
   }
 
   // Returns the cross product of this vector and another
   // Cross product is only defined for 3D vectors
-  VectorND<UT, N> cross(const VectorND<UT, N>& other) const {
+  template <typename UT2>
+  VectorND<units::compound_unit<UT, UT2>, N> cross(
+      const VectorND<UT2, N>& other) const {
     static_assert(N == 3, "Cross product is only defined for 3D vectors.");
     return {data[1] * other[2] - data[2] * other[1],
         data[2] * other[0] - data[0] * other[2],
@@ -180,13 +184,18 @@ public:
   }
 
   // Projects this vector onto another and returns
-  VectorND<UT, N> projectOntoAnother(const VectorND<UT, N>& other) const {
+  template <typename UT2>
+  VectorND<UT, N> projectOntoAnother(const VectorND<UT2, N>& other) const {
     return other.projectOntoThis(*this);
   }
 
   // Projects another vector onto this and returns
-  VectorND<UT, N> projectOntoThis(const VectorND<UT, N>& other) const {
-    return unit() * dot(other).template to<double>();
+  template <typename UT2>
+  VectorND<UT2, N> projectOntoThis(const VectorND<UT2, N>& other) const {
+    assert(N == 2 && "Projection is only defined for 2D vectors.");
+    double unit_x = unit()[0].template to<double>();
+    double unit_y = unit()[1].template to<double>();
+    return {unit_x * dot(other), unit_y * dot(other)};
   }
 
   // Returns the angle of this vector
@@ -201,8 +210,9 @@ public:
   }
 
   // Returns the angle between this vector and another
+  template <typename UT2>
   units::degree_t angleTo(
-      const VectorND<UT, N>& other, bool angleIsBearing = false) const {
+      const VectorND<UT2, N>& other, bool angleIsBearing = false) const {
     return other.angle(angleIsBearing) - angle(angleIsBearing);
   }
 

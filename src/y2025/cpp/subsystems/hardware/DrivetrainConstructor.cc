@@ -3,6 +3,7 @@
 #include "frc846/control/calculators/CircuitResistanceCalculator.h"
 #include "frc846/math/constants.h"
 #include "ports.h"
+#include "subsystems/robot_constants.h"
 
 DrivetrainConstructor::DrivetrainConstructor()
     : Loggable{"DrivetrainConstructor"} {
@@ -42,8 +43,8 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       (frc846::math::constants::geometry::pi * wheel_diameter) / 6.12_tr;
   frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
 
-  configs.wheelbase_forward_dim = 26_in;
-  configs.wheelbase_horizontal_dim = 26_in;
+  configs.wheelbase_forward_dim = robot_constants::base::wheelbase_y;
+  configs.wheelbase_horizontal_dim = robot_constants::base::wheelbase_x;
 
   units::pound_t wheel_approx_weight = 2_lb;
   units::inch_t wheel_weight_radius = 1_in;

@@ -1,5 +1,7 @@
 #include "commands/teleop/drive_command.h"
 
+#include "calculators/AntiTippingCalculator.h"
+
 DriveCommand::DriveCommand(RobotContainer &container)
     : frc846::robot::GenericCommand<RobotContainer, DriveCommand>{
           container, "drive_command"} {
@@ -46,6 +48,27 @@ void DriveCommand::Periodic() {
               "max_omega");
 
   target.velocity = {translate_x * max_speed, translate_y * max_speed};
+
+  units::feet_per_second_squared_t accel_x{
+      rampRateLimiter_x_.findRate(target.velocity[0].to<double>())};
+  units::feet_per_second_squared_t accel_y{
+      rampRateLimiter_y_.findRate(target.velocity[1].to<double>())};
+
+  // TODO: plug real heights into AntiTippingCalculator
+
+  AntiTippingCalculator::SetTelescopeHeight(10_in);
+  AntiTippingCalculator::SetElevatorHeight(10_in);
+
+  auto accel_limited = AntiTippingCalculator::LimitAcceleration(
+      {accel_x, accel_y}, container_.drivetrain_.GetReadings().pose.bearing);
+
+  target.velocity[0] =
+      1_fps * rampRateLimiter_x_.limit(target.velocity[0].to<double>(),
+                  accel_limited[0].to<double>());
+  target.velocity[1] =
+      1_fps * rampRateLimiter_y_.limit(target.velocity[1].to<double>(),
+                  accel_limited[1].to<double>());
+
   target.angular_velocity = rotation * max_omega;
 
   container_.drivetrain_.SetTarget({target});

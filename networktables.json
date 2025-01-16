@@ -184,6 +184,14 @@
     }
   },
   {
+    "name": "/Preferences/Robot/Robot/permissible_current_draw (A)",
+    "type": "double",
+    "value": 300.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/steer_gains/_kP",
     "type": "double",
     "value": 2.0,
