@@ -25,8 +25,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   TODO: Set these values during season
   */
 
-  configs.navX_connection_mode =
-      frc846::robot::swerve::NavX_connection_type::kSerial;
+  configs.navX_connection_mode = studica::AHRS::NavXComType::kMXP_SPI;
 
   units::inch_t wheel_diameter = 4_in;
 

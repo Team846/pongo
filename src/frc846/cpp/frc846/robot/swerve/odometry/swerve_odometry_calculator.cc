@@ -12,12 +12,11 @@ SwerveOdometryOutput SwerveOdometryCalculator::calculate(
   frc846::math::Vector2D displacement{0_ft, 0_ft};
 
   for (int i = 0; i < 4; i++) {
-    displacement +=
-        frc846::math::Vector2D{module_diffs[i], inputs.steer_pos[i], true} /
-        4.0;
+    displacement += frc846::math::Vector2D{module_diffs[i],
+                        inputs.steer_pos[i] + inputs.bearing, true} /
+                    4.0;
   }
   displacement *= inputs.odom_ff_;
-  displacement.rotate(inputs.bearing, true);
 
   last_position_ += displacement;
 

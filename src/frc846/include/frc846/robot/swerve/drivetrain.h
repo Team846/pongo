@@ -12,18 +12,13 @@
 
 namespace frc846::robot::swerve {
 
-enum NavX_connection_type {
-  kSPI,
-  kSerial,
-};
-
 /*
 DrivetrainConfigs
 
 Contains all configs related to the specific drivetrain in use.
 */
 struct DrivetrainConfigs {
-  NavX_connection_type navX_connection_mode;
+  studica::AHRS::NavXComType navX_connection_mode;
 
   SwerveModuleCommonConfig module_common_config;
   std::array<SwerveModuleUniqueConfig, 4> module_unique_configs;

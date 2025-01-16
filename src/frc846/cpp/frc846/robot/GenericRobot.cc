@@ -31,8 +31,6 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
   FRC_CheckErrorStatus(status, "{}", "InitializeNotifier");
 
   HAL_SetNotifierName(notifier_, "Robot", &status);
-
-  RegisterPreference("permissible_current_draw", 300_A);
 }
 
 GenericRobot::~GenericRobot() {
@@ -55,6 +53,9 @@ void GenericRobot::StartCompetition() {
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog(), false);
 
   frc846::base::FunkyLogSystem::Start(20000);
+
+  // Setup MotorMonkey
+  frc846::control::MotorMonkey::Setup();
 
   // Add dashboard buttons
 
@@ -177,9 +178,7 @@ void GenericRobot::StartCompetition() {
     generic_robot_container_->UpdateHardware();
 
     // Tick MotorMonkey
-    frc846::control::MotorMonkey::Tick(
-        GetPreferenceValue_unit_type<units::ampere_t>(
-            "permissible_current_draw"));
+    frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
 
     // Update dashboards
     frc::SmartDashboard::UpdateValues();
