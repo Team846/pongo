@@ -17,6 +17,8 @@ TelescopeSubsystem::TelescopeSubsystem()
   REGISTER_PIDF_CONFIG("telescope/telescope_gains_", 0.0, 0.0, 0.0, 0.0);
   REGISTER_SOFTLIMIT_CONFIG("telescope/telescope_softlimits", true, 1.0);
 
+  motor_helper_.SetConversion(telescope_reduction);
+
   motor_helper_.bind(&telescope_);
 }
 

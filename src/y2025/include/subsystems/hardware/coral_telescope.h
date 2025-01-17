@@ -43,6 +43,8 @@ private:
 
   void WriteToHardware(TelescopeTarget target) override;
 
+  telescope_pos_conv_t telescope_reduction = 1.0_in / 0.0_tr;
+
   frc846::control::config::MotorConstructionParameters motor_configs;
   frc846::control::HigherMotorController telescope_;
   frc846::control::HMCHelper<units::inch> motor_helper_;
