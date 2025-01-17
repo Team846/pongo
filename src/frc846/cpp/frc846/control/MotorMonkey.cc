@@ -74,7 +74,7 @@ units::volt_t MotorMonkey::battery_voltage{0_V};
 
 units::volt_t MotorMonkey::last_disabled_voltage{0_V};
 
-frc846::math::DoubleSyncBuffer MotorMonkey::sync_buffer{50U, 15};
+frc846::math::DoubleSyncBuffer MotorMonkey::sync_buffer{100U, 35};
 
 units::ampere_t MotorMonkey::max_draw_{0.0_A};
 
@@ -208,7 +208,14 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
         frc846::control::calculators::CurrentTorqueCalculator::
             predict_current_draw(duty_cycle, velocity, battery_voltage,
                 circuit_resistance_registry[msg.slot_id], motor_type);
-    second_total_current += units::math::max(0_A, pred_draw);
+
+    if (velocity > 0_rad_per_s && pred_draw < 0_A) {
+      (void)pred_draw;  // Regen braking mode
+    } else if (velocity < 0_rad_per_s && pred_draw > 0_A) {
+      (void)pred_draw;  // Regen braking mode
+    } else {
+      second_total_current += units::math::abs(pred_draw);
+    }
     total_current += units::math::abs(pred_draw);
     temp_messages.pop();
   }
