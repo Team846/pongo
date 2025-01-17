@@ -62,7 +62,7 @@ std::pair<double, double> DoubleSyncBuffer::GetTrough() {
   double min2 = 100000000.0;
 
   for (size_t i = 1; i < m_buffer_2.size() - sync_diff_; i++) {
-    double added = m_buffer_1[i] * m_buffer_2[i + sync_diff_];
+    double added = m_buffer_2[i + sync_diff_];
     if (added < min_combination) {
       min_combination = added;
       min1 = m_buffer_1[i];
