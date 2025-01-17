@@ -38,4 +38,8 @@ struct ports {
   struct algae_pivot_ {
     static constexpr int kAlgaePivotOne_CANID = 18;
   };
+
+  struct ramp_ {
+    static constexpr int kRamp_CANID = 20;
+  };
 };

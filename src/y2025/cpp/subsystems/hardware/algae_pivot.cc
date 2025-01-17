@@ -18,9 +18,9 @@ AlgaePivotSubsystem::AlgaePivotSubsystem()
   REGISTER_SOFTLIMIT_CONFIG("algae_pivot/algae_pivot_softlimits", true, 1.0);
 
   // bool using_limits =
-  // GetPreferenceValue_bool("elevator/elevator_softlimits/using_limits");
+  // GetPreferenceValue_bool("algae_pivot/algae_pivot_softlimits/using_limits");
   // double reduce_max_dc =
-  // GetPreferenceValue_double("elevator/elevator_softlimits/reduce_max_dc");
+  // GetPreferenceValue_double("algae_pivot/algae_pivot_softlimits/reduce_max_dc");
 
   motor_helper_.SetConversion(algae_pivot_reduction_);
 
@@ -47,7 +47,7 @@ AlgaePivotTarget AlgaePivotSubsystem::ZeroTarget() const {
 bool AlgaePivotSubsystem::VerifyHardware() {
   bool ok = true;
   FRC846_VERIFY(
-      pivot_.VerifyConnected(), ok, "Could not verify elevator motor");
+      pivot_.VerifyConnected(), ok, "Could not verify algae pivot motor");
   return ok;
 }
 
