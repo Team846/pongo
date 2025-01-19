@@ -28,31 +28,15 @@ void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
     }
 
     loops++;
-  } else if (target.state == kLEDSCOOPLeds) {
+  } else if (target.state == kLEDSFoundAprilTag) {
     for (int i = 0; i < kLength; i++) {
       leds_buffer_[i].SetRGB(255, 255, 255);
-    }
-  } else if (target.state == kLEDSAmpingLeds) {
-    for (int i = 0; i < kLength; i++) {
-      leds_buffer_[i].SetRGB(255, 0, 255);
     }
   } else if (target.state == kLEDSClimbing) {
     for (int i = 0; i < kLength; i++) {
       leds_buffer_[i].SetRGB(0, 255, 0);
     }
-  } else if (target.state == kLEDSPreparingShoot) {
-    if (loops % 20 < 10) {
-      for (int i = 0; i < kLength; i++) {
-        leds_buffer_[i].SetRGB(0, 0, 255);
-      }
-    } else {
-      for (int i = 0; i < kLength; i++) {
-        leds_buffer_[i].SetRGB(0, 0, 0);
-      }
-    }
-    loops++;
-    loops %= 100;
-  } else if (target.state == kLEDSReadyToShoot) {
+  } else if (target.state == kLEDSFoundReef) {
     if (loops % 10 < 5) {
       for (int i = 0; i < kLength; i++) {
         leds_buffer_[i].SetRGB(0, 255, 0);

@@ -9,14 +9,12 @@ enum LEDsState {
   kLEDSNotReady,
   kLEDSZeroing,
   kLEDSTeleop,
-  kLEDSAutonomous,
-  kLEDSHasPiece,
-  kLEDSPreparingShoot,
-  kLEDSReadyToShoot,
+  kLEDSAutonomous,  // auto phase + GPD pickup
   kLEDSClimbing,
-  kLEDSAmpingLeds,
-  kLEDSCOOPLeds,
-  kLEDSDisabled,
+  kLEDSHasPiece,
+  kLEDSFoundReef,  // will start reef placing mechanism
+  kLEDSFoundAprilTag,
+  kLEDSDisabled
 };
 
 struct LEDsReadings {};
