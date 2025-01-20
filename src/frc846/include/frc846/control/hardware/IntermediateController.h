@@ -65,7 +65,7 @@ public:
 
   virtual ControllerErrorCodes GetLastErrorCode() = 0;
 
-  virtual bool VerifyConnected() = 0;  // changed
+  virtual bool VerifyConnected() = 0;
 };
 
 }  // namespace frc846::control::hardware

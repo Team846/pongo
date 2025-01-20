@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frc846/math/RampRateLimiter.h"
 #include "frc846/robot/GenericCommand.h"
 #include "subsystems/robot_container.h"
 
@@ -15,4 +16,8 @@ public:
   void OnEnd(bool interrupted) override;
 
   bool IsFinished() override;
+
+private:
+  frc846::math::RampRateLimiter rampRateLimiter_x_;
+  frc846::math::RampRateLimiter rampRateLimiter_y_;
 };

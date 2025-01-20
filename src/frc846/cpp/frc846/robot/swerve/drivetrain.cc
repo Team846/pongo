@@ -42,8 +42,8 @@ void DrivetrainSubsystem::Setup() {
     module->InitByParent();
     module->Setup();
     module->SetSteerGains(steer_gains);
-    module->ZeroWithCANcoder();
   }
+  ZeroBearing();
 }
 
 DrivetrainTarget DrivetrainSubsystem::ZeroTarget() const {

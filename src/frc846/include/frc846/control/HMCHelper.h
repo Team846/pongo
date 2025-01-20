@@ -41,7 +41,7 @@ public:
 
   void WritePosition(pos_unit position) {
     CHECK_HMC();
-    hmc_->WritePosition(position / conv_);
+    hmc_->WritePosition(position / conv_ - mark_offset);
   }
 
   void WriteVelocityOnController(vel_unit velocity) {
@@ -61,7 +61,7 @@ public:
 
   pos_unit GetPosition() {
     CHECK_HMC();
-    return hmc_->GetPosition() * conv_;
+    return hmc_->GetPosition() * conv_ + mark_offset;
   }
 
   units::current::ampere_t GetCurrent() {
@@ -75,10 +75,22 @@ public:
   }
 
   /*
+  OffsetPositionTo()
+
+  Does NOT zero motor encoder. Simply calculates then stores an offset, then
+  adds it when GetPosition() is called. Subtracts offset when calling
+  WritePosition().
+  */
+  void OffsetPositionTo(pos_unit position) {
+    CHECK_HMC();
+    mark_offset = position - GetPosition();
+  }
+
+  /*
   SetControllerSoftLimits()
 
-  Set software limits for forward and reverse motion. Will be managed onboard
-  the motor controller.
+  Set software limits for forward and reverse motion. Will be managed
+  onboard the motor controller.
   */
   void SetControllerSoftLimits(pos_unit forward_limit, pos_unit reverse_limit) {
     CHECK_HMC();
@@ -104,6 +116,8 @@ private:
   HigherMotorController* hmc_;
 
   conv_unit conv_;
+
+  pos_unit mark_offset{0};
 };
 
 }  // namespace frc846::control
