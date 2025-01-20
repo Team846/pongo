@@ -2,6 +2,8 @@
 
 #include <units/math.h>
 
+#include <thread>
+
 #include "frc846/math/collection.h"
 
 namespace frc846::robot::swerve {
@@ -59,11 +61,17 @@ void SwerveModuleSubsystem::Setup() {
   drive_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame});
+  drive_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
+  drive_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kVelocityFrame, 5_ms);
   drive_helper_.SetPosition(0_ft);
 
   steer_.Setup();
   steer_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame});
+  steer_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
 
   ZeroWithCANcoder();
 }
@@ -99,13 +107,13 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
         GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
 
     if (position.IsAllGood()) {
-      steer_helper_.SetPosition(position_zero);
+      steer_helper_.OffsetPositionTo(position_zero);
       Log("Zeroed to {}!", position_zero);
       return;
     } else if (attempts == kMaxAttempts) {
       Error("Unable to zero normally after {} attempts - attempting anyways",
           kMaxAttempts);
-      steer_helper_.SetPosition(position_zero);
+      steer_helper_.OffsetPositionTo(position_zero);
       Warn("Unreliably zeroed to {}!", position_zero);
       return;
     }

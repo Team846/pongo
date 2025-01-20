@@ -2,8 +2,6 @@
 
 #include <cctype>
 #include <cstring>
-#include <iostream>
-#include <string>
 
 namespace frc846::base {
 
@@ -13,11 +11,11 @@ std::pair<uint8_t, bool> Compression::char_conv(char x) {
 
   x = std::tolower(x);
 
-  const std::string ENCODING =
+  const std::string_view ENCODING =
       "\nabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()[]<>|;:',./?~_- ";
 
   size_t pos = ENCODING.find(x);
-  if (pos != std::string::npos) {
+  if (pos != std::string_view::npos) {
     val = pos;
   } else {
     val = ENCODING.size() - 1;
@@ -47,7 +45,7 @@ std::vector<uint8_t> Compression::pack_bytes(std::vector<uint8_t> conv) {
   return output;
 }
 
-std::vector<uint8_t> Compression::compress(const std::string& data) {
+std::vector<uint8_t> Compression::compress(const std::string_view& data) {
   std::vector<uint8_t> conv;
   for (char c : data) {
     auto [val, is_upper] = char_conv(c);

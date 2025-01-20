@@ -3,8 +3,6 @@
 #include <units/force.h>
 #include <units/torque.h>
 
-#include <iostream>
-
 #include "frc846/math/constants.h"
 #include "subsystems/robot_constants.h"
 

@@ -1,5 +1,7 @@
 #include "frc846/robot/swerve/drivetrain.h"
 
+#include <thread>
+
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
@@ -9,13 +11,13 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"},
       configs_{configs},
       modules_{},
-      navX_{configs.navX_connection_mode} {
+      navX_{configs.navX_connection_mode, studica::AHRS::k200Hz} {
   for (int i = 0; i < 4; i++) {
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
 
-  RegisterPreference("steer_gains/_kP", 2.0);
+  RegisterPreference("steer_gains/_kP", 4.0);
   RegisterPreference("steer_gains/_kI", 0.0);
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
@@ -24,6 +26,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
 
   RegisterPreference("odom_fudge_factor", 0.875);
+
+  RegisterPreference("steer_lag", 0.05_s);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -91,6 +95,7 @@ void DrivetrainSubsystem::SetCANCoderOffsets() {
 
 DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
+  units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
   Graph("readings/bearing", bearing);
 
@@ -130,7 +135,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  return {new_pose};
+  return {new_pose, yaw_rate};
 }
 
 void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
@@ -140,9 +145,17 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
     Graph("target/ol_velocity_y", ol_target->velocity[1]);
     Graph("target/ol_angular_velocity", ol_target->angular_velocity);
 
-    units::degree_t bearing = navX_.GetAngle() * 1_deg;
+    units::degree_t bearing = GetReadings().pose.bearing;
+    units::degree_t steer_lag_compensation =
+        GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+        GetReadings().yaw_rate;
 
-    auto ol_calc_outputs = ol_calculator_.calculate({ol_target->velocity,
+    Graph("target/steer_lag_compensation", steer_lag_compensation);
+
+    auto velocity_compensated =
+        ol_target->velocity.rotate(steer_lag_compensation, true);
+
+    auto ol_calc_outputs = ol_calculator_.calculate({velocity_compensated,
         ol_target->angular_velocity, bearing,
         GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed")});
 

@@ -51,6 +51,9 @@ public:
 
   virtual void EnableStatusFrames(
       std::vector<frc846::control::config::StatusFrame> frames) = 0;
+  virtual void OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame frame,
+      units::millisecond_t period) = 0;
 
   virtual bool IsDuplicateControlMessage(double duty_cycle) = 0;
   virtual bool IsDuplicateControlMessage(

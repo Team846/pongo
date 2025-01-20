@@ -1,6 +1,5 @@
 #include "frc846/math/DoubleSyncBuffer.h"
 
-#include <iostream>
 #include <stdexcept>
 
 namespace frc846::math {

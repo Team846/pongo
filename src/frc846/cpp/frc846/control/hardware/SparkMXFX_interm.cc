@@ -147,6 +147,23 @@ void SparkMXFX_interm::EnableStatusFrames(
   APPLY_CONFIG_NO_RESET();
 }
 
+void SparkMXFX_interm::OverrideStatusFramePeriod(
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  if (frame == config::StatusFrame::kFaultFrame ||
+      frame == config::StatusFrame::kLeader) {
+    configs.signals.FaultsPeriodMs(period.to<int>());
+    configs.signals.FaultsAlwaysOn(true);
+  } else if (frame == config::StatusFrame::kVelocityFrame) {
+    configs.signals.PrimaryEncoderVelocityPeriodMs(period.to<int>());
+  } else if (frame == config::StatusFrame::kPositionFrame) {
+    configs.signals.PrimaryEncoderPositionPeriodMs(period.to<int>());
+  } else if (frame == config::StatusFrame::kSensorFrame) {
+    configs.signals.AnalogPositionPeriodMs(period.to<int>());
+  }
+
+  APPLY_CONFIG_NO_RESET();
+}
+
 bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {
   if (double* dc = std::get_if<double>(&last_command_)) {
     return *dc == duty_cycle;

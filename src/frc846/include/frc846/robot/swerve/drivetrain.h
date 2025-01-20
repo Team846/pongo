@@ -31,6 +31,7 @@ struct DrivetrainConfigs {
 
 struct DrivetrainReadings {
   frc846::robot::swerve::odometry::SwervePose pose;
+  units::degrees_per_second_t yaw_rate;
 };
 
 // Open-loop control, for use during teleop

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 namespace frc846::base {
@@ -25,6 +25,6 @@ public:
   @param data input string
   @return compressed data, 6-bit binary packed into bytes.
   */
-  static std::vector<uint8_t> compress(const std::string& data);
+  static std::vector<uint8_t> compress(const std::string_view& data);
 };
 }  // namespace frc846::base

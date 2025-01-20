@@ -94,13 +94,29 @@ void TalonFX_interm::EnableStatusFrames(
       last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(10_Hz);
     } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
       last_status_code =
-          talon_.GetPosition().SetUpdateFrequency(200_Hz, max_wait_time_);
+          talon_.GetPosition().SetUpdateFrequency(50_Hz, max_wait_time_);
     } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
-      last_status_code = talon_.GetVelocity().SetUpdateFrequency(200_Hz);
+      last_status_code = talon_.GetVelocity().SetUpdateFrequency(50_Hz);
     }
     last_error_ = getErrorCode(last_status_code);
     if (last_error_ != ControllerErrorCodes::kAllOK) return;
   }
+}
+
+void TalonFX_interm::OverrideStatusFramePeriod(
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
+  if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
+    last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(
+        1 / period, max_wait_time_);
+  } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
+    last_status_code =
+        talon_.GetPosition().SetUpdateFrequency(1 / period, max_wait_time_);
+  } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
+    last_status_code =
+        talon_.GetVelocity().SetUpdateFrequency(1 / period, max_wait_time_);
+  }
+  last_error_ = getErrorCode(last_status_code);
 }
 
 bool TalonFX_interm::IsDuplicateControlMessage(double duty_cycle) {

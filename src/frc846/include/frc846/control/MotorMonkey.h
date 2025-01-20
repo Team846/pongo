@@ -68,6 +68,9 @@ public:
   static void EnableStatusFrames(
       size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames);
 
+  static void OverrideStatusFramePeriod(size_t slot_id,
+      frc846::control::config::StatusFrame frame, units::millisecond_t period);
+
   /*
   GetBatteryVoltage()
 

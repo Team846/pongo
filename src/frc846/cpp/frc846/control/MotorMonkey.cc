@@ -5,6 +5,7 @@
 #include <rev/SparkFlex.h>
 #include <rev/SparkMax.h>
 
+#include <iostream>
 #include <string>
 
 #include "frc846/control/hardware/SparkMXFX_interm.h"
@@ -83,12 +84,12 @@ std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 int MotorMonkey::num_loops_last_brown = 4000;
 
 void MotorMonkey::Setup() {
-  loggable_.RegisterPreference("voltage_min", 7.5_V);
+  loggable_.RegisterPreference("voltage_min", 8.0_V);
   loggable_.RegisterPreference("recal_voltage_thresh", 10.5_V);
   loggable_.RegisterPreference("default_max_draw", 150.0_A);
-  loggable_.RegisterPreference("min_max_draw", 40_A);
-  loggable_.RegisterPreference("max_max_draw", 300_A);
-  loggable_.RegisterPreference("battery_cc", 400_A);
+  loggable_.RegisterPreference("min_max_draw", 60_A);
+  loggable_.RegisterPreference("max_max_draw", 250_A);
+  loggable_.RegisterPreference("battery_cc", 700_A);
   loggable_.RegisterPreference("brownout_perm_loops", 500);
 
   max_draw_ = loggable_.GetPreferenceValue_unit_type<units::ampere_t>(
@@ -376,6 +377,16 @@ void MotorMonkey::EnableStatusFrames(
   SMART_RETRY(controller_registry[slot_id]->EnableStatusFrames(frames),
       "EnableStatusFrames");
   LOG_IF_ERROR("EnableStatusFrames");
+}
+
+void MotorMonkey::OverrideStatusFramePeriod(size_t slot_id,
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(
+      controller_registry[slot_id]->OverrideStatusFramePeriod(frame, period),
+      "OverrideStatusFramePeriod");
+  LOG_IF_ERROR("OverrideStatusFramePeriod");
 }
 
 units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }

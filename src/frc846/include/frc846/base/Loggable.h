@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <fstream>
 #include <initializer_list>
-#include <iostream>
 #include <type_traits>
 #include <unordered_set>
 #include <variant>
@@ -64,16 +63,16 @@ public:
   template <typename U> void Graph(std::string key, U value) const {
     static_assert(units::traits::is_unit_t<U>(), "must be a unit type");
 
-    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
-        units::abbreviation(units::make_unit<U>(0)));
-    Graph(fullkey, value.template to<double>());
+    std::string modkey = fmt::format(
+        "{} ({})", key, units::abbreviation(units::make_unit<U>(0)));
+    Graph(modkey, value.template to<double>());
   }
 
   // Creates a unit-type preference.
   template <typename U> void RegisterPreference(std::string key, U fallback) {
-    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
-        units::abbreviation(units::make_unit<U>(0)));
-    RegisterPreference(fullkey, fallback.template to<double>());
+    std::string modkey = fmt::format(
+        "{} ({})", key, units::abbreviation(units::make_unit<U>(0)));
+    RegisterPreference(modkey, fallback.template to<double>());
   }
 
   // Creates a double preference.

@@ -51,7 +51,7 @@ public:
 
   void WritePositionOnController(pos_unit position) {
     CHECK_HMC();
-    hmc_->WritePositionOnController(position / conv_);
+    hmc_->WritePositionOnController(position / conv_ - mark_offset);
   }
 
   vel_unit GetVelocity() {
@@ -77,7 +77,7 @@ public:
   /*
   OffsetPositionTo()
 
-  Does NOT zero motor encoder. Simply calculates then stores an offset, then
+  Does not zero motor encoder. Simply calculates then stores an offset, then
   adds it when GetPosition() is called. Subtracts offset when calling
   WritePosition().
   */
@@ -94,7 +94,8 @@ public:
   */
   void SetControllerSoftLimits(pos_unit forward_limit, pos_unit reverse_limit) {
     CHECK_HMC();
-    hmc_->SetControllerSoftLimits(forward_limit * conv_, reverse_limit * conv_);
+    hmc_->SetControllerSoftLimits(forward_limit * conv_ - mark_offset,
+        reverse_limit * conv_ - mark_offset);
   }
 
   /*
@@ -108,8 +109,9 @@ public:
       pos_unit forward_reduce = pos_unit(0),
       pos_unit reverse_reduce = pos_unit(0), double reduce_max_dc = 0.0) {
     hmc_->SetSoftLimits(config::SoftLimitsHelper<T>::CreateSoftLimits(conv_,
-        using_limits, forward_limit, reverse_limit, forward_reduce,
-        reverse_reduce, reduce_max_dc));
+        using_limits, forward_limit - mark_offset, reverse_limit - mark_offset,
+        forward_reduce - mark_offset, reverse_reduce - mark_offset,
+        reduce_max_dc));
   }
 
 private:

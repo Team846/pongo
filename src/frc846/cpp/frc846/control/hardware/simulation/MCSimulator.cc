@@ -2,8 +2,6 @@
 
 #include <units/math.h>
 
-#include <iostream>
-
 #include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/calculators/VelocityPositionEstimator.h"
 
