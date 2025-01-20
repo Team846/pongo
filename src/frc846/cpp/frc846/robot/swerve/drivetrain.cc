@@ -169,8 +169,10 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
           GetPreferenceValue_unit_type<units::millisecond_t>(
               "april_tags/april_variance_coeff")});
 
-  pose_estimator.AddVisionMeasurement(
-      {tag_pos.pos[0], tag_pos.pos[1]}, tag_pos.variance);
+  if (tag_pos.variance>=0){
+    pose_estimator.AddVisionMeasurement(
+        {tag_pos.pos[0], tag_pos.pos[1]}, tag_pos.variance);
+  }
 
   Graph("april_tags/april_pos_x", tag_pos.pos[0]);
   Graph("april_tags/april_pos_y", tag_pos.pos[1]);
