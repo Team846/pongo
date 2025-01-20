@@ -125,10 +125,15 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
-          steer_params,
-          frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
+          steer_params, frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO,
           steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
+
+  configs.camera_x_offsets = {4.5_in, 4_in};
+  configs.camera_y_offsets = {-6_in, -12.5_in};
+  configs.cams = 2;
+  configs.april_locations = {{18, {0_in, 0_in}}, {19, {-22.25_in, 0_in}},
+      {7, {0_in, 275_in}}, {8, {196.17_in, 652.73_in}}};
 
   return configs;
 }

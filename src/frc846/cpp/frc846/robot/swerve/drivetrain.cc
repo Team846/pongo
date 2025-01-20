@@ -22,6 +22,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
+  RegisterPreference("align_gains/_kP", 0.6);
+  RegisterPreference("align_gains/_kD", 0.1);
+
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
 
@@ -29,11 +32,29 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("steer_lag", 0.05_s);
 
+  RegisterPreference("pose_estimator/pose_variance", 0.01);
+  RegisterPreference("pose_estimator/velocity_variance", 1000.0);
+  RegisterPreference("pose_estimator/acceleration_variance", 1);
+
+  RegisterPreference("april_tags/april_variance_coeff", 0.33);
+  RegisterPreference("april_tags/fudge_latency", 20_ms);
+
   odometry_.setConstants({});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
       .wheelbase_forward_dim = configs.wheelbase_forward_dim,
   });
+
+  std::vector<std::shared_ptr<nt::NetworkTable>> april_tables = {};
+  for (int i = 0; i < configs.cams; i++) {
+    april_tables.push_back(
+        nt::NetworkTableInstance::GetDefault().GetTable("AprilTagsCam" + i));
+  }
+  tag_pos_calculator.setConstants({.tag_locations = configs.april_locations,
+      .camera_x_offsets = configs.camera_x_offsets,
+      .camera_y_offsets = configs.camera_y_offsets,
+      .cams = configs.cams,
+      .april_tables = april_tables});
 }
 
 void DrivetrainSubsystem::Setup() {
@@ -85,6 +106,9 @@ void DrivetrainSubsystem::ZeroBearing() {
     std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
   Error("Unable to zero after {} attempts", kMaxAttempts);
+
+  pose_estimator.SetPoint(
+      {GetReadings().april_point[0], GetReadings().april_point[1]});
 }
 
 void DrivetrainSubsystem::SetCANCoderOffsets() {
@@ -94,6 +118,11 @@ void DrivetrainSubsystem::SetCANCoderOffsets() {
 }
 
 DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
+  pose_estimator.Update(
+      GetPreferenceValue_double("pose_estimator/pose_variance"),
+      GetPreferenceValue_double("pose_estimator/velocity_variance"),
+      GetPreferenceValue_double("pose_estimator/acceleration_variance"));
+
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
@@ -123,19 +152,51 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
+
+  frc846::math::Vector2D delta_pos =
+      new_pose.position - GetReadings().pose.position;
+  pose_estimator.AddOdometryMeasurement({delta_pos[0], delta_pos[1]});
+
+  frc846::robot::calculators::ATCalculatorOutput tag_pos =
+      tag_pos_calculator.calculate({new_pose, yaw_rate,
+          GetPreferenceValue_double("april_tags/april_variance_coeff"),
+          GetPreferenceValue_unit_type<units::millisecond_t>(
+              "april_tags/april_variance_coeff")});
+
+  pose_estimator.AddVisionMeasurement(
+      {tag_pos.pos[0], tag_pos.pos[1]}, tag_pos.variance);
+
+  Graph("april_tags/april_pos_x", tag_pos.pos[0]);
+  Graph("april_tags/april_pos_y", tag_pos.pos[1]);
+  Graph("april_tags/april_variance", tag_pos.variance);
+
+  if (first_loop) {
+    pose_estimator.SetPoint({tag_pos.pos[0], tag_pos.pos[1]});
+    first_loop = false;
+  }
+
+  frc846::robot::swerve::odometry::SwervePose estimated_pose{
+      .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
+      .bearing = bearing,
+      .velocity = velocity,
+  };
+
+  Graph("estimated_pose/position_x", estimated_pose.position[0]);
+  Graph("estimated_pose/position_y", estimated_pose.position[1]);
+  Graph("estimated_pose/variance", pose_estimator.getVariance());
 
   // TODO: consider bearing simulation
 
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  return {new_pose, yaw_rate};
+  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate};
 }
 
 void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
