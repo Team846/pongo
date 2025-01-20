@@ -60,19 +60,14 @@ void SwerveModuleSubsystem::Setup() {
   drive_.Setup();
   drive_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
-          frc846::control::config::StatusFrame::kVelocityFrame});
-  drive_.OverrideStatusFramePeriod(
-      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
-  drive_.OverrideStatusFramePeriod(
-      frc846::control::config::StatusFrame::kVelocityFrame, 5_ms);
+          frc846::control::config::StatusFrame::kVelocityFrame},
+      20_ms, 5_ms, 5_ms, 20_ms);
   drive_helper_.SetPosition(0_ft);
 
   steer_.Setup();
   steer_.EnableStatusFrames(
-      {frc846::control::config::StatusFrame::kPositionFrame});
-  steer_.OverrideStatusFramePeriod(
-      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
-
+      {frc846::control::config::StatusFrame::kPositionFrame}, 20_ms, 20_ms,
+      5_ms, 20_ms);
   ZeroWithCANcoder();
 }
 

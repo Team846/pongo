@@ -18,6 +18,15 @@
         "open": true
       },
       "SmartDashboard": {
+        "SwerveDrivetrain": {
+          "open": true,
+          "readings": {
+            "open": true
+          },
+          "target": {
+            "open": true
+          }
+        },
         "open": true,
         "verify_hardware": {
           "open": true

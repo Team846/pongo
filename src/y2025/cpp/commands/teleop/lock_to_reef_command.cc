@@ -12,7 +12,7 @@ LockToReefCommand::LockToReefCommand(RobotContainer& container, bool is_left)
 void LockToReefCommand::OnInit() { Log("LockToReefCommand initialized"); }
 
 void LockToReefCommand::Periodic() {
-  auto pos = container_.drivetrain_.GetReadings().pose.position;
+  auto pos = container_.drivetrain_.GetReadings().estimated_pose.position;
   int reef_target_pos = ReefProvider::getClosestReefSide(pos);
 
   auto ci_readings_ = container_.control_input_.GetReadings();
@@ -34,7 +34,7 @@ void LockToReefCommand::Periodic() {
                                               (is_left_ ? 0 : 1)];
 
   target_pos.point +=
-      base_adj.rotate(container_.drivetrain_.GetReadings().pose.bearing);
+      base_adj.rotate(container_.drivetrain_.GetReadings().estimated_pose.bearing);
 
   frc846 ::math::Vector2D r_vec = target_pos.point - pos;
   Graph("lock_to_point/x_err", r_vec[0]);
@@ -54,7 +54,7 @@ void LockToReefCommand::Periodic() {
     units::feet_per_second_t speed_target =
         1_fps * lock_gains.calculate(r_vec.magnitude().to<double>(), 0.0,
                     container_.drivetrain_.GetReadings()
-                        .pose.velocity.magnitude()
+                        .estimated_pose.velocity.magnitude()
                         .to<double>(),
                     0.0);
 

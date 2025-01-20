@@ -17,7 +17,8 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     container.drivetrain_.ZeroBearing();
   }).ToPtr());
 
-  // FAKE, TODO: remove
+  // FAKE
+  //TODO: remove
 
   frc2::Trigger test_move_10_ft_trigger{[&] {
     return container.control_input_.GetReadings().test_move_10_ft;
