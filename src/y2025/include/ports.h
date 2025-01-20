@@ -34,22 +34,12 @@ struct ports {
   struct elevator_ {
     static constexpr int kElevatorOne_CANID = 15;
   };
+
   struct algae_pivot_ {
     static constexpr int kAlgaePivotOne_CANID = 18;
   };
 
   struct ramp_ {
     static constexpr int kRamp_CANID = 20;
-  struct telescope_ {
-    static constexpr int kTelescopeOne_CANID = 16;
-  };
-
-  struct coral_wrist_ {
-    static constexpr int kCoralWristOne_CANID = 16;
-  };
-
-  struct climber_ {
-    static constexpr int kClimberOne_CANID = 17;
-    static constexpr int kClimberTwo_CANID = 18;
   };
 };

@@ -175,8 +175,6 @@ To undo the going back:
 ```
 src/frc846/cpp/frc846/control/calculators/CurrentTorqueCalculator.cc:49:30: warning: Variable 'duty_cycle_original' is assigned a value that is never used. [unreadVariable]
 src/frc846/cpp/frc846/robot/swerve/drivetrain.cc:160:64: warning: Variable 'accel_target' is assigned a value that is never used. [unreadVariable]
-src/y2025/cpp/subsystems/hardware/climber.cc:50:3: warning: Consecutive return, break, continue, goto or throw statements are unnecessary. [duplicateBreak]
-src/y2025/cpp/subsystems/hardware/coral_wrist.cc:40:3: warning: Consecutive return, break, continue, goto or throw statements are unnecessary. [duplicateBreak]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
