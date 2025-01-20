@@ -206,7 +206,10 @@ public:
     if (angleIsBearing) { return units::math::atan2(data[0], data[1]); }
     try {
       return units::math::atan2(data[1], data[0]);
-    } catch (std::exception& exc) { return 0_deg; }
+    } catch (std::exception& exc) {
+      (void)exc;
+      return 0_deg;
+    }
   }
 
   // Returns the angle between this vector and another

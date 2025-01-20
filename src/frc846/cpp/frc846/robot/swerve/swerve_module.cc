@@ -94,12 +94,19 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
     Log("CANCoder zero attempt {}/{}", attempts, kMaxAttempts);
     auto position = cancoder_.GetAbsolutePosition();
 
+    units::degree_t position_zero =
+        -position.GetValue() +
+        GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
+
     if (position.IsAllGood()) {
-      units::degree_t position_zero =
-          -position.GetValue() +
-          GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
       steer_helper_.SetPosition(position_zero);
       Log("Zeroed to {}!", position_zero);
+      return;
+    } else if (attempts == kMaxAttempts) {
+      Error("Unable to zero normally after {} attempts - attempting anyways",
+          kMaxAttempts);
+      steer_helper_.SetPosition(position_zero);
+      Warn("Unreliably zeroed to {}!", position_zero);
       return;
     }
 
@@ -107,7 +114,6 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
-  Error("Unable to zero after {} attempts", kMaxAttempts);
 }
 
 SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {

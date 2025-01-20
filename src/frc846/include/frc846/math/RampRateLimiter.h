@@ -15,8 +15,6 @@ public:
 
   double limit(double value, double rateLimit);
 
-  double findRate(double value);
-
 private:
   double m_lastValue = 0.0;
   std::chrono::milliseconds m_lastTime;

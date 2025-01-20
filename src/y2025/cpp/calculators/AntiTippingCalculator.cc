@@ -3,6 +3,8 @@
 #include <units/force.h>
 #include <units/torque.h>
 
+#include <iostream>
+
 #include "frc846/math/constants.h"
 #include "subsystems/robot_constants.h"
 
@@ -46,12 +48,13 @@ frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {
 
 frc846::math::VectorND<units::feet_per_second_squared, 2>
 AntiTippingCalculator::LimitAcceleration(
-    frc846::math::VectorND<units::feet_per_second_squared, 2> accel,
+    frc846::math::VectorND<units::feet_per_second, 2> vel_vec,
     units::degree_t bearing) {
-  frc846::math::VectorND<units::feet_per_second_squared, 2> inertial =
-      accel.rotate(180_deg, true);
-  frc846::math::VectorND<units::feet_per_second_squared, 2> inertial_dir =
-      inertial.unit();
+  if (units::math::abs(vel_vec[0]) < 0.05_fps) vel_vec[0] = 0.05_fps;
+  if (units::math::abs(vel_vec[1]) < 0.05_fps) vel_vec[1] = 0.05_fps;
+
+  frc846::math::VectorND<units::feet_per_second, 2> v_neg_dir =
+      vel_vec.rotate(180_deg, true).unit();
 
   frc846::math::Vector3D robot_cg = CalculateRobotCG();
 
@@ -76,8 +79,7 @@ AntiTippingCalculator::LimitAcceleration(
   units::degree_t closest_angle = 360_deg;
 
   for (size_t i = 0; i < 4; i++) {
-    units::degree_t angle =
-        units::math::abs(inertial_dir.angleTo(wheel_vecs[i]));
+    units::degree_t angle = units::math::abs(v_neg_dir.angleTo(wheel_vecs[i]));
     if (angle < closest_angle) {
       closest_angle = angle;
       closest_wheel_vec = i;
@@ -87,30 +89,16 @@ AntiTippingCalculator::LimitAcceleration(
   frc846::math::Vector2D closest_wheel = wheel_vecs[closest_wheel_vec];
 
   frc846::math::Vector2D effective_wheel_vec =
-      inertial_dir.projectOntoThis<units::inch>(closest_wheel);
+      v_neg_dir.projectOntoThis<units::inch>(closest_wheel);
   frc846::math::Vector3D effective_wheel_vec_3d{
       effective_wheel_vec[0], effective_wheel_vec[1], 0_in};
 
   frc846::math::Vector3D r_vec = robot_cg - effective_wheel_vec_3d;
-  frc846::math::VectorND<units::newtons, 3> grav_vec{0_N, 0_N,
-      -frc846::math::constants::physics::g * robot_constants::total_weight};
 
-  units::newton_meter_t torque_grav = r_vec.cross(grav_vec).magnitude();
+  units::feet_per_second_squared_t perm_accel_x =
+      frc846::math::constants::physics::g * r_vec[0] / r_vec[2];
+  units::feet_per_second_squared_t perm_accel_y =
+      frc846::math::constants::physics::g * r_vec[1] / r_vec[2];
 
-  // TODO: Check all signs
-
-  units::newton_meter_t torque_inertial =
-      r_vec
-          .cross(frc846::math::VectorND<units::newtons, 3>{
-              inertial[0] * robot_constants::total_weight,
-              inertial[1] * robot_constants::total_weight, 0_N})
-          .magnitude();
-
-  if (torque_inertial < torque_grav || torque_inertial == 0.0_Nm) {
-    return accel;
-  }
-
-  double rescale_factor = torque_grav / torque_inertial;
-
-  return accel * rescale_factor;
+  return {perm_accel_x, perm_accel_y};
 }

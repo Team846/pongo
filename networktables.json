@@ -262,5 +262,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/min_max_draw (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/max_max_draw (A)",
+    "type": "double",
+    "value": 300.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

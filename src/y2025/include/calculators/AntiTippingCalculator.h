@@ -47,8 +47,7 @@ public:
   Limits the acceleration of the robot to prevent tipping.
   */
   static frc846::math::VectorND<units::feet_per_second_squared, 2>
-  LimitAcceleration(
-      frc846::math::VectorND<units::feet_per_second_squared, 2> accel,
+  LimitAcceleration(frc846::math::VectorND<units::feet_per_second, 2> vel_vec,
       units::degree_t bearing);
 
 private:

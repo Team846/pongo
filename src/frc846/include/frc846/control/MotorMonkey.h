@@ -155,6 +155,8 @@ private:
   };
 
   static std::queue<MotorMessage> control_messages;
+
+  static int num_loops_last_brown;
 };
 
 }  // namespace frc846::control
