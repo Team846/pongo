@@ -98,6 +98,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
   Graph("readings/bearing", bearing);
+  Graph("readings/yaw_rate", yaw_rate);
 
   frc846::math::VectorND<units::inch, 4> drive_positions{
       0_in, 0_in, 0_in, 0_in};
@@ -123,9 +124,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -147,7 +148,7 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
     units::degree_t bearing = GetReadings().pose.bearing;
     units::degree_t steer_lag_compensation =
-        GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+        -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
         GetReadings().yaw_rate;
 
     Graph("target/steer_lag_compensation", steer_lag_compensation);

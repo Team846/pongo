@@ -49,11 +49,6 @@ void DriveCommand::Periodic() {
 
   target.velocity = {translate_x * max_speed, translate_y * max_speed};
 
-  // TODO: plug real heights into AntiTippingCalculator
-
-  AntiTippingCalculator::SetTelescopeHeight(36_in);
-  AntiTippingCalculator::SetElevatorHeight(45_in);
-
   auto delta_dir = (frc846::math::VectorND<units::feet_per_second, 2>{
                         target.velocity[0], target.velocity[1]} -
                     container_.drivetrain_.GetReadings().pose.velocity);

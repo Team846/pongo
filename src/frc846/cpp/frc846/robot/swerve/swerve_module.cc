@@ -107,13 +107,13 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
         GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
 
     if (position.IsAllGood()) {
-      steer_helper_.OffsetPositionTo(position_zero);
+      steer_helper_.SetPosition(position_zero);
       Log("Zeroed to {}!", position_zero);
       return;
     } else if (attempts == kMaxAttempts) {
       Error("Unable to zero normally after {} attempts - attempting anyways",
           kMaxAttempts);
-      steer_helper_.OffsetPositionTo(position_zero);
+      steer_helper_.SetPosition(position_zero);
       Warn("Unreliably zeroed to {}!", position_zero);
       return;
     }
