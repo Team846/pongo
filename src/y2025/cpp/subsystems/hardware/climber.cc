@@ -9,12 +9,12 @@ ClimberSubsystem::ClimberSubsystem()
       motor_configs(GET_MOTOR_CONFIG("climber/climber_one_",
           ports::climber_::kClimberOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
-      motor_two_configs(GET_MOTOR_CONFIG("climber/climber_two_",
-          ports::climber_::kClimberOne_CANID, frc846::wpilib::unit_ohm{0.0},
-          frc846::wpilib::unit_kg_m_sq{0.0})),
-      climber_(frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550,
+      climber_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
           motor_configs),
-      climber_two_(frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550,
+      motor_two_configs(GET_MOTOR_CONFIG("climber/climber_two_",
+          ports::climber_::kClimberTwo_CANID, frc846::wpilib::unit_ohm{0.0},
+          frc846::wpilib::unit_kg_m_sq{0.0})),
+      climber_two_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
           motor_two_configs) {
   RegisterPreference("climber/climber_tolerance_", 0.25_in);
 
@@ -31,12 +31,13 @@ ClimberSubsystem::ClimberSubsystem()
   motor_helper_two_.bind(&climber_two_);
 }
 
-void ClimberSubsystem::Setup() { climber_.Setup(); }
+void ClimberSubsystem::Setup() {
+  climber_.Setup();
+  climber_two_.Setup();
+}
 
 ClimberTarget ClimberSubsystem::ZeroTarget() const {
-  ClimberTarget target;
-  target.position = 0.0_deg;
-  return target;
+  return {0.0_deg, ClimberState::kClimberIdle};
 }
 
 bool ClimberSubsystem::VerifyHardware() {
@@ -47,7 +48,6 @@ bool ClimberSubsystem::VerifyHardware() {
       climber_two_.VerifyConnected(), ok, "climber two not connected");
 
   return ok;
-  return true;
 }
 
 ClimberReadings ClimberSubsystem::ReadFromHardware() {

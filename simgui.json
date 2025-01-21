@@ -1,4 +1,28 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "CANcoder (v6)[12]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[3]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[6]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[9]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -9,16 +33,71 @@
       "/SmartDashboard/zero_bearing": "Command"
     }
   },
-  "NetworkTables Info": {
-    "Connections": {
-      "open": true
-    },
-    "Server": {
-      "Subscribers": {
+  "NetworkTables": {
+    "transitory": {
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        },
         "open": true
       },
-      "open": true
-    },
+      "Preferences": {
+        "open": true
+      },
+      "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "MotorMonkey": {
+          "open": true
+        },
+        "Robot": {
+          "Robot": {
+            "open": true
+          },
+          "open": true
+        },
+        "SwerveDrivetrain": {
+          "BL": {
+            "SwerveDrivetrain": {
+              "BL": {
+                "open": true,
+                "readings": {
+                  "open": true
+                },
+                "target": {
+                  "open": true
+                }
+              },
+              "open": true
+            },
+            "open": true,
+            "target": {
+              "open": true
+            }
+          },
+          "open": true
+        },
+        "coral_wrist": {
+          "coral_wrist": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true,
+        "prune_prefs": {
+          "open": true
+        },
+        "zero_bearing": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
     "visible": true
   }
 }

@@ -40,6 +40,8 @@ struct ports {
 
   struct ramp_ {
     static constexpr int kRamp_CANID = 20;
+  };
+
   struct telescope_ {
     static constexpr int kTelescopeOne_CANID = 16;
   };

@@ -19,7 +19,7 @@ struct ClimberReadings {
   units::degree_t position;
 };
 
-enum ClimberState { kIdle, kPreClimb, kClimb };
+enum ClimberState { kClimberIdle, kPreClimb, kClimb };
 
 struct ClimberTarget {
   units::degree_t position;
@@ -27,7 +27,7 @@ struct ClimberTarget {
 };
 
 using climber_pos_conv_t = units::unit_t<
-    units::compound_unit<units::deg, units::inverse<units::turn>>>;
+    units::compound_unit<units::degree, units::inverse<units::turn>>>;
 
 class ClimberSubsystem
     : public frc846::robot::GenericSubsystem<ClimberReadings, ClimberTarget> {
@@ -45,7 +45,7 @@ private:
 
   void WriteToHardware(ClimberTarget target) override;
 
-  climber_pos_conv_t climber_reduction_ = 90.0_deg / 1.0_tr;
+  climber_pos_conv_t climber_reduction_ = 1.0_deg / 1.0_tr;
 
   frc846::control::config::MotorConstructionParameters motor_configs;
   frc846::control::config::MotorConstructionParameters motor_two_configs;

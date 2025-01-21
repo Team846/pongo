@@ -20,7 +20,7 @@ struct AlgaePivotTarget {
   units::degree_t position;
 };
 
-using elevator_pos_conv_t = units::unit_t<
+using algae_pivot_pos_conv_t = units::unit_t<
     units::compound_unit<units::degree, units::inverse<units::turn>>>;
 
 class AlgaePivotSubsystem
@@ -45,7 +45,7 @@ private:
   bool hasZeroed = false;
 
   // TODO: Set to correct reduction later
-  elevator_pos_conv_t algae_pivot_reduction_ = 1.0_deg / 1.0_tr;
+  algae_pivot_pos_conv_t algae_pivot_reduction_ = 1.0_deg / 1.0_tr;
 
   frc846::control::config::MotorConstructionParameters motor_configs;
   frc846::control::HigherMotorController pivot_;
