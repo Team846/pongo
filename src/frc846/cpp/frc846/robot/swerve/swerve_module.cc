@@ -109,12 +109,14 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
     if (position.IsAllGood()) {
       steer_helper_.SetPosition(position_zero);
       Log("Zeroed to {}!", position_zero);
+      just_zeroed = true;
       return;
     } else if (attempts == kMaxAttempts) {
       Error("Unable to zero normally after {} attempts - attempting anyways",
           kMaxAttempts);
       steer_helper_.SetPosition(position_zero);
       Warn("Unreliably zeroed to {}!", position_zero);
+      just_zeroed = true;
       return;
     }
 
@@ -141,36 +143,27 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
-  if (SwerveModuleOLControlTarget* ol_target =
-          std::get_if<SwerveModuleOLControlTarget>(&target)) {
-    Graph("target/ol_drive_target", ol_target->drive);
-    Graph("target/ol_steer_target", ol_target->steer);
+  Graph("target/ol_drive_target", target.drive);
+  Graph("target/ol_steer_target", target.steer);
 
-    auto [steer_dir, invert_drive] =
-        calculateSteerPosition(ol_target->steer, GetReadings().steer_pos);
+  auto [steer_dir, invert_drive] =
+      calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
-    Graph("target/steer_dir", steer_dir);
-    Graph("target/invert_drive", invert_drive);
+  Graph("target/steer_dir", steer_dir);
+  Graph("target/invert_drive", invert_drive);
 
-    units::dimensionless::scalar_t cosine_comp =
-        units::math::cos(ol_target->steer - GetReadings().steer_pos);
+  units::dimensionless::scalar_t cosine_comp =
+      units::math::cos(target.steer - GetReadings().steer_pos);
 
-    Graph("target/cosine_comp", cosine_comp.to<double>());
+  Graph("target/cosine_comp", cosine_comp.to<double>());
 
-    double drive_duty_cycle = ol_target->drive / max_speed_;
+  double drive_duty_cycle = target.drive / max_speed_;
 
-    drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
+  drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
 
-    if (std::abs(drive_duty_cycle) > 0.002) {
-      steer_helper_.WritePositionOnController(steer_dir);
-    }
-  } else if (SwerveModuleTorqueControlTarget* torque_target =
-                 std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
-    // TODO: finish torque control for drivetrain
-    Graph("target/torque_drive_target", torque_target->drive);
-    Graph("target/torque_steer_target", torque_target->steer);
-  } else {
-    throw std::runtime_error("SwerveModuleTarget was not of a valid type");
+  if (std::abs(drive_duty_cycle) > 0.002 || just_zeroed) {
+    steer_helper_.WritePositionOnController(steer_dir);
+    just_zeroed = false;
   }
 }
 

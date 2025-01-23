@@ -26,7 +26,7 @@ struct DrivetrainConfigs {
   units::inch_t wheelbase_horizontal_dim;
   units::inch_t wheelbase_forward_dim;
 
-  units::feet_per_second_t max_speed;
+  units::feet_per_second_squared_t max_accel;
 };
 
 struct DrivetrainReadings {
@@ -42,8 +42,9 @@ struct DrivetrainOLControlTarget {
 
 // Allows for acceleration-based control of the drivetrain
 struct DrivetrainAccelerationControlTarget {
-  frc846::math::VectorND<units::feet_per_second_squared, 2> linear_acceleration;
-  units::degrees_per_second_squared_t angular_acceleration;
+  units::feet_per_second_squared_t linear_acceleration;
+  units::degree_t accel_dir;
+  units::degrees_per_second_t angular_velocity;
 };
 
 using DrivetrainTarget = std::variant<DrivetrainOLControlTarget,
@@ -73,6 +74,12 @@ public:
 private:
   DrivetrainReadings ReadFromHardware() override;
 
+  frc846::math::VectorND<units::feet_per_second, 2> compensateForSteerLag(
+      frc846::math::VectorND<units::feet_per_second, 2> uncompensated);
+
+  void WriteVelocitiesHelper(
+      frc846::math::VectorND<units::feet_per_second, 2> velocity,
+      units::degrees_per_second_t angular_velocity, bool cut_excess_steering);
   void WriteToHardware(DrivetrainTarget target) override;
 
   DrivetrainConfigs configs_;

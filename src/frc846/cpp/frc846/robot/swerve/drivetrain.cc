@@ -139,42 +139,71 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   return {new_pose, yaw_rate};
 }
 
+frc846::math::VectorND<units::feet_per_second, 2>
+DrivetrainSubsystem::compensateForSteerLag(
+    frc846::math::VectorND<units::feet_per_second, 2> uncompensated) {
+  units::degree_t steer_lag_compensation =
+      -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+      GetReadings().yaw_rate;
+
+  Graph("target/steer_lag_compensation", steer_lag_compensation);
+
+  return uncompensated.rotate(steer_lag_compensation, true);
+}
+
+void DrivetrainSubsystem::WriteVelocitiesHelper(
+    frc846::math::VectorND<units::feet_per_second, 2> velocity,
+    units::degrees_per_second_t angular_velocity, bool cut_excess_steering) {
+  units::degree_t bearing = GetReadings().pose.bearing;
+  auto velocity_compensated = compensateForSteerLag(velocity);
+
+  auto ol_calc_outputs =
+      ol_calculator_.calculate({velocity_compensated, angular_velocity, bearing,
+          GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"),
+          cut_excess_steering});
+
+  for (int i = 0; i < 4; i++) {
+    modules_[i]->SetTarget(SwerveModuleOLControlTarget{
+        ol_calc_outputs.drive_outputs[i], ol_calc_outputs.steer_outputs[i]});
+  }
+}
+
 void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
+  for (int i = 0; i < 4; i++) {
+    modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/_kP"),
+        GetPreferenceValue_double("steer_gains/_kI"),
+        GetPreferenceValue_double("steer_gains/_kD"),
+        GetPreferenceValue_double("steer_gains/_kF")});
+  }
+
   if (DrivetrainOLControlTarget* ol_target =
           std::get_if<DrivetrainOLControlTarget>(&target)) {
-    Graph("target/ol_velocity_x", ol_target->velocity[0]);
-    Graph("target/ol_velocity_y", ol_target->velocity[1]);
-    Graph("target/ol_angular_velocity", ol_target->angular_velocity);
+    Graph("target/ol/velocity_x", ol_target->velocity[0]);
+    Graph("target/ol/velocity_y", ol_target->velocity[1]);
+    Graph("target/ol/angular_velocity", ol_target->angular_velocity);
 
-    units::degree_t bearing = GetReadings().pose.bearing;
-    units::degree_t steer_lag_compensation =
-        -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
-        GetReadings().yaw_rate;
-
-    Graph("target/steer_lag_compensation", steer_lag_compensation);
-
-    auto velocity_compensated =
-        ol_target->velocity.rotate(steer_lag_compensation, true);
-
-    auto ol_calc_outputs = ol_calculator_.calculate({velocity_compensated,
-        ol_target->angular_velocity, bearing,
-        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed")});
-
-    for (int i = 0; i < 4; i++) {
-      modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/_kP"),
-          GetPreferenceValue_double("steer_gains/_kI"),
-          GetPreferenceValue_double("steer_gains/_kD"),
-          GetPreferenceValue_double("steer_gains/_kF")});
-
-      SwerveModuleOLControlTarget module_target{
-          .drive = ol_calc_outputs.drive_outputs[i],
-          .steer = ol_calc_outputs.steer_outputs[i]};
-      modules_[i]->SetTarget(module_target);
-    }
+    WriteVelocitiesHelper(
+        ol_target->velocity, ol_target->angular_velocity, false);
   } else if (DrivetrainAccelerationControlTarget* accel_target =
                  std::get_if<DrivetrainAccelerationControlTarget>(&target)) {
-    throw std::runtime_error("Acceleration control not yet implemented");
-    // TODO: implement acceleration control for drivetrain
+    Graph(
+        "target/accel/linear_acceleration", accel_target->linear_acceleration);
+    Graph("target/accel/accel_dir", accel_target->accel_dir);
+    Graph("target/angular_velocity", accel_target->angular_velocity);
+
+    auto motor_specs = frc846::control::base::MotorSpecificationPresets::get(
+        configs_.module_common_config.motor_types);
+
+    units::feet_per_second_t true_max_speed =
+        motor_specs.free_speed * configs_.module_common_config.drive_reduction;
+    units::feet_per_second_t accel_buffer =
+        accel_target->linear_acceleration / configs_.max_accel * true_max_speed;
+
+    auto vel_new_target = GetReadings().pose.velocity +
+                          frc846::math::VectorND<units::feet_per_second, 2>{
+                              accel_buffer, accel_target->accel_dir, true};
+
+    WriteVelocitiesHelper(vel_new_target, accel_target->angular_velocity, true);
   }
 
   for (int i = 0; i < 4; i++)
