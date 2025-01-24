@@ -40,8 +40,9 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }};
 
   test_lock_trigger.WhileTrue(frc846::robot::swerve::LockToPointCommand{
-      &container.drivetrain_, {{0_ft, 0_ft}, 0_deg, 0_fps}}
-          .ToPtr());
+      &container.drivetrain_,
+      {{0_ft, 0_ft}, 0_deg,
+          0_fps}}.ToPtr());
 
   // END FAKE
 }
