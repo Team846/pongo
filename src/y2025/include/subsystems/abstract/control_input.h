@@ -10,6 +10,7 @@ struct ControlInputReadings {
 
   bool test_move_10_ft;  // TODO: remove when not needed
   bool test_bearing_pid;
+  bool test_lock;
 
   bool zero_bearing;
 };

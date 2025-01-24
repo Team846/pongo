@@ -57,6 +57,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.test_move_10_ft = dr_readings.x_button;
   ci_readings_.test_bearing_pid = dr_readings.y_button;
+  ci_readings_.test_lock = dr_readings.a_button;
 
   return ci_readings_;
 }

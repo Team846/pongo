@@ -3,7 +3,7 @@
 namespace frc846::robot::swerve {
 
 AimCommand::AimCommand(DrivetrainSubsystem* drivetrain, units::degree_t target)
-    : Loggable("AimCommand"), target_(target) {
+    : Loggable("AimCommand"), drivetrain_{drivetrain}, target_(target) {
   SetName("AimCommand");
   AddRequirements({drivetrain_});
 }

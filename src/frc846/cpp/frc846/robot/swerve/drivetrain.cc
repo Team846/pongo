@@ -25,6 +25,12 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("bearing_gains/_kP", 0.5);
   RegisterPreference("bearing_gains/_kI", 0.0);
   RegisterPreference("bearing_gains/_kD", 0.0);
+  RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
+
+  RegisterPreference("lock_gains/_kP", 0.5);
+  RegisterPreference("lock_gains/_kI", 0.0);
+  RegisterPreference("lock_gains/_kD", 0.0);
+  RegisterPreference("lock_gains/deadband", 2_in);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
@@ -115,8 +121,23 @@ units::degrees_per_second_t DrivetrainSubsystem::ApplyBearingPID(
       GetPreferenceValue_double("bearing_gains/_kI"),
       GetPreferenceValue_double("bearing_gains/_kD"), 0.0};
 
-  return 1_deg_per_s *
-         gains.calculate(error.to<double>(), 0.0, yaw_rate.to<double>(), 0.0);
+  double raw_output =
+      gains.calculate(error.to<double>(), 0.0, yaw_rate.to<double>(), 0.0);
+
+  Graph("bearing_pid/raw_output (c.dps)", raw_output);
+
+  units::degrees_per_second_t output =
+      1_deg_per_s *
+      frc846::math::HorizontalDeadband(raw_output,
+          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+              "bearing_gains/deadband")
+              .to<double>(),
+          GetPreferenceValue_unit_type<units::degrees_per_second_t>("max_omega")
+              .to<double>());
+
+  Graph("bearing_pid/output", output);
+
+  return output;
 }
 
 DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
