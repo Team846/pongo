@@ -2,27 +2,28 @@
 
 #include <units/angle.h>
 #include <units/length.h>
-#include <units/degree_t.h>
+#include <units/math.h>
 
 
 #include "frc/smartdashboard/Smartdashboard.h"
-#include "frc846/ntinf/grapher.h"
 #include "frc846/robot/GenericSubsystem.h"
-#include "frc846/util/math.h"
-#include "networktables/NetworkTable.h"
-#include "networktables/NetworkTableEntry.h"
-#include "networktables/NetworkTableInstance.h"
-#include "networktables/NetworkTableValue.h"
+#include "frc846/math/constants.h"
+#include "frc846/math/vectors.h"
+#include "frc846/math/collection.h"
+#include "frc846/base/Loggable.h"
+#include "frc846/wpilib/NTAction.h"
+#include "field.h"
+
 #include "ports.h"
-#include "subsystems/hardware/drivetrain.h"
 
 struct GPDTarget {};
+
 struct GPDReadings {
   bool note_detected;
   units::degree_t note_angle;
-  std::vector<frc846::util::Vector2D<units::foot_t>> points;
+  std::vector<frc846::math::Vector2D> notes;
   int note_index;
-  frc846::util::Vector2D<units::foot_t> closest_note;
+  frc846::math::Vector2D closest_note;
 };
 
 class GPDSubsystem
@@ -30,82 +31,39 @@ class GPDSubsystem
  public:
   GPDSubsystem(bool init);
 
+  std::pair<frc846::math::Vector2D, int> getBestNote(
+      const std::vector<frc846::math::Vector2D>& notes,
+      const frc846::math::Vector2D& robot_velocity);
+  
+  frc846::math::Vector2D findDistance(
+      units::degree_t theta_h, units::degree_t theta_v);
+
   void Setup() override {};
-
-  std::pair<frc846::util::Vector2D<units::foot_t>, int> getBestNote(
-      const std::vector<frc846::util::Vector2D<units::foot_t>>& notes,
-      const frc846::util::Vector2D<units::feet_per_second_t>& robot_velocity);
-
-  frc846::util::Vector2D<units::foot_t> findDistance(units::degree_t theta_h,
-                                                     units::degree_t theta_v);
 
   GPDTarget ZeroTarget() const override;
 
   bool VerifyHardware() override;
 
- private:
-  GPDReadings prevReadings;
-
-  frc846::util::Position poseAtLastRequest;
-  bool requested = false;
-  int prevFrame = -1;
-
-  frc846::base::Loggable readings_named{*this, "readings"};
-  frc846::ntinf::Grapher<bool> note_detected_graph_{readings_named,
-                                                    "note_detected"};
-
-  frc846::base::Loggable algo_params{*this, "algo_parameters"};
-  frc846::ntinf::Pref<units::foot_t> mount_height_{algo_params, "mount_height",
-                                                   1_ft};
-  frc846::ntinf::Pref<units::foot_t> note_height_{algo_params, "note_height",
-                                                  0_ft};
-  frc846::ntinf::Pref<units::second_t> nt_latency{algo_params, "nt_latency",
-                                                  0_s};
-
-  std::shared_ptr<nt::NetworkTable> gpdTable =
-      nt::NetworkTableInstance::GetDefault().GetTable("gpd");
-  frc846::ntinf::Grapher<units::foot_t> note_distance_magnitude_graph_{
-      readings_named, "note_distance_magnitude_graph"};
-  frc846::ntinf::Grapher<units::degree_t> note_angle_graph_{readings_named,
-                                                            "note_angle_graph"};
-  frc846::ntinf::Grapher<units::second_t> total_latency_{readings_named,
-                                                         "total_latency_graph"};
-
-  nt::NetworkTableInstance nt_table = nt::NetworkTableInstance::GetDefault();
-
-  std::shared_ptr<nt::NetworkTable> raspiPreferences =
-      nt::NetworkTableInstance::GetDefault().GetTable("RaspiPreferences");
-
   GPDReadings ReadFromHardware() override;
 
   void WriteToHardware(GPDTarget target) override;
-};
-
-public:
-  GPDSubsystem();
-
-  void Setup() override;
-
-  ElevatorTarget ZeroTarget() const override;
-
-  bool VerifyHardware() override;
-
-  bool WithinTolerance(units::inch_t pos) {
-    return units::math::abs(pos - GetReadings().height) <
-           GetPreferenceValue_unit_type<units::inch_t>("elevator_tolerance_");
-  }
+  // bool WithinTolerance(units::inch_t pos) {}
 
 private:
-  bool hasZeroed = false;
+  Field g_field;
+  GPDReadings prevReadings;
 
-  // TODO: Set to correct reduction later
-  elevator_pos_conv_t elevator_reduction_ = 1.0_in / 1.0_tr;
+  frc846::base::Loggable readings_named{*this, "readings"};
+  frc846::base::Loggable algo_params{"ago_parameters"};
 
-  frc846::control::config::MotorConstructionParameters motor_configs;
-  frc846::control::HigherMotorController elevator_;
-  frc846::control::HMCHelper<units::inch> motor_helper_;
 
-  ElevatorReadings ReadFromHardware() override;
 
-  void WriteToHardware(ElevatorTarget target) override;
+  units::foot_t mount_height_ = GetPreferenceValue_unit_type<units::inch_t>("gpd_mount_height");
+  units::foot_t algae_height_ = GetPreferenceValue_unit_type<units::inch_t>("gpd_algae_height");
+  units::second_t latency_ = GetPreferenceValue_unit_type<units::second_t>("gpd_latency");
+  
+   std::shared_ptr<nt::NetworkTable> gpdTable =
+      nt::NetworkTableInstance::GetDefault().GetTable("gpd");
+
+
 };
