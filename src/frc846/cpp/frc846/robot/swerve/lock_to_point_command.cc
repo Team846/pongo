@@ -14,6 +14,8 @@ void LockToPointCommand::Initialize() { Log("LockToPointCommand initialized"); }
 void LockToPointCommand::Execute() {
   frc846::math::Vector2D r_vec =
       target_.point - drivetrain_->GetReadings().pose.position;
+  Graph("lock_to_point/x_err", r_vec[0]);
+  Graph("lock_to_point/y_err", r_vec[1]);
   if (r_vec.magnitude() <
       drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
           "lock_gains/deadband")) {
@@ -32,7 +34,7 @@ void LockToPointCommand::Execute() {
 
     drivetrain_->SetTarget(DrivetrainOLControlTarget{
         frc846::math::VectorND<units::feet_per_second, 2>{
-            speed_target, r_vec.angle(true), true},
+            speed_target, r_vec.angle(true) + 180_deg, true},
         drivetrain_->ApplyBearingPID(target_.bearing)});
   }
 }

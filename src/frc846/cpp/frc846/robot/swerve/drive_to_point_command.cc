@@ -27,7 +27,7 @@ void DriveToPointCommand::Execute() {
   DrivetrainAccelerationControlTarget dt_target{
       .linear_acceleration = max_acceleration_,
       .accel_dir = (target_.point - start_point_).angle(true),
-      .angular_velocity = 0_deg_per_s,  // TODO: add bearing control
+      .angular_velocity = 0_deg_per_s,
   };
 
   units::second_t t_decel =
@@ -37,7 +37,10 @@ void DriveToPointCommand::Execute() {
       (dt_readings.pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
 
-  if ((target_.point - start_point_).magnitude() <= stopping_distance) {
+  if ((target_.point - start_point_).magnitude() <=
+      stopping_distance -
+          drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
+              "drive_to_subtract")) {
     if (dt_readings.pose.velocity.magnitude() < 4_fps &&
         target_.velocity > 1_fps) {
       dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
@@ -46,7 +49,7 @@ void DriveToPointCommand::Execute() {
           (dt_readings.pose.position - start_point_).angle(true);
     }
     dt_target.linear_acceleration = max_deceleration_;
-  } else if (dt_readings.pose.velocity.magnitude() < target_.velocity) {
+  } else if (dt_readings.pose.velocity.magnitude() < max_speed_) {
     dt_target.linear_acceleration = max_acceleration_;
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
@@ -55,6 +58,8 @@ void DriveToPointCommand::Execute() {
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
   }
+
+  dt_target.angular_velocity = drivetrain_->ApplyBearingPID(target_.bearing);
 
   drivetrain_->SetTarget(dt_target);
 }

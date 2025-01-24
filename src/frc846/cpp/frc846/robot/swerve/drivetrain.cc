@@ -32,8 +32,11 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/_kD", 0.0);
   RegisterPreference("lock_gains/deadband", 2_in);
 
+  RegisterPreference("drive_to_subtract", 5_in);
+
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
+  RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
   RegisterPreference("odom_fudge_factor", 0.875);
 
@@ -109,7 +112,7 @@ units::degrees_per_second_t DrivetrainSubsystem::ApplyBearingPID(
   units::degrees_per_second_t yaw_rate = GetReadings().yaw_rate;
 
   units::degree_t error =
-      frc846::math::CoterminalDifference(bearing, target_bearing);
+      frc846::math::CoterminalDifference(target_bearing, bearing);
 
   Graph("bearing_pid/bearing", bearing);
   Graph("bearing_pid/target", target_bearing);
@@ -171,9 +174,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -189,13 +192,14 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 frc846::math::VectorND<units::feet_per_second, 2>
 DrivetrainSubsystem::compensateForSteerLag(
     frc846::math::VectorND<units::feet_per_second, 2> uncompensated) {
-  units::degree_t steer_lag_compensation =
-      -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
-      GetReadings().yaw_rate;
+  // units::degree_t steer_lag_compensation =
+  //     -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+  //     GetReadings().yaw_rate;
 
-  Graph("target/steer_lag_compensation", steer_lag_compensation);
+  // Graph("target/steer_lag_compensation", steer_lag_compensation);
 
-  return uncompensated.rotate(steer_lag_compensation, true);
+  // return uncompensated.rotate(steer_lag_compensation, true);
+  return uncompensated;
 }
 
 void DrivetrainSubsystem::WriteVelocitiesHelper(
@@ -250,12 +254,18 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
                           frc846::math::VectorND<units::feet_per_second, 2>{
                               accel_buffer, accel_target->accel_dir, true};
 
+    units::degrees_per_second_t angular_vel = units::math::min(
+        units::math::max(accel_target->angular_velocity,
+            -GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+                "max_omega_cut")),
+        GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+            "max_omega_cut"));
+
     units::feet_per_second_t speed_limit =
         GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed");
     if (accel_target->speed_limit >= 1_fps)
       speed_limit = accel_target->speed_limit;
-    WriteVelocitiesHelper(
-        vel_new_target, accel_target->angular_velocity, true, speed_limit);
+    WriteVelocitiesHelper(vel_new_target, angular_vel, true, speed_limit);
   }
 
   for (int i = 0; i < 4; i++)

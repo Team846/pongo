@@ -98,6 +98,8 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
 
+  last_rezero = 0;
+
   for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
     Log("CANCoder zero attempt {}/{}", attempts, kMaxAttempts);
     auto position = cancoder_.GetAbsolutePosition();
@@ -109,14 +111,12 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
     if (position.IsAllGood()) {
       steer_helper_.SetPosition(position_zero);
       Log("Zeroed to {}!", position_zero);
-      just_zeroed = true;
       return;
     } else if (attempts == kMaxAttempts) {
       Error("Unable to zero normally after {} attempts - attempting anyways",
           kMaxAttempts);
       steer_helper_.SetPosition(position_zero);
       Warn("Unreliably zeroed to {}!", position_zero);
-      just_zeroed = true;
       return;
     }
 
@@ -161,9 +161,9 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 
   drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
 
-  if (std::abs(drive_duty_cycle) > 0.002 || just_zeroed) {
+  if (std::abs(drive_duty_cycle) > 0.002 || last_rezero < 50) {
     steer_helper_.WritePositionOnController(steer_dir);
-    just_zeroed = false;
+    last_rezero += 1;
   }
 }
 

@@ -94,7 +94,7 @@ public:
   void SetSteerGains(frc846::control::base::MotorGains gains);
 
 private:
-  bool just_zeroed = false;
+  int last_rezero = 101;
 
   /*
   getMotorParams()

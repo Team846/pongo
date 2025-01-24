@@ -25,7 +25,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   test_move_10_ft_trigger.WhileTrue(
       frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
-          {{0_ft, 10_ft}, 0_deg, 0_fps}, 4_fps, 20_fps_sq, 15_fps_sq}
+          {{0_ft, 9_ft}, 0_deg, 0_fps}, 35_fps, 20_fps_sq, 15_fps_sq}
           .ToPtr());
 
   frc2::Trigger test_bearing_pid_trigger{[&] {
@@ -40,9 +40,8 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }};
 
   test_lock_trigger.WhileTrue(frc846::robot::swerve::LockToPointCommand{
-      &container.drivetrain_,
-      {{0_ft, 10_ft}, 0_deg,
-          0_fps}}.ToPtr());
+      &container.drivetrain_, {{0_ft, 0_ft}, 0_deg, 0_fps}}
+          .ToPtr());
 
   // END FAKE
 }

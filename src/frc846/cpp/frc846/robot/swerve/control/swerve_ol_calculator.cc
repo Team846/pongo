@@ -55,6 +55,8 @@ SwerveOpenLoopCalculatorOutput SwerveOpenLoopCalculator::calculate(
 
   if (inputs.cut_excess_steering) {
     units::radians_per_second_t rotation_target = inputs.rotation_target;
+    units::radians_per_second_t abs_rotation_target =
+        units::math::abs(inputs.rotation_target);
     units::feet_per_second_t max_mag;
 
     do {
@@ -63,8 +65,10 @@ SwerveOpenLoopCalculatorOutput SwerveOpenLoopCalculator::calculate(
       max_mag = get_max_mag();
 
       if (max_mag > inputs.max_speed) {
-        rotation_target -= constants_.rotation_iter_dec;
-        if (rotation_target < 0_rad_per_s) {
+        abs_rotation_target -= constants_.rotation_iter_dec;
+        rotation_target =
+            units::math::copysign(abs_rotation_target, rotation_target);
+        if (abs_rotation_target < 0_rad_per_s) {
           calculate_module_targets(0_rad_per_s);
           max_mag = get_max_mag();
           if (max_mag > inputs.max_speed) { rescale_outputs(get_max_mag()); }
