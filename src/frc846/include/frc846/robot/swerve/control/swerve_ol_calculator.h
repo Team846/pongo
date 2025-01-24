@@ -15,6 +15,8 @@ namespace frc846::robot::swerve::control {
 struct SwerveOpenLoopCalculatorConstants {
   units::inch_t wheelbase_horizontal_dim;
   units::inch_t wheelbase_forward_dim;
+
+  units::radians_per_second_t rotation_iter_dec = 6_rad_per_s;
 };
 
 struct SwerveOpenLoopCalculatorInputs {
@@ -22,6 +24,7 @@ struct SwerveOpenLoopCalculatorInputs {
   units::degrees_per_second_t rotation_target;
   units::degree_t bearing;
   units::feet_per_second_t max_speed;
+  bool cut_excess_steering;
 };
 
 struct SwerveOpenLoopCalculatorOutput {

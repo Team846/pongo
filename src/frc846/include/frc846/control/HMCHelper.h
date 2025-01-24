@@ -75,18 +75,6 @@ public:
   }
 
   /*
-  OffsetPositionTo()
-
-  Does not zero motor encoder. Simply calculates then stores an offset, then
-  adds it when GetPosition() is called. Subtracts offset when calling
-  WritePosition().
-  */
-  void OffsetPositionTo(pos_unit position) {
-    CHECK_HMC();
-    mark_offset = position - GetPosition();
-  }
-
-  /*
   SetControllerSoftLimits()
 
   Set software limits for forward and reverse motion. Will be managed

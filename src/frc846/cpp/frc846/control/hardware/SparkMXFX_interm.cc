@@ -121,7 +121,7 @@ void SparkMXFX_interm::EnableStatusFrames(
 
   if (vector_has(frames, config::StatusFrame::kVelocityFrame) ||
       vector_has(frames, config::StatusFrame::kCurrentFrame)) {
-    configs.signals.PrimaryEncoderVelocityPeriodMs(20);
+    configs.signals.PrimaryEncoderVelocityPeriodMs(25);
     configs.signals.PrimaryEncoderVelocityAlwaysOn(true);
   } else {
     configs.signals.PrimaryEncoderVelocityPeriodMs(32767);
