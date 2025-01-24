@@ -55,5 +55,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.translate_y = dr_readings.left_stick_y;
   ci_readings_.rotation = dr_readings.right_stick_x;
 
+  ci_readings_.test_move_10_ft = dr_readings.x_button;
+  ci_readings_.test_bearing_pid = dr_readings.y_button;
+
   return ci_readings_;
 }

@@ -22,6 +22,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
+  RegisterPreference("bearing_gains/_kP", 0.5);
+  RegisterPreference("bearing_gains/_kI", 0.0);
+  RegisterPreference("bearing_gains/_kD", 0.0);
+
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
 
@@ -93,6 +97,28 @@ void DrivetrainSubsystem::SetCANCoderOffsets() {
   }
 }
 
+units::degrees_per_second_t DrivetrainSubsystem::ApplyBearingPID(
+    units::degree_t target_bearing) {
+  units::degree_t bearing = GetReadings().pose.bearing;
+  units::degrees_per_second_t yaw_rate = GetReadings().yaw_rate;
+
+  units::degree_t error =
+      frc846::math::CoterminalDifference(bearing, target_bearing);
+
+  Graph("bearing_pid/bearing", bearing);
+  Graph("bearing_pid/target", target_bearing);
+  Graph("bearing_pid/error", error);
+  Graph("bearing_pid/yaw_rate", yaw_rate);
+
+  frc846::control::base::MotorGains gains{
+      GetPreferenceValue_double("bearing_gains/_kP"),
+      GetPreferenceValue_double("bearing_gains/_kI"),
+      GetPreferenceValue_double("bearing_gains/_kD"), 0.0};
+
+  return 1_deg_per_s *
+         gains.calculate(error.to<double>(), 0.0, yaw_rate.to<double>(), 0.0);
+}
+
 DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
@@ -153,14 +179,13 @@ DrivetrainSubsystem::compensateForSteerLag(
 
 void DrivetrainSubsystem::WriteVelocitiesHelper(
     frc846::math::VectorND<units::feet_per_second, 2> velocity,
-    units::degrees_per_second_t angular_velocity, bool cut_excess_steering) {
+    units::degrees_per_second_t angular_velocity, bool cut_excess_steering,
+    units::feet_per_second_t speed_limit) {
   units::degree_t bearing = GetReadings().pose.bearing;
   auto velocity_compensated = compensateForSteerLag(velocity);
 
-  auto ol_calc_outputs =
-      ol_calculator_.calculate({velocity_compensated, angular_velocity, bearing,
-          GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"),
-          cut_excess_steering});
+  auto ol_calc_outputs = ol_calculator_.calculate({velocity_compensated,
+      angular_velocity, bearing, speed_limit, cut_excess_steering});
 
   for (int i = 0; i < 4; i++) {
     modules_[i]->SetTarget(SwerveModuleOLControlTarget{
@@ -182,8 +207,9 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
     Graph("target/ol/velocity_y", ol_target->velocity[1]);
     Graph("target/ol/angular_velocity", ol_target->angular_velocity);
 
-    WriteVelocitiesHelper(
-        ol_target->velocity, ol_target->angular_velocity, false);
+    WriteVelocitiesHelper(ol_target->velocity, ol_target->angular_velocity,
+        false,
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"));
   } else if (DrivetrainAccelerationControlTarget* accel_target =
                  std::get_if<DrivetrainAccelerationControlTarget>(&target)) {
     Graph(
@@ -203,7 +229,12 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
                           frc846::math::VectorND<units::feet_per_second, 2>{
                               accel_buffer, accel_target->accel_dir, true};
 
-    WriteVelocitiesHelper(vel_new_target, accel_target->angular_velocity, true);
+    units::feet_per_second_t speed_limit =
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed");
+    if (accel_target->speed_limit >= 1_fps)
+      speed_limit = accel_target->speed_limit;
+    WriteVelocitiesHelper(
+        vel_new_target, accel_target->angular_velocity, true, speed_limit);
   }
 
   for (int i = 0; i < 4; i++)

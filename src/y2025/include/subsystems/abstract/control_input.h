@@ -8,6 +8,9 @@ struct ControlInputReadings {
   double translate_y;
   double rotation;
 
+  bool test_move_10_ft;  // TODO: remove when not needed
+  bool test_bearing_pid;
+
   bool zero_bearing;
 };
 
