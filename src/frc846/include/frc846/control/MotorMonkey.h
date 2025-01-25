@@ -122,7 +122,7 @@ public:
   static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
       units::radian_t reverse_limit);
 
-  static std::string parseError(
+  static std::string_view parseError(
       frc846::control::hardware::ControllerErrorCodes err);
 
   static bool VerifyConnected();

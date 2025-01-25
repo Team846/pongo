@@ -4,13 +4,15 @@
 
 namespace frc846::base {
 
-std::string Loggable::Join(std::string p, std::string n) { return p + "/" + n; }
+std::string_view Loggable::Join(std::string p, std::string n) {
+  return p + "/" + n;
+}
 
 unsigned int Loggable::GetWarnCount() { return warn_count_; }
 
 unsigned int Loggable::GetErrorCount() { return error_count_; }
 
-std::unordered_set<std::string> Loggable::used_preferences_{};
+std::unordered_set<std::string_view> Loggable::used_preferences_{};
 
 unsigned int Loggable::warn_count_ = 0;
 unsigned int Loggable::error_count_ = 0;

@@ -37,6 +37,10 @@ void MCSimulator::Tick() {
   units::newton_meter_t torque_output =
       frc846::control::calculators::CurrentTorqueCalculator::current_to_torque(
           pred_current_, specs);
+  units::newton_meter_t friction_torque =
+      specs.stall_torque * specs.friction_loss *
+      (velocity_ / units::math::abs(velocity_));
+  if (units::math::abs(velocity_) < 0.01_rad_per_s) { friction_torque = 0_Nm; }
   torque_output -= load_;
 
   std::chrono::microseconds current_time =
@@ -48,6 +52,9 @@ void MCSimulator::Tick() {
   units::radians_per_second_t new_velocity =
       frc846::control::calculators::VelocityPositionEstimator::predict_velocity(
           velocity_, torque_output, loop_time, rotational_inertia_);
+  new_velocity =
+      units::radians_per_second_t{std::clamp(new_velocity.to<double>(),
+          (-specs.free_speed).to<double>(), specs.free_speed.to<double>())};
   units::radians_per_second_t avg_velocity = (velocity_ + new_velocity) / 2.0;
 
   position_ =
