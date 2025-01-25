@@ -1,6 +1,5 @@
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 
-
 #include "frc846/wpilib/util.h"
 
 namespace frc846::control::hardware {
@@ -16,7 +15,6 @@ namespace frc846::control::hardware {
 
 #define APPLY_CONFIG_NO_RESET() \
   set_last_error(esc_->Configure(configs, NO_CONFIG_RESET, NO_PERSIST_PARAMS))
-
 
 bool SparkMXFX_interm::VerifyConnected() {
   if (esc_ == nullptr) return false;

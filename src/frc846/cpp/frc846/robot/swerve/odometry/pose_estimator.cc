@@ -17,12 +17,9 @@ PoseEstimator::PoseEstimator(
   double dt =
       units::second_t(frc846::robot::GenericRobot::kPeriod).to<double>();
   filter = frc846::math::LinearKalmanFilter<6>(state_,
-      Eigen::Matrix<double, 6, 6>(
-          {{1, 0, dt, 0, dt * dt / 2, 0}, {0, 1, 0, dt, 0, dt * dt / 2},
-              {0, 0, 1, 0, dt, 0}, {0, 0, 0, 1, 0, dt}, {0, 0, 0, 0, 1, 0},
-              {0, 0, 0, 0, 0, 1}}));  // TODO: how to
-                                      // fix this to
-                                      // be prefs?
+      Eigen::Matrix<double, 6, 6>({{1, 0, dt, 0, dt * dt / 2, 0},
+          {0, 1, 0, dt, 0, dt * dt / 2}, {0, 0, 1, 0, dt, 0},
+          {0, 0, 0, 1, 0, dt}, {0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 1}}));
   Hv = Eigen::Matrix<double, 2, 6>({{1, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0}});
 
   Ha = Eigen::Matrix<double, 2, 6>({{0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 1}});
@@ -82,4 +79,4 @@ double PoseEstimator::getVariance() {
   return (cov.coeff(0, 0) + cov.coeff(1, 1)) / 2;
 }
 
-}  // namespace frc846
+}  // namespace frc846::robot::swerve::odometry

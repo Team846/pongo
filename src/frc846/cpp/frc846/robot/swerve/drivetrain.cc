@@ -23,7 +23,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
-
   RegisterPreference("bearing_gains/_kP", 0.5);
   RegisterPreference("bearing_gains/_kI", 0.0);
   RegisterPreference("bearing_gains/_kD", 0.0);
@@ -46,7 +45,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("steer_lag", 0.05_s);
 
-
   RegisterPreference("pose_estimator/pose_variance", 0.01);
   RegisterPreference("pose_estimator/velocity_variance", 1.0);
   RegisterPreference("pose_estimator/accel_variance", 1.0);
@@ -55,7 +53,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("april_tags/fudge_latency", 20_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
-
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -231,7 +228,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
       .bearing = bearing,
       .velocity = pose_estimator.velocity(),
-  };  // initialize so it can be used for april tags
+  };  // Initialize estimated pose
 
   frc846::robot::calculators::ATCalculatorOutput tag_pos =
       tag_pos_calculator.calculate({estimated_pose, yaw_rate,
@@ -257,7 +254,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
       .bearing = bearing,
       .velocity = pose_estimator.velocity(),
-  };  // update after april tags
+  };  // Update estimated pose again with vision data
 
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
   Graph("estimated_pose/position_y", estimated_pose.position[1]);

@@ -1,8 +1,9 @@
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 
+#include <iostream>
+
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/wpilib/time.h"
-#include <iostream>
 
 namespace frc846::robot::calculators {
 
@@ -19,9 +20,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     units::second_t tl =
         units::second_t(constants_.april_tables.at(i)->GetNumber("tl", -1)) +
         delay;
-    if (delay > 3.5*frc846::robot::GenericRobot::kPeriod) {
-      continue; 
-    }
+    if (delay > 3.5 * frc846::robot::GenericRobot::kPeriod) { continue; }
 
     std::vector<double> tx_nums =
         constants_.april_tables.at(i)->GetNumberArray("tx", {});
@@ -44,8 +43,9 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     if (distances.size() == tx.size() && tx.size() == tags.size()) {
       for (int j = 0; j < tags.size(); j++) {
         if (constants_.tag_locations.contains(tags[j])) {
-          output.pos += getPos(
-              bearingAtCapture, tx.at(j), distances.at(j), tags.at(j), i) *(48) / distances.at(j).to<double>();
+          output.pos += getPos(bearingAtCapture, tx.at(j), distances.at(j),
+                            tags.at(j), i) *
+                        (48) / distances.at(j).to<double>();
           variance +=
               1 /
               std::max(
