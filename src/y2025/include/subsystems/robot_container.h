@@ -19,9 +19,11 @@ public:
     RegisterPreference("init_leds", true);
 
     control_input_.Init();
-    if (GetPreferenceValue_bool("init_drivetrain")) drivetrain_.Init();
-    if (GetPreferenceValue_bool("init_leds")) leds_.Init();
+    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    bool leds_init = (GetPreferenceValue_bool("init_leds"));
 
-    RegisterSubsystems({&control_input_, &drivetrain_, &leds_});
+    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupB({{&leds_, leds_init}});
+    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
   }
 };
