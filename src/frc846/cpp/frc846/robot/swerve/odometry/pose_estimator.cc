@@ -31,8 +31,8 @@ PoseEstimator::PoseEstimator(
 
 void PoseEstimator::Update(double pVar, double vVar, double aVar) {
   filter.Predict(Eigen::Matrix<double, 6, 1>(
-      {{pVar}, {pVar}, {vVar}, {vVar}, {aVar}, {aVar}})
-          .asDiagonal());
+      {{pVar}, {pVar}, {vVar}, {vVar}, {aVar},
+          {aVar}}).asDiagonal());
   state_ = filter.getEstimate();
 }
 
