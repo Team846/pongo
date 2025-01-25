@@ -112,8 +112,12 @@ void HigherMotorController::SetSoftLimits(
 }
 
 void HigherMotorController::EnableStatusFrames(
-    std::vector<frc846::control::config::StatusFrame> frames) {
-  frc846::control::MotorMonkey::EnableStatusFrames(slot_id_, frames);
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
+  frc846::control::MotorMonkey::EnableStatusFrames(slot_id_, frames, faults_ms,
+      velocity_ms, encoder_position_ms, analog_position_ms);
 }
 
 void HigherMotorController::OverrideStatusFramePeriod(

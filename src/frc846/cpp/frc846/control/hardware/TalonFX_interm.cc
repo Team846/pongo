@@ -84,7 +84,10 @@ void TalonFX_interm::WritePosition(units::radian_t position) {
 }
 
 void TalonFX_interm::EnableStatusFrames(
-    std::vector<frc846::control::config::StatusFrame> frames) {
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
   last_error_ =
       getErrorCode(talon_.OptimizeBusUtilization(0_Hz, max_wait_time_));
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }

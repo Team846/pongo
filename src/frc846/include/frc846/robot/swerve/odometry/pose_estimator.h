@@ -13,9 +13,6 @@
 namespace frc846::robot::swerve::odometry {
 
 class PoseEstimator {
-private:
-  static constexpr int kModuleCount = 4;
-
 public:
   PoseEstimator(frc846::math::VectorND<units::foot, 2> initial_position,
       frc846::math::VectorND<units::feet_per_second, 2> initial_vel,

@@ -93,7 +93,10 @@ private:
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
   frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;
   frc846::robot::calculators::AprilTagCalculator tag_pos_calculator;
-  frc846::robot::swerve::odometry::PoseEstimator pose_estimator;
+  frc846::robot::swerve::odometry::PoseEstimator pose_estimator{{0_ft, 0_ft},
+                                      {0_fps, 0_fps},
+                                      {units::feet_per_second_squared_t(0),
+                                       units::feet_per_second_squared_t(0)}};
 
   bool first_loop = true;
 };

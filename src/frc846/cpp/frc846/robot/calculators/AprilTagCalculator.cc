@@ -2,6 +2,7 @@
 
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/wpilib/time.h"
+#include <iostream>
 
 namespace frc846::robot::calculators {
 
@@ -18,8 +19,8 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     units::second_t tl =
         units::second_t(constants_.april_tables.at(i)->GetNumber("tl", -1)) +
         delay;
-    if (tl > frc846::robot::GenericRobot::kPeriod) {
-      continue;  // check if measurement is old
+    if (delay > 3.5*frc846::robot::GenericRobot::kPeriod) {
+      continue; 
     }
 
     std::vector<double> tx_nums =
@@ -44,7 +45,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
       for (int j = 0; j < tags.size(); j++) {
         if (constants_.tag_locations.contains(tags[j])) {
           output.pos += getPos(
-              bearingAtCapture, tx.at(j), distances.at(j), tags.at(j), i);
+              bearingAtCapture, tx.at(j), distances.at(j), tags.at(j), i) *(48) / distances.at(j).to<double>();
           variance +=
               1 /
               std::max(
@@ -83,7 +84,6 @@ frc846::math::VectorND<units::inch, 2> AprilTagCalculator::getPos(
 
   frc846::math::VectorND<units::inch, 2> local_tag_pos =
       center_to_cam + cam_to_tag;
-
   local_tag_pos = local_tag_pos.rotate(bearing);
   return {
       constants_.tag_locations[tag].x_pos - local_tag_pos[0],

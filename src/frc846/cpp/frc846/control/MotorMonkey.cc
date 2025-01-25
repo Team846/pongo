@@ -370,11 +370,16 @@ size_t MotorMonkey::ConstructController(
   return slot_id;
 }
 
-void MotorMonkey::EnableStatusFrames(
-    size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames) {
+void MotorMonkey::EnableStatusFrames(size_t slot_id,
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
   CHECK_SLOT_ID();
 
-  SMART_RETRY(controller_registry[slot_id]->EnableStatusFrames(frames),
+  SMART_RETRY(
+      controller_registry[slot_id]->EnableStatusFrames(frames, faults_ms,
+          velocity_ms, encoder_position_ms, analog_position_ms),
       "EnableStatusFrames");
   LOG_IF_ERROR("EnableStatusFrames");
 }
@@ -382,7 +387,6 @@ void MotorMonkey::EnableStatusFrames(
 void MotorMonkey::OverrideStatusFramePeriod(size_t slot_id,
     frc846::control::config::StatusFrame frame, units::millisecond_t period) {
   CHECK_SLOT_ID();
-
   SMART_RETRY(
       controller_registry[slot_id]->OverrideStatusFramePeriod(frame, period),
       "OverrideStatusFramePeriod");

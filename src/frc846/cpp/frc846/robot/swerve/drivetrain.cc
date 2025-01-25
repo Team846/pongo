@@ -29,7 +29,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
 
   RegisterPreference("odom_fudge_factor", 0.875);
-
   RegisterPreference("steer_lag", 0.05_s);
 
   RegisterPreference("pose_estimator/pose_variance", 0.01);
@@ -48,7 +47,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   std::vector<std::shared_ptr<nt::NetworkTable>> april_tables = {};
   for (int i = 0; i < configs.cams; i++) {
     april_tables.push_back(
-        nt::NetworkTableInstance::GetDefault().GetTable("AprilTagsCam" + i));
+        nt::NetworkTableInstance::GetDefault().GetTable("AprilTagsCam" + std::to_string(i+1)));
   }
   tag_pos_calculator.setConstants({.tag_locations = configs.april_locations,
       .camera_x_offsets = configs.camera_x_offsets,
@@ -167,9 +166,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       tag_pos_calculator.calculate({new_pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
           GetPreferenceValue_unit_type<units::millisecond_t>(
-              "april_tags/april_variance_coeff")});
+              "april_tags/fudge_latency")});
 
-  if (tag_pos.variance>=0){
+  if (tag_pos.variance >= 0) {
     pose_estimator.AddVisionMeasurement(
         {tag_pos.pos[0], tag_pos.pos[1]}, tag_pos.variance);
   }
