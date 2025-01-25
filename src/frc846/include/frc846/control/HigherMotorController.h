@@ -90,6 +90,14 @@ public:
   // Enables specific status frames and disables all others
   void EnableStatusFrames(std::vector<config::StatusFrame> frames);
 
+  void ConfigForwardLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+  void ConfigReverseLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  bool GetForwardLimitSwitchState();
+  bool GetReverseLimitSwitchState();
+
   // Verifies if the speed controller is connected and accessible
   bool VerifyConnected();
 

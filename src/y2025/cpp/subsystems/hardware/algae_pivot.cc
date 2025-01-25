@@ -34,9 +34,11 @@ AlgaePivotSubsystem::AlgaePivotSubsystem()
 
 void AlgaePivotSubsystem::Setup() {
   pivot_.Setup();
+
   pivot_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame});
+
   motor_helper_.SetPosition(0.0_deg);
 }
 
@@ -54,7 +56,10 @@ bool AlgaePivotSubsystem::VerifyHardware() {
 AlgaePivotReadings AlgaePivotSubsystem::ReadFromHardware() {
   AlgaePivotReadings readings;
   readings.position = motor_helper_.GetPosition();
-  Graph("readings/algae_pivot_position", readings.position);
+  readings.gp_detected = pivot_.GetForwardLimitSwitchState();
+
+  Graph("readings/position", readings.position);
+  Graph("readings/game_piece_detected", readings.gp_detected);
   return readings;
 }
 

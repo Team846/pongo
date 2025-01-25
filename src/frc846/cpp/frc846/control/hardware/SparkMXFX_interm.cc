@@ -182,6 +182,42 @@ units::ampere_t SparkMXFX_interm::GetCurrent() {
   return units::make_unit<units::ampere_t>(esc_->GetOutputCurrent());
 }
 
+void SparkMXFX_interm::ConfigForwardLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  rev::spark::LimitSwitchConfig::Type d_type;
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  }
+  configs.limitSwitch.ForwardLimitSwitchEnabled(stop_motor)
+      .ForwardLimitSwitchType(d_type);
+
+  APPLY_CONFIG_NO_RESET();
+}
+
+void SparkMXFX_interm::ConfigReverseLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  rev::spark::LimitSwitchConfig::Type d_type;
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOff) {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  }
+  configs.limitSwitch.ReverseLimitSwitchEnabled(stop_motor)
+      .ReverseLimitSwitchType(d_type);
+
+  APPLY_CONFIG_NO_RESET();
+}
+
+bool SparkMXFX_interm::GetForwardLimitSwitchState() {
+  return esc_->GetForwardLimitSwitch().Get();
+}
+
+bool SparkMXFX_interm::GetReverseLimitSwitchState() {
+  return esc_->GetReverseLimitSwitch().Get();
+}
+
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {
   ControllerErrorCodes toReturn = last_error_;
   last_error_ = ControllerErrorCodes::kAllOK;

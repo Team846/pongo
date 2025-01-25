@@ -4,54 +4,55 @@
 
 TelescopeSubsystem::TelescopeSubsystem()
     : frc846::robot::GenericSubsystem<TelescopeReadings, TelescopeTarget>(
-          "telescope"),
-      motor_configs(GET_MOTOR_CONFIG("telescope/telescope_one_",
+          "coral_telescope"),
+      motor_configs(GET_MOTOR_CONFIG("coral_telescope/coral_telescope_one_",
           ports::telescope_::kTelescopeOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
       telescope_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
           motor_configs) {
-  RegisterPreference("telescope/telescope_tolerance_", 0.25_in);
+  RegisterPreference("coral_telescope/coral_telescope_tolerance_", 0.25_in);
 
   REGISTER_MOTOR_CONFIG(
-      "telescope/telescope_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("telescope/telescope_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("telescope/telescope_softlimits", true, 1.0);
+      "coral_telescope/coral_telescope_one_", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG(
+      "coral_telescope/coral_telescope_gains_", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "coral_telescope/coral_telescope_softlimits", true, 1.0);
 
   motor_helper_.SetConversion(telescope_reduction);
 
   motor_helper_.bind(&telescope_);
 }
 
-void TelescopeSubsystem::Setup() { telescope_.Setup(); }
+void TelescopeSubsystem::Setup() {
+  telescope_.Setup();
+  telescope_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kVelocityFrame});
+}
 
 TelescopeTarget TelescopeSubsystem::ZeroTarget() const {
-  TelescopeTarget target;
-  target.extension = 0.0_in;
-  return target;
+  return TelescopeTarget{0.0_in};
 }
 
 bool TelescopeSubsystem::VerifyHardware() {
-  if (is_initialized()) {
-    bool ok = true;
+  bool ok = true;
 
-    FRC846_VERIFY(
-        telescope_.VerifyConnected(), ok, "Telescope ESC not connected");
+  FRC846_VERIFY(
+      telescope_.VerifyConnected(), ok, "Telescope ESC not connected");
 
-    return ok;
-  }
-  return true;
+  return ok;
 }
 
 TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
   TelescopeReadings readings;
-  readings.extension = motor_helper_.GetPosition();
+  readings.position = motor_helper_.GetPosition();
 
-  Graph("Telescope extension", readings.extension);
+  Graph("readings/position", readings.position);
 
   return readings;
 }
 
 void TelescopeSubsystem::WriteToHardware(TelescopeTarget target) {
-  telescope_.SetGains(GET_PIDF_GAINS("telescope/telescope_gains_"));
-  motor_helper_.WritePosition(target.extension);
+  telescope_.SetGains(GET_PIDF_GAINS("coral_telescope/coral_telescope_gains_"));
+  motor_helper_.WritePosition(target.position);
 }

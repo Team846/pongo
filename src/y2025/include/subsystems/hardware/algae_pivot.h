@@ -14,6 +14,7 @@
 
 struct AlgaePivotReadings {
   units::degree_t position;
+  bool gp_detected;
 };
 
 struct AlgaePivotTarget {

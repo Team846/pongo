@@ -103,6 +103,14 @@ public:
   static units::radian_t GetPosition(size_t slot_id);
   static units::ampere_t GetCurrent(size_t slot_id);
 
+  static void ConfigForwardLimitSwitch(size_t slot_id, bool stop_motor,
+      frc846::control::base::LimitSwitchDefaultState type);
+  static void ConfigReverseLimitSwitch(size_t slot_id, bool stop_motor,
+      frc846::control::base::LimitSwitchDefaultState type);
+
+  static bool GetForwardLimitSwitchState(size_t slot_id);
+  static bool GetReverseLimitSwitchState(size_t slot_id);
+
   static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
       units::radian_t reverse_limit);
 

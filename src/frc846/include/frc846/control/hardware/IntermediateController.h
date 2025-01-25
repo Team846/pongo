@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "frc846/control/base/motor_control_base.h"
 #include "frc846/control/base/motor_gains.h"
 #include "frc846/control/config/status_frames.h"
 
@@ -62,6 +63,15 @@ public:
   virtual units::radians_per_second_t GetVelocity() = 0;
   virtual units::radian_t GetPosition() = 0;
   virtual units::ampere_t GetCurrent() = 0;
+
+  virtual void ConfigForwardLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) = 0;
+
+  virtual void ConfigReverseLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) = 0;
+
+  virtual bool GetForwardLimitSwitchState() = 0;
+  virtual bool GetReverseLimitSwitchState() = 0;
 
   virtual ControllerErrorCodes GetLastErrorCode() = 0;
 

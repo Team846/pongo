@@ -34,6 +34,12 @@ ClimberSubsystem::ClimberSubsystem()
 void ClimberSubsystem::Setup() {
   climber_.Setup();
   climber_two_.Setup();
+  climber_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame});
+  climber_two_.EnableStatusFrames(
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame});
 }
 
 ClimberTarget ClimberSubsystem::ZeroTarget() const {
@@ -54,7 +60,7 @@ ClimberReadings ClimberSubsystem::ReadFromHardware() {
   ClimberReadings readings;
   readings.position = motor_helper_.GetPosition();
 
-  Graph("Climber position", readings.position);
+  Graph("climber_position", readings.position);
 
   return readings;
 }

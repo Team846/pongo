@@ -11,12 +11,14 @@
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/calculators/VerticalArmCalculator.h"
 #include "ports.h"
 #include "units/length.h"
 #include "units/math.h"
 
 struct CoralWristReadings {
   units::degree_t position;
+  bool gp_detected;
 };
 
 struct CoralWristTarget {
@@ -39,15 +41,21 @@ public:
   bool VerifyHardware() override;
 
 private:
-  CoralWristReadings ReadFromHardware() override;
-
-  void WriteToHardware(CoralWristTarget target) override;
-
   CoralWrist_pos_conv_t coral_wrist_reduction = 1.0_deg / 1.0_tr;
 
   frc846::control::config::MotorConstructionParameters motor_configs;
-  frc846::control::HigherMotorController coral_wrist_;
-  frc846::control::HMCHelper<units::degree> motor_helper_;
+
+  frc846::control::HigherMotorController coral_wrist_one_;
+  frc846::control::HigherMotorController coral_wrist_two_;
+
+  frc846::control::HMCHelper<units::degree> motor_helper_one_;
+  frc846::control::HMCHelper<units::degree> motor_helper_two_;
+
+  frc846::robot::calculators::VerticalArmCalculator wrist_calculator_;
+
+  CoralWristReadings ReadFromHardware() override;
+
+  void WriteToHardware(CoralWristTarget target) override;
 
   bool has_zeroed_ = false;
 };

@@ -96,6 +96,26 @@ units::ampere_t HigherMotorController::GetCurrent() {
   return frc846::control::MotorMonkey::GetCurrent(slot_id_);
 }
 
+void HigherMotorController::ConfigForwardLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  frc846::control::MotorMonkey::ConfigForwardLimitSwitch(
+      slot_id_, stop_motor, type);
+}
+
+void HigherMotorController::ConfigReverseLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  frc846::control::MotorMonkey::ConfigReverseLimitSwitch(
+      slot_id_, stop_motor, type);
+}
+
+bool HigherMotorController::GetForwardLimitSwitchState() {
+  frc846::control::MotorMonkey::GetForwardLimitSwitchState(slot_id_);
+}
+
+bool HigherMotorController::GetReverseLimitSwitchState() {
+  frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
+}
+
 void HigherMotorController::SetPosition(units::radian_t position) {
   frc846::control::MotorMonkey::ZeroEncoder(slot_id_, position);
 }

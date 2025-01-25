@@ -16,11 +16,11 @@
 #include "units/math.h"
 
 struct TelescopeReadings {
-  units::inch_t extension;
+  units::inch_t position;
 };
 
 struct TelescopeTarget {
-  units::inch_t extension;
+  units::inch_t position;
 };
 
 using telescope_pos_conv_t = units::unit_t<

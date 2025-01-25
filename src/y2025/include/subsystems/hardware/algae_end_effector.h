@@ -13,28 +13,30 @@
 #include "frc846/wpilib/units.h"
 #include "ports.h"
 
-enum RampState { kIntake, kIdle };
+enum AlgaeEndEffectorState { kScore, kIdle };
 
-struct RampReadings {
+struct AlgaeEndEffectorReadings {
+  units::feet_per_second_t vel;
+  bool gp_detected;
+};
+
+struct AlgaeEndEffectorTarget {
+  AlgaeEndEffectorState state;
   units::feet_per_second_t vel;
 };
 
-struct RampTarget {
-  RampState state;
-  units::feet_per_second_t vel;
-};
-
-using ramp_pos_conv_t = units::unit_t<
+using algae_end_effector_pos_conv_t = units::unit_t<
     units::compound_unit<units::feet, units::inverse<units::turn>>>;
 
-class RampSubsystem
-    : public frc846::robot::GenericSubsystem<RampReadings, RampTarget> {
+class AlgaeEndEffectorSubsystem
+    : public frc846::robot::GenericSubsystem<AlgaeEndEffectorReadings,
+          AlgaeEndEffectorTarget> {
 public:
-  RampSubsystem();
+  AlgaeEndEffectorSubsystem();
 
   void Setup() override;
 
-  RampTarget ZeroTarget() const override;
+  AlgaeEndEffectorTarget ZeroTarget() const override;
 
   bool VerifyHardware() override;
 
@@ -42,15 +44,13 @@ private:
   bool hasZeroed = false;
 
   // TODO: Set to correct reduction later
-  ramp_pos_conv_t ramp_reduction_ = 1.0_ft / 1.0_tr;
+  algae_end_effector_pos_conv_t algae_pivot_reduction_ = 1.0_ft / 1.0_tr;
 
   frc846::control::config::MotorConstructionParameters motor_configs;
-  frc846::control::HigherMotorController ramp_;
+  frc846::control::HigherMotorController algae_end_effector;
   frc846::control::HMCHelper<units::feet> motor_helper_;
 
-  frc846::robot::calculators::VerticalArmCalculator arm_calculator_;
+  AlgaeEndEffectorReadings ReadFromHardware() override;
 
-  RampReadings ReadFromHardware() override;
-
-  void WriteToHardware(RampTarget target) override;
+  void WriteToHardware(AlgaeEndEffectorTarget target) override;
 };
