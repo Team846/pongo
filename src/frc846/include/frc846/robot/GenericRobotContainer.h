@@ -45,9 +45,8 @@ public:
     }
   }
 
-  void UpdateReadings(units::time::second_t loop) {
-    int calc_loop = static_cast<int>(loop.to<double>()) % 2;
-    if (calc_loop % 2 == 0) {
+  void UpdateReadings() {
+    if (read_counter % 2 == 0) {
       for (auto subsystem : group_a_subsystems_) {
         subsystem->UpdateReadings();
       }
@@ -56,11 +55,11 @@ public:
         subsystem->UpdateReadings();
       }
     }
+    read_counter++;
   }
 
-  void UpdateHardware(units::time::second_t loop) {
-    int calc_loop = static_cast<int>(loop.to<double>()) % 2;
-    if (calc_loop % 2 == 0) {
+  void UpdateHardware() {
+    if (write_counter % 2 == 0) {
       for (auto subsystem : group_a_subsystems_) {
         subsystem->UpdateHardware();
       }
@@ -69,6 +68,7 @@ public:
         subsystem->UpdateHardware();
       }
     }
+    write_counter++;
   }
 
   void Setup() {
@@ -93,6 +93,9 @@ private:
   std::vector<frc846::robot::SubsystemBase*> all_subsystems_{};
   std::vector<frc846::robot::SubsystemBase*> group_a_subsystems_{};
   std::vector<frc846::robot::SubsystemBase*> group_b_subsystems_{};
+
+  unsigned int read_counter;
+  unsigned int write_counter;
 };
 
 }  // namespace frc846::robot
