@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include "frc846/math/constants.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
@@ -29,11 +30,13 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
 
   RegisterPreference("odom_fudge_factor", 0.875);
+  RegisterPreference("odom_variance", 0.2);
+
   RegisterPreference("steer_lag", 0.05_s);
 
   RegisterPreference("pose_estimator/pose_variance", 0.01);
-  RegisterPreference("pose_estimator/velocity_variance", 1000.0);
-  RegisterPreference("pose_estimator/acceleration_variance", 1);
+  RegisterPreference("pose_estimator/velocity_variance", 1.0);
+  RegisterPreference("pose_estimator/accel_variance", 1.0);
 
   RegisterPreference("april_tags/april_variance_coeff", 0.33);
   RegisterPreference("april_tags/fudge_latency", 20_ms);
@@ -46,8 +49,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   std::vector<std::shared_ptr<nt::NetworkTable>> april_tables = {};
   for (int i = 0; i < configs.cams; i++) {
-    april_tables.push_back(
-        nt::NetworkTableInstance::GetDefault().GetTable("AprilTagsCam" + std::to_string(i+1)));
+    april_tables.push_back(nt::NetworkTableInstance::GetDefault().GetTable(
+        "AprilTagsCam" + std::to_string(i + 1)));
   }
   tag_pos_calculator.setConstants({.tag_locations = configs.april_locations,
       .camera_x_offsets = configs.camera_x_offsets,
@@ -120,10 +123,17 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   pose_estimator.Update(
       GetPreferenceValue_double("pose_estimator/pose_variance"),
       GetPreferenceValue_double("pose_estimator/velocity_variance"),
-      GetPreferenceValue_double("pose_estimator/acceleration_variance"));
+      GetPreferenceValue_double("pose_estimator/accel_variance"));
 
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
+
+  frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
+      navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
+      navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
+  Graph("navX/acclX", accl[0]);
+  Graph("navX/acclY", accl[1]);
+  pose_estimator.AddAccelerationMeasurement(accl);
 
   Graph("readings/bearing", bearing);
 
@@ -160,10 +170,17 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::math::Vector2D delta_pos =
       new_pose.position - GetReadings().pose.position;
-  pose_estimator.AddOdometryMeasurement({delta_pos[0], delta_pos[1]});
+  pose_estimator.AddOdometryMeasurement(
+      {delta_pos[0], delta_pos[1]}, GetPreferenceValue_double("odom_variance"));
+
+  frc846::robot::swerve::odometry::SwervePose estimated_pose{
+      .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
+      .bearing = bearing,
+      .velocity = pose_estimator.velocity(),
+  };  // initialize so it can be used for april tags
 
   frc846::robot::calculators::ATCalculatorOutput tag_pos =
-      tag_pos_calculator.calculate({new_pose, yaw_rate,
+      tag_pos_calculator.calculate({estimated_pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
           GetPreferenceValue_unit_type<units::millisecond_t>(
               "april_tags/fudge_latency")});
@@ -182,14 +199,16 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
     first_loop = false;
   }
 
-  frc846::robot::swerve::odometry::SwervePose estimated_pose{
+  estimated_pose = {
       .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
       .bearing = bearing,
-      .velocity = velocity,
-  };
+      .velocity = pose_estimator.velocity(),
+  };  // update after april tags
 
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
   Graph("estimated_pose/position_y", estimated_pose.position[1]);
+  Graph("estimated_pose/velocity_x", estimated_pose.velocity[0]);
+  Graph("estimated_pose/velocity_y", estimated_pose.velocity[1]);
   Graph("estimated_pose/variance", pose_estimator.getVariance());
 
   // TODO: consider bearing simulation

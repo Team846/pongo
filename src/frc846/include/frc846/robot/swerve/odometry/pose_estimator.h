@@ -26,6 +26,11 @@ public:
     return {units::foot_t(state_[0]), units::foot_t(state_[1])};
   }
 
+  frc846::math::VectorND<units::feet_per_second, 2> velocity() {
+    return {units::feet_per_second_t(state_[2]),
+        units::feet_per_second_t(state_[3])};
+  }
+
   void Update(double pVar, double vVar, double aVar);
 
   void AddAccelerationMeasurement(
@@ -34,7 +39,8 @@ public:
   void AddVisionMeasurement(
       frc846::math::VectorND<units::foot, 2> pos, double variance);
 
-  void AddOdometryMeasurement(frc846::math::VectorND<units::foot, 2> difPos);
+  void AddOdometryMeasurement(
+      frc846::math::VectorND<units::foot, 2> difPos, double variance);
 
   void SetPoint(frc846::math::VectorND<units::foot, 2> point);
 

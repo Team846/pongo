@@ -14,7 +14,8 @@ PoseEstimator::PoseEstimator(
   state_ = {initial_position[0].to<double>(), initial_position[1].to<double>(),
       initial_vel[0].to<double>(), initial_vel[1].to<double>(),
       initial_accl[0].to<double>(), initial_accl[1].to<double>()};
-  double dt = units::second_t(frc846::robot::GenericRobot::kPeriod).to<double>();
+  double dt =
+      units::second_t(frc846::robot::GenericRobot::kPeriod).to<double>();
   filter = frc846::math::LinearKalmanFilter<6>(state_,
       Eigen::Matrix<double, 6, 6>(
           {{1, 0, dt, 0, dt * dt / 2, 0}, {0, 1, 0, dt, 0, dt * dt / 2},
@@ -57,12 +58,13 @@ void PoseEstimator::AddAccelerationMeasurement(
 }
 
 void PoseEstimator::AddOdometryMeasurement(
-    frc846::math::VectorND<units::foot, 2> difPos) {
-  double dt = units::second_t(frc846::robot::GenericRobot::kPeriod).to<double>();
+    frc846::math::VectorND<units::foot, 2> difPos, double variance) {
+  double dt =
+      units::second_t(frc846::robot::GenericRobot::kPeriod).to<double>();
   filter.Update(Ho,
       Eigen::Matrix<double, 2, 1>(
           {{(difPos[0] / dt).to<double>()}, {(difPos[1] / dt).to<double>()}}),
-      Varo);
+      Eigen::Matrix<double, 2, 1>({{variance, variance}}));
   state_ = filter.getEstimate();
 }
 
