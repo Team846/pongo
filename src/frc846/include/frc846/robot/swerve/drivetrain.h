@@ -35,6 +35,7 @@ struct DrivetrainConfigs {
   int cams;
 
   std::map<int, frc846::robot::calculators::AprilTagData> april_locations;
+  units::feet_per_second_squared_t max_accel;
 };
 
 struct DrivetrainReadings {
@@ -52,8 +53,10 @@ struct DrivetrainOLControlTarget {
 
 // Allows for acceleration-based control of the drivetrain
 struct DrivetrainAccelerationControlTarget {
-  frc846::math::VectorND<units::feet_per_second_squared, 2> linear_acceleration;
-  units::degrees_per_second_squared_t angular_acceleration;
+  units::feet_per_second_squared_t linear_acceleration;
+  units::degree_t accel_dir;
+  units::degrees_per_second_t angular_velocity;
+  units::feet_per_second_t speed_limit = -1_fps;
 };
 
 using DrivetrainTarget = std::variant<DrivetrainOLControlTarget,
@@ -80,9 +83,18 @@ public:
 
   void SetCANCoderOffsets();
 
+  units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
+
 private:
   DrivetrainReadings ReadFromHardware() override;
 
+  frc846::math::VectorND<units::feet_per_second, 2> compensateForSteerLag(
+      frc846::math::VectorND<units::feet_per_second, 2> uncompensated);
+
+  void WriteVelocitiesHelper(
+      frc846::math::VectorND<units::feet_per_second, 2> velocity,
+      units::degrees_per_second_t angular_velocity, bool cut_excess_steering,
+      units::feet_per_second_t speed_limit);
   void WriteToHardware(DrivetrainTarget target) override;
 
   DrivetrainConfigs configs_;

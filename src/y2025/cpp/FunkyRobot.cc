@@ -58,6 +58,10 @@ void FunkyRobot::InitTeleop() {
 }
 
 void FunkyRobot::OnPeriodic() {
+  // TODO: plug real heights into AntiTippingCalculator
+  AntiTippingCalculator::SetTelescopeHeight(36_in);
+  AntiTippingCalculator::SetElevatorHeight(45_in);
+
   auto cg = AntiTippingCalculator::CalculateRobotCG();
   Graph("robot_cg_x", cg[0]);
   Graph("robot_cg_y", cg[1]);

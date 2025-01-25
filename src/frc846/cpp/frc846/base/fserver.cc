@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iostream>
 #include <thread>
 
 namespace frc846::base {

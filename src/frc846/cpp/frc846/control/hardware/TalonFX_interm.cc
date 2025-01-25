@@ -93,14 +93,28 @@ void TalonFX_interm::EnableStatusFrames(
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
   for (auto frame : frames) {
     ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
-    if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
-      last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(10_Hz);
-    } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
+    switch (frame) {
+    case frc846::control::config::StatusFrame::kCurrentFrame:
+      last_status_code =
+          talon_.GetSupplyCurrent().SetUpdateFrequency(10_Hz, max_wait_time_);
+      break;
+    case frc846::control::config::StatusFrame::kPositionFrame:
       last_status_code =
           talon_.GetPosition().SetUpdateFrequency(50_Hz, max_wait_time_);
-    } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
-      last_status_code = talon_.GetVelocity().SetUpdateFrequency(50_Hz);
+      if (last_status_code != ctre::phoenix::StatusCode::OK) break;
+
+      [[fallthrough]];  // Latency compensation requires vel, acc frames
+    case frc846::control::config::StatusFrame::kVelocityFrame:
+      last_status_code =
+          talon_.GetVelocity().SetUpdateFrequency(40_Hz, max_wait_time_);
+      if (last_status_code != ctre::phoenix::StatusCode::OK) break;
+      last_status_code =
+          talon_.GetAcceleration().SetUpdateFrequency(40_Hz, max_wait_time_);
+      break;
+
+    default: break;
     }
+
     last_error_ = getErrorCode(last_status_code);
     if (last_error_ != ControllerErrorCodes::kAllOK) return;
   }
@@ -109,15 +123,25 @@ void TalonFX_interm::EnableStatusFrames(
 void TalonFX_interm::OverrideStatusFramePeriod(
     frc846::control::config::StatusFrame frame, units::millisecond_t period) {
   ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
-  if (frame == frc846::control::config::StatusFrame::kCurrentFrame) {
+  switch (frame) {
+  case frc846::control::config::StatusFrame::kCurrentFrame:
     last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(
         1 / period, max_wait_time_);
-  } else if (frame == frc846::control::config::StatusFrame::kPositionFrame) {
+    break;
+  case frc846::control::config::StatusFrame::kPositionFrame:
     last_status_code =
         talon_.GetPosition().SetUpdateFrequency(1 / period, max_wait_time_);
-  } else if (frame == frc846::control::config::StatusFrame::kVelocityFrame) {
+    if (last_status_code != ctre::phoenix::StatusCode::OK) break;
+
+    [[fallthrough]];  // Latency compensation requires vel, acc frames
+  case frc846::control::config::StatusFrame::kVelocityFrame:
     last_status_code =
         talon_.GetVelocity().SetUpdateFrequency(1 / period, max_wait_time_);
+    if (last_status_code != ctre::phoenix::StatusCode::OK) break;
+    last_status_code =
+        talon_.GetAcceleration().SetUpdateFrequency(1 / period, max_wait_time_);
+    break;
+  default: break;
   }
   last_error_ = getErrorCode(last_status_code);
 }
@@ -148,10 +172,12 @@ void TalonFX_interm::ZeroEncoder(units::radian_t position) {
 }
 
 units::radians_per_second_t TalonFX_interm::GetVelocity() {
-  return talon_.GetVelocity().GetValue();
+  return ctre::phoenix6::BaseStatusSignal::GetLatencyCompensatedValue(
+      talon_.GetVelocity(), talon_.GetAcceleration());
 }
 units::radian_t TalonFX_interm::GetPosition() {
-  return talon_.GetPosition().GetValue();
+  return ctre::phoenix6::BaseStatusSignal::GetLatencyCompensatedValue(
+      talon_.GetPosition(), talon_.GetVelocity());
 }
 units::ampere_t TalonFX_interm::GetCurrent() {
   return talon_.GetSupplyCurrent().GetValue();

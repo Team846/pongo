@@ -89,9 +89,9 @@ public:
 
   // Returns the value of the preference for a unit-type.
   template <typename U> U GetPreferenceValue_unit_type(std::string key) {
-    std::string fullkey = fmt::format("{} ({})", name_ + "/" + key,
-        units::abbreviation(units::make_unit<U>(0)));
-    return units::make_unit<U>(GetPreferenceValue_double(fullkey));
+    std::string modkey = fmt::format(
+        "{} ({})", key, units::abbreviation(units::make_unit<U>(0)));
+    return units::make_unit<U>(GetPreferenceValue_double(modkey));
   }
 
   // Returns the value of the preference for a double.
