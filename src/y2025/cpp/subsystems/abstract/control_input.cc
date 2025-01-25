@@ -31,6 +31,15 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
         readings.zero_bearing ? 1 : 0);
   }
 
+  if (readings.lock_left_reef != previous_readings_.lock_left_reef) {
+    Log("ControlInput [Lock Left Reef] state changed to {}",
+        readings.lock_left_reef ? 1 : 0);
+  }
+  if (readings.lock_right_reef != previous_readings_.lock_right_reef) {
+    Log("ControlInput [Lock Right Reef] state changed to {}",
+        readings.lock_right_reef ? 1 : 0);
+  }
+
   previous_readings_ = readings;
 
   return readings;
@@ -53,7 +62,21 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.zero_bearing = dr_readings.back_button;
   ci_readings_.translate_x = dr_readings.left_stick_x;
   ci_readings_.translate_y = dr_readings.left_stick_y;
+
+  ci_readings_.rc_p_y = (int)dr_readings.pov == 0;
+  ci_readings_.rc_p_x = (int)dr_readings.pov == 90;
+  ci_readings_.rc_n_y = (int)dr_readings.pov == 180;
+  ci_readings_.rc_n_x = (int)dr_readings.pov == 270;
+  ci_readings_.rc_control = ci_readings_.rc_p_y || ci_readings_.rc_n_y ||
+                            ci_readings_.rc_p_x || ci_readings_.rc_n_x;
+
   ci_readings_.rotation = dr_readings.right_stick_x;
+
+  ci_readings_.test_move_10_ft = dr_readings.x_button;
+  ci_readings_.test_bearing_pid = dr_readings.y_button;
+
+  ci_readings_.lock_left_reef = dr_readings.left_bumper;
+  ci_readings_.lock_right_reef = dr_readings.right_bumper;
 
   return ci_readings_;
 }
