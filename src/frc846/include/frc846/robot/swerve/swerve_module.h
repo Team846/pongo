@@ -57,7 +57,7 @@ struct SwerveModuleCommonConfig {
   steer_conv_unit steer_reduction;
   drive_conv_unit drive_reduction;
 
-  std::string bus = "";
+  std::string_view bus = "";
 };
 
 /*

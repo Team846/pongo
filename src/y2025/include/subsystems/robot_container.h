@@ -15,7 +15,7 @@ public:
       drivetrain_constructor_.getDrivetrainConfigs()};
 
   RobotContainer() {
-    RegisterPreference("init_drivetrain", true);
+    RegisterPreference("init_drivetrain", false);
     RegisterPreference("init_leds", true);
 
     control_input_.Init();

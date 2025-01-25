@@ -64,7 +64,8 @@ void GenericRobot::StartCompetition() {
 
   frc::SmartDashboard::PutData(
       "get_prune_list", new frc846::wpilib::NTAction([this] {
-        for (const std::string& x : frc846::base::Loggable::ListKeysToPrune()) {
+        for (const std::string_view& x :
+            frc846::base::Loggable::ListKeysToPrune()) {
           Log("Key {} found in prune list.", x);
         }
       }));
@@ -131,7 +132,7 @@ void GenericRobot::StartCompetition() {
         loop.Clear();
       } else if (mode == Mode::kAutonomous) {
         // Get and run selected auto command
-        std::string option_name = auto_chooser_.GetSelected();
+        std::string_view option_name = auto_chooser_.GetSelected();
         auto_command_ = autos_[option_name];
 
         if (auto_command_ != nullptr) {
@@ -222,7 +223,7 @@ void GenericRobot::VerifyHardware() {
   generic_robot_container_->VerifyHardware();
 }
 
-void GenericRobot::AddAuto(std::string name, frc2::Command* command) {
+void GenericRobot::AddAuto(std::string_view name, frc2::Command* command) {
   auto_chooser_.AddOption(name, name);
   autos_[name] = command;
   frc::SmartDashboard::PutData(&auto_chooser_);
