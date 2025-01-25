@@ -1,5 +1,7 @@
 #include "frc846/math/RampRateLimiter.h"
 
+#include <cmath>
+
 namespace frc846::math {
 
 RampRateLimiter::RampRateLimiter() {
