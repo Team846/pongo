@@ -21,6 +21,8 @@ public:
 
   virtual ~SubsystemBase() = default;
 
+  virtual void Init() = 0;
+
   virtual void Setup() = 0;
 
   virtual void UpdateReadings() = 0;
@@ -49,7 +51,7 @@ public:
   virtual ~GenericSubsystem() { Warn("Destroying subsystem"); };
 
   // Initializer function for RobotContainer use only.
-  void Init() {
+  void Init() override final {
     SetName(name());
     Log("Initializing subsystem");
     init_ = true;

@@ -168,14 +168,7 @@ void GenericRobot::StartCompetition() {
 
     OnPeriodic();
 
-    // Update subsystem readings
-    generic_robot_container_->UpdateReadings();
-
-    // Tick command scheduler
-    frc2::CommandScheduler::GetInstance().Run();
-
-    // Update subsystem hardware
-    generic_robot_container_->UpdateHardware();
+    // moved this stuff down
 
     // Tick MotorMonkey
     frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
@@ -211,6 +204,15 @@ void GenericRobot::StartCompetition() {
       Warn("Loop overrun: {} (loop period: {})",
           loop_time.convert<units::millisecond>(), kPeriod);
     }
+
+    // Update subsystem readings
+    generic_robot_container_->UpdateReadings(loop_time);
+
+    // Tick command scheduler
+    frc2::CommandScheduler::GetInstance().Run();
+
+    // Update subsystem hardware
+    generic_robot_container_->UpdateHardware(loop_time);
   }
 }
 
