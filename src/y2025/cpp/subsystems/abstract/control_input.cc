@@ -31,6 +31,11 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
         readings.zero_bearing ? 1 : 0);
   }
 
+  // if (readings.targeting_algae != previous_readings_.targeting_algae) {
+  // Log("ControlInput [Targeting Note] state changed to {}",
+  //     readings.targeting_algae ? 1 : 0);
+  // }
+
   previous_readings_ = readings;
 
   return readings;
