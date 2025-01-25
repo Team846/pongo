@@ -32,10 +32,13 @@
     "Connections": {
       "open": true
     },
-    "Server": {
-      "Subscribers": {
+    "Elastic@1": {
+      "Publishers": {
         "open": true
       },
+      "open": true
+    },
+    "Server": {
       "open": true
     },
     "visible": true
