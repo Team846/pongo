@@ -139,11 +139,9 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
-          steer_params, frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO,
-          steer_reduction, drive_reduction, ""};
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
-
+  //   std::cout
   configs.camera_x_offsets = {4.5_in, 4_in};
   configs.camera_y_offsets = {-6_in, -12.5_in};
   configs.cams = 2;
