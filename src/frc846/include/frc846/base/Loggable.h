@@ -130,7 +130,7 @@ public:
   static unsigned int GetWarnCount();
   static unsigned int GetErrorCount();
 
-  static std::string Join(std::string p, std::string n);
+  static std::string_view Join(std::string p, std::string n);
 
   static std::vector<std::string> ListKeysToPrune();
 
@@ -141,7 +141,7 @@ private:
 
   const std::string name_;
 
-  static std::unordered_set<std::string> used_preferences_;
+  static std::unordered_set<std::string_view> used_preferences_;
 
   static unsigned int warn_count_;
   static unsigned int error_count_;

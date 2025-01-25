@@ -6,7 +6,7 @@
 #include <rev/SparkMax.h>
 
 #include <iostream>
-#include <string>
+#include <string_view>
 
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
@@ -473,7 +473,7 @@ void MotorMonkey::SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
   LOG_IF_ERROR("SetSoftLimits");
 }
 
-std::string MotorMonkey::parseError(
+std::string_view MotorMonkey::parseError(
     frc846::control::hardware::ControllerErrorCodes err) {
   switch (err) {
   case frc846::control::hardware::ControllerErrorCodes::kAllOK: return "All OK";

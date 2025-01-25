@@ -212,9 +212,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-          .calculate({bearing, steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+                      .calculate({bearing, steer_positions, drive_positions,
+                          GetPreferenceValue_double("odom_fudge_factor")})
+                      .position,
       .bearing = bearing,
       .velocity = velocity,
   };
