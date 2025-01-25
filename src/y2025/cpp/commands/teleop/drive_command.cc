@@ -68,6 +68,32 @@ void DriveCommand::Periodic() {
       1_fps * rampRateLimiter_y_.limit(target.velocity[1].to<double>(),
                   accel_limited[1].to<double>());
 
+  if (ci_readings_.rc_control) {
+    frc846::math::VectorND<units::feet_per_second, 2> vel_rc{0_fps, 0_fps};
+
+    units::feet_per_second_t rc_speed =
+        container_.drivetrain_
+            .GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                "rc_control_speed");
+
+    if (ci_readings_.rc_p_x) {
+      vel_rc[0] = rc_speed;
+      vel_rc[1] = 0_fps;
+    } else if (ci_readings_.rc_n_x) {
+      vel_rc[0] = -rc_speed;
+      vel_rc[1] = 0_fps;
+    } else if (ci_readings_.rc_p_y) {
+      vel_rc[0] = 0_fps;
+      vel_rc[1] = rc_speed;
+    } else if (ci_readings_.rc_n_y) {
+      vel_rc[0] = 0_fps;
+      vel_rc[1] = -rc_speed;
+    }
+
+    target.velocity =
+        vel_rc.rotate(container_.drivetrain_.GetReadings().pose.bearing, true);
+  }
+
   target.angular_velocity = rotation * max_omega;
 
   container_.drivetrain_.SetTarget({target});

@@ -31,6 +31,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/_kI", 0.0);
   RegisterPreference("lock_gains/_kD", 0.0);
   RegisterPreference("lock_gains/deadband", 2_in);
+  RegisterPreference("lock_adj_rate", 0.05_in);
 
   RegisterPreference("drive_to_subtract", 5_in);
 
@@ -41,6 +42,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("odom_fudge_factor", 0.875);
 
   RegisterPreference("steer_lag", 0.05_s);
+
+  RegisterPreference("rc_control_speed", 2.5_fps);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -174,9 +177,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
