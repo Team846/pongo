@@ -328,8 +328,10 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
     units::feet_per_second_t true_max_speed =
         motor_specs.free_speed * configs_.module_common_config.drive_reduction;
+    Graph("target/true_max_speed", true_max_speed);
     units::feet_per_second_t accel_buffer =
         accel_target->linear_acceleration / configs_.max_accel * true_max_speed;
+    Graph("target/accel_buffer", accel_buffer);
 
     auto vel_new_target = GetReadings().pose.velocity +
                           frc846::math::VectorND<units::feet_per_second, 2>{

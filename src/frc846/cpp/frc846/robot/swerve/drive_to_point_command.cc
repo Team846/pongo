@@ -36,27 +36,35 @@ void DriveToPointCommand::Execute() {
   units::foot_t stopping_distance =
       (dt_readings.pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
+  Graph("stopping_distance", stopping_distance);
 
-  if ((target_.point - start_point_).magnitude() <=
-      stopping_distance -
-          drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-              "drive_to_subtract")) {
+  auto dist_left = (target_.point - dt_readings.pose.position).magnitude();
+
+  if ((target_.point - dt_readings.pose.position).magnitude() <=
+      stopping_distance) {
     if (dt_readings.pose.velocity.magnitude() < 4_fps &&
         target_.velocity > 1_fps) {
       dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
     } else {
       dt_target.accel_dir =
-          (dt_readings.pose.position - start_point_).angle(true);
+          (start_point_ - dt_readings.pose.position).angle(true);
     }
-    dt_target.linear_acceleration = max_deceleration_;
+    double decel_scale_factor = 1.0;
+    if (dist_left > 3_in) {
+      decel_scale_factor = units::math::abs(stopping_distance / dist_left);
+    }
+    dt_target.linear_acceleration = max_deceleration_ * decel_scale_factor;
+    Graph("stopping", true);
   } else if (dt_readings.pose.velocity.magnitude() < max_speed_) {
     dt_target.linear_acceleration = max_acceleration_;
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
+    Graph("stopping", false);
   } else {
     dt_target.linear_acceleration = 0_fps_sq;
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
+    Graph("stopping", false);
   }
 
   dt_target.angular_velocity = drivetrain_->ApplyBearingPID(target_.bearing);

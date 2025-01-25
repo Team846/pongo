@@ -11,7 +11,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
   ATCalculatorOutput output;
 
   double totalTagWeight = 0;
-  double variance = 0;  // harmonically averaged
+  double variance = 0;
   for (int i = 0; i < constants_.cams; i++) {
     units::second_t delay =
         frc846::wpilib::CurrentFPGATime() -
@@ -41,7 +41,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
         input.pose.bearing -
         input.angular_velocity * (tl + input.fudge_latency);
     if (distances.size() == tx.size() && tx.size() == tags.size()) {
-      for (int j = 0; j < tags.size(); j++) {
+      for (size_t j = 0; j < tags.size(); j++) {
         if (constants_.tag_locations.contains(tags[j])) {
           output.pos += getPos(bearingAtCapture, tx.at(j), distances.at(j),
                             tags.at(j), i) *
