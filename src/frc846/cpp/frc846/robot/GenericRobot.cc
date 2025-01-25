@@ -64,8 +64,7 @@ void GenericRobot::StartCompetition() {
 
   frc::SmartDashboard::PutData(
       "get_prune_list", new frc846::wpilib::NTAction([this] {
-        for (const std::string_view& x :
-            frc846::base::Loggable::ListKeysToPrune()) {
+        for (const std::string& x : frc846::base::Loggable::ListKeysToPrune()) {
           Log("Key {} found in prune list.", x);
         }
       }));
