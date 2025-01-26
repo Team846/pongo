@@ -218,6 +218,10 @@ bool SparkMXFX_interm::GetReverseLimitSwitchState() {
   return esc_->GetReverseLimitSwitch().Get();
 }
 
+units::volt_t SparkMXFX_interm::GetAnalogDeviceOutput() {
+  return units::make_unit<units::volt_t>(esc_->GetAnalog().GetVoltage());
+}
+
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {
   ControllerErrorCodes toReturn = last_error_;
   last_error_ = ControllerErrorCodes::kAllOK;

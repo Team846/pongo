@@ -8,7 +8,7 @@ TelescopeSubsystem::TelescopeSubsystem()
       motor_configs(GET_MOTOR_CONFIG("coral_telescope/coral_telescope_one_",
           ports::telescope_::kTelescopeOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
-      telescope_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
+      telescope_(frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
   RegisterPreference("coral_telescope/coral_telescope_tolerance_", 0.25_in);
 
@@ -20,6 +20,9 @@ TelescopeSubsystem::TelescopeSubsystem()
       "coral_telescope/coral_telescope_softlimits", true, 1.0);
 
   motor_helper_.SetConversion(telescope_reduction);
+
+  telescope_position_calculator_.setConstants(
+      {0_V, 3.3_V, 10_tr, telescope_reduction, false});
 
   motor_helper_.bind(&telescope_);
 }
@@ -45,8 +48,11 @@ bool TelescopeSubsystem::VerifyHardware() {
 
 TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
   TelescopeReadings readings;
-  readings.position = motor_helper_.GetPosition();
 
+  units::volt_t pot_voltage = telescope_.GetAnalogDeviceOutput();
+  readings.position = telescope_position_calculator_.calculate({pot_voltage});
+
+  Graph("readings/pot_voltage", pot_voltage);
   Graph("readings/position", readings.position);
 
   return readings;

@@ -109,11 +109,15 @@ void HigherMotorController::ConfigReverseLimitSwitch(
 }
 
 bool HigherMotorController::GetForwardLimitSwitchState() {
-  frc846::control::MotorMonkey::GetForwardLimitSwitchState(slot_id_);
+  return frc846::control::MotorMonkey::GetForwardLimitSwitchState(slot_id_);
 }
 
 bool HigherMotorController::GetReverseLimitSwitchState() {
-  frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
+  return frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
+}
+
+units::volt_t HigherMotorController::GetAnalogDeviceOutput() {
+  return frc846::control::MotorMonkey::GetAnalogDeviceOutput(slot_id_);
 }
 
 void HigherMotorController::SetPosition(units::radian_t position) {

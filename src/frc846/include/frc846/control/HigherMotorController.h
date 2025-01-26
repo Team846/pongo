@@ -98,6 +98,8 @@ public:
   bool GetForwardLimitSwitchState();
   bool GetReverseLimitSwitchState();
 
+  units::volt_t GetAnalogDeviceOutput();
+
   // Verifies if the speed controller is connected and accessible
   bool VerifyConnected();
 

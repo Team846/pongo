@@ -233,6 +233,15 @@ public:
   bool GetReverseLimitSwitchState();
 
   /*
+  GetAnalogDeviceOutput()
+
+  Gets the voltage output of an analog device.
+
+  @return The voltage output of the analog device
+  */
+  units::volt_t GetAnalogDeviceOutput();
+
+  /*
   GetLastErrorCode()
 
   Gets the the last error code from the motor controller.
