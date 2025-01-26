@@ -20,11 +20,12 @@ public:
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
     RegisterPreference("init_leds", true);
+    RegisterPreference("init_gpd", true);
 
     control_input_.Init();
-    GPD_.Init();
     if (GetPreferenceValue_bool("init_drivetrain")) drivetrain_.Init();
     if (GetPreferenceValue_bool("init_leds")) leds_.Init();
+    if (GetPreferenceValue_bool("init_gpd")) GPD_.Init();
 
     RegisterSubsystems({&control_input_, &drivetrain_, &leds_, &GPD_});
   }
