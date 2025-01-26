@@ -9,7 +9,9 @@ struct ControlInputReadings {
   double rotation;
 
   bool zero_bearing;
-  // bool targeting_algae;
+  
+  
+  bool targeting_algae;
 };
 
 struct ControlInputTarget {
