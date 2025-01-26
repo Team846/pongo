@@ -1,6 +1,5 @@
 #pragma once
 
-#include "calculators/gpd.h"
 #include "frc846/robot/GenericCommand.h"
 #include "subsystems/robot_container.h"
 
@@ -18,7 +17,4 @@ public:
   bool IsFinished() override;
 
 private:
-  GPDCalculator gpd;
-  std::shared_ptr<nt::NetworkTable> gpdTable =
-      nt::NetworkTableInstance::GetDefault().GetTable("GPDCam1");
 };

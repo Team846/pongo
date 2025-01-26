@@ -2,6 +2,7 @@
 
 #include "frc846/robot/GenericRobotContainer.h"
 #include "subsystems/abstract/control_input.h"
+#include "subsystems/abstract/gpd.h"
 #include "subsystems/hardware/DrivetrainConstructor.h"
 #include "subsystems/hardware/leds.h"
 
@@ -14,14 +15,17 @@ public:
   frc846::robot::swerve::DrivetrainSubsystem drivetrain_{
       drivetrain_constructor_.getDrivetrainConfigs()};
 
+  GPDSubsystem GPD_{&drivetrain_};
+
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
     RegisterPreference("init_leds", true);
 
     control_input_.Init();
+    GPD_.Init();
     if (GetPreferenceValue_bool("init_drivetrain")) drivetrain_.Init();
     if (GetPreferenceValue_bool("init_leds")) leds_.Init();
 
-    RegisterSubsystems({&control_input_, &drivetrain_, &leds_});
+    RegisterSubsystems({&control_input_, &drivetrain_, &leds_, &GPD_});
   }
 };

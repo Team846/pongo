@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "calculators/gpd.h"
+#include "subsystems/abstract/gpd.h"
 
 DriveCommand::DriveCommand(RobotContainer &container)
     : frc846::robot::GenericCommand<RobotContainer, DriveCommand>{
@@ -18,38 +18,6 @@ void DriveCommand::Periodic() {
   frc846::robot::swerve::DrivetrainOLControlTarget target{};
 
   container_.drivetrain_.SetTarget({target});
-
-  // bool targeting_algae =
-  // container_.control_input_.GetReadings().targeting_algae;
-
-  //   std::vector<frc846::math::Vector2D> notes =
-  //   container_.gpd_.GetReadings().notes;
-  // run gpd
-  std::vector<frc846::math::Vector2D> algae =
-      std::vector<frc846::math::Vector2D>();
-  std::vector<double> theta_x = gpdTable->GetNumberArray("tx", {});
-  std::vector<double> distances = gpdTable->GetNumberArray("distances", {});
-  units::second_t latency = gpdTable->GetNumber("tl", 0.1) * 1_s;
-
-  std::pair<bool, frc846::math::Vector2D> gpd_calculations =
-      gpd.calculate(algae, theta_x, container_.drivetrain_.GetReadings().pose,
-          latency, distances);
-
-  // if (targeting_algae) // add later && note is detected
-  // { //turn towards the note
-  //   frc846::math::Vector2D rel_algae_pos = gpd_calculations.second - //change
-  //   to params from gpd method
-  //                                         container_.drivetrain_.GetReadings().pose.point;
-  //       drivetrain_target.rotation = DrivetrainRotationPosition(
-  //           rel_algae_pos.Bearing());
-
-  //       noteBearing =
-
-  //                                   // field centric, negative because switch
-  //                                   // between ccw to cs
-  //   }
-  //   container_.drivetrain_.SetTarget(drivetrain_target);
-  //   }
 
   double translate_x = frc846::math::HorizontalDeadband(
       container_.control_input_.GetReadings().translate_x,
