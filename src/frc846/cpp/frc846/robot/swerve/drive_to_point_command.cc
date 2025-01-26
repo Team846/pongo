@@ -18,7 +18,7 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
-  start_point_ = drivetrain_->GetReadings().pose.position;
+  start_point_ = drivetrain_->GetReadings().estimated_pose.position;
 }
 
 void DriveToPointCommand::Execute() {
@@ -31,23 +31,25 @@ void DriveToPointCommand::Execute() {
   };
 
   units::second_t t_decel =
-      ((dt_readings.pose.velocity.magnitude() - target_.velocity) /
+      ((dt_readings.estimated_pose.velocity.magnitude() - target_.velocity) /
           max_deceleration_);
   units::foot_t stopping_distance =
-      (dt_readings.pose.velocity.magnitude() * t_decel) -
+      (dt_readings.estimated_pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
   Graph("stopping_distance", stopping_distance);
 
-  auto dist_left = (target_.point - dt_readings.pose.position).magnitude();
+  auto dist_left =
+      (target_.point - dt_readings.estimated_pose.position).magnitude();
 
-  if ((target_.point - dt_readings.pose.position).magnitude() <=
+  if ((target_.point - dt_readings.estimated_pose.position).magnitude() <=
       stopping_distance) {
-    if (dt_readings.pose.velocity.magnitude() < 4_fps &&
+    if (dt_readings.estimated_pose.velocity.magnitude() < 4_fps &&
         target_.velocity > 1_fps) {
-      dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
+      dt_target.accel_dir =
+          dt_readings.estimated_pose.velocity.angle(true) + 180_deg;
     } else {
       dt_target.accel_dir =
-          (start_point_ - dt_readings.pose.position).angle(true);
+          (start_point_ - dt_readings.estimated_pose.position).angle(true);
     }
     double decel_scale_factor = 1.0;
     if (dist_left > 3_in) {
@@ -55,7 +57,7 @@ void DriveToPointCommand::Execute() {
     }
     dt_target.linear_acceleration = max_deceleration_ * decel_scale_factor;
     Graph("stopping", true);
-  } else if (dt_readings.pose.velocity.magnitude() < max_speed_) {
+  } else if (dt_readings.estimated_pose.velocity.magnitude() < max_speed_) {
     dt_target.linear_acceleration = max_acceleration_;
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
