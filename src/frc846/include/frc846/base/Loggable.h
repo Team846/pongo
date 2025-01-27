@@ -97,7 +97,7 @@ public:
   // Returns the value of the preference for a double.
   double GetPreferenceValue_double(std::string key);
 
-  // Returns the value of the preference   for a boolean.
+  // Returns the value of the preference for a boolean.
   bool GetPreferenceValue_bool(std::string key);
 
   // Returns the value of the preference for an integer.
@@ -110,9 +110,9 @@ public:
   template <typename U> void SetPreferenceValue(std::string key, U value) {
     static_assert(units::traits::is_unit_t<U>(), "must be a unit type");
 
-    std::string fullkey = fmt::format(
+    std::string modkey = fmt::format(
         "{} ({})", key, units::abbreviation(units::make_unit<U>(0)));
-    SetPreferenceValue(fullkey, value.template to<double>());
+    SetPreferenceValue(modkey, value.template to<double>());
   }
 
   // Sets but does NOT initialize the value of the preference for a double.
