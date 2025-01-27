@@ -21,6 +21,9 @@ struct ControlInputReadings {
   bool lock_right_reef;
 
   bool zero_bearing;
+  
+  
+  bool targeting_algae;
 };
 
 struct ControlInputTarget {

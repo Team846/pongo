@@ -14,6 +14,10 @@ DrivetrainConstructor::DrivetrainConstructor()
 
   RegisterPreference("drive_motor_voltage_compensation", 16_V);
   RegisterPreference("steer_motor_voltage_compensation", 12_V);
+
+  RegisterPreference("gpd/kP", 12_V);
+  RegisterPreference("gpd/kD", 12_V);
+
 }
 
 frc846::robot::swerve::DrivetrainConfigs
