@@ -19,7 +19,7 @@ DrivetrainConstructor::DrivetrainConstructor()
 frc846::robot::swerve::DrivetrainConfigs
 DrivetrainConstructor::getDrivetrainConfigs() {
   frc846::control::base::MotorMonkeyType mmtype =
-      frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO;
+      frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60;
 
   frc846::robot::swerve::DrivetrainConfigs configs;
 
@@ -145,18 +145,8 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   configs.camera_x_offsets = {4.5_in, 4_in};
   configs.camera_y_offsets = {-6_in, -12.5_in};
   configs.cams = 2;
-  configs.april_locations = {{1, {27.71_in, 33.5_in}},
-      {2, {293.11_in, 33.5_in}}, {3, {317.15_in, 238.98_in}},
-      {4, {238.39_in, 325.675_in}}, {5, {72.14_in, 325.675_in}},
-      {6, {131.795_in, 160.385_in}}, {7, {155.25_in, 144.005_in}},
-      {8, {185.205_in, 160.385_in}}, {9, {188.455_in, 193.105_in}},
-      {10, {155.25_in, 209.485_in}}, {11, {128.545_in, 193.105_in}},
-      {12, {23.89_in, 657.365_in}}, {13, {289.290_in, 657.365_in}},
-      {14, {244.89_in, 365.195_in}}, {15, {78.64_in, 365.195_in}},
-      {16, {-0.15_in, 451.895_in}}, {17, {128.545_in, 530.485_in}},
-      {18, {155.25_in, 546.875_in}}, {19, {188.455_in, 530.485_in}},
-      {20, {185.205_in, 497.775_in}}, {21, {161.75_in, 481.385_in}},
-      {22, {131.795_in, 497.775_in}}};
+  configs.april_locations = {{18, {0_in, 0_in}}, {19, {-22.25_in, 0_in}},
+      {7, {0_in, 275_in}}, {8, {196.17_in, 652.73_in}}};
 
   return configs;
 }

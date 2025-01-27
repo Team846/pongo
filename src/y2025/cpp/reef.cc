@@ -1,33 +1,24 @@
 #include "reef.h"
-
 #include <frc/DriverStation.h>
-
 #include "field.h"
-
-const frc846::math::FieldPoint ReefProvider::reefCenter = {
-    {158.5_in, 190.75_in}, 0_deg, 0_fps};
 
 std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations() {
   std::vector<frc846::math::FieldPoint> reefScoringLocations;
 
-  frc846::math::Vector2D reef_center =
-      reefCenter
-          .mirrorOnlyY(frc::DriverStation::GetAlliance().value() ==
-                       frc::DriverStation::kBlue)
-          .point;
+  frc846::math::Vector2D reef_center = Field::getPoint("kReefCenter").mirrorOnlyY(frc::DriverStation::kBlue).point;
   frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{2.5_in, 63.5_in};
+      frc846::math::Vector2D{6.5_in, 46.75_in};
 
   frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-10.5_in, 63.5_in};
+      frc846::math::Vector2D{-6.5_in, 46.75_in};
 
   for (int i = 0; i < 6; i++) {
     reefScoringLocations.push_back(frc846::math::FieldPoint{
-        reef_center + left_reef_displacement.rotate(60_deg * i, true),
-        60_deg * i, 0_fps});
+        reef_center+left_reef_displacement.rotate(60_deg * i, true), 60_deg * i + 180_deg,
+        0_fps});
     reefScoringLocations.push_back(frc846::math::FieldPoint{
-        reef_center + right_reef_displacement.rotate(60_deg * i, true),
-        60_deg * i, 0_fps});
+        reef_center+right_reef_displacement.rotate(60_deg * i, true), 60_deg * i + 180_deg,
+        0_fps});
   }
 
   return reefScoringLocations;
@@ -35,12 +26,8 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations() {
 
 int ReefProvider::getClosestReefSide(frc846::math::Vector2D current_pos) {
   // TODO: perhaps hysteresis
-  frc846::math::Vector2D reef_center =
-      reefCenter
-          .mirrorOnlyY(frc::DriverStation::GetAlliance().value() ==
-                       frc::DriverStation::kBlue)
-          .point;
-  frc846::math::Vector2D reef_to_robot = current_pos - reef_center;
+  frc846::math::Vector2D reef_center = Field::getPoint("kReefCenter").mirrorOnlyY(frc::DriverStation::kBlue).point;
+  frc846::math::Vector2D reef_to_robot = current_pos-reef_center;
 
   units::degree_t angle = reef_to_robot.angle(true);
   while (angle < 0_deg)

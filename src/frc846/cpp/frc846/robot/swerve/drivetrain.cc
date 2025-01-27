@@ -176,7 +176,6 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       GetPreferenceValue_double("pose_estimator/accel_variance"));
 
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
-  // units::degree_t bearing = navX_.GetFusedHeading()*1_deg;
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
@@ -213,9 +212,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-          .calculate({bearing, steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+                      .calculate({bearing, steer_positions, drive_positions,
+                          GetPreferenceValue_double("odom_fudge_factor")})
+                      .position,
       .bearing = bearing,
       .velocity = velocity,
   };
