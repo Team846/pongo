@@ -10,6 +10,7 @@
 #include <frc2/command/button/Trigger.h>
 #include <hal/Notifier.h>
 
+#include "calculators/AntiTippingCalculator.h"
 #include "commands/teleop/drive_command.h"
 #include "commands/teleop/leds_command.h"
 #include "control_triggers.h"
@@ -56,7 +57,16 @@ void FunkyRobot::InitTeleop() {
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
-void FunkyRobot::OnPeriodic() {}
+void FunkyRobot::OnPeriodic() {
+  // TODO: plug real heights into AntiTippingCalculator
+  AntiTippingCalculator::SetTelescopeHeight(36_in);
+  AntiTippingCalculator::SetElevatorHeight(45_in);
+
+  auto cg = AntiTippingCalculator::CalculateRobotCG();
+  Graph("robot_cg_x", cg[0]);
+  Graph("robot_cg_y", cg[1]);
+  Graph("robot_cg_z", cg[2]);
+}
 
 void FunkyRobot::InitTest() {}
 

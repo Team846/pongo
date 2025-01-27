@@ -55,9 +55,9 @@ public:
 
     const auto elapsed_time = end_time - start_time;
 
-    if (elapsed_time > 1000_us) {
+    if (elapsed_time > 3000_us) {
       Warn("Command {} periodic overrun. Took {} ms.", name(),
-          elapsed_time / 1000_us);
+          elapsed_time / 3000_us);
     }
 
     avg_periodic_time_ =
@@ -106,7 +106,8 @@ protected:
 private:
   frc2::InstantCommand end_command_addition{[&] {
     Log("Command group ending. Took {} ms to complete.",
-        (frc846::wpilib::CurrentFPGATime() - command_start_time_).to<double>());
+        (frc846::wpilib::CurrentFPGATime() - command_start_time_)
+            .template to<double>());
   }};
 
   frc2::InstantCommand start_command_addition{[&] {

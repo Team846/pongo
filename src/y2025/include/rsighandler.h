@@ -14,7 +14,7 @@
 #include <map>
 
 void handler(int sig) {
-  std::map<int, std::string> sigErrors;
+  std::map<int, std::string_view> sigErrors;
 
   sigErrors[SIGFPE] = "FATAL ERROR >> Arithmetic Error, SIGFPE";
   sigErrors[SIGILL] = "FATAL ERROR >> Illegal Instruction, SIGILL";

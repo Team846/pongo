@@ -9,14 +9,36 @@
       "/SmartDashboard/zero_bearing": "Command"
     }
   },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true,
+        "verify_hardware": {
+          "open": true
+        },
+        "zero_bearing": {
+          "open": true
+        }
+      }
+    }
+  },
   "NetworkTables Info": {
     "Connections": {
       "open": true
     },
-    "Server": {
-      "Subscribers": {
+    "Elastic@1": {
+      "Publishers": {
         "open": true
       },
+      "open": true
+    },
+    "Server": {
       "open": true
     },
     "visible": true

@@ -1,6 +1,5 @@
 #include "frc846/math/DoubleSyncBuffer.h"
 
-#include <iostream>
 #include <stdexcept>
 
 namespace frc846::math {
@@ -57,17 +56,12 @@ std::pair<double, double> DoubleSyncBuffer::GetTrough() {
     throw std::runtime_error(
         "DoubleSyncBuffer::GetTrough() called on invalid buffer");
 
-  double min_combination = 100000000.0;
   double min1 = 100000000.0;
   double min2 = 100000000.0;
 
   for (size_t i = 1; i < m_buffer_2.size() - sync_diff_; i++) {
-    double added = m_buffer_2[i + sync_diff_];
-    if (added < min_combination) {
-      min_combination = added;
-      min1 = m_buffer_1[i];
-      min2 = m_buffer_2[i + sync_diff_];
-    }
+    if (m_buffer_2[i + sync_diff_] < min2) min2 = m_buffer_2[i + sync_diff_];
+    if (m_buffer_1[i] < min1) min1 = m_buffer_1[i];
   }
 
   return std::make_pair(min1, min2);

@@ -115,9 +115,9 @@
     "xtree": "cpp",
     "xutility": "cpp",
     "queue": "cpp",
-    "*.clang-format": "cpp",
     "expected": "cpp",
-    "source_location": "cpp"
+    "source_location": "cpp",
+    "version": "cpp"
   },
   "wpilib.useWindbgX": true,
   "C_Cpp.errorSquiggles": "enabled",

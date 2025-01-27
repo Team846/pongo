@@ -121,7 +121,7 @@ void SparkMXFX_interm::EnableStatusFrames(
 
   if (vector_has(frames, config::StatusFrame::kVelocityFrame) ||
       vector_has(frames, config::StatusFrame::kCurrentFrame)) {
-    configs.signals.PrimaryEncoderVelocityPeriodMs(20);
+    configs.signals.PrimaryEncoderVelocityPeriodMs(25);
     configs.signals.PrimaryEncoderVelocityAlwaysOn(true);
   } else {
     configs.signals.PrimaryEncoderVelocityPeriodMs(32767);
@@ -142,6 +142,23 @@ void SparkMXFX_interm::EnableStatusFrames(
   } else {
     configs.signals.AnalogPositionPeriodMs(32767);
     configs.signals.AnalogPositionAlwaysOn(false);
+  }
+
+  APPLY_CONFIG_NO_RESET();
+}
+
+void SparkMXFX_interm::OverrideStatusFramePeriod(
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  if (frame == config::StatusFrame::kFaultFrame ||
+      frame == config::StatusFrame::kLeader) {
+    configs.signals.FaultsPeriodMs(period.to<int>());
+    configs.signals.FaultsAlwaysOn(true);
+  } else if (frame == config::StatusFrame::kVelocityFrame) {
+    configs.signals.PrimaryEncoderVelocityPeriodMs(period.to<int>());
+  } else if (frame == config::StatusFrame::kPositionFrame) {
+    configs.signals.PrimaryEncoderPositionPeriodMs(period.to<int>());
+  } else if (frame == config::StatusFrame::kSensorFrame) {
+    configs.signals.AnalogPositionPeriodMs(period.to<int>());
   }
 
   APPLY_CONFIG_NO_RESET();

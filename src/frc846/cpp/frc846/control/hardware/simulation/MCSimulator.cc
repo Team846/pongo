@@ -29,15 +29,19 @@ void MCSimulator::Tick() {
     duty_cycle = gains.calculate(
         pos->to<double>(), 0.0, velocity_.to<double>(), load_.to<double>());
   }
+  duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
+
   pred_current_ = frc846::control::calculators::CurrentTorqueCalculator::
       predict_current_draw(
           duty_cycle, velocity_, battery_voltage_, circuit_resistance_, specs);
   units::newton_meter_t torque_output =
       frc846::control::calculators::CurrentTorqueCalculator::current_to_torque(
           pred_current_, specs);
+  units::newton_meter_t friction_torque =
+      specs.stall_torque * specs.friction_loss *
+      (velocity_ / units::math::abs(velocity_));
+  if (units::math::abs(velocity_) < 0.01_rad_per_s) { friction_torque = 0_Nm; }
   torque_output -= load_;
-
-  if (inverted) torque_output = -torque_output;
 
   std::chrono::microseconds current_time =
       std::chrono::duration_cast<std::chrono::microseconds>(
@@ -48,6 +52,9 @@ void MCSimulator::Tick() {
   units::radians_per_second_t new_velocity =
       frc846::control::calculators::VelocityPositionEstimator::predict_velocity(
           velocity_, torque_output, loop_time, rotational_inertia_);
+  new_velocity =
+      units::radians_per_second_t{std::clamp(new_velocity.to<double>(),
+          (-specs.free_speed).to<double>(), specs.free_speed.to<double>())};
   units::radians_per_second_t avg_velocity = (velocity_ + new_velocity) / 2.0;
 
   position_ =
@@ -62,21 +69,31 @@ void MCSimulator::SetInverted(bool inverted) {
   position_ = -position_;
 }
 
-void MCSimulator::WriteDC(double duty_cycle) { control_message = duty_cycle; }
+void MCSimulator::WriteDC(double duty_cycle) {
+  if (inverted) duty_cycle = -duty_cycle;
+  control_message = duty_cycle;
+}
 void MCSimulator::WriteVelocity(units::radians_per_second_t velocity) {
+  if (inverted) velocity = -velocity;
   control_message = velocity;
 }
 void MCSimulator::WritePosition(units::radian_t position) {
+  if (inverted) position_ = -position_;
   control_message = position;
 }
 
 units::ampere_t MCSimulator::GetCurrent() {
   return units::math::abs(pred_current_);
 }
-units::radian_t MCSimulator::GetPosition() { return position_; }
-units::radians_per_second_t MCSimulator::GetVelocity() { return velocity_; }
+units::radian_t MCSimulator::GetPosition() {
+  return inverted ? -position_ : position_;
+}
+units::radians_per_second_t MCSimulator::GetVelocity() {
+  return inverted ? -velocity_ : velocity_;
+}
 
 void MCSimulator::ZeroEncoder(units::radian_t position) {
+  if (inverted) position = -position;
   this->position_ = position;
 }
 
@@ -103,15 +120,18 @@ void MCSimulator::EnableStatusFrames(
 }
 
 bool MCSimulator::IsDuplicateControlMessage(double duty_cycle) {
+  if (inverted) duty_cycle = -duty_cycle;
   return std::holds_alternative<double>(control_message) &&
          std::get<double>(control_message) == duty_cycle;
 }
 bool MCSimulator::IsDuplicateControlMessage(
     units::radians_per_second_t velocity) {
+  if (inverted) velocity = -velocity;
   return std::holds_alternative<units::radians_per_second_t>(control_message) &&
          std::get<units::radians_per_second_t>(control_message) == velocity;
 }
 bool MCSimulator::IsDuplicateControlMessage(units::radian_t position) {
+  if (inverted) position = -position;
   return std::holds_alternative<units::radian_t>(control_message) &&
          std::get<units::radian_t>(control_message) == position;
 }
@@ -120,7 +140,10 @@ void MCSimulator::SetGains(frc846::control::base::MotorGains gains) {
   this->gains = gains;
 }
 
-void MCSimulator::SetLoad(units::newton_meter_t load) { this->load_ = load; }
+void MCSimulator::SetLoad(units::newton_meter_t load) {
+  if (inverted) load = -load;
+  this->load_ = load;
+}
 void MCSimulator::SetBatteryVoltage(units::volt_t voltage) {
   this->battery_voltage_ = voltage;
 }

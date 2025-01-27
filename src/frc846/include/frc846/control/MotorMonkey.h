@@ -68,6 +68,9 @@ public:
   static void EnableStatusFrames(
       size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames);
 
+  static void OverrideStatusFramePeriod(size_t slot_id,
+      frc846::control::config::StatusFrame frame, units::millisecond_t period);
+
   /*
   GetBatteryVoltage()
 
@@ -115,7 +118,7 @@ public:
   static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
       units::radian_t reverse_limit);
 
-  static std::string parseError(
+  static std::string_view parseError(
       frc846::control::hardware::ControllerErrorCodes err);
 
   static bool VerifyConnected();
@@ -155,6 +158,8 @@ private:
   };
 
   static std::queue<MotorMessage> control_messages;
+
+  static int num_loops_last_brown;
 };
 
 }  // namespace frc846::control

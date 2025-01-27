@@ -11,7 +11,6 @@
 #include <filesystem>
 #include <fstream>
 #include <initializer_list>
-#include <iostream>
 #include <mutex>
 #include <queue>
 #include <type_traits>
@@ -122,7 +121,7 @@ private:
   }
 
 public:
-  FunkyLogger(std::string pname) : pname_{pname} {};
+  FunkyLogger(std::string_view pname) : pname_{pname} {};
 
   template <typename... T>
   void Log(fmt::format_string<T...> fmt, T&&... args) const {

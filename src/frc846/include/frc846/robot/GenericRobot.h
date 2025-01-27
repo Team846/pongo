@@ -35,7 +35,7 @@ public:
 
   void VerifyHardware();
 
-  void AddAuto(std::string name, frc2::Command* command);
+  void AddAuto(std::string_view name, frc2::Command* command);
 
 private:
   hal::Handle<HAL_NotifierHandle> notifier_;
@@ -47,8 +47,8 @@ private:
   GenericRobotContainer* generic_robot_container_;
 
   frc2::Command* auto_command_ = nullptr;
-  frc::SendableChooser<std::string> auto_chooser_;
-  std::unordered_map<std::string, frc2::Command*> autos_;
+  frc::SendableChooser<std::string_view> auto_chooser_;
+  std::unordered_map<std::string_view, frc2::Command*> autos_;
 };
 
 }  // namespace frc846::robot

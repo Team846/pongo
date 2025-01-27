@@ -6,7 +6,19 @@
 struct ControlInputReadings {
   double translate_x;
   double translate_y;
+
+  bool rc_p_y;
+  bool rc_p_x;
+  bool rc_n_y;
+  bool rc_n_x;
+  bool rc_control;
+
   double rotation;
+
+  bool test_move_10_ft;  // TODO: remove when not needed
+  bool test_bearing_pid;
+  bool lock_left_reef;
+  bool lock_right_reef;
 
   bool zero_bearing;
   

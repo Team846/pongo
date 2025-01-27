@@ -90,6 +90,9 @@ public:
   // Enables specific status frames and disables all others
   void EnableStatusFrames(std::vector<config::StatusFrame> frames);
 
+  void OverrideStatusFramePeriod(
+      config::StatusFrame frame, units::millisecond_t period);
+
   // Verifies if the speed controller is connected and accessible
   bool VerifyConnected();
 

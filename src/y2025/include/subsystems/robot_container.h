@@ -22,11 +22,13 @@ public:
     RegisterPreference("init_leds", true);
     RegisterPreference("init_gpd", true);
 
-    control_input_.Init();
-    if (GetPreferenceValue_bool("init_drivetrain")) drivetrain_.Init();
-    if (GetPreferenceValue_bool("init_leds")) leds_.Init();
-    if (GetPreferenceValue_bool("init_gpd")) GPD_.Init();
+    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    bool leds_init = (GetPreferenceValue_bool("init_leds"));
+    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
-    RegisterSubsystems({&control_input_, &drivetrain_, &leds_, &GPD_});
+    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    RegisterSubsystemGroupB({{&leds_, leds_init}});
+    RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
   }
 };

@@ -84,6 +84,11 @@ public:
 
   void EnableStatusFrames(
       std::vector<frc846::control::config::StatusFrame> frames) override;
+  void OverrideStatusFramePeriod(frc846::control::config::StatusFrame frame,
+      units::millisecond_t period) override {
+    (void)frame;
+    (void)period;
+  };
 
   bool IsDuplicateControlMessage(double duty_cycle) override;
   bool IsDuplicateControlMessage(units::radians_per_second_t velocity) override;

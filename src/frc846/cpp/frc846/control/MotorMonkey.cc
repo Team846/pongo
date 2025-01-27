@@ -5,7 +5,8 @@
 #include <rev/SparkFlex.h>
 #include <rev/SparkMax.h>
 
-#include <string>
+#include <iostream>
+#include <string_view>
 
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 #include "frc846/control/hardware/TalonFX_interm.h"
@@ -80,13 +81,16 @@ units::ampere_t MotorMonkey::max_draw_{0.0_A};
 
 std::queue<MotorMonkey::MotorMessage> MotorMonkey::control_messages{};
 
+int MotorMonkey::num_loops_last_brown = 4000;
+
 void MotorMonkey::Setup() {
-  loggable_.RegisterPreference("voltage_min", 7.5_V);
+  loggable_.RegisterPreference("voltage_min", 8.0_V);
   loggable_.RegisterPreference("recal_voltage_thresh", 10.5_V);
   loggable_.RegisterPreference("default_max_draw", 150.0_A);
-  loggable_.RegisterPreference("min_max_draw", 40_A);
-  loggable_.RegisterPreference("max_max_draw", 300_A);
-  loggable_.RegisterPreference("battery_cc", 400_A);
+  loggable_.RegisterPreference("min_max_draw", 60_A);
+  loggable_.RegisterPreference("max_max_draw", 250_A);
+  loggable_.RegisterPreference("battery_cc", 700_A);
+  loggable_.RegisterPreference("brownout_perm_loops", 500);
 
   max_draw_ = loggable_.GetPreferenceValue_unit_type<units::ampere_t>(
       "default_max_draw");
@@ -94,6 +98,14 @@ void MotorMonkey::Setup() {
 
 void MotorMonkey::RecalculateMaxDraw() {
   if (!sync_buffer.IsValid()) return;
+
+  if (frc::RobotController::IsBrownedOut()) num_loops_last_brown = 0;
+  if (num_loops_last_brown <
+      loggable_.GetPreferenceValue_int("brownout_perm_loops")) {
+    max_draw_ =
+        loggable_.GetPreferenceValue_unit_type<units::ampere_t>("min_max_draw");
+    return;
+  }
 
   sync_buffer.Sync();
   loggable_.Graph("sync_diff_", sync_buffer.GetSyncDiff());
@@ -163,6 +175,8 @@ void MotorMonkey::Tick(bool disabled) {
             dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
         sim->SetBatteryVoltage(battery_voltage);
         sim->SetLoad(load_registry[i]);
+        // sim->Tick();
+        // TODO: fix sim
       }
     }
   }
@@ -365,6 +379,16 @@ void MotorMonkey::EnableStatusFrames(
   LOG_IF_ERROR("EnableStatusFrames");
 }
 
+void MotorMonkey::OverrideStatusFramePeriod(size_t slot_id,
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(
+      controller_registry[slot_id]->OverrideStatusFramePeriod(frame, period),
+      "OverrideStatusFramePeriod");
+  LOG_IF_ERROR("OverrideStatusFramePeriod");
+}
+
 units::volt_t MotorMonkey::GetBatteryVoltage() { return battery_voltage; }
 
 void MotorMonkey::SetLoad(size_t slot_id, units::newton_meter_t load) {
@@ -445,7 +469,7 @@ void MotorMonkey::SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
   LOG_IF_ERROR("SetSoftLimits");
 }
 
-std::string MotorMonkey::parseError(
+std::string_view MotorMonkey::parseError(
     frc846::control::hardware::ControllerErrorCodes err) {
   switch (err) {
   case frc846::control::hardware::ControllerErrorCodes::kAllOK: return "All OK";
