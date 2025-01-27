@@ -115,7 +115,7 @@ private:
   calculateSteerPosition()
 
   Calculates the direction for the steer motor, based on a normalized target.
-  Also returns a boolean that represents the inversion of the drive motsor.
+  Also returns a boolean that represents the inversion of the drive motor.
   */
   std::pair<units::degree_t, bool> calculateSteerPosition(
       units::degree_t target_norm, units::degree_t current);

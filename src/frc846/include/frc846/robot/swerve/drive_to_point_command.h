@@ -26,9 +26,14 @@ public:
 
   bool IsFinished() override;
 
-private:
+protected:
   frc846::robot::swerve::DrivetrainSubsystem* drivetrain_;
 
+  virtual std::pair<frc846::math::FieldPoint, bool> GetTargetPoint() {
+    return {{{0_in, 0_in}, 0_deg, 0_fps}, false};
+  };
+
+private:
   units::feet_per_second_t max_speed_;
   units::feet_per_second_squared_t max_acceleration_;
   units::feet_per_second_squared_t max_deceleration_;

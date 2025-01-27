@@ -33,8 +33,8 @@ void LockToReefCommand::Periodic() {
       ReefProvider::getReefScoringLocations()[2 * reef_target_pos +
                                               (is_left_ ? 0 : 1)];
 
-  target_pos.point +=
-      base_adj.rotate(container_.drivetrain_.GetReadings().estimated_pose.bearing);
+  target_pos.point += base_adj.rotate(
+      container_.drivetrain_.GetReadings().estimated_pose.bearing);
 
   frc846 ::math::Vector2D r_vec = target_pos.point - pos;
   Graph("lock_to_point/x_err", r_vec[0]);

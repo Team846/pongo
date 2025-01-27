@@ -4,7 +4,7 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/button/Trigger.h>
 
-#include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
 #include "reef.h"
@@ -18,7 +18,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }).ToPtr());
 
   // FAKE
-  //TODO: remove
+  // TODO: remove
 
   frc2::Trigger test_move_10_ft_trigger{[&] {
     return container.control_input_.GetReadings().test_move_10_ft;
@@ -38,8 +38,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(LockToReefCommand{container, true}.ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{
+      container, true, 15_fps, 15_fps_sq, 10_fps_sq}
+                   .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(LockToReefCommand{container, false}.ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{
+      container, false, 15_fps, 15_fps_sq, 10_fps_sq}
+                   .ToPtr());
 }
