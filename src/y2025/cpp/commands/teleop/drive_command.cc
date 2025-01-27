@@ -1,10 +1,6 @@
 #include "commands/teleop/drive_command.h"
-#include <utility>
-
 
 #include <utility>
-
-#include "subsystems/abstract/gpd.h"
 
 #include "calculators/AntiTippingCalculator.h"
 
@@ -21,18 +17,9 @@ void DriveCommand::Periodic() {
 
   frc846::robot::swerve::DrivetrainOLControlTarget target{};
 
-  bool targeting_algae = container_.control_input_.GetReadings().targeting_algae;
-  
-  if (targeting_algae) // add and a note is detected
-  {
-    // Turn towards the note
-    frc846::util::Vector2D rel_note_pos =
-        container_.gpd_.GPDCalculator.algae - 
-        container_.drivetrain_.GetReadings().pose.point;
-    error = container_. - container_.drivetrain_.GetReadings().pose.bearing
-    drivetrain_target.rotation = GetPreferenceValue_double("gpd/kP") * error + GetPreferenceValue_double("gpd/kD") * velocity
+  bool targeting_algae =
+      container_.control_input_.GetReadings().targeting_algae;
 
-  }
   container_.drivetrain_.SetTarget({target});
 
   double translate_x = frc846::math::HorizontalDeadband(
