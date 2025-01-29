@@ -19,6 +19,7 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
   start_point_ = drivetrain_->GetReadings().estimated_pose.position;
+  is_decelerating_ = false;
 }
 
 void DriveToPointCommand::Execute() {
@@ -36,16 +37,17 @@ void DriveToPointCommand::Execute() {
   units::second_t t_decel =
       ((dt_readings.estimated_pose.velocity.magnitude() - target_.velocity) /
           max_deceleration_);
-  units::foot_t stopping_distance =
+  units::foot_t stopping_distance = units::math::abs(
       (dt_readings.estimated_pose.velocity.magnitude() * t_decel) -
-      ((max_deceleration_ * t_decel * t_decel) / 2.0);
+      ((max_deceleration_ * t_decel * t_decel) / 2.0));
   Graph("stopping_distance", stopping_distance);
 
   auto dist_left =
       (target_.point - dt_readings.estimated_pose.position).magnitude();
 
-  if ((target_.point - dt_readings.estimated_pose.position).magnitude() <=
-      stopping_distance) {
+  if (dist_left <= stopping_distance) {
+    is_decelerating_ = true;
+
     if (dt_readings.estimated_pose.velocity.magnitude() < 4_fps &&
         target_.velocity > 1_fps) {
       dt_target.accel_dir =
@@ -54,6 +56,7 @@ void DriveToPointCommand::Execute() {
       dt_target.accel_dir =
           (start_point_ - dt_readings.estimated_pose.position).angle(true);
     }
+
     double decel_scale_factor = 1.0;
     if (dist_left > 3_in) {
       decel_scale_factor = units::math::abs(stopping_distance / dist_left);
@@ -85,7 +88,10 @@ void DriveToPointCommand::End(bool interrupted) {
 bool DriveToPointCommand::IsFinished() {
   auto current_point = drivetrain_->GetReadings().estimated_pose.position;
   return (current_point - start_point_).magnitude() >=
-         (target_.point - start_point_).magnitude();
+             (target_.point - start_point_).magnitude() ||
+         is_decelerating_ &&
+             drivetrain_->GetReadings().estimated_pose.velocity.magnitude() <
+                 1_fps;
   // TODO: add bump sensor
 }
 
