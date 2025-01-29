@@ -23,6 +23,10 @@ class GPDSubsystem
 public:
   GPDSubsystem(frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
 
+  frc846::math::Vector2D getBestGP(
+      const std::vector<frc846::math::Vector2D> algae,
+      const frc846::math::VectorND<units::feet_per_second, 2> robot_velocity);
+
   void Setup() override;
 
   GPDTarget ZeroTarget() const override;
