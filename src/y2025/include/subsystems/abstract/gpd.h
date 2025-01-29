@@ -40,4 +40,6 @@ private:
   void WriteToHardware(GPDTarget target) override;
 
   frc846::robot::swerve::DrivetrainSubsystem* drivetrain_;
+
+  units::degree_t gp_spin_;
 };

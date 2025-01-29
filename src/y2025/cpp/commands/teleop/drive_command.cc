@@ -17,9 +17,6 @@ void DriveCommand::Periodic() {
 
   frc846::robot::swerve::DrivetrainOLControlTarget target{};
 
-  bool targeting_algae =
-      container_.control_input_.GetReadings().targeting_algae;
-
   container_.drivetrain_.SetTarget({target});
 
   double translate_x = frc846::math::HorizontalDeadband(

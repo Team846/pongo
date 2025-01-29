@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "frc846/math/fieldpoints.h"
+#include "frc846/wpilib/time.h"
 
 GPDSubsystem::GPDSubsystem(
     frc846::robot::swerve::DrivetrainSubsystem* drivetrain)
@@ -33,8 +34,15 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
       180_deg - drivetrain_readings.pose.bearing);
 
   std::vector<double> distances = gpdTable->GetNumberArray("distances", {});
-  units::second_t latency = gpdTable->GetNumber("tl", 0.05) *
-                            1_s;  // TODO: check when entry was last updated
+
+  auto latency_entry = gpdTable->GetEntry("tl");
+  units::second_t nt_delay =
+      frc846::wpilib::CurrentFPGATime() -
+      units::microsecond_t(latency_entry.GetLastChange());
+  Graph("nt_delay", nt_delay);
+  units::second_t latency = latency_entry.GetDouble(0.005) * 1_s + nt_delay;
+  Graph("latency", latency);
+
   std::vector<double> theta_x = gpdTable->GetNumberArray("tx", {});
 
   readings.gamepieces.clear();
@@ -51,12 +59,16 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
 
   int num_gps = readings.gamepieces.size();
 
+  Graph("num_gps", num_gps);
+
+  gp_spin_ += 5_deg;
+
 #ifndef _WIN32
   for (int i = 0; i < std::min(20, num_gps); i++) {
     auto pos = readings.gamepieces[i];
     g_field.GetObject(std::to_string(i))
         ->SetPose(
-            frc846::math::FieldPoint::field_size_y - pos[1], pos[0], 0_deg);
+            frc846::math::FieldPoint::field_size_y - pos[1], pos[0], gp_spin_);
   }
   for (int i = std::min(20, num_gps); i < 20; i++) {
     g_field.GetObject(std::to_string(i))->SetPose(100_m, 100_m, 0_deg);
