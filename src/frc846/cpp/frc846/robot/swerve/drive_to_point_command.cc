@@ -89,10 +89,9 @@ bool DriveToPointCommand::IsFinished() {
   auto current_point = drivetrain_->GetReadings().estimated_pose.position;
   return (current_point - start_point_).magnitude() >=
              (target_.point - start_point_).magnitude() ||
-         is_decelerating_ &&
+         (is_decelerating_ &&
              drivetrain_->GetReadings().estimated_pose.velocity.magnitude() <
-                 1_fps;
-  // TODO: add bump sensor
+                 1_fps);
 }
 
 }  // namespace frc846::robot::swerve
