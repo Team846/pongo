@@ -21,8 +21,7 @@ TelescopeSubsystem::TelescopeSubsystem()
 
   motor_helper_.SetConversion(telescope_reduction);
 
-  telescope_position_calculator_.setConstants(
-      {0_V, 3.3_V, 10_tr, telescope_reduction, false});
+  telescope_position_calculator_.setConstants({0_V, 3.3_V, 10_tr, false});
 
   motor_helper_.bind(&telescope_);
 }
@@ -50,7 +49,8 @@ TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
   TelescopeReadings readings;
 
   units::volt_t pot_voltage = telescope_.GetAnalogDeviceOutput();
-  readings.position = telescope_position_calculator_.calculate({pot_voltage});
+  readings.position = telescope_position_calculator_.calculate({pot_voltage}) *
+                      telescope_reduction;
 
   Graph("readings/pot_voltage", pot_voltage);
   Graph("readings/position", readings.position);

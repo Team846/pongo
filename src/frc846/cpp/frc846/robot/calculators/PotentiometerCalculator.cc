@@ -4,8 +4,9 @@ namespace frc846::robot::calculators {
 
 PotentiometerCalculator::PotentiometerCalculator() {}
 
-units::inch_t PotentiometerCalculator::calculate(PotentiometerInputs inputs) {
-  units::volt_t normalized_voltage = inputs.current_voltage;
+units::turn_t PotentiometerCalculator::calculate(
+    units::volt_t current_voltage) {
+  units::volt_t normalized_voltage = current_voltage;
   if (constants_.inverted) {
     normalized_voltage =
         constants_.max_voltage - normalized_voltage + constants_.zero_voltage;
@@ -15,9 +16,7 @@ units::inch_t PotentiometerCalculator::calculate(PotentiometerInputs inputs) {
   units::turn_t potentiometer_turns =
       normalized_voltage / (constants_.max_voltage - constants_.zero_voltage) *
       constants_.range;
-  units::inch_t actual_position =
-      potentiometer_turns * constants_.gear_reduction;
-  return actual_position;
+  return potentiometer_turns;
 }
 
 }  // namespace frc846::robot::calculators
