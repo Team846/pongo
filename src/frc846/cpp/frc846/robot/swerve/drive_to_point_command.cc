@@ -65,7 +65,11 @@ void DriveToPointCommand::Execute() {
         (target_.point - dt_readings.estimated_pose.position).angle(true);
     Graph("stopping", false);
   } else {
-    dt_target.linear_acceleration = 0_fps_sq;
+    if (dt_readings.pose.velocity.magnitude() < max_speed_)
+      dt_target.linear_acceleration = max_acceleration_;
+    else
+      dt_target.linear_acceleration = 0_fps_sq;
+
     dt_target.accel_dir =
         (target_.point - dt_readings.estimated_pose.position).angle(true);
     Graph("stopping", false);
