@@ -24,19 +24,33 @@ bool GPDSubsystem::VerifyHardware() { return true; }
 void GPDSubsystem::Setup() {}
 
 std::pair<frc846::math::Vector2D, bool> GPDSubsystem::getBestGP(
-    const std::vector<frc846::math::Vector2D> algae,
-    const frc846::math::VectorND<units::feet_per_second, 2> robot_velocity) {
+    const std::vector<frc846::math::Vector2D> algae) {
   if (algae.empty()) { return {{0_in, 0_in}, false}; }
   frc846::math::Vector2D closest_algae;
-  units::degree_t min_angle = 180_deg;
 
-  for (size_t i = 0; i < algae.size(); i++) {
-    frc846::math::Vector2D this_algae = algae.at(i);
-    units::degree_t angle = robot_velocity.angleTo(this_algae, true);
+  auto robot_pose = drivetrain_->GetReadings().pose;
 
-    if (angle < min_angle) {
-      min_angle = angle;
-      closest_algae = this_algae;
+  if (robot_pose.velocity.magnitude() >= 2_fps) {
+    units::degree_t min_angle = 180_deg;
+    for (size_t i = 0; i < algae.size(); i++) {
+      frc846::math::Vector2D this_algae = algae.at(i);
+      units::degree_t angle = robot_pose.velocity.angleTo(this_algae, true);
+
+      if (angle < min_angle) {
+        min_angle = angle;
+        closest_algae = this_algae;
+      }
+    }
+  } else {
+    units::inch_t min_dist = 1000_in;
+    for (size_t i = 0; i < algae.size(); i++) {
+      frc846::math::Vector2D this_algae = algae.at(i);
+      units::inch_t dist = (this_algae - robot_pose.position).magnitude();
+
+      if (dist < min_dist) {
+        min_dist = dist;
+        closest_algae = this_algae;
+      }
     }
   }
 
