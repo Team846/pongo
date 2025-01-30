@@ -13,7 +13,7 @@ GPDSubsystem::GPDSubsystem(
   for (int i = 0; i < 20; i++) {
     g_field.GetObject(std::to_string(i));
   }
-  frc::SmartDashboard::PutData("NoteField", &g_field);
+  frc::SmartDashboard::PutData("GPDField", &g_field);
 #endif
 }
 
@@ -23,29 +23,29 @@ bool GPDSubsystem::VerifyHardware() { return true; }
 
 void GPDSubsystem::Setup() {}
 
-frc846::math::Vector2D GPDSubsystem::getBestGP(
+std::pair<frc846::math::Vector2D, bool> GPDSubsystem::getBestGP(
     const std::vector<frc846::math::Vector2D> algae,
     const frc846::math::VectorND<units::feet_per_second, 2> robot_velocity) {
-  if (algae.empty()) { return {}; }
+  if (algae.empty()) { return {{0_in, 0_in}, false}; }
   frc846::math::Vector2D closest_algae;
-  int closest_algae_index = -1;
   units::degree_t min_angle = 180_deg;
 
   for (size_t i = 0; i < algae.size(); i++) {
-    frc846::math::Vector2D relative_note = algae.at(i);
-    units::degree_t angle = robot_velocity.angleTo(relative_note, true);
+    frc846::math::Vector2D this_algae = algae.at(i);
+    units::degree_t angle = robot_velocity.angleTo(this_algae, true);
 
     if (angle < min_angle) {
       min_angle = angle;
-      closest_algae = relative_note;
-      closest_algae_index = i;
+      closest_algae = this_algae;
     }
-
-    return closest_algae;
   }
+
+  return {closest_algae, true};
 }
 
 GPDReadings GPDSubsystem::ReadFromHardware() {
+  // TODO: Camera offsets?
+
   GPDReadings readings;
   frc846::robot::swerve::DrivetrainReadings drivetrain_readings =
       drivetrain_->GetReadings();

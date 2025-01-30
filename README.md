@@ -173,10 +173,6 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/y2025/cpp/commands/teleop/drive_command.cc:20:24: warning: Variable 'targeting_algae' is assigned a value that is never used. [unreadVariable]
-src/y2025/cpp/subsystems/abstract/gpd.cc:30:7: warning: The scope of the variable 'closest_algae_index' can be reduced. [variableScope]
-src/y2025/cpp/subsystems/abstract/gpd.cc:30:27: warning: Variable 'closest_algae_index' is assigned a value that is never used. [unreadVariable]
-src/y2025/cpp/subsystems/abstract/gpd.cc:40:27: warning: Variable 'closest_algae_index' is assigned a value that is never used. [unreadVariable]
-src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```
