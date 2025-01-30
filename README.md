@@ -117,7 +117,7 @@ WPILib VSCode is installed in a hard-to-find directory on MacOS. It is usually l
 
 It is a good idea to rename the file or move it into your Applications folder and pin it in dock for easy access and differentiation from normal VSCode.
 
-WPILib VSCode will have a W icon in the top right corner, wherease normal VSCode will not.
+WPILib VSCode will have a W icon in the top right corner, whereas normal VSCode will not.
 
 ## First Build
 
