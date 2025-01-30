@@ -45,17 +45,13 @@ void DriveToPointCommand::Execute() {
   auto dist_left =
       (target_.point - dt_readings.estimated_pose.position).magnitude();
 
-  if (dist_left <= stopping_distance) {
+  if (dist_left - drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
+                      "drive_to_subtract") <=
+      stopping_distance) {
     is_decelerating_ = true;
 
-    if (dt_readings.estimated_pose.velocity.magnitude() < 4_fps &&
-        target_.velocity > 1_fps) {
-      dt_target.accel_dir =
-          dt_readings.estimated_pose.velocity.angle(true) + 180_deg;
-    } else {
-      dt_target.accel_dir =
-          (start_point_ - dt_readings.estimated_pose.position).angle(true);
-    }
+    dt_target.accel_dir =
+        dt_readings.estimated_pose.velocity.angle(true) + 180_deg;
 
     double decel_scale_factor = 1.0;
     if (dist_left > 3_in) {
