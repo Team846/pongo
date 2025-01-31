@@ -4,6 +4,16 @@
       "visible": false
     }
   },
+  "Keyboard 0 Settings": {
+    "window": {
+      "visible": true
+    }
+  },
+  "FMS": {
+    "window": {
+      "visible": false
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [

@@ -31,8 +31,6 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
   FRC_CheckErrorStatus(status, "{}", "InitializeNotifier");
 
   HAL_SetNotifierName(notifier_, "Robot", &status);
-
-  RegisterPreference("permissible_current_draw", 300_A);
 }
 
 GenericRobot::~GenericRobot() {
@@ -55,6 +53,9 @@ void GenericRobot::StartCompetition() {
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog(), false);
 
   frc846::base::FunkyLogSystem::Start(20000);
+
+  // Setup MotorMonkey
+  frc846::control::MotorMonkey::Setup();
 
   // Add dashboard buttons
 
@@ -130,7 +131,7 @@ void GenericRobot::StartCompetition() {
         loop.Clear();
       } else if (mode == Mode::kAutonomous) {
         // Get and run selected auto command
-        std::string option_name = auto_chooser_.GetSelected();
+        std::string_view option_name = auto_chooser_.GetSelected();
         auto_command_ = autos_[option_name];
 
         if (auto_command_ != nullptr) {
@@ -177,9 +178,7 @@ void GenericRobot::StartCompetition() {
     generic_robot_container_->UpdateHardware();
 
     // Tick MotorMonkey
-    frc846::control::MotorMonkey::Tick(
-        GetPreferenceValue_unit_type<units::ampere_t>(
-            "permissible_current_draw"));
+    frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
 
     // Update dashboards
     frc::SmartDashboard::UpdateValues();
@@ -223,7 +222,7 @@ void GenericRobot::VerifyHardware() {
   generic_robot_container_->VerifyHardware();
 }
 
-void GenericRobot::AddAuto(std::string name, frc2::Command* command) {
+void GenericRobot::AddAuto(std::string_view name, frc2::Command* command) {
   auto_chooser_.AddOption(name, name);
   autos_[name] = command;
   frc::SmartDashboard::PutData(&auto_chooser_);

@@ -15,7 +15,7 @@ TalonFX hardware.
 */
 class TalonFX_interm : public IntermediateController {
 public:
-  TalonFX_interm(int can_id, std::string bus = "",
+  TalonFX_interm(int can_id, std::string_view bus = "",
       units::millisecond_t max_wait_time = 20_ms);
   /*
   Tick()
@@ -112,10 +112,13 @@ public:
 
   Enables specified status frames which are periodically updated
 
-  @param frames A the status frames wanted to be enabled.
+  @param frames the frames to be enabled
   */
   void EnableStatusFrames(
       std::vector<frc846::control::config::StatusFrame> frames) override;
+
+  void OverrideStatusFramePeriod(frc846::control::config::StatusFrame frame,
+      units::millisecond_t period) override;
 
   /*
   IsDuplicateControlMessage()

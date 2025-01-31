@@ -20,20 +20,13 @@ struct SwerveModuleReadings {
   units::degree_t steer_pos;
 };
 
-// Allows for torque-based control by DrivetrainSubsystem
-struct SwerveModuleTorqueControlTarget {
-  units::newton_meter_t drive;
-  units::newton_meter_t steer;
-};
-
 // For open-loop control by DrivetrainSubsystem
 struct SwerveModuleOLControlTarget {
   units::feet_per_second_t drive;
   units::degree_t steer;
 };
 
-using SwerveModuleTarget =
-    std::variant<SwerveModuleTorqueControlTarget, SwerveModuleOLControlTarget>;
+using SwerveModuleTarget = SwerveModuleOLControlTarget;
 
 struct SwerveModuleUniqueConfig {
   std::string loc;
@@ -57,7 +50,7 @@ struct SwerveModuleCommonConfig {
   steer_conv_unit steer_reduction;
   drive_conv_unit drive_reduction;
 
-  std::string bus = "";
+  std::string_view bus = "";
 };
 
 /*
@@ -101,6 +94,8 @@ public:
   void SetSteerGains(frc846::control::base::MotorGains gains);
 
 private:
+  int last_rezero = 101;
+
   /*
   getMotorParams()
 

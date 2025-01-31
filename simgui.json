@@ -35,6 +35,31 @@
   },
   "NetworkTables": {
     "transitory": {
+      "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true,
+        "verify_hardware": {
+          "open": true
+        },
+        "zero_bearing": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "Elastic@1": {
+      "Publishers": {
+  "NetworkTables": {
+    "transitory": {
       "LiveWindow": {
         ".status": {
           "open": true
@@ -91,6 +116,9 @@
         "prune_prefs": {
           "open": true
         },
+    "Server": {
+      "open": true
+    },
         "zero_bearing": {
           "open": true
         }

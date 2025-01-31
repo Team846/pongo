@@ -3,7 +3,6 @@
 #include <rev/SparkFlex.h>
 #include <rev/SparkMax.h>
 
-#include <algorithm>
 #include <variant>
 
 #include "IntermediateController.h"
@@ -115,10 +114,13 @@ public:
 
   Enables specified status frames which are periodically updated
 
-  @param frames A the status frames wanted to be enabled.
+  @param frames the frames to be enabled
   */
   void EnableStatusFrames(
       std::vector<frc846::control::config::StatusFrame> frames) override;
+
+  void OverrideStatusFramePeriod(frc846::control::config::StatusFrame frame,
+      units::millisecond_t period) override;
 
   /*
   IsDuplicateControlMessage()

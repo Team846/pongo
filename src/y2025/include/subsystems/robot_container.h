@@ -38,17 +38,29 @@ public:
     RegisterPreference("init_ramp", true);
 
     control_input_.Init();
-    if (GetPreferenceValue_bool("init_drivetrain")) drivetrain_.Init();
-    if (GetPreferenceValue_bool("init_leds")) leds_.Init();
-    if (GetPreferenceValue_bool("init_algae_pivot")) algae_pivot_.Init();
-    if (GetPreferenceValue_bool("init_climber")) climber_.Init();
-    if (GetPreferenceValue_bool("init_telescope")) telescope_.Init();
-    if (GetPreferenceValue_bool("init_coral_wrist")) coral_wrist_.Init();
-    if (GetPreferenceValue_bool("init_elevator")) elevator_.Init();
-    if (GetPreferenceValue_bool("init_ramp")) ramp_.Init();
 
-    RegisterSubsystems({&control_input_, &drivetrain_, &leds_, &algae_pivot_,
-        &telescope_, &coral_wrist_, &elevator_, &ramp_, &climber_});
+    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    bool algae_pivot_init = (GetPreferenceValue_bool("init_algae_pivot"));
+    bool leds_init = (GetPreferenceValue_bool("init_leds"));
+    bool climber_init = (GetPreferenceValue_bool("init_climber"));
+    bool telescope_init = (GetPreferenceValue_bool("init_telescope"));
+    bool coral_wrist_init = (GetPreferenceValue_bool("init_coral_wrist"));
+    bool elevator_init = (GetPreferenceValue_bool("init_elevator"));
+    bool ramp_init = (GetPreferenceValue_bool("init_ramp"));
+
+    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupB({{&leds_, leds_init}});
+
+    RegisterSubsystemGroupA({{&ramp_, &ramp_init}});
+    RegisterSubsystemGroupB({{&climber_, &climber_init}});
+
+    RegisterSubsystemGroupA({{&algae_pivot_, &algae_pivot_init}});
+    RegisterSubsystemGroupA({{&elevator_, &elevator_init}});
+
+    RegisterSubsystemGroupB({{&telescope_, &telescope_init}});
+    RegisterSubsystemGroupB({{&coral_wrist_, &coral_wrist_init}});
+
+    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
   }
 };
 

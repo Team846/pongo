@@ -46,7 +46,6 @@ double CurrentTorqueCalculator::scale_current_draw(double scale_factor,
 double CurrentTorqueCalculator::limit_current_draw(double duty_cycle,
     units::ampere_t current_limit, units::revolutions_per_minute_t rpm,
     units::volt_t v_supply, unit_ohm circuit_resistance, MotorSpecs specs) {
-  double duty_cycle_original = duty_cycle;
   units::ampere_t current_draw = predict_current_draw(
       duty_cycle, rpm, v_supply, circuit_resistance, specs);
   if (units::math::abs(current_draw) > current_limit) {

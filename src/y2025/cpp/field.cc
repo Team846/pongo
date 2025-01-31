@@ -12,7 +12,7 @@ frc846::math::FieldPoint Field_nonstatic::getPoint(std::string name) {
   }
 
   Warn("Unable to access fieldpoint: {}.", name);
-  return frc846::math::FieldPoint{{0_in, 0_in}, 0_deg, {0_fps, 0_fps}};
+  return frc846::math::FieldPoint{{0_in, 0_in}, 0_deg, 0_fps};
 }
 
 std::vector<frc846::math::FieldPoint> Field_nonstatic::getPath(
@@ -90,7 +90,7 @@ std::string Field_nonstatic::getFileDirectory() {
 }
 
 frc846::math::FieldPoint Field_nonstatic::parsePoint(std::string line) {
-  frc846::math::FieldPoint pt{{0_in, 0_in}, 0_deg, {0_fps, 0_fps}};
+  frc846::math::FieldPoint pt{{0_in, 0_in}, 0_deg, 0_fps};
 
   auto tokens = split(line, ',');
   if (tokens.size() != 0) {
@@ -99,13 +99,13 @@ frc846::math::FieldPoint Field_nonstatic::parsePoint(std::string line) {
       if (tokens.size() == 6) v = std::stod(tokens[5]) * 1_fps;
 
       pt = {{std::stod(tokens[2]) * 1_in, std::stod(tokens[3]) * 1_in},
-          std::stod(tokens[4]) * 1_deg, {v, 0_fps}};
+          std::stod(tokens[4]) * 1_deg, v};
     } else if (tokens[0] == "P") {
       auto v = 0_fps;
       if (tokens.size() == 5) v = std::stod(tokens[4]) * 1_fps;
 
       pt = {{std::stod(tokens[1]) * 1_in, std::stod(tokens[2]) * 1_in},
-          std::stod(tokens[3]) * 1_deg, {v, 0_fps}};
+          std::stod(tokens[3]) * 1_deg, v};
     } else if (tokens[0] == "F") {
       if (tokens.size() == 2) { pt = getPoint(tokens[1]); }
     } else {

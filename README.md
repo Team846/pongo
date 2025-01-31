@@ -43,8 +43,8 @@ Commands set targets to these subsystems. Some commands are like actions, such a
 
 #### WPILib Tools
 
-- Download WPILib tools and WPILib VSCode. Attached is the link for version 2025.1.1.
-  - [2025.1.1 WINDOWS](https://packages.wpilib.workers.dev/installer/v2025.1.1/Win64/WPILib_Windows-2025.1.1.iso)
+- Download WPILib tools and WPILib VSCode. Attached is the link for version 2025.2.1.
+  - [2025.2.1 WINDOWS](https://packages.wpilib.workers.dev/installer/v2025.2.1/Win64/WPILib_Windows-2025.2.1.iso)
 - Once downloaded, double click on the file. By default, it will be saved in the downloads folder.
 - Run the .exe file inside of it. It should be called "WPILib Installer".
 - Go through the default setup process.
@@ -106,7 +106,7 @@ Select x64 or arm depending on your chip. If using M1/M2/M3 mac, select arm.
 
 Ignore the LLVM section.
 
-- [WPILib 2025.1.1](https://github.com/wpilibsuite/allwpilib/releases/tag/v2025.1.1).
+- [WPILib 2025.2.1](https://github.com/wpilibsuite/allwpilib/releases/tag/v2025.2.1).
 - [git-scm](https://git-scm.com/download/mac).
 - Clang-format: `brew install clang-format`
 - CppCheck: `brew install cppcheck`
@@ -173,9 +173,6 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/frc846/cpp/frc846/control/calculators/CurrentTorqueCalculator.cc:49:30: warning: Variable 'duty_cycle_original' is assigned a value that is never used. [unreadVariable]
-src/frc846/cpp/frc846/robot/swerve/drivetrain.cc:160:64: warning: Variable 'accel_target' is assigned a value that is never used. [unreadVariable]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src/frc846/cpp/frc846/math/collection.cc:39:0: warning: The function 'CoterminalDifference' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```

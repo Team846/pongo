@@ -60,5 +60,10 @@ TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
 
 void TelescopeSubsystem::WriteToHardware(TelescopeTarget target) {
   telescope_.SetGains(GET_PIDF_GAINS("coral_telescope/coral_telescope_gains_"));
-  motor_helper_.WritePosition(target.position);
+  // //motor_helper_.WritePosition(target.position);
+  // motor_helper_.WriteDC(arm_calculator_.calculate({motor_helper_.GetPosition(),
+  //     target.position, motor_helper_.GetVelocity(),
+  //     GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_")}));
+
+  telescope_.SetLoad(1_Nm);
 }

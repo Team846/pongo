@@ -100,6 +100,19 @@ public:
 
   units::volt_t GetAnalogDeviceOutput();
 
+  // void ConfigForwardLimitSwitch(
+  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+  // void ConfigReverseLimitSwitch(
+  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  // bool GetForwardLimitSwitchState();
+  // bool GetReverseLimitSwitchState();
+
+  // units::volt_t GetAnalogDeviceOutput();
+
+  void OverrideStatusFramePeriod(
+      config::StatusFrame frame, units::millisecond_t period);
+
   // Verifies if the speed controller is connected and accessible
   bool VerifyConnected();
 

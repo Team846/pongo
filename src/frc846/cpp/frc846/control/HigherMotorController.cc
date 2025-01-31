@@ -140,4 +140,10 @@ void HigherMotorController::EnableStatusFrames(
   frc846::control::MotorMonkey::EnableStatusFrames(slot_id_, frames);
 }
 
+void HigherMotorController::OverrideStatusFramePeriod(
+    frc846::control::config::StatusFrame frame, units::millisecond_t period) {
+  frc846::control::MotorMonkey::OverrideStatusFramePeriod(
+      slot_id_, frame, period);
+}
+
 }  // namespace frc846::control

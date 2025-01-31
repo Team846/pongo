@@ -3,6 +3,7 @@
 #include "frc846/control/calculators/CircuitResistanceCalculator.h"
 #include "frc846/math/constants.h"
 #include "ports.h"
+#include "subsystems/robot_constants.h"
 
 DrivetrainConstructor::DrivetrainConstructor()
     : Loggable{"DrivetrainConstructor"} {
@@ -17,6 +18,9 @@ DrivetrainConstructor::DrivetrainConstructor()
 
 frc846::robot::swerve::DrivetrainConfigs
 DrivetrainConstructor::getDrivetrainConfigs() {
+  frc846::control::base::MotorMonkeyType mmtype =
+      frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60;
+
   frc846::robot::swerve::DrivetrainConfigs configs;
 
   /*
@@ -38,17 +42,19 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BL = 3;
   unsigned int num_connectors_BR = 3;
 
+  double drive_gear_ratio = 6.12;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
-      (frc846::math::constants::geometry::pi * wheel_diameter) / 6.12_tr;
+      (frc846::math::constants::geometry::pi * wheel_diameter) /
+      (drive_gear_ratio * 1_tr);
   frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
 
-  configs.wheelbase_forward_dim = 26_in;
-  configs.wheelbase_horizontal_dim = 26_in;
+  configs.wheelbase_forward_dim = robot_constants::base::wheelbase_y;
+  configs.wheelbase_horizontal_dim = robot_constants::base::wheelbase_x;
 
   units::pound_t wheel_approx_weight = 2_lb;
   units::inch_t wheel_weight_radius = 1_in;
 
-  units::pound_t robot_weight = 120_lb;
+  units::pound_t robot_weight = robot_constants::total_weight;
 
   // (Mass wheel) * (wheel_r)^2 * (steer reduction)^2
   frc846::wpilib::unit_kg_m_sq relative_steer_inertia{
@@ -61,6 +67,15 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       (drive_reduction * drive_reduction).to<double>()};
 
   /* END SETTABLES */
+
+  // Max accel = (4 * [Max force per wheel]) / (robot_weight)
+  units::meter_t effective_torque_radius =
+      (wheel_diameter / 2.0) / drive_gear_ratio;
+  units::newton_t max_force_per_wheel{
+      frc846::control::base::MotorSpecificationPresets::get(mmtype)
+          .stall_torque /
+      effective_torque_radius};
+  configs.max_accel = (4.0 * max_force_per_wheel) / robot_weight;
 
   frc846::wpilib::unit_ohm wire_resistance_FR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
@@ -124,9 +139,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
-          steer_params,
-          frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
-          steer_reduction, drive_reduction, ""};
+          steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   return configs;

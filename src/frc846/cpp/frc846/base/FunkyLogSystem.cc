@@ -1,9 +1,8 @@
 #include "frc846/base/FunkyLogSystem.h"
 
 #include <fstream>
-#include <functional>
 #include <future>
-#include <iostream>
+#include <string>
 #include <thread>
 
 #include "frc846/base/compression.h"

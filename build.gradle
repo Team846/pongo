@@ -135,7 +135,7 @@ spotless {
 }
 
 if (!project.hasProperty('fromCI')) {
-    check.dependsOn spotlessApply
+    spotlessApply
 }
 spotlessCppCheck.onlyIf { !project.hasProperty('fromCI') || project.hasProperty('runningSpotlessCpp') }
 

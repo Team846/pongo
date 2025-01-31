@@ -58,5 +58,6 @@ ElevatorReadings ElevatorSubsystem::ReadFromHardware() {
 
 void ElevatorSubsystem::WriteToHardware(ElevatorTarget target) {
   elevator_.SetGains(GET_PIDF_GAINS("elevator/elevator_gains_"));
-  motor_helper_.WritePosition(target.height);
+  // motor_helper_.WritePosition(target.height);
+  elevator_.SetLoad(1_Nm);
 }

@@ -2,6 +2,8 @@
 
 #include <units/math.h>
 
+#include <thread>
+
 #include "frc846/math/collection.h"
 
 namespace frc846::robot::swerve {
@@ -59,11 +61,17 @@ void SwerveModuleSubsystem::Setup() {
   drive_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame});
+  drive_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
+  drive_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kVelocityFrame, 5_ms);
   drive_helper_.SetPosition(0_ft);
 
   steer_.Setup();
   steer_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame});
+  steer_.OverrideStatusFramePeriod(
+      frc846::control::config::StatusFrame::kPositionFrame, 5_ms);
 
   ZeroWithCANcoder();
 }
@@ -90,16 +98,25 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
 
+  last_rezero = 0;
+
   for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
     Log("CANCoder zero attempt {}/{}", attempts, kMaxAttempts);
     auto position = cancoder_.GetAbsolutePosition();
 
+    units::degree_t position_zero =
+        -position.GetValue() +
+        GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
+
     if (position.IsAllGood()) {
-      units::degree_t position_zero =
-          -position.GetValue() +
-          GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset_");
       steer_helper_.SetPosition(position_zero);
       Log("Zeroed to {}!", position_zero);
+      return;
+    } else if (attempts == kMaxAttempts) {
+      Error("Unable to zero normally after {} attempts - attempting anyways",
+          kMaxAttempts);
+      steer_helper_.SetPosition(position_zero);
+      Warn("Unreliably zeroed to {}!", position_zero);
       return;
     }
 
@@ -107,7 +124,6 @@ void SwerveModuleSubsystem::ZeroWithCANcoder() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
-  Error("Unable to zero after {} attempts", kMaxAttempts);
 }
 
 SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
@@ -127,36 +143,27 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
-  if (SwerveModuleOLControlTarget* ol_target =
-          std::get_if<SwerveModuleOLControlTarget>(&target)) {
-    Graph("target/ol_drive_target", ol_target->drive);
-    Graph("target/ol_steer_target", ol_target->steer);
+  Graph("target/ol_drive_target", target.drive);
+  Graph("target/ol_steer_target", target.steer);
 
-    auto [steer_dir, invert_drive] =
-        calculateSteerPosition(ol_target->steer, GetReadings().steer_pos);
+  auto [steer_dir, invert_drive] =
+      calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
-    Graph("target/steer_dir", steer_dir);
-    Graph("target/invert_drive", invert_drive);
+  Graph("target/steer_dir", steer_dir);
+  Graph("target/invert_drive", invert_drive);
 
-    units::dimensionless::scalar_t cosine_comp =
-        units::math::cos(ol_target->steer - GetReadings().steer_pos);
+  units::dimensionless::scalar_t cosine_comp =
+      units::math::cos(target.steer - GetReadings().steer_pos);
 
-    Graph("target/cosine_comp", cosine_comp.to<double>());
+  Graph("target/cosine_comp", cosine_comp.to<double>());
 
-    double drive_duty_cycle = ol_target->drive / max_speed_;
+  double drive_duty_cycle = target.drive / max_speed_;
 
-    drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
+  drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
 
-    if (std::abs(drive_duty_cycle) > 0.002) {
-      steer_helper_.WritePositionOnController(steer_dir);
-    }
-  } else if (SwerveModuleTorqueControlTarget* torque_target =
-                 std::get_if<SwerveModuleTorqueControlTarget>(&target)) {
-    // TODO: finish torque control for drivetrain
-    Graph("target/torque_drive_target", torque_target->drive);
-    Graph("target/torque_steer_target", torque_target->steer);
-  } else {
-    throw std::runtime_error("SwerveModuleTarget was not of a valid type");
+  if (std::abs(drive_duty_cycle) > 0.002 || last_rezero < 50) {
+    steer_helper_.WritePositionOnController(steer_dir);
+    last_rezero += 1;
   }
 }
 
