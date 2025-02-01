@@ -9,6 +9,15 @@ namespace frc846::control {
     throw std::runtime_error("HMCHelper not bound to a " \
                              "HigherMotorController");
 
+template <typename T> struct SoftLimitsConfig {
+  bool using_limits;
+  T forward_limit;
+  T reverse_limit;
+  T forward_reduce;
+  T reverse_reduce;
+  double reduce_max_dc;
+};
+
 /*
 HMCHelper
 
@@ -41,7 +50,7 @@ public:
 
   void WritePosition(pos_unit position) {
     CHECK_HMC();
-    hmc_->WritePosition(position / conv_ - mark_offset);
+    hmc_->WritePosition(position / conv_);
   }
 
   void WriteVelocityOnController(vel_unit velocity) {
@@ -51,7 +60,7 @@ public:
 
   void WritePositionOnController(pos_unit position) {
     CHECK_HMC();
-    hmc_->WritePositionOnController(position / conv_ - mark_offset);
+    hmc_->WritePositionOnController(position / conv_);
   }
 
   vel_unit GetVelocity() {
@@ -61,7 +70,7 @@ public:
 
   pos_unit GetPosition() {
     CHECK_HMC();
-    return hmc_->GetPosition() * conv_ + mark_offset;
+    return hmc_->GetPosition() * conv_;
   }
 
   units::current::ampere_t GetCurrent() {
@@ -82,8 +91,12 @@ public:
   */
   void SetControllerSoftLimits(pos_unit forward_limit, pos_unit reverse_limit) {
     CHECK_HMC();
-    hmc_->SetControllerSoftLimits(forward_limit * conv_ - mark_offset,
-        reverse_limit * conv_ - mark_offset);
+    hmc_->SetControllerSoftLimits(forward_limit / conv_, reverse_limit / conv_);
+  }
+  void SetControllerSoftLimits(SoftLimitsConfig<pos_unit> config) {
+    CHECK_HMC();
+    hmc_->SetControllerSoftLimits(
+        config.forward_limit / conv_, config.reverse_limit / conv_);
   }
 
   /*
@@ -97,17 +110,19 @@ public:
       pos_unit forward_reduce = pos_unit(0),
       pos_unit reverse_reduce = pos_unit(0), double reduce_max_dc = 0.0) {
     hmc_->SetSoftLimits(config::SoftLimitsHelper<T>::CreateSoftLimits(conv_,
-        using_limits, forward_limit - mark_offset, reverse_limit - mark_offset,
-        forward_reduce - mark_offset, reverse_reduce - mark_offset,
-        reduce_max_dc));
+        using_limits, forward_limit, reverse_limit, forward_reduce,
+        reverse_reduce, reduce_max_dc));
+  }
+  void SetSoftLimits(SoftLimitsConfig<pos_unit> config) {
+    hmc_->SetSoftLimits(config::SoftLimitsHelper<T>::CreateSoftLimits(conv_,
+        config.using_limits, config.forward_limit, config.reverse_limit,
+        config.forward_reduce, config.reverse_reduce, config.reduce_max_dc));
   }
 
 private:
   HigherMotorController* hmc_;
 
   conv_unit conv_;
-
-  pos_unit mark_offset{0};
 };
 
 }  // namespace frc846::control

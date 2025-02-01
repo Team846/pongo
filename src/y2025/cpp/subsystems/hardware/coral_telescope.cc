@@ -14,11 +14,14 @@ TelescopeSubsystem::TelescopeSubsystem()
 
   REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
   REGISTER_PIDF_CONFIG("coral_telescope_gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("coral_telescope_softlimits", true, 1.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "coral_telescope_limits", true, 72_in, 30_in, 66_in, 34_in, 0.3);
 
   motor_helper_.SetConversion(0.5_in / 1.0_tr);
-
-  telescope_position_calculator_.setConstants({0_V, 3.3_V, 10_tr, false});
+  motor_helper_.SetSoftLimits(
+      GET_SOFTLIMITS("coral_telescope_limits", units::inch_t));
+  motor_helper_.SetControllerSoftLimits(
+      GET_SOFTLIMITS("coral_telescope_limits", units::inch_t));
 
   motor_helper_.bind(&telescope_);
 }
@@ -45,11 +48,8 @@ bool TelescopeSubsystem::VerifyHardware() {
 TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
   TelescopeReadings readings;
 
-  units::volt_t pot_voltage = telescope_.GetAnalogDeviceOutput();
-  readings.position = telescope_position_calculator_.calculate({pot_voltage}) *
-                      telescope_reduction;
+  readings.position = motor_helper_.GetPosition();
 
-  Graph("readings/pot_voltage", pot_voltage);
   Graph("readings/position", readings.position);
 
   return readings;
@@ -57,10 +57,7 @@ TelescopeReadings TelescopeSubsystem::ReadFromHardware() {
 
 void TelescopeSubsystem::WriteToHardware(TelescopeTarget target) {
   telescope_.SetGains(GET_PIDF_GAINS("coral_telescope/coral_telescope_gains_"));
-  // //motor_helper_.WritePosition(target.position);
-  // motor_helper_.WriteDC(arm_calculator_.calculate({motor_helper_.GetPosition(),
-  //     target.position, motor_helper_.GetVelocity(),
-  //     GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_")}));
+  motor_helper_.WritePosition(target.position);
 
   telescope_.SetLoad(1_Nm);
 }

@@ -14,7 +14,8 @@ ElevatorSubsystem::ElevatorSubsystem()
 
   REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
   REGISTER_PIDF_CONFIG("elevator_gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("elevator_softlimits", true, 1.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "elevator_limits", true, 72_in, 30_in, 66_in, 34_in, 0.3);
 
   // bool using_limits =
   //     GetPreferenceValue_bool("elevator/elevator_softlimits/using_limits");

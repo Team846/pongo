@@ -9,18 +9,19 @@ ClimberSubsystem::ClimberSubsystem()
       motor_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::climber_::kClimberOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
-      climber_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
-          motor_configs),
       motor_two_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::climber_::kClimberTwo_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
+      climber_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
+          motor_configs),
       climber_two_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
           motor_two_configs) {
   RegisterPreference("climber_tolerance", 0.25_in);
 
   REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
   REGISTER_PIDF_CONFIG("climber_gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("climber_softlimits", true, 1.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "climber_softlimits", true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
   motor_helper_.SetConversion(climber_reduction_);
   motor_helper_two_.SetConversion(climber_reduction_);

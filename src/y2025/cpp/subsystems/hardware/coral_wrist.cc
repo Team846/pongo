@@ -19,7 +19,8 @@ CoralWristSubsystem::CoralWristSubsystem()
 
   REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
   REGISTER_PIDF_CONFIG("coral_wrist_gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("coral_wrist_softlimits", true, 1.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "coral_wrist_limits", true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
   motor_helper_one_.SetConversion(coral_wrist_reduction);
   motor_helper_two_.SetConversion(coral_wrist_reduction);

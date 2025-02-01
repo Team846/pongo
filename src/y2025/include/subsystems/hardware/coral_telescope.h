@@ -11,7 +11,6 @@
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericSubsystem.h"
-#include "frc846/robot/calculators/PotentiometerCalculator.h"
 #include "ports.h"
 #include "units/length.h"
 #include "units/math.h"
@@ -43,9 +42,6 @@ private:
   TelescopeReadings ReadFromHardware() override;
 
   void WriteToHardware(TelescopeTarget target) override;
-
-  frc846::robot::calculators::PotentiometerCalculator
-      telescope_position_calculator_;
 
   frc846::control::config::MotorConstructionParameters motor_configs;
   frc846::control::HigherMotorController telescope_;

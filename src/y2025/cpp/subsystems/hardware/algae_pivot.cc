@@ -14,7 +14,8 @@ AlgaePivotSubsystem::AlgaePivotSubsystem()
 
   REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
   REGISTER_PIDF_CONFIG("algae_pivot_gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("algae_pivot_softlimits", true, 1.0);
+  REGISTER_SOFTLIMIT_CONFIG(
+      "algae_pivot_softlimits", true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
   // bool using_limits =
   // GetPreferenceValue_bool("algae_pivot/algae_pivot_softlimits/using_limits");
