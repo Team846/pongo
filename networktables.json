@@ -1,285 +1,5 @@
 [
   {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_current_limit (A)",
-    "type": "double",
-    "value": 120.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_current_limit (A)",
-    "type": "double",
-    "value": 120.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_smart_current_limit (A)",
-    "type": "double",
-    "value": 80.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_smart_current_limit (A)",
-    "type": "double",
-    "value": 80.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_voltage_compensation (V)",
-    "type": "double",
-    "value": 16.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_voltage_compensation (V)",
-    "type": "double",
-    "value": 12.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/FR/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/FL/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/BR/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/BL/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/kP",
-    "type": "double",
-    "value": 0.3,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/kI",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/kD",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/kF",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/robot_container/init_drivetrain",
-    "type": "boolean",
-    "value": true,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/robot_container/init_leds",
-    "type": "boolean",
-    "value": true,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/control_input/trigger_threshold",
-    "type": "double",
-    "value": 0.3,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_speed (fps)",
-    "type": "double",
-    "value": 15.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_omega (deg_per_s)",
-    "type": "double",
-    "value": 180.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/control_input/translation_deadband",
-    "type": "double",
-    "value": 0.07,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/control_input/translation_exponent",
-    "type": "int",
-    "value": 2,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/control_input/rotation_deadband",
-    "type": "double",
-    "value": 0.07,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/control_input/rotation_exponent",
-    "type": "int",
-    "value": 2,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/Robot/Robot/permissible_current_draw (A)",
-    "type": "double",
-    "value": 300.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kP",
-    "type": "double",
-    "value": 2.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kI",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kD",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kF",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
-    "type": "double",
-    "value": 0.875,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/voltage_min (V)",
-    "type": "double",
-    "value": 7.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/recal_voltage_thresh (V)",
-    "type": "double",
-    "value": 9.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/default_max_draw (A)",
-    "type": "double",
-    "value": 150.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/battery_cc (A)",
-    "type": "double",
-    "value": 600.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/min_max_draw (A)",
-    "type": "double",
-    "value": 40.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/MotorMonkey/MotorMonkey/max_max_draw (A)",
-    "type": "double",
-    "value": 300.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
     "name": "/Preferences/DrivetrainConstructor/drive_motor_current_limit (A)",
     "type": "double",
     "value": 120.0,
@@ -330,7 +50,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": 0.0,
+    "value": -26.455,
     "properties": {
       "persistent": true
     }
@@ -338,7 +58,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": 0.0,
+    "value": -102.392,
     "properties": {
       "persistent": true
     }
@@ -346,13 +66,45 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": 0.0,
+    "value": 79.01367,
     "properties": {
       "persistent": true
     }
   },
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": 168.684,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kP",
+    "type": "double",
+    "value": 4.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/steer_gains/_kF",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -376,9 +128,33 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
+    "type": "double",
+    "value": 0.82,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/steer_lag (s)",
     "type": "double",
-    "value": 0.05,
+    "value": 0.16,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_drivetrain",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_leds",
+    "type": "boolean",
+    "value": true,
     "properties": {
       "persistent": true
     }
@@ -410,7 +186,7 @@
   {
     "name": "/Preferences/MotorMonkey/min_max_draw (A)",
     "type": "double",
-    "value": 60.0,
+    "value": 100.0,
     "properties": {
       "persistent": true
     }
@@ -440,9 +216,81 @@
     }
   },
   {
+    "name": "/Preferences/control_input/trigger_threshold",
+    "type": "double",
+    "value": 0.3,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/translation_deadband",
+    "type": "double",
+    "value": 0.07,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/translation_exponent",
+    "type": "int",
+    "value": 2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/rotation_deadband",
+    "type": "double",
+    "value": 0.07,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/control_input/rotation_exponent",
+    "type": "int",
+    "value": 2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/FR/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": -26.455078125,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/FL/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": -102.392578125,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/BL/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": 79.013671875,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/BR/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
+    "type": "double",
+    "value": 168.486328125,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/bearing_gains/_kP",
     "type": "double",
-    "value": 0.5,
+    "value": 6.0,
     "properties": {
       "persistent": true
     }
@@ -458,7 +306,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/bearing_gains/_kD",
     "type": "double",
-    "value": 0.0,
+    "value": -0.8,
     "properties": {
       "persistent": true
     }
@@ -474,7 +322,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kP",
     "type": "double",
-    "value": 0.5,
+    "value": -0.5,
     "properties": {
       "persistent": true
     }
@@ -490,7 +338,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kD",
     "type": "double",
-    "value": 0.0,
+    "value": 0.02,
     "properties": {
       "persistent": true
     }
@@ -498,7 +346,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/deadband (in)",
     "type": "double",
-    "value": 2.0,
+    "value": 0.75,
     "properties": {
       "persistent": true
     }
@@ -506,7 +354,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_subtract (in)",
     "type": "double",
-    "value": 5.0,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }
@@ -514,7 +362,887 @@
   {
     "name": "/Preferences/SwerveDrivetrain/max_omega_cut (deg_per_s)",
     "type": "double",
+    "value": 55.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/rc_control_speed (fps)",
+    "type": "double",
+    "value": 2.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/Robot/Robot/permissible_current_draw (A)",
+    "type": "double",
+    "value": 300.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_current_limit (A)",
+    "type": "double",
+    "value": 120.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_current_limit (A)",
+    "type": "double",
+    "value": 120.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_smart_current_limit (A)",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_smart_current_limit (A)",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/drive_motor_voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DrivetrainConstructor/DrivetrainConstructor/steer_motor_voltage_compensation (V)",
+    "type": "double",
+    "value": 12.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_speed (fps)",
+    "type": "double",
+    "value": 15.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/SwerveDrivetrain/max_omega (deg_per_s)",
+    "type": "double",
+    "value": 180.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/algae_pivot/algae_pivot_tolerance_ (deg)",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_one_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_one_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/algae_pivot/\"algae_pivot/algae_pivot_one_\"/current_limit (A)",
+    "type": "double",
     "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/algae_pivot/\"algae_pivot/algae_pivot_one_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/algae_pivot/\"algae_pivot/algae_pivot_one_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_softlimits\"/using_limits",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algae_pivot/\"algae_pivot/algae_pivot_softlimits\"/reduce_max_dc",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/climber/climber_tolerance_ (in)",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_one_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_one_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_one_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_one_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_one_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_two_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_two_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_two_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_two_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/climber/\"climber/climber_two_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_softlimits\"/using_limits",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/climber/\"climber/climber_softlimits\"/reduce_max_dc",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope/telescope/telescope_tolerance_ (in)",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_one_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_one_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope/\"telescope/telescope_one_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope/\"telescope/telescope_one_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope/\"telescope/telescope_one_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_softlimits\"/using_limits",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/\"telescope/telescope_softlimits\"/reduce_max_dc",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/coral_wrist/coral_wrist/coral_wrist_tolerance_ (in)",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_one_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_one_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/coral_wrist/\"coral_wrist/coral_wrist_one_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/coral_wrist/\"coral_wrist/coral_wrist_one_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/coral_wrist/\"coral_wrist/coral_wrist_one_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_softlimits\"/using_limits",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_wrist/\"coral_wrist/coral_wrist_softlimits\"/reduce_max_dc",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator/elevator_tolerance_ (in)",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_one_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_one_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator/\"elevator/elevator_one_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator/\"elevator/elevator_one_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator/\"elevator/elevator_one_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_softlimits\"/using_limits",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/\"elevator/elevator_softlimits\"/reduce_max_dc",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_\"/inverted",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_\"/brake_mode",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/ramp/\"ramp/ramp_\"/current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/ramp/\"ramp/ramp_\"/smart_current_limit (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/ramp/\"ramp/ramp_\"/voltage_compensation (V)",
+    "type": "double",
+    "value": 16.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_gains_\"/_kP",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_gains_\"/_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_gains_\"/_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ramp/\"ramp/ramp_gains_\"/_kF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_algae_pivot",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_climber",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_telescope",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_coral_wrist",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_elevator",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_ramp",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/lock_adj_rate (in)",
+    "type": "double",
+    "value": 0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/odom_variance",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/pose_variance",
+    "type": "double",
+    "value": 0.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/velocity_variance",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/accel_variance",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/april_tags/april_variance_coeff",
+    "type": "double",
+    "value": 0.33,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/april_tags/fudge_latency (ms)",
+    "type": "double",
+    "value": 20.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/voltage_min (V)",
+    "type": "double",
+    "value": 7.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/recal_voltage_thresh (V)",
+    "type": "double",
+    "value": 10.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/default_max_draw (A)",
+    "type": "double",
+    "value": 150.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/min_max_draw (A)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/max_max_draw (A)",
+    "type": "double",
+    "value": 300.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/MotorMonkey/MotorMonkey/battery_cc (A)",
+    "type": "double",
+    "value": 400.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/robot_container/init_gpd",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/GPD/intake_to_cam_y (in)",
+    "type": "double",
+    "value": -45.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/GPD/intake_to_cam_x (in)",
+    "type": "double",
+    "value": -9.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/GPD/cam_h_angle (deg)",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/GPD/max_gp_diff (in)",
+    "type": "double",
+    "value": 10.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/GPD/use_diff_thresh (in)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/lock_max_speed (fps)",
+    "type": "double",
+    "value": 10.0,
     "properties": {
       "persistent": true
     }

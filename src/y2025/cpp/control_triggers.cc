@@ -4,6 +4,7 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/button/Trigger.h>
 
+#include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
@@ -41,4 +42,11 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(LockToReefCommand{container, false}.ToPtr());
+
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().targeting_algae &&
+           container.GPD_.GetReadings().gamepieces.size() != 0U;
+  }}.OnTrue(LockGPDCommand{container}.Until([&] {
+    return !container.control_input_.GetReadings().targeting_algae;
+  }));
 }

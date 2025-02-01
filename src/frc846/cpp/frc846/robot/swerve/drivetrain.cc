@@ -32,6 +32,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/_kD", 0.0);
   RegisterPreference("lock_gains/deadband", 2_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
+  RegisterPreference("lock_max_speed", 7_fps);
 
   RegisterPreference("drive_to_subtract", 5_in);
 
