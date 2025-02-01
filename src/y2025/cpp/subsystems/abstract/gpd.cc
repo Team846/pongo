@@ -19,6 +19,9 @@ GPDSubsystem::GPDSubsystem(
   RegisterPreference("intake_to_cam_y", -15_in);
   RegisterPreference("intake_to_cam_x", -3_in);
   RegisterPreference("cam_h_angle", 0_deg);
+
+  RegisterPreference("max_gp_diff", 10_in);
+  RegisterPreference("use_diff_thresh", 40_in);
 }
 
 GPDTarget GPDSubsystem::ZeroTarget() const { return GPDTarget{}; }
@@ -29,7 +32,8 @@ void GPDSubsystem::Setup() {}
 
 std::pair<frc846::math::Vector2D, bool> GPDSubsystem::getBestGP(
     const std::vector<frc846::math::Vector2D> algae) {
-  if (algae.empty()) { return {{0_in, 0_in}, false}; }
+  if (algae.size() == 0U) { return {{0_in, 0_in}, false}; }
+
   frc846::math::Vector2D closest_algae;
 
   auto robot_pose = drivetrain_->GetReadings().pose;
@@ -90,12 +94,12 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
   for (size_t i = 0; i < distances.size() && i < theta_x.size(); ++i) {
     readings.gamepieces.push_back(
         frc846::math::Vector2D{units::inch_t(distances[i]),
-            drivetrain_readings.pose.bearing +
+            drivetrain_readings.pose.bearing -
                 drivetrain_readings.yaw_rate * latency +
                 units::degree_t(theta_x[i]) +
                 GetPreferenceValue_unit_type<units::degree_t>("cam_h_angle"),
             true} +
-        drivetrain_readings.pose.position +
+        drivetrain_readings.pose.position -
         frc846::math::Vector2D{drivetrain_readings.pose.velocity[0] * latency,
             drivetrain_readings.pose.velocity[1] * latency} +
         frc846::math::Vector2D{

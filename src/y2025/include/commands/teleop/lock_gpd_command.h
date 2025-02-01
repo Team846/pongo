@@ -9,9 +9,4 @@
 class LockGPDCommand : public frc846::robot::swerve::LockToPointCommand {
 public:
   LockGPDCommand(RobotContainer& container);
-
-  std::pair<frc846::math::FieldPoint, bool> GetTargetPoint() override;
-
-private:
-  RobotContainer& container_;
 };

@@ -10,8 +10,6 @@ class LockToReefCommand : public frc846::robot::swerve::LockToPointCommand {
 public:
   LockToReefCommand(RobotContainer& container, bool is_left);
 
-  std::pair<frc846::math::FieldPoint, bool> GetTargetPoint() override;
-
 private:
   RobotContainer& container_;
   bool is_left_;

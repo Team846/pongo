@@ -32,6 +32,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/_kD", 0.0);
   RegisterPreference("lock_gains/deadband", 2_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
+  RegisterPreference("lock_max_speed", 7_fps);
 
   RegisterPreference("drive_to_subtract", 5_in);
 
@@ -177,9 +178,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
