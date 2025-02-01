@@ -5,19 +5,16 @@
 TelescopeSubsystem::TelescopeSubsystem()
     : frc846::robot::GenericSubsystem<TelescopeReadings, TelescopeTarget>(
           "coral_telescope"),
-      motor_configs(GET_MOTOR_CONFIG("coral_telescope/coral_telescope_one_",
+      motor_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::telescope_::kTelescopeOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
       telescope_(frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
-  RegisterPreference("coral_telescope/coral_telescope_tolerance_", 0.25_in);
+  RegisterPreference("coral_telescope_tolerance", 0.25_in);
 
-  REGISTER_MOTOR_CONFIG(
-      "coral_telescope/coral_telescope_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG(
-      "coral_telescope/coral_telescope_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG(
-      "coral_telescope/coral_telescope_softlimits", true, 1.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("coral_telescope_gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG("coral_telescope_softlimits", true, 1.0);
 
   motor_helper_.SetConversion(telescope_reduction);
 

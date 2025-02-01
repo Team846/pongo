@@ -5,17 +5,16 @@
 ElevatorSubsystem::ElevatorSubsystem()
     : frc846::robot::GenericSubsystem<ElevatorReadings, ElevatorTarget>(
           "elevator"),
-      motor_configs(GET_MOTOR_CONFIG("elevator/elevator_one_",
+      motor_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::elevator_::kElevatorOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
       elevator_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60,
           motor_configs) {
-  RegisterPreference("elevator_tolerance_", 0.25_in);
+  RegisterPreference("elevator_tolerance", 0.25_in);
 
-  REGISTER_MOTOR_CONFIG(
-      "elevator/elevator_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("elevator/elevator_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("elevator/elevator_softlimits", true, 1.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("elevator_gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG("elevator_softlimits", true, 1.0);
 
   // bool using_limits =
   //     GetPreferenceValue_bool("elevator/elevator_softlimits/using_limits");

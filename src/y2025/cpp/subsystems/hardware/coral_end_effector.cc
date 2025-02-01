@@ -5,16 +5,13 @@
 CoralEndEffectorSubsystem::CoralEndEffectorSubsystem()
     : frc846::robot::GenericSubsystem<CoralEndEffectorReadings,
           CoralEndEffectorTarget>("coral_end_effector"),
-      motor_configs(GET_MOTOR_CONFIG("coral_end_effector/coral_end_effector_",
-          ports::ramp_::kRamp_CANID, frc846::wpilib::unit_ohm{0.0},
-          frc846::wpilib::unit_kg_m_sq{0.0})),
+      motor_configs(GET_MOTOR_CONFIG("motor_configs", ports::ramp_::kRamp_CANID,
+          frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
       coral_end_effector(
           frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
-  REGISTER_MOTOR_CONFIG("coral_end_effector/coral_end_effector_", false, true,
-      40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG(
-      "coral_end_effector/coral_end_effector_gains_", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("coral_end_effector_gains", 0.0, 0.0, 0.0, 0.0);
 
   motor_helper_.SetConversion(coral_pivot_reduction_);
   motor_helper_.bind(&coral_end_effector);
@@ -50,8 +47,7 @@ CoralEndEffectorReadings CoralEndEffectorSubsystem::ReadFromHardware() {
 }
 
 void CoralEndEffectorSubsystem::WriteToHardware(CoralEndEffectorTarget target) {
-  coral_end_effector.SetGains(
-      GET_PIDF_GAINS("coral_end_effector/coral_end_effector_gains_"));
+  coral_end_effector.SetGains(GET_PIDF_GAINS("coral_end_effector_gains"));
   if (target.state == CoralEndEffectorState::kScore) {
     target.vel = 2.0_fps;
   } else if (target.state == CoralEndEffectorState::kIntake) {

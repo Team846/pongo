@@ -5,16 +5,13 @@
 AlgaeEndEffectorSubsystem::AlgaeEndEffectorSubsystem()
     : frc846::robot::GenericSubsystem<AlgaeEndEffectorReadings,
           AlgaeEndEffectorTarget>("algae_end_effector"),
-      motor_configs(GET_MOTOR_CONFIG("algae_end_effector/algae_end_effector_",
-          ports::ramp_::kRamp_CANID, frc846::wpilib::unit_ohm{0.0},
-          frc846::wpilib::unit_kg_m_sq{0.0})),
+      motor_configs(GET_MOTOR_CONFIG("motor_configs", ports::ramp_::kRamp_CANID,
+          frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
       algae_end_effector(
           frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
-  REGISTER_MOTOR_CONFIG("algae_end_effector/algae_end_effector_", false, true,
-      40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG(
-      "algae_end_effector/algae_end_effector_gains_", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("algae_end_effector_gains", 0.0, 0.0, 0.0, 0.0);
 
   motor_helper_.SetConversion(algae_pivot_reduction_);
   motor_helper_.bind(&algae_end_effector);
@@ -49,8 +46,7 @@ AlgaeEndEffectorReadings AlgaeEndEffectorSubsystem::ReadFromHardware() {
 }
 
 void AlgaeEndEffectorSubsystem::WriteToHardware(AlgaeEndEffectorTarget target) {
-  algae_end_effector.SetGains(
-      GET_PIDF_GAINS("algae_end_effector/algae_end_effector_gains_"));
+  algae_end_effector.SetGains(GET_PIDF_GAINS("algae_end_effector_gains"));
   if (target.state == AlgaeEndEffectorState::kScore) {
     target.vel = 2.0_fps;
   } else {

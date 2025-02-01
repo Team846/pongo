@@ -6,24 +6,21 @@
 ClimberSubsystem::ClimberSubsystem()
     : frc846::robot::GenericSubsystem<ClimberReadings, ClimberTarget>(
           "climber"),
-      motor_configs(GET_MOTOR_CONFIG("climber/climber_one_",
+      motor_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::climber_::kClimberOne_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
       climber_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
           motor_configs),
-      motor_two_configs(GET_MOTOR_CONFIG("climber/climber_two_",
+      motor_two_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::climber_::kClimberTwo_CANID, frc846::wpilib::unit_ohm{0.0},
           frc846::wpilib::unit_kg_m_sq{0.0})),
       climber_two_(frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX44,
           motor_two_configs) {
-  RegisterPreference("climber/climber_tolerance_", 0.25_in);
+  RegisterPreference("climber_tolerance", 0.25_in);
 
-  REGISTER_MOTOR_CONFIG(
-      "climber/climber_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_MOTOR_CONFIG(
-      "climber/climber_two_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("climber/climber_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("climber/climber_softlimits", true, 1.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("climber_gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG("climber_softlimits", true, 1.0);
 
   motor_helper_.SetConversion(climber_reduction_);
   motor_helper_two_.SetConversion(climber_reduction_);
@@ -66,8 +63,8 @@ ClimberReadings ClimberSubsystem::ReadFromHardware() {
 }
 
 void ClimberSubsystem::WriteToHardware(ClimberTarget target) {
-  climber_.SetGains(GET_PIDF_GAINS("climber/climber_gains_"));
-  climber_two_.SetGains(GET_PIDF_GAINS("climber/climber_two_gains_"));
+  climber_.SetGains(GET_PIDF_GAINS("climber_gains"));
+  climber_two_.SetGains(GET_PIDF_GAINS("climber_gains"));
 
   if (target.target_state == kPreClimb) {
     target.position = 30.0_deg;

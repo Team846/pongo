@@ -43,7 +43,8 @@ public:
 private:
   CoralWrist_pos_conv_t coral_wrist_reduction = 1.0_deg / 1.0_tr;
 
-  frc846::control::config::MotorConstructionParameters motor_configs;
+  frc846::control::config::MotorConstructionParameters motor_configs_one_;
+  frc846::control::config::MotorConstructionParameters motor_configs_two_;
 
   frc846::control::HigherMotorController coral_wrist_one_;
   frc846::control::HigherMotorController coral_wrist_two_;

@@ -5,17 +5,16 @@
 AlgaePivotSubsystem::AlgaePivotSubsystem()
     : frc846::robot::GenericSubsystem<AlgaePivotReadings, AlgaePivotTarget>(
           "algae_pivot"),
-      motor_configs(GET_MOTOR_CONFIG("algae_pivot/algae_pivot_one_",
+      motor_configs(GET_MOTOR_CONFIG("motor_configs",
           ports::algae_pivot_::kAlgaePivotOne_CANID,
           frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
       pivot_(frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
-  RegisterPreference("algae_pivot_tolerance_", 0.25_deg);
+  RegisterPreference("algae_pivot_tolerance", 0.25_deg);
 
-  REGISTER_MOTOR_CONFIG(
-      "algae_pivot/algae_pivot_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("algae_pivot/algae_pivot_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("algae_pivot/algae_pivot_softlimits", true, 1.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("algae_pivot_gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG("algae_pivot_softlimits", true, 1.0);
 
   // bool using_limits =
   // GetPreferenceValue_bool("algae_pivot/algae_pivot_softlimits/using_limits");
@@ -64,8 +63,8 @@ AlgaePivotReadings AlgaePivotSubsystem::ReadFromHardware() {
 }
 
 void AlgaePivotSubsystem::WriteToHardware(AlgaePivotTarget target) {
-  pivot_.SetGains(GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_"));
-  motor_helper_.WriteDC(arm_calculator_.calculate({motor_helper_.GetPosition(),
-      target.position, motor_helper_.GetVelocity(),
-      GET_PIDF_GAINS("algae_pivot/algae_pivot_gains_")}));
+  pivot_.SetGains(GET_PIDF_GAINS("algae_pivot_gains"));
+  motor_helper_.WriteDC(
+      arm_calculator_.calculate({motor_helper_.GetPosition(), target.position,
+          motor_helper_.GetVelocity(), GET_PIDF_GAINS("algae_pivot_gains")}));
 }

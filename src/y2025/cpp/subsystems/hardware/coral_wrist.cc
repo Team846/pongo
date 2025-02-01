@@ -5,21 +5,21 @@
 CoralWristSubsystem::CoralWristSubsystem()
     : frc846::robot::GenericSubsystem<CoralWristReadings, CoralWristTarget>(
           "coral_wrist"),
-      motor_configs(GET_MOTOR_CONFIG("coral_wrist/coral_wrist_one_",
+      motor_configs_one_(GET_MOTOR_CONFIG("motor_configs",
           ports::coral_wrist_::kCoralWristOne_CANID,
           frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
+      motor_configs_two_(GET_MOTOR_CONFIG("motor_configs",
+          ports::coral_wrist_::kCoralWristTwo_CANID,
+          frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
       coral_wrist_one_(frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550,
-          motor_configs),
+          motor_configs_one_),
       coral_wrist_two_(frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550,
-          motor_configs) {
-  RegisterPreference("coral_wrist/coral_wrist_tolerance_", 0.25_in);
+          motor_configs_two_) {
+  RegisterPreference("coral_wrist_tolerance", 0.25_in);
 
-  REGISTER_MOTOR_CONFIG(
-      "coral_wrist/coral_wrist_one_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_MOTOR_CONFIG(
-      "coral_wrist/coral_wrist_two_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("coral_wrist/coral_wrist_gains_", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("coral_wrist/coral_wrist_softlimits", true, 1.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("coral_wrist_gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_SOFTLIMIT_CONFIG("coral_wrist_softlimits", true, 1.0);
 
   motor_helper_one_.SetConversion(coral_wrist_reduction);
   motor_helper_two_.SetConversion(coral_wrist_reduction);
@@ -71,14 +71,14 @@ CoralWristReadings CoralWristSubsystem::ReadFromHardware() {
 }
 
 void CoralWristSubsystem::WriteToHardware(CoralWristTarget target) {
-  coral_wrist_one_.SetGains(GET_PIDF_GAINS("coral_wrist/coral_wrist_gains_"));
-  coral_wrist_two_.SetGains(GET_PIDF_GAINS("coral_wrist/coral_wrist_gains_"));
+  coral_wrist_one_.SetGains(GET_PIDF_GAINS("coral_wrist_gains_"));
+  coral_wrist_two_.SetGains(GET_PIDF_GAINS("coral_wrist_gains_"));
   motor_helper_one_.WriteDC(
       wrist_calculator_.calculate({motor_helper_one_.GetPosition(),
           target.position, motor_helper_one_.GetVelocity(),
-          GET_PIDF_GAINS("algae_pivot/coral_wrist_gains_")}));
+          GET_PIDF_GAINS("coral_wrist_gains")}));
   motor_helper_two_.WriteDC(
       wrist_calculator_.calculate({motor_helper_one_.GetPosition(),
           target.position, motor_helper_one_.GetVelocity(),
-          GET_PIDF_GAINS("algae_pivot/coral_wrist_gains_")}));
+          GET_PIDF_GAINS("coral_wrist_gains")}));
 }

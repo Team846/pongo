@@ -4,12 +4,12 @@
 
 RampSubsystem::RampSubsystem()
     : frc846::robot::GenericSubsystem<RampReadings, RampTarget>("ramp"),
-      motor_configs(GET_MOTOR_CONFIG("ramp/ramp_", ports::ramp_::kRamp_CANID,
+      motor_configs(GET_MOTOR_CONFIG("motor_configs", ports::ramp_::kRamp_CANID,
           frc846::wpilib::unit_ohm{0.0}, frc846::wpilib::unit_kg_m_sq{0.0})),
       ramp_(frc846::control::base::MotorMonkeyType::SPARK_MAX_VORTEX,
           motor_configs) {
-  REGISTER_MOTOR_CONFIG("ramp/ramp_", false, true, 40_A, 40_A, 16.0_V);
-  REGISTER_PIDF_CONFIG("ramp/ramp_gains_", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_MOTOR_CONFIG("motor_configs", false, true, 40_A, 40_A, 16.0_V);
+  REGISTER_PIDF_CONFIG("ramp_gains", 0.0, 0.0, 0.0, 0.0);
 
   motor_helper_.SetConversion(ramp_reduction_);
   motor_helper_.bind(&ramp_);
@@ -39,7 +39,7 @@ RampReadings RampSubsystem::ReadFromHardware() {
 }
 
 void RampSubsystem::WriteToHardware(RampTarget target) {
-  ramp_.SetGains(GET_PIDF_GAINS("ramp/ramp_gains_"));
+  ramp_.SetGains(GET_PIDF_GAINS("ramp_gains"));
   if (target.state == RampState::kIntake) {
     target.vel = 2.0_fps;
   } else {
