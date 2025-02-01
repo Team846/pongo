@@ -66,8 +66,6 @@ std::pair<frc846::math::Vector2D, bool> GPDSubsystem::getBestGP(
 }
 
 GPDReadings GPDSubsystem::ReadFromHardware() {
-  // TODO: Camera offsets?
-
   GPDReadings readings;
   frc846::robot::swerve::DrivetrainReadings drivetrain_readings =
       drivetrain_->GetReadings();
