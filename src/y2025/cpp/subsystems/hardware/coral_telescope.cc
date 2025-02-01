@@ -16,7 +16,7 @@ TelescopeSubsystem::TelescopeSubsystem()
   REGISTER_PIDF_CONFIG("coral_telescope_gains", 0.0, 0.0, 0.0, 0.0);
   REGISTER_SOFTLIMIT_CONFIG("coral_telescope_softlimits", true, 1.0);
 
-  motor_helper_.SetConversion(telescope_reduction);
+  motor_helper_.SetConversion(0.5_in / 1.0_tr);
 
   telescope_position_calculator_.setConstants({0_V, 3.3_V, 10_tr, false});
 

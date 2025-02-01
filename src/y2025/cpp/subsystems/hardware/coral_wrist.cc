@@ -44,9 +44,7 @@ void CoralWristSubsystem::Setup() {
   motor_helper_two_.SetPosition(0.0_deg);
 }
 
-CoralWristTarget CoralWristSubsystem::ZeroTarget() const {
-  CoralWristTarget{0.0_deg};
-}
+CoralWristTarget CoralWristSubsystem::ZeroTarget() const { return {0.0_deg}; }
 
 bool CoralWristSubsystem::VerifyHardware() {
   bool ok = true;
