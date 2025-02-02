@@ -7,6 +7,7 @@
 #include <units/mass.h>
 #include <units/velocity.h>
 
+#include "frc846/math/Differentiator.h"
 #include "frc846/math/calculator.h"
 #include "frc846/math/constants.h"
 #include "frc846/math/vectors.h"
@@ -53,4 +54,15 @@ public:
 private:
   static frc846::math::Vector3D elev_cg_position_;
   static frc846::math::Vector3D tele_cg_position_;
+
+  static frc846::math::Differentiator elev_velocity_diff_;
+  static frc846::math::Differentiator elev_acceleration_diff_;
+
+  static frc846::math::Differentiator tele_velocity_diff_;
+  static frc846::math::Differentiator tele_acceleration_diff_;
+
+  double robot_weight = 0;
+
+  static double elev_acceleration;
+  static double tele_acceleration;
 };

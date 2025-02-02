@@ -518,5 +518,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/lock_adj_rate (in)",
+    "type": "double",
+    "value": 0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/rc_control_speed (fps)",
+    "type": "double",
+    "value": 2.5,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

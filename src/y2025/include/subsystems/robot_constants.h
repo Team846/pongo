@@ -17,6 +17,8 @@ struct robot_constants {
     static constexpr units::pound_t elevator_weight = 20_lb;
     static constexpr units::inch_t min_height_off_base = 38_in;
 
+    static constexpr units::inch_t second_stage_extension = 60_in;
+
     static constexpr units::pound_t end_effector_weight = 10_lb;
 
     static constexpr units::pound_t total_weight =

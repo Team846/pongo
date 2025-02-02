@@ -3,6 +3,9 @@
 #include <units/force.h>
 #include <units/torque.h>
 
+#include <iostream>
+
+#include "frc846/base/Loggable.h"
 #include "frc846/math/constants.h"
 #include "subsystems/robot_constants.h"
 
@@ -12,6 +15,17 @@ frc846::math::Vector3D AntiTippingCalculator::elev_cg_position_{
 frc846::math::Vector3D AntiTippingCalculator::tele_cg_position_{
     robot_constants::telescope::pos_x, robot_constants::telescope::pos_y,
     robot_constants::base::height};
+
+frc846::math::Differentiator AntiTippingCalculator::elev_velocity_diff_;
+frc846::math::Differentiator AntiTippingCalculator::tele_velocity_diff_;
+
+frc846::math::Differentiator AntiTippingCalculator::elev_acceleration_diff_;
+frc846::math::Differentiator AntiTippingCalculator::tele_acceleration_diff_;
+
+// double elev_acceleration;
+double AntiTippingCalculator::elev_acceleration;
+
+double AntiTippingCalculator::tele_acceleration;
 
 void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
   if (height > robot_constants::elevator::min_height_off_base) {
@@ -24,10 +38,20 @@ void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
         (robot_constants::elevator::elevator_weight +
             robot_constants::elevator::end_effector_weight);
   }
+
+  double velocity =
+      elev_velocity_diff_.Calculate(elev_cg_position_[2].to<double>());
+  // elev_acceleration = elev_acceleration_diff_.Calculate(velocity);
+  elev_acceleration = 50;
 }
 
 void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
   tele_cg_position_[2] = height / 2.0;
+
+  double velocity =
+      tele_velocity_diff_.Calculate(tele_cg_position_[2].to<double>());
+  // tele_acceleration = tele_acceleration_diff_.Calculate(velocity);
+  tele_acceleration = 10;
 }
 
 frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {
@@ -93,10 +117,133 @@ AntiTippingCalculator::LimitAcceleration(
 
   frc846::math::Vector3D r_vec = robot_cg - effective_wheel_vec_3d;
 
+  // need to fix to incoorporate telescope & elevator
   units::feet_per_second_squared_t perm_accel_x =
       frc846::math::constants::physics::g * r_vec[0] / r_vec[2];
   units::feet_per_second_squared_t perm_accel_y =
       frc846::math::constants::physics::g * r_vec[1] / r_vec[2];
+
+  // Telescope calcualtion
+
+  units::feet_per_second_squared_t tele_accel{tele_acceleration};
+
+  frc846::math::Vector3D cg_to_telescope = tele_cg_position_ - robot_cg;
+
+  units::foot_t distance_wheel = units::math::sqrt(
+      units::math::pow<2>(
+          tele_cg_position_[0] - robot_constants::base::wheelbase_x / 2) +
+      units::math::pow<2>(
+          tele_cg_position_[1] - robot_constants::base::wheelbase_y / 2));
+
+  units::foot_t distance_cg =
+      units::math::sqrt(units::math::pow<2>(robot_constants::base::wheelbase_x -
+                                            robot_constants::telescope::pos_x) +
+                        units::math::pow<2>(robot_constants::base::wheelbase_y -
+                                            robot_constants::telescope::pos_y));
+
+  double tele_scaling_factor =
+      (((frc846::math::constants::physics::g * robot_constants::total_weight *
+            distance_cg) +
+           (robot_constants::telescope::total_weight * tele_accel *
+               distance_wheel)) /
+          (robot_constants::total_weight * tele_cg_position_[2].to<double>()))
+          .to<double>();
+
+  perm_accel_x *= tele_scaling_factor;
+  perm_accel_y *= tele_scaling_factor;
+
+  // Elevator calculation
+
+  // all stages extended
+
+  if (elev_cg_position_[2].to<double>() >
+      robot_constants::elevator::second_stage_extension.to<double>()) {
+    units::feet_per_second_squared_t elev_accel{elev_acceleration};
+
+    frc846::math::Vector3D cg_to_elevator = elev_cg_position_ - robot_cg;
+
+    units::foot_t distance_wheel_elev = units::math::sqrt(
+        units::math::pow<2>(
+            elev_cg_position_[0] - robot_constants::base::wheelbase_x / 2) +
+        units::math::pow<2>(
+            elev_cg_position_[1] - robot_constants::base::wheelbase_y / 2));
+
+    units::foot_t distance_cg_elev = units::math::sqrt(
+        units::math::pow<2>(robot_constants::base::wheelbase_x -
+                            robot_constants::elevator::pos_x) +
+        units::math::pow<2>(robot_constants::base::wheelbase_y -
+                            robot_constants::elevator::pos_y));
+
+    double elev_mult_factor =
+        (frc846::math::constants::physics::g * robot_constants::total_weight *
+            distance_cg_elev)
+            .to<double>() +
+        (robot_constants::elevator::elevator_weight * elev_accel *
+            distance_wheel_elev)
+            .to<double>();
+
+    double elev_div_factor = robot_constants::total_weight.to<double>() *
+                             elev_cg_position_[2].to<double>();
+    double elev_scaling_factor = elev_mult_factor / (elev_div_factor);
+    perm_accel_x *= elev_scaling_factor;
+    perm_accel_y *= elev_scaling_factor;
+
+    std::cerr << "perm_accel_x: " << perm_accel_x.to<double>() << std::endl;
+    std::cerr << "perm_accel_y: " << perm_accel_y.to<double>() << std::endl;
+    std::cerr << "distance_wheel: " << distance_wheel_elev.to<double>()
+              << std::endl;
+    std::cerr << "distance_cg: " << distance_cg_elev.to<double>() << std::endl;
+
+    std::cerr << "elev scale: " << elev_scaling_factor << std::endl;
+
+    std::cerr << "elev_ position[0]" << elev_cg_position_[0].to<double>()
+              << std::endl;
+    std::cerr << "elev_ position[1]" << elev_cg_position_[1].to<double>()
+              << std::endl;
+    std::cerr << "elev_ position[2]" << elev_cg_position_[2].to<double>()
+              << std::endl;
+
+    std::cerr << "elev accel" << elev_acceleration << std::endl;
+    std::cerr << "elev weight"
+              << robot_constants::elevator::elevator_weight.to<double>()
+              << std::endl;
+
+    std::cerr << "robot weight" << robot_constants::total_weight.to<double>()
+              << std::endl;
+
+    std::cerr << "height" << elev_cg_position_[2].to<double>() << std::endl;
+
+  } else {
+    units::feet_per_second_squared_t elev_accel{elev_acceleration};
+
+    frc846::math::Vector3D cg_to_elevator = elev_cg_position_ - robot_cg;
+
+    units::foot_t distance_wheel_elev = units::math::sqrt(
+        units::math::pow<2>(
+            elev_cg_position_[0] - robot_constants::base::wheelbase_x / 2) +
+        units::math::pow<2>(
+            elev_cg_position_[1] - robot_constants::base::wheelbase_y / 2));
+
+    units::foot_t distance_cg_elev = units::math::sqrt(
+        units::math::pow<2>(robot_constants::base::wheelbase_x -
+                            robot_constants::elevator::pos_x) +
+        units::math::pow<2>(robot_constants::base::wheelbase_y -
+                            robot_constants::elevator::pos_y));
+
+    double elev_mult_factor =
+        (frc846::math::constants::physics::g * robot_constants::total_weight *
+            distance_cg_elev)
+            .to<double>() +
+        (robot_constants::elevator::end_effector_weight * elev_accel *
+            distance_wheel_elev)
+            .to<double>();
+
+    double elev_div_factor = robot_constants::total_weight.to<double>() *
+                             elev_cg_position_[2].to<double>();
+    double elev_scaling_factor = elev_mult_factor / (elev_div_factor);
+    perm_accel_x *= elev_scaling_factor;
+    perm_accel_y *= elev_scaling_factor;
+  }
 
   return {perm_accel_x, perm_accel_y};
 }

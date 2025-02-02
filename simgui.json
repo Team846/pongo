@@ -1,4 +1,33 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "CANcoder (v6)[12]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[3]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[6]": {
+        "header": {
+          "open": true
+        }
+      },
+      "CANcoder (v6)[9]": {
+        "header": {
+          "open": true
+        }
+      },
+      "navX-Sensor[4]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -11,6 +40,14 @@
   },
   "NetworkTables": {
     "transitory": {
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        }
+      },
+      "Preferences": {
+        "open": true
+      },
       "Shuffleboard": {
         ".metadata": {
           "open": true
@@ -18,13 +55,24 @@
         "open": true
       },
       "SmartDashboard": {
-        "open": true,
-        "verify_hardware": {
+        "MotorMonkey": {
           "open": true
         },
-        "zero_bearing": {
+        "Robot": {
           "open": true
-        }
+        },
+        "SwerveDrivetrain": {
+          "open": true,
+          "readings": {
+            "open": true
+          },
+          "target": {
+            "ol": {
+              "open": true
+            }
+          }
+        },
+        "open": true
       }
     }
   },
@@ -42,5 +90,23 @@
       "open": true
     },
     "visible": true
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 326
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    }
   }
 }
