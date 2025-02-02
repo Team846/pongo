@@ -4,7 +4,6 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/button/Trigger.h>
 
-#include "commands/teleop/processor_auto_align.h"
 #include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
@@ -40,19 +39,13 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   // END FAKE
 
   frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().lock_processor;
-  }}.WhileTrue(ProcessorAutoAlignCommand{
-      container, 15_fps, 15_fps_sq, 10_fps_sq}
-          .ToPtr());
-
-  frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
-      container, true, 15_fps, 15_fps_sq, 10_fps_sq}
+      container, true, 5_fps, 15_fps_sq, 10_fps_sq}
           .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
-      container, false, 15_fps, 15_fps_sq, 10_fps_sq}
+      container, false, 5_fps, 15_fps_sq, 10_fps_sq}
           .ToPtr());
 }

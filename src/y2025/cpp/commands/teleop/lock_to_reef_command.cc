@@ -57,7 +57,7 @@ void LockToReefCommand::Periodic() {
             lock_gains.kD * std::pow(container_.drivetrain_.GetReadings()
                                          .estimated_pose.velocity.magnitude()
                                          .to<double>(),
-                                2) +
+                                3.5) +
             lock_gains.kFF * 0.0);
 
     container_.drivetrain_.SetTarget(

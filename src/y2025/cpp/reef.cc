@@ -4,8 +4,6 @@
 
 #include "field.h"
 
-// TODO: change for 2025 robot lengths
-
 frc846::math::FieldPoint ReefProvider::reefPoint = {
     {158.5_in, 144_in + 32.75_in}, 0_deg};
 

@@ -19,11 +19,18 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
-  start_point_ = drivetrain_->GetReadings().pose.position;
+  start_point_ = drivetrain_->GetReadings().estimated_pose.position;
 }
 
 void DriveToPointCommand::Execute() {
+  Log("overriden? {}", max_speed_);
+
   DrivetrainReadings dt_readings{drivetrain_->GetReadings()};
+
+  if (GetTargetPoint().second) {
+    Log("hello");
+    target_ = GetTargetPoint().first;
+  }
 
   DrivetrainAccelerationControlTarget dt_target{
       .linear_acceleration = max_acceleration_,
@@ -38,27 +45,35 @@ void DriveToPointCommand::Execute() {
       units::math::abs(dt_readings.pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
 
-  if ((target_.point - start_point_).magnitude() -
-          drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-              "drive_to_subtract") <=
-      stopping_distance) {
-    if (dt_readings.pose.velocity.magnitude() < 4_fps &&
-        target_.velocity > 1_fps) {
-      dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
-    } else {
-      dt_target.accel_dir =
-          (dt_readings.pose.position - start_point_).angle(true);
-    }
-    dt_target.linear_acceleration = max_deceleration_;
+  units::foot_t dist_to_target =
+      (target_.point - dt_readings.estimated_pose.position).magnitude() -
+      drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
+          "drive_to_subtract");
+
+  if (dist_to_target <= stopping_distance) {
+    is_decelerating_ = true;
+    dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
+
+    if (dist_to_target > 3_in && dist_to_target > stopping_distance)
+      dt_target.linear_acceleration =
+          max_deceleration_ * dist_to_target / stopping_distance;
+    else
+      dt_target.linear_acceleration = max_deceleration_;
   } else {
+    is_decelerating_ = false;
     if (dt_readings.pose.velocity.magnitude() < max_speed_)
       dt_target.linear_acceleration = max_acceleration_;
-    else
+    else {
+      Log("this is wild");
       dt_target.linear_acceleration = 0_fps_sq;
+    }
 
     dt_target.accel_dir =
-        (target_.point - dt_readings.pose.position).angle(true);
+        (target_.point - dt_readings.estimated_pose.position).angle(true);
   }
+
+  Graph("is_decelerating", is_decelerating_);
+  Graph("stopping_distance", stopping_distance);
 
   dt_target.angular_velocity = drivetrain_->ApplyBearingPID(target_.bearing);
 
@@ -78,10 +93,10 @@ bool DriveToPointCommand::IsFinished() {
                    .magnitude() ||  // what is this sketch condition???/
            (is_decelerating_ &&
                drivetrain_->GetReadings().pose.velocity.magnitude() <
-                   1_fps);  // extremely interesting way of ending the
-                            // command..... CHECK Velocity
+                   0.5_fps);  // extremely interesting way of ending the
+                              // command..... CHECK Velocity
   } else {
-    return ((target_.point - current_point).magnitude() < 2.5_ft);
+    return ((target_.point - current_point).magnitude() < .5_ft);
   }
 }
 
