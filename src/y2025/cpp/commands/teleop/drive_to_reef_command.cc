@@ -25,13 +25,12 @@ std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
   units::inch_t reef_drive_subtract =
       (drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
           "reef_drive_early"));
-  //   target_pos.point =
-  //       cpos + (target_pos.point -
-  //       cpos).AddToMagnitude(-reef_drive_subtract);
+  target_pos.point =
+      cpos + (target_pos.point - cpos).AddToMagnitude(-reef_drive_subtract);
 
-  target_pos.velocity = 0_fps;
-  //   drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-  //       "reef_drive_fvel");
+  target_pos.velocity =
+      drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+          "reef_drive_fvel");
 
   return {target_pos, true};
 }
