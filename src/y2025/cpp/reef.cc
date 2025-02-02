@@ -5,7 +5,7 @@
 #include "field.h"
 
 frc846::math::FieldPoint ReefProvider::reefPoint = {
-    {158.5_in, 144_in + 32.75_in}, 0_deg};
+    {158.5_in, 144_in + 32.75_in}, 0_deg, 0_fps};
 
 std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations() {
   std::vector<frc846::math::FieldPoint> reefScoringLocations;

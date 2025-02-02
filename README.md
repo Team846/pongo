@@ -173,7 +173,6 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/frc846/cpp/frc846/robot/swerve/drive_to_point_command.cc:57:49: warning: Condition 'dist_to_target>stopping_distance' is always false [knownConditionTrueFalse]
-src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```

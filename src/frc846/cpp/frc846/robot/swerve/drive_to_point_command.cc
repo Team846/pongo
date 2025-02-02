@@ -5,14 +5,13 @@ namespace frc846::robot::swerve {
 DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
     frc846::math::FieldPoint target, units::feet_per_second_t max_speed,
     units::feet_per_second_squared_t max_acceleration,
-    units::feet_per_second_squared_t max_deceleration, bool end_when_close)
+    units::feet_per_second_squared_t max_deceleration)
     : Loggable("DriveToPointCommand"),
       drivetrain_(drivetrain),
       max_speed_(max_speed),
       max_acceleration_(max_acceleration),
       max_deceleration_(max_deceleration),
-      target_(target),
-      end_when_close_(end_when_close) {
+      target_(target) {
   SetName("DriveToPointCommand");
   AddRequirements({drivetrain_});
 }
@@ -23,14 +22,12 @@ void DriveToPointCommand::Initialize() {
 }
 
 void DriveToPointCommand::Execute() {
-  Log("overriden? {}", max_speed_);
-
   DrivetrainReadings dt_readings{drivetrain_->GetReadings()};
 
-  if (GetTargetPoint().second) {
-    Log("hello");
-    target_ = GetTargetPoint().first;
-  }
+  const auto [new_target_point, is_valid] = GetTargetPoint();
+
+  Graph("override_is_valid", is_valid);
+  if (is_valid) target_ = new_target_point;
 
   DrivetrainAccelerationControlTarget dt_target{
       .linear_acceleration = max_acceleration_,
@@ -54,7 +51,7 @@ void DriveToPointCommand::Execute() {
     is_decelerating_ = true;
     dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
 
-    if (dist_to_target > 3_in && dist_to_target > stopping_distance)
+    if (dist_to_target > 3_in)
       dt_target.linear_acceleration =
           max_deceleration_ * dist_to_target / stopping_distance;
     else
@@ -63,10 +60,7 @@ void DriveToPointCommand::Execute() {
     is_decelerating_ = false;
     if (dt_readings.pose.velocity.magnitude() < max_speed_)
       dt_target.linear_acceleration = max_acceleration_;
-    else {
-      Log("this is wild");
-      dt_target.linear_acceleration = 0_fps_sq;
-    }
+    else { dt_target.linear_acceleration = 0_fps_sq; }
 
     dt_target.accel_dir =
         (target_.point - dt_readings.estimated_pose.position).angle(true);
@@ -87,17 +81,10 @@ void DriveToPointCommand::End(bool interrupted) {
 
 bool DriveToPointCommand::IsFinished() {
   auto current_point = drivetrain_->GetReadings().estimated_pose.position;
-  if (!end_when_close_) {
-    return (current_point - start_point_).magnitude() >=
-               (target_.point - start_point_)
-                   .magnitude() ||  // what is this sketch condition???/
-           (is_decelerating_ &&
-               drivetrain_->GetReadings().pose.velocity.magnitude() <
-                   0.5_fps);  // extremely interesting way of ending the
-                              // command..... CHECK Velocity
-  } else {
-    return ((target_.point - current_point).magnitude() < .5_ft);
-  }
+  return (current_point - start_point_).magnitude() >=
+             (target_.point - start_point_).magnitude() ||
+         (is_decelerating_ &&
+             drivetrain_->GetReadings().pose.velocity.magnitude() < 0.5_fps);
 }
 
 }  // namespace frc846::robot::swerve

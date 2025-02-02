@@ -54,6 +54,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
+  RegisterPreference("reef_drive_early", 12_in);
+  RegisterPreference("reef_drive_fvel", 1_fps);
+
   odometry_.setConstants({});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
@@ -212,9 +215,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-          .calculate({bearing, steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+                      .calculate({bearing, steer_positions, drive_positions,
+                          GetPreferenceValue_double("odom_fudge_factor")})
+                      .position,
       .bearing = bearing,
       .velocity = velocity,
   };

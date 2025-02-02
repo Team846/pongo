@@ -28,7 +28,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
       10_fps_sq, 5_fps_sq
       // ,true
   }
-          .ToPtr());
+                                        .ToPtr());
 
   frc2::Trigger test_bearing_pid_trigger{[&] {
     return container.control_input_.GetReadings().test_bearing_pid;
@@ -42,10 +42,10 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, true, 5_fps, 15_fps_sq, 10_fps_sq}
-          .ToPtr());
+                   .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, false, 5_fps, 15_fps_sq, 10_fps_sq}
-          .ToPtr());
+                   .ToPtr());
 }
