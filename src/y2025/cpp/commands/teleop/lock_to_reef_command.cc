@@ -52,16 +52,18 @@ void LockToReefCommand::Periodic() {
         container_.drivetrain_.GetPreferenceValue_double("lock_gains/_kD"),
         0.0};
     units::feet_per_second_t speed_target =
-        1_fps * lock_gains.calculate(r_vec.magnitude().to<double>(), 0.0,
-                    container_.drivetrain_.GetReadings()
-                        .estimated_pose.velocity.magnitude()
-                        .to<double>(),
-                    0.0);
+        1_fps *
+        (lock_gains.kP * r_vec.magnitude().to<double>() + lock_gains.kI * 0.0 +
+            lock_gains.kD * std::pow(container_.drivetrain_.GetReadings()
+                                         .estimated_pose.velocity.magnitude()
+                                         .to<double>(),
+                                2) +
+            lock_gains.kFF * 0.0);
 
     container_.drivetrain_.SetTarget(
         frc846::robot::swerve::DrivetrainOLControlTarget{
             frc846::math::VectorND<units::feet_per_second, 2>{
-                speed_target, r_vec.angle(true) + 180_deg, true},
+                speed_target, r_vec.angle(true), true},
             container_.drivetrain_.ApplyBearingPID(target_pos.bearing)});
   }
 }

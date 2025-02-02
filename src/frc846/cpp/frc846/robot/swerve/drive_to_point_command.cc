@@ -5,13 +5,14 @@ namespace frc846::robot::swerve {
 DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
     frc846::math::FieldPoint target, units::feet_per_second_t max_speed,
     units::feet_per_second_squared_t max_acceleration,
-    units::feet_per_second_squared_t max_deceleration)
+    units::feet_per_second_squared_t max_deceleration, bool end_when_close)
     : Loggable("DriveToPointCommand"),
       drivetrain_(drivetrain),
       max_speed_(max_speed),
       max_acceleration_(max_acceleration),
       max_deceleration_(max_deceleration),
-      target_(target) {
+      target_(target),
+      end_when_close_(end_when_close) {
   SetName("DriveToPointCommand");
   AddRequirements({drivetrain_});
 }
@@ -70,10 +71,18 @@ void DriveToPointCommand::End(bool interrupted) {
 }
 
 bool DriveToPointCommand::IsFinished() {
-  auto current_point = drivetrain_->GetReadings().pose.position;
-  return (current_point - start_point_).magnitude() >=
-         (target_.point - start_point_).magnitude();
-  // TODO: add bump sensor
+  auto current_point = drivetrain_->GetReadings().estimated_pose.position;
+  if (!end_when_close_) {
+    return (current_point - start_point_).magnitude() >=
+               (target_.point - start_point_)
+                   .magnitude() ||  // what is this sketch condition???/
+           (is_decelerating_ &&
+               drivetrain_->GetReadings().pose.velocity.magnitude() <
+                   1_fps);  // extremely interesting way of ending the
+                            // command..... CHECK Velocity
+  } else {
+    return ((target_.point - current_point).magnitude() < 2.5_ft);
+  }
 }
 
 }  // namespace frc846::robot::swerve

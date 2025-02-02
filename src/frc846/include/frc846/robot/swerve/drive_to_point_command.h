@@ -16,7 +16,8 @@ public:
   DriveToPointCommand(frc846::robot::swerve::DrivetrainSubsystem* drivetrain,
       frc846::math::FieldPoint target, units::feet_per_second_t max_speed,
       units::feet_per_second_squared_t max_acceleration,
-      units::feet_per_second_squared_t max_deceleration);
+      units::feet_per_second_squared_t max_deceleration,
+      bool end_when_close = false);
 
   void Initialize() override;
 
@@ -42,6 +43,7 @@ private:
   frc846::math::Vector2D start_point_;
 
   bool is_decelerating_ = false;
+  bool end_when_close_;
 };
 
 }  // namespace frc846::robot::swerve
