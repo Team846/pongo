@@ -12,7 +12,6 @@
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericSubsystem.h"
-#include "ports.h"
 
 struct WristReadings {
   units::degree_t position;
@@ -34,11 +33,16 @@ public:
       wrist_pos_conv_t conversion);
 
   void Setup() override final;
-  virtual void ExtendedSetup() = 0;
 
   bool VerifyHardware() override final;
 
 protected:
+  virtual void ExtendedSetup() = 0;
+
+  virtual std::pair<units::degree_t, bool> GetSensorPos() {
+    return {0_deg, false};
+  }
+
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController wrist_esc_;

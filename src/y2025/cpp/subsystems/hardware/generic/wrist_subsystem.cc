@@ -26,11 +26,10 @@ void WristSubsystem::Setup() {
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame});
 
-  wrist_esc_helper_.SetPosition(0.0_deg);
+  const auto [sensor_pos, is_valid] = GetSensorPos();
+  if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
 
   ExtendedSetup();
-
-  // TODO: Add zeroing
 }
 
 bool WristSubsystem::VerifyHardware() {
@@ -45,6 +44,13 @@ WristReadings WristSubsystem::ReadFromHardware() {
   readings.position = wrist_esc_helper_.GetPosition();
 
   Graph("readings/position", readings.position);
+
+  const auto [sensor_pos, is_valid] = GetSensorPos();
+  if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
+
+  Graph("readings/sensor_pos", sensor_pos);
+  Graph("readings/sensor_valid", is_valid);
+
   return readings;
 }
 

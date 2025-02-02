@@ -31,28 +31,32 @@ struct ports {
     static constexpr int kLEDStrip1 = 6;
   };
 
-  struct elevator_ {
-    static constexpr int kElevatorOne_CANID = 15;
-  };
-  struct algae_pivot_ {
-    static constexpr int kAlgaePivotOne_CANID = 21;
-  };
-
-  struct ramp_ {
-    static constexpr int kRamp_CANID = 20;
-  };
-
-  struct telescope_ {
-    static constexpr int kTelescopeOne_CANID = 16;
+  struct coral_ss_ {
+    struct telescope_ {
+      static constexpr int kTelescope_CANID = 15;
+    };
+    struct wrist_ {
+      static constexpr int kWristMotor_CANID = 16;
+    };
+    struct end_effector_ {
+      static constexpr int kEE_CANID = 17;
+    };
   };
 
-  struct coral_wrist_ {
-    static constexpr int kCoralWristOne_CANID = 17;
-    static constexpr int kCoralWristTwo_CANID = 22;
+  struct algal_ss_ {
+    struct elevator_ {
+      static constexpr int kElevator_CANID = 19;
+    };
+    struct wrist_ {
+      static constexpr int kWristMotor_CANID = 20;
+    };
+    struct end_effector_ {
+      static constexpr int kEE1_CANID = 21;
+      static constexpr int kEE2_CANID = 22;
+    };
   };
 
   struct climber_ {
-    static constexpr int kClimberOne_CANID = 18;
-    static constexpr int kClimberTwo_CANID = 19;
+    static constexpr int kClimber_CANID = 24;
   };
 };
