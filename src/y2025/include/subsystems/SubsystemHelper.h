@@ -9,6 +9,8 @@ inline std::string MakeKey(std::string base, std::string suffix) {
   return std::string(frc846::base::Loggable::Join(base, suffix));
 }
 
+// TODO: remove motor configs
+
 #define REGISTER_MOTOR_CONFIG(name, inverted, brake_mode, current_limit, \
     smart_current_limit, voltage_compensation)                           \
   RegisterPreference(MakeKey(name, "inverted"), inverted);               \

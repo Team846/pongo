@@ -1,0 +1,50 @@
+#pragma once
+
+#include <time.h>
+#include <units/acceleration.h>
+#include <units/angular_velocity.h>
+#include <units/length.h>
+#include <units/mass.h>
+#include <units/math.h>
+#include <units/velocity.h>
+
+#include "frc846/base/Loggable.h"
+#include "frc846/control/HMCHelper.h"
+#include "frc846/control/HigherMotorController.h"
+#include "frc846/robot/GenericSubsystem.h"
+#include "ports.h"
+
+struct WristReadings {
+  units::degree_t position;
+};
+
+struct WristTarget {
+  units::degree_t position;
+};
+
+using wrist_pos_conv_t = units::unit_t<
+    units::compound_unit<units::deg, units::inverse<units::turn>>>;
+
+class WristSubsystem
+    : public frc846::robot::GenericSubsystem<WristReadings, WristTarget> {
+public:
+  WristSubsystem(std::string name,
+      frc846::control::base::MotorMonkeyType mmtype,
+      frc846::control::config::MotorConstructionParameters motor_configs_,
+      wrist_pos_conv_t conversion);
+
+  void Setup() override final;
+  virtual void ExtendedSetup() = 0;
+
+  bool VerifyHardware() override final;
+
+protected:
+  frc846::control::config::MotorConstructionParameters motor_configs_;
+
+  frc846::control::HigherMotorController wrist_esc_;
+  frc846::control::HMCHelper<units::degree> wrist_esc_helper_;
+
+  WristReadings ReadFromHardware() override final;
+
+  void WriteToHardware(WristTarget target) override final;
+};
