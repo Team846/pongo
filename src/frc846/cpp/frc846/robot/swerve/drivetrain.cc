@@ -46,6 +46,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
+  RegisterPreference("accel_spike_thresh", 45_fps_sq);
+  RegisterPreference("max_past_accel_spike", 25);
+  RegisterPreference("accel_vel_bump_thresh", 2_fps);
+
   odometry_.setConstants({});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
@@ -102,6 +106,10 @@ void DrivetrainSubsystem::ZeroBearing() {
     std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
   Error("Unable to zero after {} attempts", kMaxAttempts);
+}
+
+void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
+  odometry_.SetPosition(position);
 }
 
 void DrivetrainSubsystem::SetCANCoderOffsets() {
@@ -178,9 +186,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-          .calculate({bearing, steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+                      .calculate({bearing, steer_positions, drive_positions,
+                          GetPreferenceValue_double("odom_fudge_factor")})
+                      .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -190,7 +198,39 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  return {new_pose, yaw_rate};
+  units::meters_per_second_squared_t accel_x{navX_.GetWorldLinearAccelX()};
+  units::meters_per_second_squared_t accel_y{navX_.GetWorldLinearAccelY()};
+  units::meters_per_second_squared_t accel_z{navX_.GetWorldLinearAccelZ()};
+  Graph("readings/accel_x", accel_x);
+  Graph("readings/accel_y", accel_y);
+  Graph("readings/accel_z", accel_z);
+
+  units::meters_per_second_squared_t accel_mag = units::math::sqrt(
+      accel_x * accel_x + accel_y * accel_y + accel_z * accel_z);
+  Graph("readings/accel_mag", accel_mag);
+
+  int last_accel_spike = GetReadings().last_accel_spike + 1;
+  if (accel_mag >=
+      GetPreferenceValue_unit_type<units::meters_per_second_squared_t>(
+          "accel_spike_thresh")) {
+    last_accel_spike = 0;
+  }
+
+  units::meters_per_second_t accel_vel_x{navX_.GetVelocityX()};
+  units::meters_per_second_t accel_vel_y{navX_.GetVelocityY()};
+  units::meters_per_second_t accel_vel_z{navX_.GetVelocityZ()};
+
+  Graph("readings/accel_vel_x", accel_vel_x);
+  Graph("readings/accel_vel_y", accel_vel_y);
+  Graph("readings/accel_vel_z", accel_vel_z);
+
+  units::meters_per_second_t accel_vel = units::math::sqrt(
+      units::math::pow<2>(accel_vel_x) + units::math::pow<2>(accel_vel_y) +
+      units::math::pow<2>(accel_vel_z));
+
+  Graph("readings/accel_vel", accel_vel);
+
+  return {new_pose, yaw_rate, accel_mag, accel_vel, last_accel_spike};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>

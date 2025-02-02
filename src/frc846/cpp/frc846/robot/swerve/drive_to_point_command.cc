@@ -47,7 +47,7 @@ void DriveToPointCommand::Execute() {
     is_decelerating_ = true;
     dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
 
-    if (dist_to_target > 3_in && dist_to_target > stopping_distance)
+    if (dist_to_target > 3_in)
       dt_target.linear_acceleration =
           max_deceleration_ * dist_to_target / stopping_distance;
     else
@@ -62,6 +62,7 @@ void DriveToPointCommand::Execute() {
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
   }
+  Graph("is_decelerating", is_decelerating_);
 
   dt_target.angular_velocity = drivetrain_->ApplyBearingPID(target_.bearing);
 
@@ -74,11 +75,16 @@ void DriveToPointCommand::End(bool interrupted) {
 }
 
 bool DriveToPointCommand::IsFinished() {
-  auto current_point = drivetrain_->GetReadings().pose.position;
+  auto drivetrain_readings = drivetrain_->GetReadings();
+  auto current_point = drivetrain_readings.pose.position;
   return ((current_point - start_point_).magnitude() >=
              (target_.point - start_point_).magnitude()) ||
-         (is_decelerating_ &&
-             drivetrain_->GetReadings().pose.velocity.magnitude() < 0.5_fps);
+         ((drivetrain_readings.last_accel_spike <=
+              drivetrain_->GetPreferenceValue_int("max_past_accel_spike")) &&
+             drivetrain_readings.accel_vel <
+                 drivetrain_
+                     ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                         "accel_vel_bump_thresh"));
 }
 
 }  // namespace frc846::robot::swerve

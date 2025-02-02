@@ -32,6 +32,9 @@ struct DrivetrainConfigs {
 struct DrivetrainReadings {
   frc846::robot::swerve::odometry::SwervePose pose;
   units::degrees_per_second_t yaw_rate;
+  units::feet_per_second_squared_t acceleration;
+  units::feet_per_second_t accel_vel;
+  int last_accel_spike;
 };
 
 // Open-loop control, for use during teleop
@@ -69,6 +72,8 @@ public:
   bool VerifyHardware() override;
 
   void ZeroBearing();
+
+  void SetPosition(frc846::math::Vector2D position);
 
   void SetCANCoderOffsets();
 

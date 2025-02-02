@@ -88,6 +88,7 @@ void TalonFX_interm::EnableStatusFrames(
   last_error_ =
       getErrorCode(talon_.OptimizeBusUtilization(0_Hz, max_wait_time_));
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
+
   for (auto frame : frames) {
     ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
     switch (frame) {
