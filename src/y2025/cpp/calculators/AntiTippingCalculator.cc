@@ -41,8 +41,7 @@ void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
 
   double velocity =
       elev_velocity_diff_.Calculate(elev_cg_position_[2].to<double>());
-  // elev_acceleration = elev_acceleration_diff_.Calculate(velocity);
-  elev_acceleration = 50;
+  elev_acceleration = elev_acceleration_diff_.Calculate(velocity);
 }
 
 void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
@@ -50,8 +49,7 @@ void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
 
   double velocity =
       tele_velocity_diff_.Calculate(tele_cg_position_[2].to<double>());
-  // tele_acceleration = tele_acceleration_diff_.Calculate(velocity);
-  tele_acceleration = 10;
+  tele_acceleration = tele_acceleration_diff_.Calculate(velocity);
 }
 
 frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {
@@ -117,7 +115,6 @@ AntiTippingCalculator::LimitAcceleration(
 
   frc846::math::Vector3D r_vec = robot_cg - effective_wheel_vec_3d;
 
-  // need to fix to incoorporate telescope & elevator
   units::feet_per_second_squared_t perm_accel_x =
       frc846::math::constants::physics::g * r_vec[0] / r_vec[2];
   units::feet_per_second_squared_t perm_accel_y =
@@ -187,31 +184,6 @@ AntiTippingCalculator::LimitAcceleration(
     double elev_scaling_factor = elev_mult_factor / (elev_div_factor);
     perm_accel_x *= elev_scaling_factor;
     perm_accel_y *= elev_scaling_factor;
-
-    std::cerr << "perm_accel_x: " << perm_accel_x.to<double>() << std::endl;
-    std::cerr << "perm_accel_y: " << perm_accel_y.to<double>() << std::endl;
-    std::cerr << "distance_wheel: " << distance_wheel_elev.to<double>()
-              << std::endl;
-    std::cerr << "distance_cg: " << distance_cg_elev.to<double>() << std::endl;
-
-    std::cerr << "elev scale: " << elev_scaling_factor << std::endl;
-
-    std::cerr << "elev_ position[0]" << elev_cg_position_[0].to<double>()
-              << std::endl;
-    std::cerr << "elev_ position[1]" << elev_cg_position_[1].to<double>()
-              << std::endl;
-    std::cerr << "elev_ position[2]" << elev_cg_position_[2].to<double>()
-              << std::endl;
-
-    std::cerr << "elev accel" << elev_acceleration << std::endl;
-    std::cerr << "elev weight"
-              << robot_constants::elevator::elevator_weight.to<double>()
-              << std::endl;
-
-    std::cerr << "robot weight" << robot_constants::total_weight.to<double>()
-              << std::endl;
-
-    std::cerr << "height" << elev_cg_position_[2].to<double>() << std::endl;
 
   } else {
     units::feet_per_second_squared_t elev_accel{elev_acceleration};

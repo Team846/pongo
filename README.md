@@ -173,8 +173,6 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/y2025/cpp/calculators/AntiTippingCalculator.cc:42:19: warning: Variable 'velocity' is assigned a value that is never used. [unreadVariable]
-src/y2025/cpp/calculators/AntiTippingCalculator.cc:51:19: warning: Variable 'velocity' is assigned a value that is never used. [unreadVariable]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```
