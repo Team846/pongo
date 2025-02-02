@@ -33,13 +33,14 @@ protected:
     return {{{0_in, 0_in}, 0_deg, 0_fps}, false};
   };
 
+  frc846::math::Vector2D start_point_;
+
 private:
   units::feet_per_second_t max_speed_;
   units::feet_per_second_squared_t max_acceleration_;
   units::feet_per_second_squared_t max_deceleration_;
 
   frc846::math::FieldPoint target_;
-  frc846::math::Vector2D start_point_;
 
   bool is_decelerating_ = false;
 };
