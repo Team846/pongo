@@ -178,9 +178,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -196,14 +196,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 frc846::math::VectorND<units::feet_per_second, 2>
 DrivetrainSubsystem::compensateForSteerLag(
     frc846::math::VectorND<units::feet_per_second, 2> uncompensated) {
-  // units::degree_t steer_lag_compensation =
-  //     -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
-  //     GetReadings().yaw_rate;
+  units::degree_t steer_lag_compensation =
+      -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+      GetReadings().yaw_rate;
 
-  // Graph("target/steer_lag_compensation", steer_lag_compensation);
+  Graph("target/steer_lag_compensation", steer_lag_compensation);
 
-  // return uncompensated.rotate(steer_lag_compensation, true);
-  return uncompensated;
+  return uncompensated.rotate(steer_lag_compensation, true);
 }
 
 void DrivetrainSubsystem::WriteVelocitiesHelper(

@@ -25,10 +25,18 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }};
   test_move_10_ft_trigger.WhileTrue(
       frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
-          {{0_ft, 9_ft}, 0_deg, 0_fps}, 11_fps, 10_fps_sq, 10_fps_sq}
+          {{0_ft, 9_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
-                  {{0_ft, 2_ft}, 30_deg, 0_fps}, 11_fps, 10_fps_sq, 10_fps_sq}
+                  {{0_ft, 2_ft}, 45_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
+                  .ToPtr())
+          .AndThen(
+              frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
+                  {{-4_ft, 2_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
+                  .ToPtr())
+          .AndThen(
+              frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
+                  {{0_ft, 2_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
                   .ToPtr()));
 
   frc2::Trigger test_bearing_pid_trigger{[&] {

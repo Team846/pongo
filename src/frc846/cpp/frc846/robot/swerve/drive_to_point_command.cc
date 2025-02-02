@@ -19,6 +19,7 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
   start_point_ = drivetrain_->GetReadings().pose.position;
+  is_decelerating_ = false;
 }
 
 void DriveToPointCommand::Execute() {
@@ -34,27 +35,30 @@ void DriveToPointCommand::Execute() {
       ((dt_readings.pose.velocity.magnitude() - target_.velocity) /
           max_deceleration_);
   units::foot_t stopping_distance =
-      (dt_readings.pose.velocity.magnitude() * t_decel) -
+      units::math::abs(dt_readings.pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
 
-  if ((target_.point - start_point_).magnitude() <=
-      stopping_distance -
-          drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-              "drive_to_subtract")) {
-    if (dt_readings.pose.velocity.magnitude() < 4_fps &&
-        target_.velocity > 1_fps) {
-      dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
-    } else {
-      dt_target.accel_dir =
-          (dt_readings.pose.position - start_point_).angle(true);
-    }
-    dt_target.linear_acceleration = max_deceleration_;
-  } else if (dt_readings.pose.velocity.magnitude() < max_speed_) {
-    dt_target.linear_acceleration = max_acceleration_;
-    dt_target.accel_dir =
-        (target_.point - dt_readings.pose.position).angle(true);
+  units::foot_t dist_to_target =
+      (target_.point - dt_readings.pose.position).magnitude() -
+      drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
+          "drive_to_subtract");
+
+  if (dist_to_target <= stopping_distance) {
+    is_decelerating_ = true;
+    dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
+
+    if (dist_to_target > 3_in && dist_to_target > stopping_distance)
+      dt_target.linear_acceleration =
+          max_deceleration_ * dist_to_target / stopping_distance;
+    else
+      dt_target.linear_acceleration = max_deceleration_;
   } else {
-    dt_target.linear_acceleration = 0_fps_sq;
+    is_decelerating_ = false;
+    if (dt_readings.pose.velocity.magnitude() < max_speed_)
+      dt_target.linear_acceleration = max_acceleration_;
+    else
+      dt_target.linear_acceleration = 0_fps_sq;
+
     dt_target.accel_dir =
         (target_.point - dt_readings.pose.position).angle(true);
   }
@@ -71,9 +75,10 @@ void DriveToPointCommand::End(bool interrupted) {
 
 bool DriveToPointCommand::IsFinished() {
   auto current_point = drivetrain_->GetReadings().pose.position;
-  return (current_point - start_point_).magnitude() >=
-         (target_.point - start_point_).magnitude();
-  // TODO: add bump sensor
+  return ((current_point - start_point_).magnitude() >=
+             (target_.point - start_point_).magnitude()) ||
+         (is_decelerating_ &&
+             drivetrain_->GetReadings().pose.velocity.magnitude() < 0.5_fps);
 }
 
 }  // namespace frc846::robot::swerve
