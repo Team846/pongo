@@ -44,7 +44,6 @@ struct FieldPoint {
     return mirror(false);
   }
 
-private:
   static constexpr units::inch_t field_size_y = 690.875_in;
   static constexpr units::inch_t field_size_x = 317_in;
 };

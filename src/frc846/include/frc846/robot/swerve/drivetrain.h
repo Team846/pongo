@@ -43,6 +43,9 @@ struct DrivetrainReadings {
   frc846::math::Vector2D april_point;
   frc846::robot::swerve::odometry::SwervePose estimated_pose;
   units::degrees_per_second_t yaw_rate;
+  units::feet_per_second_squared_t acceleration;
+  units::feet_per_second_t accel_vel;
+  int last_accel_spike;
 };
 
 // Open-loop control, for use during teleop
@@ -81,6 +84,8 @@ public:
 
   void ZeroBearing();
 
+  void SetPosition(frc846::math::Vector2D position);
+
   void SetCANCoderOffsets();
 
   units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
@@ -101,6 +106,8 @@ private:
   std::array<SwerveModuleSubsystem*, 4> modules_;
 
   studica::AHRS navX_;
+
+  int last_accel_spike_ = 1000;
 
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
   frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;

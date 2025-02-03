@@ -175,8 +175,7 @@ void MotorMonkey::Tick(bool disabled) {
             dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
         sim->SetBatteryVoltage(battery_voltage);
         sim->SetLoad(load_registry[i]);
-        // sim->Tick();
-        // TODO: fix sim
+        sim->Tick();
       }
     }
   }

@@ -19,6 +19,8 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
   start_point_ = drivetrain_->GetReadings().estimated_pose.position;
+  is_decelerating_ = false;
+  num_stalled_loops_ = 0;
 }
 
 void DriveToPointCommand::Execute() {
@@ -38,11 +40,10 @@ void DriveToPointCommand::Execute() {
   Graph("max_deceleration", max_deceleration_);
 
   units::second_t t_decel =
-      ((dt_readings.estimated_pose.velocity.magnitude() - target_.velocity) /
+      ((dt_readings.pose.velocity.magnitude() - target_.velocity) /
           max_deceleration_);
   units::foot_t stopping_distance =
-      units::math::abs(
-          dt_readings.estimated_pose.velocity.magnitude() * t_decel) -
+      units::math::abs(dt_readings.pose.velocity.magnitude() * t_decel) -
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
 
   units::foot_t dist_to_target =
@@ -63,13 +64,15 @@ void DriveToPointCommand::Execute() {
       dt_target.linear_acceleration = max_deceleration_;
   } else {
     is_decelerating_ = false;
-    if (dt_readings.estimated_pose.velocity.magnitude() < max_speed_)
+    if (dt_readings.pose.velocity.magnitude() < max_speed_)
       dt_target.linear_acceleration = max_acceleration_;
-    else { dt_target.linear_acceleration = -1_fps_sq; }
+    else
+      dt_target.linear_acceleration = 0_fps_sq;
 
     dt_target.accel_dir =
         (target_.point - dt_readings.estimated_pose.position).angle(true);
   }
+  Graph("is_decelerating", is_decelerating_);
 
   Graph("is_decelerating", is_decelerating_);
   Graph("stopping_distance", stopping_distance);
@@ -85,11 +88,29 @@ void DriveToPointCommand::End(bool interrupted) {
 }
 
 bool DriveToPointCommand::IsFinished() {
-  auto current_point = drivetrain_->GetReadings().estimated_pose.position;
-  return (current_point - start_point_).magnitude() >=
-             (target_.point - start_point_).magnitude() ||
+  auto drivetrain_readings = drivetrain_->GetReadings();
+  auto current_point = drivetrain_readings.pose.position;
+
+  if (drivetrain_readings.accel_vel <
+          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "accel_vel_stopped_thresh") ||
+      drivetrain_readings.pose.velocity.magnitude() <
+          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "vel_stopped_thresh")) {
+    num_stalled_loops_ += 1;
+  } else {
+    num_stalled_loops_ = 0;
+  }
+
+  return ((current_point - start_point_).magnitude() >=
+             (target_.point - start_point_).magnitude()) ||
          (is_decelerating_ &&
-             drivetrain_->GetReadings().pose.velocity.magnitude() < 0.5_fps);
+             drivetrain_readings.pose.velocity.magnitude() <
+                 drivetrain_
+                     ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                         "vel_stopped_thresh")) ||
+         num_stalled_loops_ >
+             drivetrain_->GetPreferenceValue_int("stopped_num_loops");
 }
 
 }  // namespace frc846::robot::swerve

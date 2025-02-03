@@ -33,6 +33,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/_kD", 0.0);
   RegisterPreference("lock_gains/deadband", 2_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
+  RegisterPreference("lock_max_speed", 7_fps);
 
   RegisterPreference("drive_to_subtract", 2_in);
 
@@ -54,9 +55,15 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
+  RegisterPreference("accel_spike_thresh", 45_fps_sq);
+  RegisterPreference("max_past_accel_spike", 25);
+  RegisterPreference("accel_vel_stopped_thresh", 0.7_fps);
+  RegisterPreference("vel_stopped_thresh", 1.0_fps);
+  RegisterPreference("stopped_num_loops", 25);
+
   RegisterPreference("reef_drive_early", 12_in);
   RegisterPreference("reef_drive_fvel", 1_fps);
-
+        
   odometry_.setConstants({});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
@@ -127,6 +134,10 @@ void DrivetrainSubsystem::ZeroBearing() {
 
   pose_estimator.SetPoint(
       {GetReadings().april_point[0], GetReadings().april_point[1]});
+}
+
+void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
+  odometry_.SetPosition(position);
 }
 
 void DrivetrainSubsystem::SetCANCoderOffsets() {
@@ -215,9 +226,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -270,20 +281,52 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate};
+  units::meters_per_second_squared_t accel_x{navX_.GetWorldLinearAccelX()};
+  units::meters_per_second_squared_t accel_y{navX_.GetWorldLinearAccelY()};
+  units::meters_per_second_squared_t accel_z{navX_.GetWorldLinearAccelZ()};
+  Graph("readings/accel_x", accel_x);
+  Graph("readings/accel_y", accel_y);
+  Graph("readings/accel_z", accel_z);
+
+  units::meters_per_second_squared_t accel_mag = units::math::sqrt(
+      accel_x * accel_x + accel_y * accel_y + accel_z * accel_z);
+  Graph("readings/accel_mag", accel_mag);
+
+  last_accel_spike_ += 1;
+  if (accel_mag >=
+      GetPreferenceValue_unit_type<units::feet_per_second_squared_t>(
+          "accel_spike_thresh")) {
+    last_accel_spike_ = 0;
+  }
+  Graph("readings/last_accel_spike", last_accel_spike_);
+
+  units::meters_per_second_t accel_vel_x{navX_.GetVelocityX()};
+  units::meters_per_second_t accel_vel_y{navX_.GetVelocityY()};
+  units::meters_per_second_t accel_vel_z{navX_.GetVelocityZ()};
+
+  Graph("readings/accel_vel_x", accel_vel_x);
+  Graph("readings/accel_vel_y", accel_vel_y);
+  Graph("readings/accel_vel_z", accel_vel_z);
+
+  units::meters_per_second_t accel_vel = units::math::sqrt(
+      units::math::pow<2>(accel_vel_x) + units::math::pow<2>(accel_vel_y) +
+      units::math::pow<2>(accel_vel_z));
+
+  Graph("readings/accel_vel", accel_vel);
+
+  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel, last_accel_spike_};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>
 DrivetrainSubsystem::compensateForSteerLag(
     frc846::math::VectorND<units::feet_per_second, 2> uncompensated) {
-  // units::degree_t steer_lag_compensation =
-  //     -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
-  //     GetReadings().yaw_rate;
+  units::degree_t steer_lag_compensation =
+      -GetPreferenceValue_unit_type<units::second_t>("steer_lag") *
+      GetReadings().yaw_rate;
 
-  // Graph("target/steer_lag_compensation", steer_lag_compensation);
+  Graph("target/steer_lag_compensation", steer_lag_compensation);
 
-  // return uncompensated.rotate(steer_lag_compensation, true);
-  return uncompensated;
+  return uncompensated.rotate(steer_lag_compensation, true);
 }
 
 void DrivetrainSubsystem::WriteVelocitiesHelper(

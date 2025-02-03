@@ -43,6 +43,8 @@ private:
   frc846::math::FieldPoint target_;
 
   bool is_decelerating_ = false;
+
+  int num_stalled_loops_ = 0;
 };
 
 }  // namespace frc846::robot::swerve
