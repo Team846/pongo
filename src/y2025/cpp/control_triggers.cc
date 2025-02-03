@@ -34,9 +34,9 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
                   {{0_ft, 7_ft}, -30_deg, 0_fps}, 12_fps, 15_fps_sq, 15_fps_sq}
                   .ToPtr())
           .AndThen(frc2::WaitCommand{1_s}.ToPtr())
-          .AndThen(
-              frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
-                  {{2_ft, 8_ft}, -60_deg, 12_fps}, 12_fps, 15_fps_sq, 15_fps_sq}
+          .AndThen(frc846::robot::swerve::DriveToPointCommand{
+              &container.drivetrain_, {{2_ft, 8_ft}, -100_deg, 15_fps}, 15_fps,
+              15_fps_sq, 15_fps_sq}
                   .ToPtr())
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{6_ft, 16_ft}, -126_deg, 0_fps}, 12_fps,
