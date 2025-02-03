@@ -11,8 +11,5 @@ public:
   LockToReefCommand(RobotContainer& container, bool is_left);
 
 private:
-  RobotContainer& container_;
-  bool is_left_;
-
   frc846::math::Vector2D base_adj{0_in, 0_in};
 };
