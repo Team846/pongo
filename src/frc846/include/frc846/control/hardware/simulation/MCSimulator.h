@@ -71,8 +71,6 @@ public:
   virtual bool GetForwardLimitSwitchState() override { return false; }
   virtual bool GetReverseLimitSwitchState() override { return false; }
 
-  virtual units::volt_t GetAnalogDeviceOutput() override { return 0.0_V; }
-
   /*
   ZeroEncoder()
 

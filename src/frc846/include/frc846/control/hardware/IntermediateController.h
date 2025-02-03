@@ -76,8 +76,6 @@ public:
   virtual bool GetForwardLimitSwitchState() = 0;
   virtual bool GetReverseLimitSwitchState() = 0;
 
-  virtual units::volt_t GetAnalogDeviceOutput() = 0;
-
   virtual ControllerErrorCodes GetLastErrorCode() = 0;
 
   virtual bool VerifyConnected() = 0;

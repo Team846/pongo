@@ -98,8 +98,6 @@ public:
   bool GetForwardLimitSwitchState();
   bool GetReverseLimitSwitchState();
 
-  units::volt_t GetAnalogDeviceOutput();
-
   // void ConfigForwardLimitSwitch(
   //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
   // void ConfigReverseLimitSwitch(

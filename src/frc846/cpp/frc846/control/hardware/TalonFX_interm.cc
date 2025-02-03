@@ -216,9 +216,6 @@ bool TalonFX_interm::GetReverseLimitSwitchState() {
          ctre::phoenix6::signals::ForwardLimitValue::ClosedToGround;
 }
 
-// TODO: If possible figure out how to implement this for TalonFX
-units::volt_t TalonFX_interm::GetAnalogDeviceOutput() { return 0.0_V; }
-
 ControllerErrorCodes TalonFX_interm::GetLastErrorCode() {
   ControllerErrorCodes toReturn = last_error_;
   last_error_ = ControllerErrorCodes::kAllOK;
