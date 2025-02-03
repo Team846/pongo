@@ -42,12 +42,11 @@ void SparkMXFX_interm::Tick() {
   if (double* dc = std::get_if<double>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
         *dc, rev::spark::SparkBase::ControlType::kDutyCycle);
-  } else if (units::radians_per_second_t* vel =
-                 std::get_if<units::radians_per_second_t>(&last_command_)) {
+  } else if (units::revolutions_per_minute_t* vel =
+                 std::get_if<units::revolutions_per_minute_t>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
         vel->to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
-  } else if (units::radian_t* pos =
-                 std::get_if<units::radian_t>(&last_command_)) {
+  } else if (units::turn_t* pos = std::get_if<units::turn_t>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
         pos->to<double>(), rev::spark::SparkBase::ControlType::kPosition);
   }
@@ -77,9 +76,9 @@ void SparkMXFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
 void SparkMXFX_interm::SetSoftLimits(
     units::radian_t forward_limit, units::radian_t reverse_limit) {
   configs.softLimit.ForwardSoftLimitEnabled(true)
-      .ForwardSoftLimit(forward_limit.to<double>())
+      .ForwardSoftLimit(units::turn_t(forward_limit).to<double>())
       .ReverseSoftLimitEnabled(true)
-      .ReverseSoftLimit(reverse_limit.to<double>());
+      .ReverseSoftLimit(units::turn_t(reverse_limit).to<double>());
 
   APPLY_CONFIG_NO_RESET();
 }
@@ -102,17 +101,20 @@ void SparkMXFX_interm::WriteDC(double duty_cycle) {
   last_command_ = duty_cycle;
 }
 void SparkMXFX_interm::WriteVelocity(units::radians_per_second_t velocity) {
-  last_command_ = velocity;
+  last_command_ = units::revolutions_per_minute_t(velocity);
 }
 void SparkMXFX_interm::WritePosition(units::radian_t position) {
-  last_command_ = position;
+  last_command_ = units::turn_t(position);
 }
 
 void SparkMXFX_interm::EnableStatusFrames(
-    std::vector<frc846::control::config::StatusFrame> frames) {
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
   if (vector_has(frames, config::StatusFrame::kLeader) ||
       vector_has(frames, config::StatusFrame::kFaultFrame)) {
-    configs.signals.FaultsPeriodMs(20);
+    configs.signals.FaultsPeriodMs(faults_ms.to<int>());
     configs.signals.FaultsAlwaysOn(true);
   } else {
     configs.signals.FaultsPeriodMs(32767);
@@ -121,7 +123,7 @@ void SparkMXFX_interm::EnableStatusFrames(
 
   if (vector_has(frames, config::StatusFrame::kVelocityFrame) ||
       vector_has(frames, config::StatusFrame::kCurrentFrame)) {
-    configs.signals.PrimaryEncoderVelocityPeriodMs(25);
+    configs.signals.PrimaryEncoderVelocityPeriodMs(velocity_ms.to<int>());
     configs.signals.PrimaryEncoderVelocityAlwaysOn(true);
   } else {
     configs.signals.PrimaryEncoderVelocityPeriodMs(32767);
@@ -129,7 +131,8 @@ void SparkMXFX_interm::EnableStatusFrames(
   }
 
   if (vector_has(frames, config::StatusFrame::kPositionFrame)) {
-    configs.signals.PrimaryEncoderPositionPeriodMs(20);
+    configs.signals.PrimaryEncoderPositionPeriodMs(
+        encoder_position_ms.to<int>());
     configs.signals.PrimaryEncoderPositionAlwaysOn(true);
   } else {
     configs.signals.PrimaryEncoderPositionPeriodMs(32767);
@@ -137,7 +140,7 @@ void SparkMXFX_interm::EnableStatusFrames(
   }
 
   if (vector_has(frames, config::StatusFrame::kSensorFrame)) {
-    configs.signals.AnalogPositionPeriodMs(20);
+    configs.signals.AnalogPositionPeriodMs(analog_position_ms.to<int>());
     configs.signals.AnalogPositionAlwaysOn(true);
   } else {
     configs.signals.AnalogPositionPeriodMs(32767);
@@ -158,9 +161,8 @@ void SparkMXFX_interm::OverrideStatusFramePeriod(
   } else if (frame == config::StatusFrame::kPositionFrame) {
     configs.signals.PrimaryEncoderPositionPeriodMs(period.to<int>());
   } else if (frame == config::StatusFrame::kSensorFrame) {
-    configs.signals.AnalogPositionPeriodMs(period.to<int>());
+    configs.signals.AnalogPositionPeriodMs(20);
   }
-
   APPLY_CONFIG_NO_RESET();
 }
 
@@ -172,28 +174,29 @@ bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(
     units::radians_per_second_t velocity) {
-  if (units::radians_per_second_t* vel =
-          std::get_if<units::radians_per_second_t>(&last_command_)) {
+  if (units::revolutions_per_minute_t* vel =
+          std::get_if<units::revolutions_per_minute_t>(&last_command_)) {
     return *vel == velocity;
   }
   return false;
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(units::radian_t position) {
-  if (units::radian_t* pos = std::get_if<units::radian_t>(&last_command_)) {
+  if (units::turn_t* pos = std::get_if<units::turn_t>(&last_command_)) {
     return *pos == position;
   }
   return false;
 }
 
 void SparkMXFX_interm::ZeroEncoder(units::radian_t position) {
-  set_last_error(encoder_->SetPosition(position.to<double>()));
+  set_last_error(encoder_->SetPosition(units::turn_t(position).to<double>()));
 }
 
 units::radians_per_second_t SparkMXFX_interm::GetVelocity() {
-  return units::make_unit<units::radians_per_second_t>(encoder_->GetVelocity());
+  return units::make_unit<units::revolutions_per_minute_t>(
+      encoder_->GetVelocity());
 }
 units::radian_t SparkMXFX_interm::GetPosition() {
-  return units::make_unit<units::radian_t>(encoder_->GetPosition());
+  return units::make_unit<units::turn_t>(encoder_->GetPosition());
 }
 units::ampere_t SparkMXFX_interm::GetCurrent() {
   return units::make_unit<units::ampere_t>(esc_->GetOutputCurrent());

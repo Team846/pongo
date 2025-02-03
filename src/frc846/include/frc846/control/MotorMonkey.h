@@ -65,8 +65,12 @@ public:
 
   Enables specific status frames for a motor controller. Disables all others.
   */
-  static void EnableStatusFrames(
-      size_t slot_id, std::vector<frc846::control::config::StatusFrame> frames);
+  static void EnableStatusFrames(size_t slot_id,
+      std::vector<frc846::control::config::StatusFrame> frames,
+      units::millisecond_t faults_ms = 20_ms,
+      units::millisecond_t velocity_ms = 20_ms,
+      units::millisecond_t encoder_position_ms = 20_ms,
+      units::millisecond_t analog_position_ms = 20_ms);
 
   static void OverrideStatusFramePeriod(size_t slot_id,
       frc846::control::config::StatusFrame frame, units::millisecond_t period);

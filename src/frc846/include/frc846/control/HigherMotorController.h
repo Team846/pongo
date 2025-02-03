@@ -88,7 +88,11 @@ public:
   void SetSoftLimits(config::SoftLimits soft_limits);
 
   // Enables specific status frames and disables all others
-  void EnableStatusFrames(std::vector<config::StatusFrame> frames);
+  void EnableStatusFrames(std::vector<config::StatusFrame> frames,
+      units::millisecond_t faults_ms = 20_ms,
+      units::millisecond_t velocity_ms = 20_ms,
+      units::millisecond_t encoder_position_ms = 20_ms,
+      units::millisecond_t analog_position_ms = 20_ms);
 
   void OverrideStatusFramePeriod(
       config::StatusFrame frame, units::millisecond_t period);

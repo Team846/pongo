@@ -4,7 +4,9 @@
 #include <units/angular_acceleration.h>
 
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/calculators/AprilTagCalculator.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
+#include "frc846/robot/swerve/odometry/pose_estimator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
 #include "frc846/robot/swerve/swerve_module.h"
@@ -26,11 +28,20 @@ struct DrivetrainConfigs {
   units::inch_t wheelbase_horizontal_dim;
   units::inch_t wheelbase_forward_dim;
 
+  units::feet_per_second_t max_speed;
+
+  std::vector<units::inch_t> camera_x_offsets;
+  std::vector<units::inch_t> camera_y_offsets;
+  int cams;
+
+  std::map<int, frc846::robot::calculators::AprilTagData> april_locations;
   units::feet_per_second_squared_t max_accel;
 };
 
 struct DrivetrainReadings {
   frc846::robot::swerve::odometry::SwervePose pose;
+  frc846::math::Vector2D april_point;
+  frc846::robot::swerve::odometry::SwervePose estimated_pose;
   units::degrees_per_second_t yaw_rate;
   units::feet_per_second_squared_t acceleration;
   units::feet_per_second_t accel_vel;
@@ -100,6 +111,13 @@ private:
 
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
   frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;
+  frc846::robot::calculators::AprilTagCalculator tag_pos_calculator;
+  frc846::robot::swerve::odometry::PoseEstimator pose_estimator{{0_ft, 0_ft},
+      {0_fps, 0_fps},
+      {units::feet_per_second_squared_t(0),
+          units::feet_per_second_squared_t(0)}};
+
+  bool first_loop = true;
 };
 
 }  // namespace frc846::robot::swerve

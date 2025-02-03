@@ -6,6 +6,7 @@
 
 #include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
 #include "reef.h"
@@ -18,11 +19,13 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     container.drivetrain_.ZeroBearing();
   }).ToPtr());
 
-  // FAKE, TODO: remove
+  // FAKE
+  // TODO: remove
 
   frc2::Trigger test_move_10_ft_trigger{[&] {
     return container.control_input_.GetReadings().test_move_10_ft;
   }};
+
   test_move_10_ft_trigger.WhileTrue(frc2::InstantCommand{[&]() {
     container.drivetrain_.SetPosition({3_ft, 4_ft});
   }}
@@ -57,10 +60,14 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(LockToReefCommand{container, true}.ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{
+      container, true, 5_fps, 15_fps_sq, 15_fps_sq}
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(LockToReefCommand{container, false}.ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{
+      container, false, 5_fps, 15_fps_sq, 15_fps_sq}
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&

@@ -1,34 +1,48 @@
 #include "reef.h"
 
-#include <iostream>
+#include <frc/DriverStation.h>
+
+#include "field.h"
+
+frc846::math::FieldPoint ReefProvider::reefPoint = {
+    {158.5_in, 144_in + 32.75_in}, 0_deg, 0_fps};
 
 std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations() {
   std::vector<frc846::math::FieldPoint> reefScoringLocations;
 
-  // TODO: add real values
-  // TODO: add reef center
+  frc846::math::Vector2D reef_center =
+      reefPoint
+          .mirrorOnlyY(
+              frc::DriverStation::GetAlliance() == frc::DriverStation::kBlue)
+          .point;
   frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{8.0_in, 40.0_in};
+      frc846::math::Vector2D{6.5_in, 48.5_in};
 
   frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-8.0_in, 40.0_in};
+      frc846::math::Vector2D{-6.5_in, 48.5_in};
 
   for (int i = 0; i < 6; i++) {
     reefScoringLocations.push_back(frc846::math::FieldPoint{
-        left_reef_displacement.rotate(60_deg * i, true), 60_deg * i + 180_deg,
-        0_fps});
+        reef_center + left_reef_displacement.rotate(60_deg * i, true),
+        60_deg * i, 0_fps});
     reefScoringLocations.push_back(frc846::math::FieldPoint{
-        right_reef_displacement.rotate(60_deg * i, true), 60_deg * i + 180_deg,
-        0_fps});
+        reef_center + right_reef_displacement.rotate(60_deg * i, true),
+        60_deg * i, 0_fps});
   }
 
   return reefScoringLocations;
 }
 
 int ReefProvider::getClosestReefSide(frc846::math::Vector2D current_pos) {
-  // TODO: include center reef, perhaps hysteresis
+  // TODO: perhaps hysteresis
+  frc846::math::Vector2D reef_center =
+      reefPoint
+          .mirrorOnlyY(
+              frc::DriverStation::GetAlliance() == frc::DriverStation::kBlue)
+          .point;
+  frc846::math::Vector2D reef_to_robot = current_pos - reef_center;
 
-  units::degree_t angle = current_pos.angle(true);
+  units::degree_t angle = reef_to_robot.angle(true);
   while (angle < 0_deg)
     angle += 360_deg;
   while (angle > 360_deg)

@@ -4,6 +4,8 @@
 
 #include <exception>
 
+// TODO: move reef center + processor to scriptable points
+
 frc846::math::FieldPoint Field_nonstatic::getPoint(std::string name) {
   if (!points.empty()) {
     auto it = std::find_if(points.begin(), points.end(),

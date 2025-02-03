@@ -19,7 +19,7 @@ DrivetrainConstructor::DrivetrainConstructor()
 frc846::robot::swerve::DrivetrainConfigs
 DrivetrainConstructor::getDrivetrainConfigs() {
   frc846::control::base::MotorMonkeyType mmtype =
-      frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60;
+      frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO;
 
   frc846::robot::swerve::DrivetrainConfigs configs;
 
@@ -141,6 +141,12 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
+
+  configs.camera_x_offsets = {4.5_in, 3.5_in};
+  configs.camera_y_offsets = {-6_in, -11_in};
+  configs.cams = 2;
+  configs.april_locations = {{18, {0_in, 0_in}}, {19, {-22.25_in, 0_in}},
+      {7, {155.25_in, 144_in}}, {8, {196.17_in, 652.73_in}}};
 
   return configs;
 }

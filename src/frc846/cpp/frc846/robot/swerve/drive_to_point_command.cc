@@ -18,7 +18,7 @@ DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
 
 void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
-  start_point_ = drivetrain_->GetReadings().pose.position;
+  start_point_ = drivetrain_->GetReadings().estimated_pose.position;
   is_decelerating_ = false;
   num_stalled_loops_ = 0;
 }
@@ -26,11 +26,18 @@ void DriveToPointCommand::Initialize() {
 void DriveToPointCommand::Execute() {
   DrivetrainReadings dt_readings{drivetrain_->GetReadings()};
 
+  const auto [new_target_point, is_valid] = GetTargetPoint();
+
+  Graph("override_is_valid", is_valid);
+  if (is_valid) target_ = new_target_point;
+
   DrivetrainAccelerationControlTarget dt_target{
       .linear_acceleration = max_acceleration_,
       .accel_dir = (target_.point - start_point_).angle(true),
       .angular_velocity = 0_deg_per_s,
   };
+
+  Graph("max_deceleration", max_deceleration_);
 
   units::second_t t_decel =
       ((dt_readings.pose.velocity.magnitude() - target_.velocity) /
@@ -40,13 +47,14 @@ void DriveToPointCommand::Execute() {
       ((max_deceleration_ * t_decel * t_decel) / 2.0);
 
   units::foot_t dist_to_target =
-      (target_.point - dt_readings.pose.position).magnitude() -
+      (target_.point - dt_readings.estimated_pose.position).magnitude() -
       drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
           "drive_to_subtract");
 
   if (dist_to_target <= stopping_distance) {
     is_decelerating_ = true;
-    dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
+    dt_target.accel_dir =
+        dt_readings.estimated_pose.velocity.angle(true) + 180_deg;
 
     if (dist_to_target > 3_in)
       dt_target.linear_acceleration = max_deceleration_ *
@@ -62,9 +70,12 @@ void DriveToPointCommand::Execute() {
       dt_target.linear_acceleration = 0_fps_sq;
 
     dt_target.accel_dir =
-        (target_.point - dt_readings.pose.position).angle(true);
+        (target_.point - dt_readings.estimated_pose.position).angle(true);
   }
   Graph("is_decelerating", is_decelerating_);
+
+  Graph("is_decelerating", is_decelerating_);
+  Graph("stopping_distance", stopping_distance);
 
   dt_target.angular_velocity = drivetrain_->ApplyBearingPID(target_.bearing);
 
