@@ -19,7 +19,7 @@ DrivetrainConstructor::DrivetrainConstructor()
 frc846::robot::swerve::DrivetrainConfigs
 DrivetrainConstructor::getDrivetrainConfigs() {
   frc846::control::base::MotorMonkeyType mmtype =
-      frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO;
+      frc846::control::base::MotorMonkeyType::TALON_FX_KRAKENX60;
 
   frc846::robot::swerve::DrivetrainConfigs configs;
 
