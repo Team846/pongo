@@ -89,7 +89,7 @@ void DriveToPointCommand::End(bool interrupted) {
 
 bool DriveToPointCommand::IsFinished() {
   auto drivetrain_readings = drivetrain_->GetReadings();
-  auto current_point = drivetrain_readings.pose.position;
+  auto current_point = drivetrain_readings.estimated_pose.position;
 
   if (drivetrain_readings.accel_vel <
           drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(

@@ -26,9 +26,10 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().test_move_10_ft;
   }};
 
-  test_move_10_ft_trigger.WhileTrue(frc2::InstantCommand{[&]() {
-    container.drivetrain_.SetPosition({3_ft, 4_ft});
-  }}
+  test_move_10_ft_trigger.WhileTrue(
+      frc2::InstantCommand{[&]() {
+        container.drivetrain_.SetPosition({3_ft, 4_ft});
+      }}
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
                   {{3_ft, 13_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
@@ -62,12 +63,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, true, 5_fps, 15_fps_sq, 15_fps_sq}
-          .ToPtr());
+                   .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, false, 5_fps, 15_fps_sq, 15_fps_sq}
-          .ToPtr());
+                   .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&
