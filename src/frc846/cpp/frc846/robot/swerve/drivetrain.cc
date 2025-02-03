@@ -48,7 +48,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("accel_spike_thresh", 45_fps_sq);
   RegisterPreference("max_past_accel_spike", 25);
-  RegisterPreference("accel_vel_bump_thresh", 2_fps);
+  RegisterPreference("accel_vel_stopped_thresh", 0.7_fps);
+  RegisterPreference("vel_stopped_thresh", 1.0_fps);
+  RegisterPreference("stopped_num_loops", 25);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -186,9 +188,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -209,12 +211,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       accel_x * accel_x + accel_y * accel_y + accel_z * accel_z);
   Graph("readings/accel_mag", accel_mag);
 
-  int last_accel_spike = GetReadings().last_accel_spike + 1;
+  last_accel_spike_ += 1;
   if (accel_mag >=
-      GetPreferenceValue_unit_type<units::meters_per_second_squared_t>(
+      GetPreferenceValue_unit_type<units::feet_per_second_squared_t>(
           "accel_spike_thresh")) {
-    last_accel_spike = 0;
+    last_accel_spike_ = 0;
   }
+  Graph("readings/last_accel_spike", last_accel_spike_);
 
   units::meters_per_second_t accel_vel_x{navX_.GetVelocityX()};
   units::meters_per_second_t accel_vel_y{navX_.GetVelocityY()};
@@ -230,7 +233,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   Graph("readings/accel_vel", accel_vel);
 
-  return {new_pose, yaw_rate, accel_mag, accel_vel, last_accel_spike};
+  return {new_pose, yaw_rate, accel_mag, accel_vel, last_accel_spike_};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>

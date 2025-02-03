@@ -96,6 +96,8 @@ private:
 
   studica::AHRS navX_;
 
+  int last_accel_spike_ = 1000;
+
   frc846::robot::swerve::odometry::SwerveOdometryCalculator odometry_;
   frc846::robot::swerve::control::SwerveOpenLoopCalculator ol_calculator_;
 };

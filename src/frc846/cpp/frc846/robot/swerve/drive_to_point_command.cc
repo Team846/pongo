@@ -20,6 +20,7 @@ void DriveToPointCommand::Initialize() {
   Log("DriveToPointCommand initialized");
   start_point_ = drivetrain_->GetReadings().pose.position;
   is_decelerating_ = false;
+  num_stalled_loops_ = 0;
 }
 
 void DriveToPointCommand::Execute() {
@@ -48,8 +49,9 @@ void DriveToPointCommand::Execute() {
     dt_target.accel_dir = dt_readings.pose.velocity.angle(true) + 180_deg;
 
     if (dist_to_target > 3_in)
-      dt_target.linear_acceleration =
-          max_deceleration_ * dist_to_target / stopping_distance;
+      dt_target.linear_acceleration = max_deceleration_ *
+                                      units::math::abs(stopping_distance) /
+                                      units::math::abs(dist_to_target);
     else
       dt_target.linear_acceleration = max_deceleration_;
   } else {
@@ -77,14 +79,27 @@ void DriveToPointCommand::End(bool interrupted) {
 bool DriveToPointCommand::IsFinished() {
   auto drivetrain_readings = drivetrain_->GetReadings();
   auto current_point = drivetrain_readings.pose.position;
+
+  if (drivetrain_readings.accel_vel <
+          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "accel_vel_stopped_thresh") ||
+      drivetrain_readings.pose.velocity.magnitude() <
+          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "vel_stopped_thresh")) {
+    num_stalled_loops_ += 1;
+  } else {
+    num_stalled_loops_ = 0;
+  }
+
   return ((current_point - start_point_).magnitude() >=
              (target_.point - start_point_).magnitude()) ||
-         ((drivetrain_readings.last_accel_spike <=
-              drivetrain_->GetPreferenceValue_int("max_past_accel_spike")) &&
-             drivetrain_readings.accel_vel <
+         (is_decelerating_ &&
+             drivetrain_readings.pose.velocity.magnitude() <
                  drivetrain_
                      ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                         "accel_vel_bump_thresh"));
+                         "vel_stopped_thresh")) ||
+         num_stalled_loops_ >
+             drivetrain_->GetPreferenceValue_int("stopped_num_loops");
 }
 
 }  // namespace frc846::robot::swerve

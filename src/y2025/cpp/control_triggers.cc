@@ -23,10 +23,9 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   frc2::Trigger test_move_10_ft_trigger{[&] {
     return container.control_input_.GetReadings().test_move_10_ft;
   }};
-  test_move_10_ft_trigger.WhileTrue(
-      frc2::InstantCommand{[&]() {
-        container.drivetrain_.SetPosition({3_ft, 4_ft});
-      }}
+  test_move_10_ft_trigger.WhileTrue(frc2::InstantCommand{[&]() {
+    container.drivetrain_.SetPosition({3_ft, 4_ft});
+  }}
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
                   {{3_ft, 13_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
@@ -45,7 +44,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
                   .ToPtr())
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
-                  {{3_ft, 2_ft}, 0_deg, 0_fps}, 4_fps, 20_fps_sq, 20_fps_sq}
+                  {{3_ft, 2_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
                   .ToPtr()));
 
   frc2::Trigger test_bearing_pid_trigger{[&] {

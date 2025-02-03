@@ -37,6 +37,8 @@ private:
   frc846::math::Vector2D start_point_;
 
   bool is_decelerating_ = false;
+
+  int num_stalled_loops_ = 0;
 };
 
 }  // namespace frc846::robot::swerve
