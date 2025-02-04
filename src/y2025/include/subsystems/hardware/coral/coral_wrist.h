@@ -2,9 +2,9 @@
 
 #include "subsystems/hardware/generic/wrist_subsystem.h"
 
-class ClimberSubsystem : public WristSubsystem {
+class CoralWristSubsystem : public WristSubsystem {
 public:
-  ClimberSubsystem();
+  CoralWristSubsystem();
 
 protected:
   void ExtendedSetup() override;
