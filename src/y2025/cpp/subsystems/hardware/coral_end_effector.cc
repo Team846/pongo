@@ -27,7 +27,7 @@ void CoralEndEffectorSubsystem::Setup() {
 }
 
 CoralEndEffectorTarget CoralEndEffectorSubsystem::ZeroTarget() const {
-  return CoralEndEffectorTarget{CoralEndEffectorState::kIdle, 0.0_fps};
+  return CoralEndEffectorTarget{CoralEndEffectorState::kCoralIdle, 0.0_fps};
 }
 
 bool CoralEndEffectorSubsystem::VerifyHardware() {
@@ -48,10 +48,10 @@ CoralEndEffectorReadings CoralEndEffectorSubsystem::ReadFromHardware() {
 
 void CoralEndEffectorSubsystem::WriteToHardware(CoralEndEffectorTarget target) {
   coral_end_effector.SetGains(GET_PIDF_GAINS("coral_end_effector_gains"));
-  if (target.state == CoralEndEffectorState::kScore) {
+  if (target.state == CoralEndEffectorState::kCoralScore) {
     target.vel = 2.0_fps;
-  } else if (target.state == CoralEndEffectorState::kIntake) {
-    target.vel = 1.0_fps;
+  } else if (target.state == CoralEndEffectorState::kCoralIntake) {
+    target.vel = 0.5_fps;
   } else {
     target.vel = 0.0_fps;
   }

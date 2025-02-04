@@ -27,7 +27,7 @@ void AlgaeEndEffectorSubsystem::Setup() {
 }
 
 AlgaeEndEffectorTarget AlgaeEndEffectorSubsystem::ZeroTarget() const {
-  return AlgaeEndEffectorTarget{AlgaeEndEffectorState::kIdle, 0.0_fps};
+  return AlgaeEndEffectorTarget{AlgaeEndEffectorState::kAlgaeIdle, 0.0_fps};
 }
 
 bool AlgaeEndEffectorSubsystem::VerifyHardware() {
@@ -47,8 +47,10 @@ AlgaeEndEffectorReadings AlgaeEndEffectorSubsystem::ReadFromHardware() {
 
 void AlgaeEndEffectorSubsystem::WriteToHardware(AlgaeEndEffectorTarget target) {
   algae_end_effector.SetGains(GET_PIDF_GAINS("algae_end_effector_gains"));
-  if (target.state == AlgaeEndEffectorState::kScore) {
+  if (target.state == AlgaeEndEffectorState::kAlgaeScore) {
     target.vel = 2.0_fps;
+  } else if (target.state == AlgaeEndEffectorState::kAlgaeIntake) {
+    target.vel = 1.0_fps;
   } else {
     target.vel = 0.0_fps;
   }

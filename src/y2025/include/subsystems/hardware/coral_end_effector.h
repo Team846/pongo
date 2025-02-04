@@ -13,7 +13,7 @@
 #include "frc846/wpilib/units.h"
 #include "ports.h"
 
-enum CoralEndEffectorState { kScore, kIntake, kIdle };
+enum CoralEndEffectorState { kCoralScore, kCoralIntake, kCoralIdle };
 
 struct CoralEndEffectorReadings {
   units::feet_per_second_t vel;

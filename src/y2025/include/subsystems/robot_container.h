@@ -4,12 +4,13 @@
 #include "subsystems/abstract/control_input.h"
 #include "subsystems/hardware/DrivetrainConstructor.h"
 #include "subsystems/hardware/algae_pivot.h"
+#include "subsystems/hardware/algae_end_effector.h"
 #include "subsystems/hardware/climber.h"
 #include "subsystems/hardware/coral_telescope.h"
 #include "subsystems/hardware/coral_wrist.h"
+#include "subsystems/hardware/coral_end_effector.h"
 #include "subsystems/hardware/elevator.h"
 #include "subsystems/hardware/leds.h"
-#include "subsystems/hardware/ramp.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
@@ -20,12 +21,15 @@ public:
   frc846::robot::swerve::DrivetrainSubsystem drivetrain_{
       drivetrain_constructor_.getDrivetrainConfigs()};
 
+  ElevatorSubsystem elevator_{};
   AlgaePivotSubsystem algae_pivot_{};
-  ClimberSubsystem climber_{};
+  AlgaeEndEffectorSubsystem algae_end_effector{};
+
   TelescopeSubsystem telescope_{};
   CoralWristSubsystem coral_wrist_{};
-  ElevatorSubsystem elevator_{};
-  RampSubsystem ramp_{};
+  CoralEndEffectorSubsystem coral_end_effector{};
+
+  ClimberSubsystem climber_{};
 
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
@@ -35,7 +39,6 @@ public:
     RegisterPreference("init_telescope", true);
     RegisterPreference("init_coral_wrist", true);
     RegisterPreference("init_elevator", true);
-    RegisterPreference("init_ramp", true);
 
     control_input_.Init();
 
@@ -46,12 +49,10 @@ public:
     bool telescope_init = (GetPreferenceValue_bool("init_telescope"));
     bool coral_wrist_init = (GetPreferenceValue_bool("init_coral_wrist"));
     bool elevator_init = (GetPreferenceValue_bool("init_elevator"));
-    bool ramp_init = (GetPreferenceValue_bool("init_ramp"));
 
     RegisterSubsystemGroupA({{&control_input_, true}});
     RegisterSubsystemGroupB({{&leds_, leds_init}});
 
-    RegisterSubsystemGroupA({{&ramp_, &ramp_init}});
     RegisterSubsystemGroupB({{&climber_, &climber_init}});
 
     RegisterSubsystemGroupA({{&algae_pivot_, &algae_pivot_init}});

@@ -15,6 +15,10 @@ struct ControlInputReadings {
 
   double rotation;
 
+  bool intake_algae;
+
+  bool intake_coral;
+
   bool test_move_10_ft;  // TODO: remove when not needed
   bool test_bearing_pid;
   bool lock_left_reef;

@@ -13,7 +13,7 @@
 #include "frc846/wpilib/units.h"
 #include "ports.h"
 
-enum AlgaeEndEffectorState { kScore, kIdle };
+enum AlgaeEndEffectorState { kAlgaeScore, kAlgaeIntake, kAlgaeIdle };
 
 struct AlgaeEndEffectorReadings {
   units::feet_per_second_t vel;
