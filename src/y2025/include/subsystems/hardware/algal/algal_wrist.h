@@ -6,6 +6,8 @@ class AlgalWristSubsystem : public WristSubsystem {
 public:
   AlgalWristSubsystem();
 
+  WristTarget ZeroTarget() const override;
+
 protected:
   void ExtendedSetup() override;
   std::pair<units::degree_t, bool> GetSensorPos() override;

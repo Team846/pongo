@@ -22,6 +22,10 @@ ElevatorSubsystem::ElevatorSubsystem()
           },
           1.0_in / 2.0_tr) {}
 
+LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {
+  return LinearSubsystemTarget{0_in};
+}
+
 void ElevatorSubsystem::ExtendedSetup() {
   // TODO: implement
 }

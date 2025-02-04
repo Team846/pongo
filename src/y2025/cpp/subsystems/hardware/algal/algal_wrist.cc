@@ -21,6 +21,10 @@ AlgalWristSubsystem::AlgalWristSubsystem()
           },
           1.0_tr / 4.0_tr) {}
 
+WristTarget AlgalWristSubsystem::ZeroTarget() const {
+  return WristTarget{0_deg};
+}
+
 void AlgalWristSubsystem::ExtendedSetup() {
   // TODO: implement
 }

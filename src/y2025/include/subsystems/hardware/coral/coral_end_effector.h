@@ -26,6 +26,8 @@ class CoralEESubsystem
 public:
   CoralEESubsystem();
 
+  CoralEETarget ZeroTarget() const override { return {0.0}; }
+
   void Setup() override;
 
   bool VerifyHardware() override;

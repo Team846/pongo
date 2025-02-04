@@ -21,6 +21,10 @@ CoralWristSubsystem::CoralWristSubsystem()
           },
           1.0_tr / 2.0_tr) {}
 
+WristTarget CoralWristSubsystem::ZeroTarget() const {
+  return WristTarget{0_deg};
+}
+
 void CoralWristSubsystem::ExtendedSetup() {
   // TODO: implement
 }

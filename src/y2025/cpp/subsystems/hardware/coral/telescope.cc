@@ -22,6 +22,10 @@ TelescopeSubsystem::TelescopeSubsystem()
           },
           1.0_in / 2.0_tr) {}
 
+LinearSubsystemTarget TelescopeSubsystem::ZeroTarget() const {
+  return LinearSubsystemTarget{0_in};
+}
+
 void TelescopeSubsystem::ExtendedSetup() {
   // TODO: implement
 }

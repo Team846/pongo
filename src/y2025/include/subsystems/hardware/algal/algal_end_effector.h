@@ -26,6 +26,8 @@ class AlgalEESubsystem
 public:
   AlgalEESubsystem();
 
+  AlgalEETarget ZeroTarget() const override { return {0.0}; }
+
   void Setup() override;
 
   bool VerifyHardware() override;
