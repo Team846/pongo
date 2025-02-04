@@ -5,13 +5,14 @@ namespace frc846::robot::swerve {
 DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
     frc846::math::FieldPoint target, units::feet_per_second_t max_speed,
     units::feet_per_second_squared_t max_acceleration,
-    units::feet_per_second_squared_t max_deceleration)
+    units::feet_per_second_squared_t max_deceleration, bool end_when_close)
     : Loggable("DriveToPointCommand"),
       drivetrain_(drivetrain),
       max_speed_(max_speed),
       max_acceleration_(max_acceleration),
       max_deceleration_(max_deceleration),
-      target_(target) {
+      target_(target),
+      end_when_close_(end_when_close) {
   SetName("DriveToPointCommand");
   AddRequirements({drivetrain_});
 }
@@ -110,7 +111,10 @@ bool DriveToPointCommand::IsFinished() {
                      ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
                          "vel_stopped_thresh")) ||
          num_stalled_loops_ >
-             drivetrain_->GetPreferenceValue_int("stopped_num_loops");
+             drivetrain_->GetPreferenceValue_int("stopped_num_loops")
+
+         || (end_when_close_ &&
+                (target_.point - current_point).magnitude() < 1_ft);
 }
 
 }  // namespace frc846::robot::swerve

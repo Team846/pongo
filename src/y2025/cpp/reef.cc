@@ -16,10 +16,10 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations() {
               frc::DriverStation::GetAlliance() == frc::DriverStation::kBlue)
           .point;
   frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{6.5_in, 48.5_in};
+      frc846::math::Vector2D{6.5_in, 47.5_in};
 
   frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-6.5_in, 48.5_in};
+      frc846::math::Vector2D{-6.5_in, 47.5_in};
 
   for (int i = 0; i < 6; i++) {
     reefScoringLocations.push_back(frc846::math::FieldPoint{

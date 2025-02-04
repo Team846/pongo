@@ -3,9 +3,8 @@
 #include "reef.h"
 
 LockToReefCommand::LockToReefCommand(RobotContainer& container, bool is_left)
-    : frc846::robot::swerve::LockToPointCommand{&(container.drivetrain_),
-          ReefProvider::getReefScoringLocations()[is_left ? 0 : 1],
-          [&, &cnt = container, &ba = base_adj, &lft = is_left](
+    : frc846::robot::swerve::LockToPointCommand{&(container.drivetrain_), {},
+          [&, &cnt = container, lft = is_left, &ba = base_adj](
               frc846::math::FieldPoint ctarget, frc846::math::FieldPoint start,
               bool firstLoop) {
             auto pos = cnt.drivetrain_.GetReadings().estimated_pose.position;
@@ -29,8 +28,8 @@ LockToReefCommand::LockToReefCommand(RobotContainer& container, bool is_left)
                 ReefProvider::getReefScoringLocations()[2 * reef_target_pos +
                                                         (lft ? 0 : 1)];
 
-            target_pos.point +=
-                ba.rotate(cnt.drivetrain_.GetReadings().pose.bearing);
+            auto bearing = cnt.drivetrain_.GetReadings().pose.bearing;
+            target_pos.point += ba.rotate(bearing);
 
             return std::pair<frc846::math::FieldPoint, bool>{target_pos, true};
           }} {}

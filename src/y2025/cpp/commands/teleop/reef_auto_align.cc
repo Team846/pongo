@@ -12,4 +12,4 @@ ReefAutoAlignCommand::ReefAutoAlignCommand(RobotContainer& container,
           frc2::SequentialCommandGroup{
               DriveToReefCommand{&(container.drivetrain_), is_left, max_speed,
                   max_acceleration, max_deceleration},
-              LockToReefCommand{container, true}}} {}
+              LockToReefCommand{container, is_left}}} {}
