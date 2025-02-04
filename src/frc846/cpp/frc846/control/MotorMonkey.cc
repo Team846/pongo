@@ -87,7 +87,7 @@ void MotorMonkey::Setup() {
   loggable_.RegisterPreference("voltage_min", 8.0_V);
   loggable_.RegisterPreference("recal_voltage_thresh", 10.5_V);
   loggable_.RegisterPreference("default_max_draw", 150.0_A);
-  loggable_.RegisterPreference("min_max_draw", 60_A);
+  loggable_.RegisterPreference("min_max_draw", 100_A);
   loggable_.RegisterPreference("max_max_draw", 250_A);
   loggable_.RegisterPreference("battery_cc", 700_A);
   loggable_.RegisterPreference("brownout_perm_loops", 500);

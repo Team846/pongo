@@ -16,8 +16,8 @@ GPDSubsystem::GPDSubsystem(
   frc::SmartDashboard::PutData("GPDField", &g_field);
 #endif
 
-  RegisterPreference("intake_to_cam_y", -15_in);
-  RegisterPreference("intake_to_cam_x", -3_in);
+  RegisterPreference("intake_to_cam_y", -45_in);
+  RegisterPreference("intake_to_cam_x", -9_in);
   RegisterPreference("cam_h_angle", 0_deg);
 
   RegisterPreference("max_gp_diff", 10_in);

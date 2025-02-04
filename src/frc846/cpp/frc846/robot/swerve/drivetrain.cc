@@ -22,27 +22,27 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
-  RegisterPreference("bearing_gains/_kP", 0.5);
+  RegisterPreference("bearing_gains/_kP", 6.0);
   RegisterPreference("bearing_gains/_kI", 0.0);
-  RegisterPreference("bearing_gains/_kD", 0.0);
+  RegisterPreference("bearing_gains/_kD", -0.08);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP", 0.5);
+  RegisterPreference("lock_gains/_kP", -0.5);
   RegisterPreference("lock_gains/_kI", 0.0);
-  RegisterPreference("lock_gains/_kD", 0.0);
-  RegisterPreference("lock_gains/deadband", 2_in);
+  RegisterPreference("lock_gains/_kD", 0.02);
+  RegisterPreference("lock_gains/deadband", 0.75_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
-  RegisterPreference("lock_max_speed", 7_fps);
+  RegisterPreference("lock_max_speed", 10_fps);
 
-  RegisterPreference("drive_to_subtract", 5_in);
+  RegisterPreference("drive_to_subtract", 2_in);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
-  RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
+  RegisterPreference("max_omega_cut", units::degrees_per_second_t{55});
 
-  RegisterPreference("odom_fudge_factor", 0.875);
+  RegisterPreference("odom_fudge_factor", 0.82);
 
-  RegisterPreference("steer_lag", 0.05_s);
+  RegisterPreference("steer_lag", 0.16_s);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
