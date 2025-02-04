@@ -9,7 +9,8 @@ IntakeCoralCommand::IntakeCoralCommand(RobotContainer &container)
 void IntakeCoralCommand::OnInit() {}
 
 void IntakeCoralCommand::Periodic() {
-  container_.coral_end_effector.SetTarget({CoralEndEffectorState::kCoralIntake});
+  container_.coral_end_effector.SetTarget(
+      {CoralEndEffectorState::kCoralIntake});
 }
 
 void IntakeCoralCommand::OnEnd(bool interrupted) {}
