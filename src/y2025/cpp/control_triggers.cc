@@ -26,9 +26,10 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().test_move_10_ft;
   }};
 
-  test_move_10_ft_trigger.WhileTrue(frc2::InstantCommand{[&]() {
-    container.drivetrain_.SetPosition({3_ft, 4_ft});
-  }}
+  test_move_10_ft_trigger.WhileTrue(
+      frc2::InstantCommand{[&]() {
+        container.drivetrain_.SetPosition({3_ft, 4_ft});
+      }}
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
                   {{0_ft, 7_ft}, -30_deg, 0_fps}, 12_fps, 15_fps_sq, 15_fps_sq}
@@ -37,24 +38,24 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{2_ft, 8_ft}, -100_deg, 15_fps}, 15_fps,
               15_fps_sq, 15_fps_sq}
-                  .ToPtr())
+                       .ToPtr())
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{6_ft, 16_ft}, -126_deg, 0_fps}, 12_fps,
               15_fps_sq, 15_fps_sq}
-                  .ToPtr())
+                       .ToPtr())
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{1_ft, 12_ft}, -120_deg, 0_fps}, 12_fps,
               15_fps_sq, 15_fps_sq}
-                  .ToPtr())
+                       .ToPtr())
           .AndThen(frc2::WaitCommand{1_s}.ToPtr())
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{6_ft, 16_ft}, -126_deg, 0_fps}, 12_fps,
               15_fps_sq, 15_fps_sq}
-                  .ToPtr())
+                       .ToPtr())
           .AndThen(frc846::robot::swerve::DriveToPointCommand{
               &container.drivetrain_, {{1.5_ft, 11.5_ft}, -120_deg, 0_fps},
               12_fps, 15_fps_sq, 15_fps_sq}
-                  .ToPtr()));
+                       .ToPtr()));
   // .AndThen(
   //     frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
   //         {{3_ft, 13_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
@@ -88,12 +89,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, true, 5_fps, 15_fps_sq, 15_fps_sq}
-          .ToPtr());
+                   .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{
       container, false, 5_fps, 15_fps_sq, 15_fps_sq}
-          .ToPtr());
+                   .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&

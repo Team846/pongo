@@ -98,6 +98,9 @@ void DriveCommand::Periodic() {
 
   target.angular_velocity = rotation * max_omega;
 
+  if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue)
+    target.velocity = target.velocity.rotate(180_deg);
+
   container_.drivetrain_.SetTarget({target});
 }
 

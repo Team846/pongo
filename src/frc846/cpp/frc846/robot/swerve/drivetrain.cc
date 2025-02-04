@@ -114,6 +114,15 @@ void DrivetrainSubsystem::ZeroBearing() {
 
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
+
+  if (!frc::DriverStation::IsAutonomous()) {
+    if (frc::DriverStation::GetAlliance() ==
+        frc::DriverStation::Alliance::kBlue)
+      bearing_offset_ = 180_deg;
+    else
+      bearing_offset_ = 0_deg;
+  }
+
   for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
     Log("Gyro zero attempt {}/{}", attempts, kMaxAttempts);
     if (navX_.IsConnected() && !navX_.IsCalibrating()) {
@@ -130,10 +139,19 @@ void DrivetrainSubsystem::ZeroBearing() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(kSleepTimeMs));
   }
-  Error("Unable to zero after {} attempts", kMaxAttempts);
+  Error("Unable to zero after {} attempts, forcing zero", kMaxAttempts);
+
+  navX_.ZeroYaw();
+  for (SwerveModuleSubsystem* module : modules_) {
+    module->ZeroWithCANcoder();
+  }
 
   pose_estimator.SetPoint(
       {GetReadings().april_point[0], GetReadings().april_point[1]});
+}
+
+void DrivetrainSubsystem::SetBearing(units::degree_t bearing) {
+  bearing_offset_ = bearing - (GetReadings().pose.bearing - bearing_offset_);
 }
 
 void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
@@ -190,11 +208,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       GetPreferenceValue_double("pose_estimator/accel_variance"));
 
   units::degree_t bearing = navX_.GetAngle() * 1_deg;
+  bearing += bearing_offset_;
+
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
       navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
       navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
+  accl.rotate(bearing_offset_);
+
   Graph("navX/acclX", accl[0]);
   Graph("navX/acclY", accl[1]);
   pose_estimator.AddAccelerationMeasurement(accl);
@@ -226,9 +248,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };

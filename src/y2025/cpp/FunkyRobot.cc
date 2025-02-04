@@ -10,6 +10,7 @@
 #include <frc2/command/button/Trigger.h>
 #include <hal/Notifier.h>
 
+#include "autos/auton_seqs.h"
 #include "calculators/AntiTippingCalculator.h"
 #include "commands/teleop/drive_command.h"
 #include "commands/teleop/leds_command.h"
@@ -32,6 +33,10 @@ void FunkyRobot::OnInitialize() {
   //   AddAuto(x.name + "_blue", new GenericAuto{container_, x, true});
   // }
 
+  ADD_AUTO_VARIANTS(ThreePieceAuto, "3PC");
+  ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
+  ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
+
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",
       new frc846::wpilib::NTAction(
@@ -40,10 +45,9 @@ void FunkyRobot::OnInitialize() {
       "zero_bearing", new frc846::wpilib::NTAction(
                           [this] { container_.drivetrain_.ZeroBearing(); }));
 
-  // frc::SmartDashboard::PutData(
-  //     "zero_odometry", new frc846::ntinf::NTAction(
-  //                          [this] { container_.drivetrain_.ZeroOdometry();
-  //                          }));
+  frc::SmartDashboard::PutData("zero_odometry",
+      new frc846::wpilib::NTAction(
+          [this] { container_.drivetrain_.SetPosition({0_in, 0_in}); }));
 }
 
 void FunkyRobot::OnDisable() {
