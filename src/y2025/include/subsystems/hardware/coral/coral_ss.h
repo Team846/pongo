@@ -22,6 +22,7 @@ struct CoralSSReadings {};
 
 struct CoralSSTarget {
   CoralStates state;
+  bool score;
 };
 
 class CoralSuperstructure

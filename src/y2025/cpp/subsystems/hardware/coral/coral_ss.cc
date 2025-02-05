@@ -23,6 +23,8 @@ CoralSuperstructure::CoralSuperstructure()
   REGISTER_SETPOINT("score_l2", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("score_l3", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
+
+  RegisterPreference("score_dc", -0.5);
 }
 
 void CoralSuperstructure::Setup() {
@@ -64,7 +66,11 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
 
   telescope.SetTarget({setpoint.height});
   coral_wrist.SetTarget({setpoint.angle});
-  coral_end_effector.SetTarget({setpoint.ee_dc});
+
+  if (target.score)
+    coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
+  else
+    coral_end_effector.SetTarget({setpoint.ee_dc});
 
   telescope.UpdateHardware();
   coral_wrist.UpdateHardware();
