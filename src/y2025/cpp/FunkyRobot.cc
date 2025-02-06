@@ -11,6 +11,8 @@
 #include <hal/Notifier.h>
 
 #include "calculators/AntiTippingCalculator.h"
+#include "commands/teleop/algal_command.h"
+#include "commands/teleop/coral_command.h"
 #include "commands/teleop/drive_command.h"
 #include "commands/teleop/leds_command.h"
 #include "control_triggers.h"
@@ -52,15 +54,21 @@ void FunkyRobot::OnDisable() {
 
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
+  container_.leds_.SetDefaultCommand(
+      LEDsCommand{container_});  // TODO: fix leds
+
+  container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
+  container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
 void FunkyRobot::OnPeriodic() {
-  // TODO: plug real heights into AntiTippingCalculator
-  AntiTippingCalculator::SetTelescopeHeight(36_in);
-  AntiTippingCalculator::SetElevatorHeight(45_in);
+  // TODO: fix AntiTippingCalculator cg calc from heights
+  AntiTippingCalculator::SetTelescopeHeight(
+      container_.coral_ss_.telescope.GetReadings().position);
+  AntiTippingCalculator::SetElevatorHeight(
+      container_.algal_ss_.elevator.GetReadings().position);
 
   auto cg = AntiTippingCalculator::CalculateRobotCG();
   Graph("robot_cg_x", cg[0]);

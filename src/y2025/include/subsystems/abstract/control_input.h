@@ -20,10 +20,25 @@ struct ControlInputReadings {
   // Driving
   double rotation;
 
-  // Reef alignment
+  // Alignment
   bool lock_left_reef;
   bool lock_right_reef;
+  bool auto_align;
 
+  // Superstructure
+  bool position_coral;
+  bool position_algal;
+  AlgalStates algal_state;
+  CoralStates coral_state;
+
+  // Scoring
+  bool score_coral;
+  bool score_algae;
+
+  // Climb: 1: Preclimb, 2: Climb, 3: Reset
+  int climb_state;
+
+  // Resets
   bool zero_bearing;
 };
 
