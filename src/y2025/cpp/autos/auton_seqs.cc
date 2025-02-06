@@ -28,16 +28,16 @@ using FPT = frc846::math::FieldPoint;
       (is_left_side ? "L" : "R")
 
 #define MKPT(x, y, bearing, velocity) \
-  FPT{{x, y}, bearing, velocity}.mirror(is_blue_side).mirrorOnlyX(is_left_side)
+  FPT{{x, y}, bearing, velocity}.mirror(is_blue_side).mirrorOnlyX(!is_left_side)
 
-#define START(x, y, start_bearing)                              \
-  INSTANT {                                                     \
-    [&, blue = is_blue_side, left = is_left_side]() {           \
-      FPT start_point{{x, y}, start_bearing, 0_fps};            \
-      start_point = start_point.mirror(blue).mirrorOnlyX(left); \
-      container.drivetrain_.SetPosition(start_point.point);     \
-      container.drivetrain_.SetBearing(start_point.bearing);    \
-    }                                                           \
+#define START(x, y, start_bearing)                               \
+  INSTANT {                                                      \
+    [&, blue = is_blue_side, left = is_left_side]() {            \
+      FPT start_point{{x, y}, start_bearing, 0_fps};             \
+      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.SetPosition(start_point.point);      \
+      container.drivetrain_.SetBearing(start_point.bearing);     \
+    }                                                            \
   }
 
 #define DRIVE(auto_name, x, y, bearing, final_velocity)                   \
