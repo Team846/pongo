@@ -14,17 +14,15 @@
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/coral_command.h"
 #include "commands/teleop/drive_command.h"
-#include "commands/teleop/leds_command.h"
 #include "control_triggers.h"
 #include "field.h"
 #include "frc846/wpilib/NTAction.h"
 #include "rsighandler.h"
+#include "subsystems/hardware/leds_logic.h"
 
 FunkyRobot::FunkyRobot() : GenericRobot{&container_} {}
 
 void FunkyRobot::OnInitialize() {
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
-
   Field::Setup();
 
   // for (auto x : Field::getAllAutoData()) {
@@ -48,14 +46,10 @@ void FunkyRobot::OnInitialize() {
   //                          }));
 }
 
-void FunkyRobot::OnDisable() {
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
-}
+void FunkyRobot::OnDisable() {}
 
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  container_.leds_.SetDefaultCommand(
-      LEDsCommand{container_});  // TODO: fix leds
 
   container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
   container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
@@ -64,6 +58,8 @@ void FunkyRobot::InitTeleop() {
 }
 
 void FunkyRobot::OnPeriodic() {
+  LEDsLogic::UpdateLEDs(&container_);
+
   // TODO: fix AntiTippingCalculator cg calc from heights
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);

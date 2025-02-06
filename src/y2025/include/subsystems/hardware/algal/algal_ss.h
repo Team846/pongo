@@ -44,7 +44,11 @@ public:
 
   AlgalSetpoint getSetpoint(AlgalStates state);
 
+  bool isHomed() { return is_homed; }
+
 protected:
+  bool is_homed = false;
+
   AlgalSSReadings ReadFromHardware() override;
 
   void WriteToHardware(AlgalSSTarget target) override;
