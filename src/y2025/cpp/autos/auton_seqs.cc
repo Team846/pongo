@@ -4,6 +4,7 @@
 
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
+#include "reef.h"
 
 using INSTANT = frc2::InstantCommand;
 using SEQUENCE = frc2::SequentialCommandGroup;
@@ -22,6 +23,8 @@ using FPT = frc846::math::FieldPoint;
 #define MAX_ACCEL_LEAVE 10_fps_sq
 #define MAX_DECEL_LEAVE 10_fps_sq
 #define MAX_VEL_LEAVE 10_fps
+
+#define START_Y (311.5_in - 15_in)
 
 #define AUTO_NAME(default_name)                                \
   std::string(default_name) + (is_blue_side ? "_B_" : "_R_") + \
@@ -46,6 +49,20 @@ using FPT = frc846::math::FieldPoint;
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
 
+#define DRIVE_TO_SOURCE(auto_name)                                        \
+  frc846::robot::swerve::DriveToPointCommand {                            \
+    &(container.drivetrain_), MKPT(20_in, 75_in, -36_deg, 0_fps),         \
+        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
+  }
+
+#define DRIVE_TO_REEF(auto_name, number_on_right)                             \
+  frc846::robot::swerve::DriveToPointCommand {                                \
+    &(container.drivetrain_),                                                 \
+        ReefProvider::getReefScoringLocations()[number_on_right].mirrorOnlyX( \
+            is_left_side),                                                    \
+        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name     \
+  }
+
 #define AIM(bearing)                                                     \
   frc846::robot::swerve::AimCommand {                                    \
     &(container.drivetrain_), bearing + (is_blue_side ? 180_deg : 0_deg) \
@@ -56,16 +73,16 @@ ThreePieceAuto::ThreePieceAuto(
     : frc846::robot::GenericCommandGroup<RobotContainer, ThreePieceAuto,
           SEQUENCE>{container, AUTO_NAME("3PC"),
           SEQUENCE{
-              START(3_ft, 4_ft, 0_deg),
+              START(158.5_in - 75_in, START_Y, 180_deg),
               WAIT{0.25_s},
-              DRIVE(3PC, 0_ft, 7_ft, -30_deg, 0_fps),
+              DRIVE_TO_REEF(3PC, 3),
               WAIT{1_s},
-              DRIVE(3PC, 2_ft, 8_ft, -100_deg, 15_fps),
-              DRIVE(3PC, 6_ft, 16_ft, -126_deg, 0_fps),
-              DRIVE(3PC, 1_ft, 12_ft, -120_deg, 0_fps),
+              DRIVE(3PC, 100_in, 200_in, 40_deg, 15_fps),
+              DRIVE_TO_SOURCE(3PC),
+              DRIVE_TO_REEF(3PC, 4),
               WAIT{1_s},
-              DRIVE(3PC, 6_ft, 16_ft, -126_deg, 0_fps),
-              DRIVE(3PC, 1.5_ft, 11.5_ft, -120_deg, 0_fps),
+              DRIVE_TO_SOURCE(3PC),
+              DRIVE_TO_REEF(3PC, 5),
           }} {}
 
 OnePieceAndNetAuto::OnePieceAndNetAuto(
@@ -73,12 +90,12 @@ OnePieceAndNetAuto::OnePieceAndNetAuto(
     : frc846::robot::GenericCommandGroup<RobotContainer, OnePieceAndNetAuto,
           SEQUENCE>{container, AUTO_NAME("1PCN"),
           SEQUENCE{
-              START(0_ft, 4_ft, 0_deg),
+              START(158.5_in, START_Y, 180_deg),
               WAIT{0.25_s},
-              DRIVE(1PC, 0_ft, 7_ft, 0_deg, 0_fps),
+              DRIVE_TO_REEF(1PC, 1),
               WAIT{1_s},
-              DRIVE(1PC, 4_ft, 4_ft, 180_deg, 0_fps),
-              DRIVE(1PC, 4_ft, 3_ft, 180_deg, 0_fps),
+              DRIVE(1PC, 158.5_in - 75_in, START_Y - 30_in, 180_deg, 0_fps),
+              DRIVE(1PC, 158.5_in - 75_in, START_Y, 180_deg, 0_fps),
           }} {}
 
 LeaveAuto::LeaveAuto(
@@ -86,7 +103,7 @@ LeaveAuto::LeaveAuto(
     : frc846::robot::GenericCommandGroup<RobotContainer, LeaveAuto, SEQUENCE>{
           container, AUTO_NAME("LEAVE"),
           SEQUENCE{
-              START(3_ft, 4_ft, 0_deg),
+              START(158.5_in, START_Y, 180_deg),
               WAIT{0.25_s},
-              DRIVE(LEAVE, 3_ft, 7_ft, 0_deg, 0_fps),
+              DRIVE(LEAVE, 158.5_in, START_Y - 3_ft, 180_deg, 0_fps),
           }} {}
