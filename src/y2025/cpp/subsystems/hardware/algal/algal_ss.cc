@@ -80,5 +80,3 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   algal_wrist.UpdateHardware();
   algal_end_effector.UpdateHardware();
 }
-
-// TODO: add to robot container

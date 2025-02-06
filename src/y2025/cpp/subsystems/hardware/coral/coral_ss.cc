@@ -76,5 +76,3 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   coral_wrist.UpdateHardware();
   coral_end_effector.UpdateHardware();
 }
-
-// TODO: add to robot container

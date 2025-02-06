@@ -30,6 +30,8 @@ class CoralSuperstructure
 public:
   CoralSuperstructure();
 
+  CoralSSTarget ZeroTarget() const override { return {}; };
+
   void Setup() override;
 
   bool VerifyHardware() override;

@@ -16,10 +16,15 @@ ClimberSubsystem::ClimberSubsystem()
                   30_A,  // TODO: prefify current limits (only)
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::climber_::wire_resistance,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
+          1.0_tr / 2.0_tr) {
+  RegisterPreference("pre_climb_setpoint", 270_deg);
+  RegisterPreference("climb_setpoint", 100_deg);
+}
 
-          },
-          1.0_tr / 2.0_tr) {}
+WristTarget ClimberSubsystem::ZeroTarget() const {
+  return WristTarget{0.0_deg};
+}
 
 void ClimberSubsystem::ExtendedSetup() {
   // TODO: implement

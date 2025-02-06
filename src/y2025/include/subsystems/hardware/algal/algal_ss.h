@@ -32,6 +32,8 @@ class AlgalSuperstructure
 public:
   AlgalSuperstructure();
 
+  AlgalSSTarget ZeroTarget() const override { return {}; };
+
   void Setup() override;
 
   bool VerifyHardware() override;

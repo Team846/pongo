@@ -2,25 +2,25 @@
 
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/xbox.h"
+#include "subsystems/hardware/algal/algal_ss.h"
+#include "subsystems/hardware/coral/coral_ss.h"
 
 struct ControlInputReadings {
+  // Driving
   double translate_x;
   double translate_y;
 
+  // Reef adjustment
   bool rc_p_y;
   bool rc_p_x;
   bool rc_n_y;
   bool rc_n_x;
   bool rc_control;
 
+  // Driving
   double rotation;
 
-  bool intake_algae;
-
-  bool intake_coral;
-
-  bool test_move_10_ft;  // TODO: remove when not needed
-  bool test_bearing_pid;
+  // Reef alignment
   bool lock_left_reef;
   bool lock_right_reef;
 
