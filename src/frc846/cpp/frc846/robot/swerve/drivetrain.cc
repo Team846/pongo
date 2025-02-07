@@ -45,6 +45,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
+  RegisterPreference("bearing_latency", 0.01_s);
 
   RegisterPreference("pose_estimator/pose_variance", 0.01);
   RegisterPreference("pose_estimator/velocity_variance", 1.0);
@@ -248,9 +249,12 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };

@@ -44,6 +44,10 @@ struct FieldPoint {
     return FieldPoint{{point[0], point[1]}, bearing, velocity};
   }
 
+  FieldPoint flipDirection() const {
+    return FieldPoint{{point[0], point[1]}, bearing + 180_deg, velocity};
+  }
+
   static constexpr units::inch_t field_size_y = 690.875_in;
   static constexpr units::inch_t field_size_x = 317_in;
 };

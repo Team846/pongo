@@ -12,8 +12,8 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
-#define MAX_ACCEL_3PC 15_fps_sq
-#define MAX_DECEL_3PC 15_fps_sq
+#define MAX_ACCEL_3PC 20_fps_sq
+#define MAX_DECEL_3PC 20_fps_sq
 #define MAX_VEL_3PC 12_fps
 
 #define MAX_ACCEL_1PC 7_fps_sq
@@ -51,16 +51,18 @@ using FPT = frc846::math::FieldPoint;
 
 #define DRIVE_TO_SOURCE(auto_name)                                        \
   frc846::robot::swerve::DriveToPointCommand {                            \
-    &(container.drivetrain_), MKPT(20_in, 75_in, -36_deg, 0_fps),         \
+    &(container.drivetrain_), MKPT(50_in, 68.5_in, 36_deg, 0_fps),        \
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
 
-#define DRIVE_TO_REEF(auto_name, number_on_right)                             \
-  frc846::robot::swerve::DriveToPointCommand {                                \
-    &(container.drivetrain_),                                                 \
-        ReefProvider::getReefScoringLocations()[number_on_right].mirrorOnlyX( \
-            is_left_side),                                                    \
-        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name     \
+#define DRIVE_TO_REEF(auto_name, number_on_right)                         \
+  frc846::robot::swerve::DriveToPointCommand {                            \
+    &(container.drivetrain_),                                             \
+        ReefProvider::getReefScoringLocations(false)[number_on_right]     \
+            .mirror(is_blue_side)                                         \
+            .mirrorOnlyX(is_left_side)                                    \
+            .flipDirection(),                                             \
+        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
 
 #define AIM(bearing)                                                     \
@@ -73,11 +75,11 @@ ThreePieceAuto::ThreePieceAuto(
     : frc846::robot::GenericCommandGroup<RobotContainer, ThreePieceAuto,
           SEQUENCE>{container, AUTO_NAME("3PC"),
           SEQUENCE{
-              START(158.5_in - 75_in, START_Y, 180_deg),
+              START(158.5_in - 73.25_in, START_Y, 180_deg),
               WAIT{0.25_s},
               DRIVE_TO_REEF(3PC, 3),
               WAIT{1_s},
-              DRIVE(3PC, 100_in, 200_in, 40_deg, 15_fps),
+              DRIVE(3PC, 75_in, 180_in, 40_deg, 10_fps),
               DRIVE_TO_SOURCE(3PC),
               DRIVE_TO_REEF(3PC, 4),
               WAIT{1_s},
@@ -94,8 +96,8 @@ OnePieceAndNetAuto::OnePieceAndNetAuto(
               WAIT{0.25_s},
               DRIVE_TO_REEF(1PC, 1),
               WAIT{1_s},
-              DRIVE(1PC, 158.5_in - 75_in, START_Y - 30_in, 180_deg, 0_fps),
-              DRIVE(1PC, 158.5_in - 75_in, START_Y, 180_deg, 0_fps),
+              DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
+              DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps),
           }} {}
 
 LeaveAuto::LeaveAuto(
