@@ -70,6 +70,8 @@ private:
   frc::XboxController driver_{0};
   frc::XboxController operator_{1};
 
+  int climb_state_ = 0;
+
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;

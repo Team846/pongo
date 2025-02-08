@@ -12,6 +12,7 @@
 
 #include "calculators/AntiTippingCalculator.h"
 #include "commands/teleop/algal_command.h"
+#include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
 #include "commands/teleop/drive_command.h"
 #include "control_triggers.h"
@@ -53,6 +54,7 @@ void FunkyRobot::InitTeleop() {
 
   container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
   container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
+  container_.climber_.SetDefaultCommand(ClimberCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }

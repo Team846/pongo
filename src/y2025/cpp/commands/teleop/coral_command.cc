@@ -3,7 +3,7 @@
 CoralCommand::CoralCommand(RobotContainer &container)
     : frc846::robot::GenericCommand<RobotContainer, CoralCommand>{
           container, "coral_command"} {
-  AddRequirements({&container_.algal_ss_});
+  AddRequirements({&container_.coral_ss_});
 }
 
 void CoralCommand::OnInit() {}

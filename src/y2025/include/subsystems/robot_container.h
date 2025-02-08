@@ -40,10 +40,10 @@ public:
     RegisterSubsystemGroupA({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
-    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    // RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
 
-    RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-    RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+    // RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
+    // RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
     RegisterSubsystemGroupB({{&climber_, climber_init}});
   }

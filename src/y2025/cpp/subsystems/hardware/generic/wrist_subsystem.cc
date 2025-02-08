@@ -9,12 +9,9 @@ WristSubsystem::WristSubsystem(std::string name,
     : frc846::robot::GenericSubsystem<WristReadings, WristTarget>(name),
       wrist_esc_(mmtype, motor_configs_) {
   REGISTER_PIDF_CONFIG("gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("limits", true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
+  REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
   wrist_esc_helper_.SetConversion(conversion);
-  wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS("limits", units::degree_t));
-  wrist_esc_helper_.SetControllerSoftLimits(
-      GET_SOFTLIMITS("limits", units::degree_t));
 
   RegisterPreference("cg_offset", 0.0_deg);
   RegisterPreference("flip_position_load_sign", false);
@@ -29,6 +26,9 @@ void WristSubsystem::Setup() {
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
+
+  // wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
+  // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }

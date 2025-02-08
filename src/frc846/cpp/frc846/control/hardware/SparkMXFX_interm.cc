@@ -44,12 +44,14 @@ void SparkMXFX_interm::Tick() {
         *dc, rev::spark::SparkBase::ControlType::kDutyCycle);
   } else if (units::radians_per_second_t* vel =
                  std::get_if<units::radians_per_second_t>(&last_command_)) {
+    units::revolutions_per_minute_t rev_ms_t = *vel;
     last_status_code = pid_controller_->SetReference(
-        vel->to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
+        rev_ms_t.to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
   } else if (units::radian_t* pos =
                  std::get_if<units::radian_t>(&last_command_)) {
+    units::turn_t pos_ms_t = *pos;
     last_status_code = pid_controller_->SetReference(
-        pos->to<double>(), rev::spark::SparkBase::ControlType::kPosition);
+        pos_ms_t.to<double>(), rev::spark::SparkBase::ControlType::kPosition);
   }
   set_last_error(last_status_code);
 }
@@ -93,7 +95,8 @@ void SparkMXFX_interm::SetVoltageCompensation(
 
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
-  configs.closedLoop.Pidf(gains_.kP, gains_.kI, gains_.kD, gains_.kFF);
+  configs.closedLoop.Pidf(
+      gains_.kP, gains_.kI, std::abs(gains_.kD), gains_.kFF);
 
   APPLY_CONFIG_NO_RESET();
 }
@@ -186,14 +189,16 @@ bool SparkMXFX_interm::IsDuplicateControlMessage(units::radian_t position) {
 }
 
 void SparkMXFX_interm::ZeroEncoder(units::radian_t position) {
-  set_last_error(encoder_->SetPosition(position.to<double>()));
+  units::turn_t npos = position;
+  set_last_error(encoder_->SetPosition(npos.to<double>()));
 }
 
 units::radians_per_second_t SparkMXFX_interm::GetVelocity() {
-  return units::make_unit<units::radians_per_second_t>(encoder_->GetVelocity());
+  return units::make_unit<units::revolutions_per_minute_t>(
+      encoder_->GetVelocity());
 }
 units::radian_t SparkMXFX_interm::GetPosition() {
-  return units::make_unit<units::radian_t>(encoder_->GetPosition());
+  return units::make_unit<units::turn_t>(encoder_->GetPosition());
 }
 units::ampere_t SparkMXFX_interm::GetCurrent() {
   return units::make_unit<units::ampere_t>(esc_->GetOutputCurrent());

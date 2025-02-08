@@ -44,19 +44,19 @@ inline std::string MakeKey(std::string base, std::string suffix) {
       GetPreferenceValue_double(MakeKey(name, "_kD")), \
       GetPreferenceValue_double(MakeKey(name, "_kF"))}
 
-#define REGISTER_SOFTLIMIT_CONFIG(                                             \
-    name, use_limits, upper, lower, reduce_upper, reduce_lower, reduce_max_dc) \
-  RegisterPreference(MakeKey(name, "use_limits"), use_limits);                 \
-  RegisterPreference(MakeKey(name, "upper_limit"), use_limits);                \
-  RegisterPreference(MakeKey(name, "lower_limit"), reduce_max_dc);             \
-  RegisterPreference(MakeKey(name, "reduce_upper"), upper);                    \
-  RegisterPreference(MakeKey(name, "reduce_lower"), lower);                    \
-  RegisterPreference(MakeKey(name, "reduce_max_dc"), reduce_max_dc)
+#define REGISTER_SOFTLIMIT_CONFIG(                                       \
+    use_limits, upper, lower, reduce_upper, reduce_lower, reduce_max_dc) \
+  RegisterPreference("limits/use_limits", use_limits);                   \
+  RegisterPreference("limits/upper_limit", upper);                       \
+  RegisterPreference("limits/lower_limit", lower);                       \
+  RegisterPreference("limits/reduce_upper", reduce_upper);               \
+  RegisterPreference("limits/reduce_lower", reduce_lower);               \
+  RegisterPreference("limits/reduce_max_dc", reduce_max_dc)
 
-#define GET_SOFTLIMITS(name, typename)                                       \
-  {GetPreferenceValue_bool(MakeKey(name, "use_limits")),                     \
-      GetPreferenceValue_unit_type<typename>(MakeKey(name, "upper_limit")),  \
-      GetPreferenceValue_unit_type<typename>(MakeKey(name, "lower_limit")),  \
-      GetPreferenceValue_unit_type<typename>(MakeKey(name, "reduce_upper")), \
-      GetPreferenceValue_unit_type<typename>(MakeKey(name, "reduce_lower")), \
-      GetPreferenceValue_double(MakeKey(name, "reduce_max_dc"))}
+#define GET_SOFTLIMITS(typename)                                     \
+  {GetPreferenceValue_bool("limits/use_limits"),                     \
+      GetPreferenceValue_unit_type<typename>("limits/upper_limit"),  \
+      GetPreferenceValue_unit_type<typename>("limits/lower_limit"),  \
+      GetPreferenceValue_unit_type<typename>("limits/reduce_upper"), \
+      GetPreferenceValue_unit_type<typename>("limits/reduce_lower"), \
+      GetPreferenceValue_double("limits/reduce_max_dc")}

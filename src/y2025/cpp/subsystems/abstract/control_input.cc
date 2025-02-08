@@ -109,10 +109,13 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   if (op_readings.left_bumper) ci_readings_.score_coral = true;
   if (dr_readings.right_trigger) ci_readings_.score_algae = true;
 
-  if (op_readings.left_trigger) {
-    ci_readings_.climb_state += 1;
-    if (ci_readings_.climb_state == 3) ci_readings_.climb_state = 1;
+  if (op_readings.left_trigger && !previous_operator_.left_trigger) {
+    climb_state_ += 1;
+    if (climb_state_ == 3) climb_state_ = 0;
   }
+  ci_readings_.climb_state = climb_state_;
+
+  Graph("climb_state", climb_state_);
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;

@@ -10,12 +10,9 @@ LinearSubsystem::LinearSubsystem(std::string name,
           LinearSubsystemTarget>(name),
       linear_esc_(mmtype, motor_configs_) {
   REGISTER_PIDF_CONFIG("gains", 0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG("limits", true, 30_in, 0_in, 30_in, 0_in, 0.3);
+  // REGISTER_SOFTLIMIT_CONFIG("limits", true, 30_in, 0_in, 30_in, 0_in, 0.3);
 
   linear_esc_helper_.SetConversion(conversion);
-  linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS("limits", units::inch_t));
-  linear_esc_helper_.SetControllerSoftLimits(
-      GET_SOFTLIMITS("limits", units::inch_t));
 
   linear_esc_helper_.bind(&linear_esc_);
 }
@@ -27,6 +24,10 @@ void LinearSubsystem::Setup() {
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
+
+  // linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS("limits", units::inch_t));
+  // linear_esc_helper_.SetControllerSoftLimits(
+  //     GET_SOFTLIMITS("limits", units::inch_t));
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { linear_esc_helper_.SetPosition(sensor_pos); }

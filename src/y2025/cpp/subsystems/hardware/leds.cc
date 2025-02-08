@@ -16,12 +16,15 @@ bool LEDsSubsystem::VerifyHardware() { return true; }
 LEDsReadings LEDsSubsystem::ReadFromHardware() { return {}; }
 
 void LEDsSubsystem::SetRainbow() {
+  int kRange = 70;
+  int kStart = 45;
   for (int i = 0; i < kLength; i++) {
-    const auto pixelHue = (first_pixel_hue_ + (i * 180 / kLength)) % 180;
-    leds_buffer_[i].SetHSV(pixelHue, 255, 200);
+    const auto pixelHue =
+        ((first_pixel_hue_ + (i * kRange / kLength)) % kRange + kStart) % 180;
+    leds_buffer_[i].SetHSV(pixelHue, 255, 255);
   }
-  first_pixel_hue_ += 3;
-  first_pixel_hue_ %= 180;
+  first_pixel_hue_ += 2;
+  first_pixel_hue_ %= kRange;
 }
 
 void LEDsSubsystem::SetStrip(int R, int G, int B) {
