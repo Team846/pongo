@@ -65,8 +65,7 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
   if (forward_limit && !is_homed_) {
     is_homed_ = true;
-    linear_esc_helper_.SetPosition(
-        hall_effect_loc_);
+    linear_esc_helper_.SetPosition(hall_effect_loc_);
     linear_esc_helper_.SetPosition(hall_effect_loc_);
   }
 
