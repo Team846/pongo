@@ -20,7 +20,7 @@ TelescopeSubsystem::TelescopeSubsystem()
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}
 
           },
-          1.0_in / 2.0_tr) {}
+          1.0_in / 2.0_tr, robot_constants::telescope::telescope_hall_effect) {}
 
 LinearSubsystemTarget TelescopeSubsystem::ZeroTarget() const {
   return LinearSubsystemTarget{0_in};

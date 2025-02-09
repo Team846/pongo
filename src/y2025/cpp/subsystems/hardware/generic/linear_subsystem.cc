@@ -5,10 +5,11 @@
 LinearSubsystem::LinearSubsystem(std::string name,
     frc846::control::base::MotorMonkeyType mmtype,
     frc846::control::config::MotorConstructionParameters motor_configs_,
-    linear_pos_conv_t conversion)
+    linear_pos_conv_t conversion, units::inch_t hall_effect_loc_)
     : frc846::robot::GenericSubsystem<LinearSubsystemReadings,
           LinearSubsystemTarget>(name),
-      linear_esc_(mmtype, motor_configs_) {
+      linear_esc_(mmtype, motor_configs_),
+      hall_effect_loc_(hall_effect_loc_) {
   REGISTER_PIDF_CONFIG("gains", 0.0, 0.0, 0.0, 0.0);
   // REGISTER_SOFTLIMIT_CONFIG("limits", true, 30_in, 0_in, 30_in, 0_in, 0.3);
 
@@ -62,6 +63,13 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
   Graph("readings/homing_sensor", forward_limit);
 
+  if (forward_limit && !is_homed_) {
+    is_homed_ = true;
+    linear_esc_helper_.SetPosition(
+        hall_effect_loc_);
+    linear_esc_helper_.SetPosition(hall_effect_loc_);
+  }
+
   return readings;
 }
 
@@ -69,5 +77,9 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   Graph("target/position", target.position);
 
   linear_esc_.SetGains(GET_PIDF_GAINS("gains"));
-  linear_esc_helper_.WritePosition(target.position);
+  if (!is_homed_) {
+    linear_esc_helper_.WriteDC(0.1);
+  } else {
+    linear_esc_helper_.WritePosition(target.position);
+  }
 }
