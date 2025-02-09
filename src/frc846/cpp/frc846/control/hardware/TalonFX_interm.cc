@@ -185,9 +185,9 @@ void TalonFX_interm::ConfigForwardLimitSwitch(
   ctre::phoenix6::configs::HardwareLimitSwitchConfigs configs{};
   ctre::phoenix6::signals::ForwardLimitTypeValue d_type;
   if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOff) {
-    d_type = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
-  } else {
     d_type = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyClosed;
+  } else {
+    d_type = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
   }
   configs.WithForwardLimitEnable(false).WithForwardLimitType(d_type);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
@@ -198,9 +198,9 @@ void TalonFX_interm::ConfigReverseLimitSwitch(
   ctre::phoenix6::configs::HardwareLimitSwitchConfigs configs{};
   ctre::phoenix6::signals::ReverseLimitTypeValue d_type;
   if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOff) {
-    d_type = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
-  } else {
     d_type = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyClosed;
+  } else {
+    d_type = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
   }
   configs.WithReverseLimitEnable(false).WithReverseLimitType(d_type);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));

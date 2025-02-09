@@ -33,7 +33,7 @@ struct ports {
 
   struct coral_ss_ {
     struct telescope_ {
-      static constexpr int kTelescope_CANID = 15;
+      static constexpr int kTelescope_CANID = 22;  // 15
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 16;
@@ -52,11 +52,11 @@ struct ports {
     };
     struct end_effector_ {
       static constexpr int kEE1_CANID = 21;
-      static constexpr int kEE2_CANID = 22;
+      static constexpr int kEE2_CANID = 23;  // 22
     };
   };
 
   struct climber_ {
-    static constexpr int kClimber_CANID = 21;
+    static constexpr int kClimber_CANID = 24;  // 21
   };
 };

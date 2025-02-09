@@ -29,6 +29,9 @@ void LinearSubsystem::Setup() {
   // linear_esc_helper_.SetControllerSoftLimits(
   //     GET_SOFTLIMITS("limits", units::inch_t));
 
+  linear_esc_.ConfigForwardLimitSwitch(
+      true, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
+
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { linear_esc_helper_.SetPosition(sensor_pos); }
 
@@ -54,6 +57,10 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
   Graph("readings/sensor_pos", sensor_pos);
   Graph("readings/sensor_pos_valid", is_valid);
+
+  bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
+
+  Graph("readings/homing_sensor", forward_limit);
 
   return readings;
 }
