@@ -42,7 +42,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BL = 3;
   unsigned int num_connectors_BR = 3;
 
-  double drive_gear_ratio = 6.12;
+  double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
       (frc846::math::constants::geometry::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
