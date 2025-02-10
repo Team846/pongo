@@ -63,6 +63,9 @@ void HigherMotorController::WriteVelocity(
 }
 
 void HigherMotorController::WritePosition(units::radian_t position) {
+  if (soft_limits_.has_value()) {
+    position = soft_limits_.value().LimitPosition(position);
+  }
   double dc_target = gains_.calculate((position - GetPosition()).to<double>(),
       0.0, GetVelocity().to<double>(), load_.to<double>());
   WriteDC(dc_target);

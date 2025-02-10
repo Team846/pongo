@@ -27,8 +27,8 @@ void WristSubsystem::Setup() {
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
 
-  // wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
-  // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
+  wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
+  wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }

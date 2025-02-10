@@ -6,7 +6,7 @@
 
 TelescopeSubsystem::TelescopeSubsystem()
     : LinearSubsystem("telescope",
-          frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO,
+          frc846::control::base::MotorMonkeyType::SPARK_FLEX_VORTEX,
           frc846::control::config::MotorConstructionParameters{
               .can_id = ports::coral_ss_::telescope_::kTelescope_CANID,
               .inverted = false,

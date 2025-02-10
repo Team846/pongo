@@ -25,16 +25,26 @@ CoralSuperstructure::CoralSuperstructure()
   REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
+
+  RegisterPreference("init_telescope", false);
+  RegisterPreference("init_wrist", false);
+  RegisterPreference("init_ee", true);
 }
 
 void CoralSuperstructure::Setup() {
-  telescope.Init();
-  coral_wrist.Init();
-  coral_end_effector.Init();
+  if (GetPreferenceValue_bool("init_telescope")) {
+    telescope.Init();
+    telescope.Setup();
+  }
+  if (GetPreferenceValue_bool("init_wrist")) {
+    coral_wrist.Init();
+    coral_wrist.Setup();
+  }
 
-  telescope.Setup();
-  coral_wrist.Setup();
-  coral_end_effector.Setup();
+  if (GetPreferenceValue_bool("init_ee")) {
+    coral_end_effector.Init();
+    coral_end_effector.Setup();
+  }
 }
 
 bool CoralSuperstructure::VerifyHardware() {

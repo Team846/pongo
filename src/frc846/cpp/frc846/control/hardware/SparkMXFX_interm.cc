@@ -78,10 +78,12 @@ void SparkMXFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
 
 void SparkMXFX_interm::SetSoftLimits(
     units::radian_t forward_limit, units::radian_t reverse_limit) {
+  units::turn_t limit_fwd = forward_limit;
+  units::turn_t limit_rev = reverse_limit;
   configs.softLimit.ForwardSoftLimitEnabled(true)
-      .ForwardSoftLimit(forward_limit.to<double>())
+      .ForwardSoftLimit(limit_fwd.to<double>())
       .ReverseSoftLimitEnabled(true)
-      .ReverseSoftLimit(reverse_limit.to<double>());
+      .ReverseSoftLimit(limit_rev.to<double>());
 
   APPLY_CONFIG_NO_RESET();
 }
