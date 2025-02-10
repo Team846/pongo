@@ -19,17 +19,28 @@ CoralWristSubsystem::CoralWristSubsystem()
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}
 
           },
-          1.0_tr / 2.0_tr) {}
+          cancoder_reduction * cancoder_to_subsystem_reduction),
+      cancoder_{ports::coral_ss_::wrist_::kWristCANCoder_CANID, "rio"} {}
 
 WristTarget CoralWristSubsystem::ZeroTarget() const {
   return WristTarget{0_deg};
 }
 
 void CoralWristSubsystem::ExtendedSetup() {
-  // TODO: implement
+  cancoder_.OptimizeBusUtilization();
+  cancoder_.GetAbsolutePosition().SetUpdateFrequency(20_Hz);
+  RegisterPreference("use_sensor_threshold", 5_deg_per_s);
+  RegisterPreference("cancoder_offset", 10_deg);
 }
 
 std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
-  // TODO: implement
-  return {0_deg, false};
+  return {
+      frc846::math::modulo(
+          cancoder_.GetAbsolutePosition().GetValue() +
+              GetPreferenceValue_unit_type<units::degree_t>("cancoder_offset"),
+          360_deg) *
+          (1 / cancoder_to_subsystem_reduction),
+      units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
+          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+              "use_sensor_threshold")};
 }

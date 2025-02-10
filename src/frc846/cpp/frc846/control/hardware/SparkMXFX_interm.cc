@@ -221,7 +221,7 @@ void SparkMXFX_interm::ConfigForwardLimitSwitch(
 void SparkMXFX_interm::ConfigReverseLimitSwitch(
     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
   rev::spark::LimitSwitchConfig::Type d_type;
-  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOff) {
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
     d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
   } else {
     d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;

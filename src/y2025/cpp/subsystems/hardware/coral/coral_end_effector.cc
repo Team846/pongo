@@ -21,7 +21,10 @@ CoralEESubsystem::CoralEESubsystem()
 void CoralEESubsystem::Setup() {
   esc_.Setup();
 
-  // TODO: finish
+  esc_.ConfigForwardLimitSwitch(
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+  esc_.ConfigReverseLimitSwitch(
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
 }
 
 bool CoralEESubsystem::VerifyHardware() {
@@ -32,7 +35,7 @@ bool CoralEESubsystem::VerifyHardware() {
 
 CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
-  readings.has_piece_ = false;
+  readings.has_piece_ = esc_.GetReverseLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }

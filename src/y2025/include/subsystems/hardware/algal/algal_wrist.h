@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ctre/phoenix6/CANcoder.hpp>
+
 #include "subsystems/hardware/generic/wrist_subsystem.h"
 
 class AlgalWristSubsystem : public WristSubsystem {
@@ -13,4 +15,8 @@ protected:
   std::pair<units::degree_t, bool> GetSensorPos() override;
 
 private:
+  wrist_pos_conv_t cancoder_reduction = 10_tr / 1_tr;
+  wrist_pos_conv_t cancoder_to_subsystem_reduction = 8_tr / 2_tr;
+
+  ctre::phoenix6::hardware::CANcoder cancoder_;
 };

@@ -11,10 +11,12 @@
 #include "frc846/base/Loggable.h"
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
+#include "frc846/math/collection.h"
 #include "frc846/robot/GenericSubsystem.h"
 
 struct WristReadings {
   units::degree_t position;
+  units::degrees_per_second_t velocity;
 };
 
 struct WristTarget {
