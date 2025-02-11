@@ -3,10 +3,10 @@
 #include "frc846/robot/GenericCommand.h"
 #include "subsystems/robot_container.h"
 
-class LEDsCommand
-    : public frc846::robot::GenericCommand<RobotContainer, LEDsCommand> {
+class CoralCommand
+    : public frc846::robot::GenericCommand<RobotContainer, CoralCommand> {
 public:
-  LEDsCommand(RobotContainer& container);
+  CoralCommand(RobotContainer& container);
 
   void OnInit() override;
 

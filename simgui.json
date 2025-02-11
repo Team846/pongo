@@ -38,18 +38,6 @@
     }
   },
   "NetworkTables Info": {
-    "Connections": {
-      "open": true
-    },
-    "Elastic@1": {
-      "Publishers": {
-        "open": true
-      },
-      "open": true
-    },
-    "Server": {
-      "open": true
-    },
     "visible": true
   }
 }

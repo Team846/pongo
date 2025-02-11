@@ -462,6 +462,38 @@ units::ampere_t MotorMonkey::GetCurrent(size_t slot_id) {
   return controller_registry[slot_id]->GetCurrent();
 }
 
+void MotorMonkey::ConfigForwardLimitSwitch(size_t slot_id, bool stop_motor,
+    frc846::control::base::LimitSwitchDefaultState type) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(
+      controller_registry[slot_id]->ConfigForwardLimitSwitch(stop_motor, type),
+      "ConfigForwardLimitSwitch");
+  LOG_IF_ERROR("ConfigForwardLimitSwitch");
+}
+
+void MotorMonkey::ConfigReverseLimitSwitch(size_t slot_id, bool stop_motor,
+    frc846::control::base::LimitSwitchDefaultState type) {
+  CHECK_SLOT_ID();
+
+  SMART_RETRY(
+      controller_registry[slot_id]->ConfigReverseLimitSwitch(stop_motor, type),
+      "ConfigReverseLimitSwitch");
+  LOG_IF_ERROR("ConfigReverseLimitSwitch");
+}
+
+bool MotorMonkey::GetForwardLimitSwitchState(size_t slot_id) {
+  CHECK_SLOT_ID();
+
+  return controller_registry[slot_id]->GetForwardLimitSwitchState();
+}
+
+bool MotorMonkey::GetReverseLimitSwitchState(size_t slot_id) {
+  CHECK_SLOT_ID();
+
+  return controller_registry[slot_id]->GetReverseLimitSwitchState();
+}
+
 void MotorMonkey::SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
     units::radian_t reverse_limit) {
   CHECK_SLOT_ID();

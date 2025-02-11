@@ -6,17 +6,13 @@
 #include "ports.h"
 
 enum LEDsState {
-  kLEDSNotReady,
-  kLEDSZeroing,
-  kLEDSTeleop,
-  kLEDSAutonomous,
-  kLEDSHasPiece,
-  kLEDSPreparingShoot,
-  kLEDSReadyToShoot,
-  kLEDSClimbing,
-  kLEDSAmpingLeds,
-  kLEDSCOOPLeds,
-  kLEDSDisabled,
+  kLEDsUnready,
+  kLEDsDisabled,
+  kLEDsAutonomous,
+  kLEDsSequencing,
+  kLEDsTeleop,
+  kLEDsClimbing,
+  kLEDsHavePiece
 };
 
 struct LEDsReadings {};
@@ -37,7 +33,9 @@ public:
   bool VerifyHardware() override;
 
 private:
-  bool zeroSequence = false;
+  void SetRainbow();
+  void SetStrip(int R, int G, int B);
+  void Flash(int loops_on);
 
   // Number of LEDs.
   static constexpr int kLength = 30;

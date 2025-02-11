@@ -94,6 +94,24 @@ public:
       units::millisecond_t encoder_position_ms = 20_ms,
       units::millisecond_t analog_position_ms = 20_ms);
 
+  void ConfigForwardLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+  void ConfigReverseLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  bool GetForwardLimitSwitchState();
+  bool GetReverseLimitSwitchState();
+
+  // void ConfigForwardLimitSwitch(
+  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+  // void ConfigReverseLimitSwitch(
+  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  // bool GetForwardLimitSwitchState();
+  // bool GetReverseLimitSwitchState();
+
+  // units::volt_t GetAnalogDeviceOutput();
+
   void OverrideStatusFramePeriod(
       config::StatusFrame frame, units::millisecond_t period);
 

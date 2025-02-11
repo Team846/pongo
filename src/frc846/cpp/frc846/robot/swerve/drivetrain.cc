@@ -248,13 +248,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position = odometry_
-          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                    "bearing_latency") *
-                                    GetReadings().yaw_rate,
-              steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+      .position =
+          odometry_
+              .calculate(
+                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                 "bearing_latency") *
+                                 GetReadings().yaw_rate,
+                      steer_positions, drive_positions,
+                      GetPreferenceValue_double("odom_fudge_factor")})
+              .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -295,6 +297,14 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .bearing = bearing,
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
+
+  if (frc::DriverStation::IsAutonomous() ||
+      frc::DriverStation::IsAutonomousEnabled()) {
+    estimated_pose = new_pose;
+    Graph("overriding_kalman_pose_auton", true);
+  } else {
+    Graph("overriding_kalman_pose_auton", false);
+  }
 
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
   Graph("estimated_pose/position_y", estimated_pose.position[1]);

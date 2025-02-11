@@ -202,9 +202,49 @@ public:
   units::ampere_t GetCurrent() override;
 
   /*
+  ConfigForwardLimitSwitch()
+
+  Configures the forward limit switch.
+
+  @param stop_motor Stop the motor when the limit switch is true.
+  @param type The state which the limit switch is normally.
+  */
+  void ConfigForwardLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  /*
+  ConfigReverseLimitSwitch()
+
+  Configures the reverse limit switch.
+
+  @param stop_motor Stop the motor when the limit switch is true.
+  @param type The state which the limit switch is normally.
+  */
+  void ConfigReverseLimitSwitch(
+      bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
+
+  /*
+  GetForwardLimitSwitchState()
+
+  Gets the limit switch's state.
+
+  @return bool If the limit switch is enabled
+  */
+  bool GetForwardLimitSwitchState();
+
+  /*
+  GetForwardLimitSwitchState()
+
+  Gets the limit switch's state.
+
+  @return bool If the limit switch is enabled
+  */
+  bool GetReverseLimitSwitchState();
+
+  /*
   GetLastErrorCode()
 
-  Gets the the last error code from the motor controller.
+  Gets the last error code from the motor controller.
 
   @return The last error code.
   */
@@ -216,7 +256,7 @@ private:
 
   rev::spark::SparkBaseConfig configs{};
 
-  std::variant<units::turn_t, units::revolutions_per_minute_t, double>
+  std::variant<units::radian_t, units::radians_per_second_t, double>
       last_command_;
   frc846::control::base::MotorGains gains_;
 

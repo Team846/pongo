@@ -29,4 +29,6 @@ units::degree_t CoterminalDifference(
 units::degree_t CoterminalSum(
     units::degree_t angle, units::degree_t other_angle);
 
+units::degree_t modulo(units::degree_t a, units::degree_t b);
+
 }  // namespace frc846::math

@@ -58,7 +58,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   frc846::robot::XboxReadings dr_readings{driver_, trigger_threshold};
   frc846::robot::XboxReadings op_readings{operator_, trigger_threshold};
 
-  // DRIVETRAIN
   ci_readings_.zero_bearing = dr_readings.back_button;
   ci_readings_.translate_x = dr_readings.left_stick_x;
   ci_readings_.translate_y = dr_readings.left_stick_y;
@@ -72,13 +71,56 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.rotation = dr_readings.right_stick_x;
 
-  ci_readings_.test_move_10_ft = dr_readings.x_button;
-  ci_readings_.test_bearing_pid = dr_readings.y_button;
-
   ci_readings_.lock_left_reef = dr_readings.left_bumper;
   ci_readings_.lock_right_reef = dr_readings.right_bumper;
 
   ci_readings_.targeting_algae = dr_readings.left_trigger;
+
+  ci_readings_.auto_align = dr_readings.a_button;
+
+  if (dr_readings.b_button && !previous_driver_.b_button)
+    ci_readings_.position_algal = !ci_readings_.position_algal;
+
+  if (dr_readings.y_button && !previous_driver_.y_button)
+    ci_readings_.position_coral = !ci_readings_.position_coral;
+
+  else if (op_readings.a_button)
+    ci_readings_.coral_state = CoralStates::kCoral_ScoreL2;
+  else if (op_readings.b_button)
+    ci_readings_.coral_state = CoralStates::kCoral_ScoreL3;
+  else if (op_readings.x_button)
+    ci_readings_.coral_state = CoralStates::kCoral_ScoreL4;
+  else
+    ci_readings_.coral_state = previous_readings_.coral_state;
+
+  if ((int)op_readings.pov == 0)
+    ci_readings_.algal_state = AlgalStates::kAlgae_Net;
+  else if ((int)op_readings.pov == 90)
+    ci_readings_.algal_state = AlgalStates::kAlgae_L3Pick;
+  else if ((int)op_readings.pov == 180)
+    ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+  else if ((int)op_readings.pov == 270)
+    ci_readings_.algal_state = AlgalStates::kAlgae_L2Pick;
+  else if (op_readings.right_trigger)
+    ci_readings_.algal_state = AlgalStates::kAlgae_GroundIntake;
+  else if (op_readings.right_bumper)
+    ci_readings_.algal_state = AlgalStates::kAlgae_OnTopIntake;
+  else
+    ci_readings_.algal_state = previous_readings_.algal_state;
+
+  if (op_readings.left_bumper) ci_readings_.score_coral = true;
+  if (dr_readings.right_trigger) ci_readings_.score_algae = true;
+
+  if (op_readings.left_trigger && !previous_operator_.left_trigger) {
+    climb_state_ += 1;
+    if (climb_state_ == 3) climb_state_ = 0;
+  }
+  ci_readings_.climb_state = climb_state_;
+
+  Graph("climb_state", climb_state_);
+
+  previous_driver_ = dr_readings;
+  previous_operator_ = op_readings;
 
   return ci_readings_;
 }

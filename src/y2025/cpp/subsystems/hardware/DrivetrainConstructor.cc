@@ -7,13 +7,13 @@
 
 DrivetrainConstructor::DrivetrainConstructor()
     : Loggable{"DrivetrainConstructor"} {
-  RegisterPreference("drive_motor_current_limit", 120_A);
+  RegisterPreference("drive_motor_current_limit", 160_A);
   RegisterPreference("steer_motor_current_limit", 120_A);
-  RegisterPreference("drive_motor_smart_current_limit", 80_A);
+  RegisterPreference("drive_motor_smart_current_limit", 120_A);
   RegisterPreference("steer_motor_smart_current_limit", 80_A);
 
   RegisterPreference("drive_motor_voltage_compensation", 16_V);
-  RegisterPreference("steer_motor_voltage_compensation", 12_V);
+  RegisterPreference("steer_motor_voltage_compensation", 10_V);
 }
 
 frc846::robot::swerve::DrivetrainConfigs
