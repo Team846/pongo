@@ -137,11 +137,11 @@ AntiTippingCalculator::LimitAcceleration(
 
   perm_accel_x += (tele_force * effective_tele_vec[0] +
                       elev_force * effective_elev_vec[0]) /
-                  robot_constants::total_weight;
+                  (robot_constants::total_weight * r_vec[2]);
 
   perm_accel_y += (tele_force * effective_tele_vec[1] +
                       elev_force * effective_elev_vec[1]) /
-                  robot_constants::total_weight;
+                  (robot_constants::total_weight * r_vec[2]);
 
   return {perm_accel_x, perm_accel_y};
 }
