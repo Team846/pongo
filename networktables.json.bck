@@ -184,9 +184,17 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/lock_max_speed (fps)",
+    "type": "double",
+    "value": 7.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/drive_to_subtract (in)",
     "type": "double",
-    "value": 5.0,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }
@@ -224,6 +232,14 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/odom_variance",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/steer_lag (s)",
     "type": "double",
     "value": 0.05,
@@ -232,129 +248,57 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/bearing_latency (s)",
+    "type": "double",
+    "value": 0.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/pose_variance",
+    "type": "double",
+    "value": 0.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/velocity_variance",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/pose_estimator/accel_variance",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/april_tags/april_variance_coeff",
+    "type": "double",
+    "value": 0.33,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/april_tags/fudge_latency (ms)",
+    "type": "double",
+    "value": 20.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/rc_control_speed (fps)",
     "type": "double",
     "value": 2.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/telescope/motor_configs/current_limit (A)",
-    "type": "double",
-    "value": 40.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/telescope/motor_configs/smart_current_limit (A)",
-    "type": "double",
-    "value": 30.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/telescope/gains/_kP",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/telescope/gains/_kI",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/telescope/gains/_kD",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/bearing_gains/_kP",
-    "type": "double",
-    "value": 0.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/bearing_gains/_kI",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/bearing_gains/_kD",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/bearing_gains/deadband (deg_per_s)",
-    "type": "double",
-    "value": 3.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/lock_gains/_kP",
-    "type": "double",
-    "value": 0.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/lock_gains/_kI",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/lock_gains/_kD",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/lock_gains/deadband (in)",
-    "type": "double",
-    "value": 2.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/drive_to_subtract (in)",
-    "type": "double",
-    "value": 5.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/SwerveDrivetrain/max_omega_cut (deg_per_s)",
-    "type": "double",
-    "value": 40.0,
     "properties": {
       "persistent": true
     }
