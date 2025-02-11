@@ -9,11 +9,6 @@
       "visible": true
     }
   },
-  "FMS": {
-    "window": {
-      "visible": false
-    }
-  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
