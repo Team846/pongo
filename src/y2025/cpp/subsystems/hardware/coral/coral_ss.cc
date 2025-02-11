@@ -29,6 +29,8 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("init_telescope", false);
   RegisterPreference("init_wrist", false);
   RegisterPreference("init_ee", true);
+
+  RegisterPreference("override_distance_sensor", false);
 }
 
 void CoralSuperstructure::Setup() {
@@ -78,8 +80,9 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   coral_wrist.SetTarget({setpoint.angle});
 
   // TODO: Check setpoint state of each subsystem
-  if (target.score || (!GetPreferenceValue_bool("Override_distance_sensor") &&
-                          coral_end_effector.GetReadings().has_piece_))
+  if (target.score || (!GetPreferenceValue_bool("override_distance_sensor") &&
+                          coral_end_effector.GetReadings().has_piece_ &&
+                          coral_end_effector.GetReadings().see_reef))
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
   else
     coral_end_effector.SetTarget({setpoint.ee_dc});

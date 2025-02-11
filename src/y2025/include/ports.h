@@ -37,28 +37,28 @@ struct ports {
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 16;
-      static constexpr int kWristCANCoder_CANID = 18;
+      static constexpr int kWristCANCoder_CANID = 17;
     };
     struct end_effector_ {
-      static constexpr int kEE_CANID = 17;
+      static constexpr int kEE_CANID = 18;
     };
   };
 
   struct algal_ss_ {
     struct elevator_ {
-      static constexpr int kElevator_CANID = 19;
+      static constexpr int kElevator_CANID = 20;
     };
     struct wrist_ {
-      static constexpr int kWristMotor_CANID = 20;
-      static constexpr int kWristCANCoder_CANID = 21;
+      static constexpr int kWristMotor_CANID = 21;
+      static constexpr int kWristCANCoder_CANID = 22;
     };
     struct end_effector_ {
-      static constexpr int kEE1_CANID = 21;
-      static constexpr int kEE2_CANID = 22;
+      static constexpr int kEE1_CANID = 23;
+      static constexpr int kEE2_CANID = 24;
     };
   };
 
   struct climber_ {
-    static constexpr int kClimber_CANID = 24;
+    static constexpr int kClimber_CANID = 26;
   };
 };

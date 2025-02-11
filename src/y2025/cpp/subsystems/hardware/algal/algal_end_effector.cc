@@ -40,9 +40,10 @@ AlgalEESubsystem::GetCurrentConfig(
 
 void AlgalEESubsystem::Setup() {
   esc_1_.Setup();
-  esc_2_.Setup();
+  esc_1_.EnableStatusFrames({frc846::control::config::kFaultFrame});
 
-  // TODO: finish
+  esc_2_.Setup();
+  esc_2_.EnableStatusFrames({});
 }
 
 bool AlgalEESubsystem::VerifyHardware() {
@@ -54,7 +55,7 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
-  readings.has_piece_ = false;
+  readings.has_piece_ = false;  // TODO: add piece sensor
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }

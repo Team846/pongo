@@ -37,6 +37,7 @@ CoralEESubsystem::GetCurrentConfig(
 
 void CoralEESubsystem::Setup() {
   esc_.Setup();
+  esc_.EnableStatusFrames({frc846::control::config::kFaultFrame});
 
   esc_.ConfigForwardLimitSwitch(
       false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
@@ -53,7 +54,9 @@ bool CoralEESubsystem::VerifyHardware() {
 CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
   readings.has_piece_ = esc_.GetReverseLimitSwitchState();
+  readings.see_reef = esc_.GetForwardLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
+  Graph("readings/see_reef", readings.see_reef);
   return readings;
 }
 
