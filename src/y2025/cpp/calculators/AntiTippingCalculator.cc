@@ -13,6 +13,17 @@ frc846::math::Vector3D AntiTippingCalculator::tele_cg_position_{
     robot_constants::telescope::pos_x, robot_constants::telescope::pos_y,
     robot_constants::base::height};
 
+frc846::math::Differentiator AntiTippingCalculator::elev_df_vel{};
+frc846::math::Differentiator AntiTippingCalculator::elev_df_acc{};
+frc846::math::Smoother AntiTippingCalculator::elev_acc_smoother{0.4};
+
+frc846::math::Differentiator AntiTippingCalculator::tele_df_vel{};
+frc846::math::Differentiator AntiTippingCalculator::tele_df_acc{};
+frc846::math::Smoother AntiTippingCalculator::tele_acc_smoother{0.4};
+
+units::newton_t AntiTippingCalculator::tele_force{};
+units::newton_t AntiTippingCalculator::elev_force{};
+
 void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
   if (height > robot_constants::elevator::min_height_off_base) {
     elev_cg_position_[2] = height / 2.0;
@@ -23,6 +34,12 @@ void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
             (robot_constants::elevator::end_effector_weight * height)) /
         (robot_constants::elevator::total_weight);
   }
+
+  elev_df_vel.Calculate(elev_cg_position_[2].to<double>());
+  elev_df_acc.Calculate(elev_df_vel.GetRate());
+  elev_acc_smoother.Calculate(elev_df_acc.GetRate());
+  elev_force = robot_constants::elevator::total_weight *
+               elev_acc_smoother.Get() * 1_in / (1_s * 1_s);
 }
 
 void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
@@ -30,6 +47,12 @@ void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
       (robot_constants::telescope::telescope_weight * (height / 2.0) +
           robot_constants::telescope::end_effector_weight * height) /
       (robot_constants::telescope::total_weight);
+
+  tele_df_vel.Calculate(tele_cg_position_[2].to<double>());
+  tele_df_acc.Calculate(tele_df_vel.GetRate());
+  tele_acc_smoother.Calculate(tele_df_acc.GetRate());
+  tele_force = robot_constants::telescope::total_weight *
+               tele_acc_smoother.Get() * 1_in / (1_s * 1_s);
 }
 
 frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {
@@ -99,6 +122,26 @@ AntiTippingCalculator::LimitAcceleration(
       frc846::math::constants::physics::g * r_vec[0] / r_vec[2];
   units::feet_per_second_squared_t perm_accel_y =
       frc846::math::constants::physics::g * r_vec[1] / r_vec[2];
+
+  frc846::math::Vector2D effective_tele_vec =
+      v_neg_dir.projectOntoThis<units::inch>(
+          closest_wheel -
+          frc846::math::Vector2D{robot_constants::telescope::pos_x,
+              robot_constants::telescope::pos_y});
+
+  frc846::math::Vector2D effective_elev_vec =
+      v_neg_dir.projectOntoThis<units::inch>(
+          closest_wheel -
+          frc846::math::Vector2D{robot_constants::elevator::pos_x,
+              robot_constants::elevator::pos_y});
+
+  perm_accel_x += (tele_force * effective_tele_vec[0] +
+                      elev_force * effective_elev_vec[0]) /
+                  robot_constants::total_weight;
+
+  perm_accel_y += (tele_force * effective_tele_vec[1] +
+                      elev_force * effective_elev_vec[1]) /
+                  robot_constants::total_weight;
 
   return {perm_accel_x, perm_accel_y};
 }
