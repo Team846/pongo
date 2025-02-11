@@ -27,7 +27,7 @@ struct ports {
     static constexpr int kBRCANCoder_CANID = 12;
   };
 
-  struct leds_ {  // TODO: Confirm LED ports
+  struct leds_ {
     static constexpr int kLEDStrip1 = 6;
   };
 

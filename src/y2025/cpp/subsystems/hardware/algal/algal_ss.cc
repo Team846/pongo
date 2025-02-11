@@ -27,16 +27,27 @@ AlgalSuperstructure::AlgalSuperstructure()
   REGISTER_SETPOINT("l3_pick", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
+
+  RegisterPreference("init_elevator", false);
+  RegisterPreference("init_wrist", false);
+  RegisterPreference("init_ee", false);
 }
 
 void AlgalSuperstructure::Setup() {
-  elevator.Init();
-  algal_wrist.Init();
-  algal_end_effector.Init();
+  if (GetPreferenceValue_bool("init_elevator")) {
+    elevator.Init();
+    elevator.Setup();
+  }
 
-  elevator.Setup();
-  algal_wrist.Setup();
-  algal_end_effector.Setup();
+  if (GetPreferenceValue_bool("init_wrist")) {
+    algal_wrist.Init();
+    algal_wrist.Setup();
+  }
+
+  if (GetPreferenceValue_bool("init_ee")) {
+    algal_end_effector.Init();
+    algal_end_effector.Setup();
+  }
 }
 
 bool AlgalSuperstructure::VerifyHardware() {
