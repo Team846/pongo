@@ -34,6 +34,9 @@ public:
       frc846::control::config::MotorConstructionParameters motor_configs_,
       wrist_pos_conv_t conversion);
 
+  frc846::control::config::MotorConstructionParameters GetCurrentConfig(
+      frc846::control::config::MotorConstructionParameters original_config);
+
   void Setup() override final;
 
   bool VerifyHardware() override final;
