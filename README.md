@@ -1,8 +1,8 @@
 # 2025 Codebase for FRC Team 846
 
-[![Compilation Check](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/compilation_check.yaml)
-[![Formatting Check](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/formatting_check.yaml)
-[![CppCheck](https://github.com/Team846/monkey_menace/actions/workflows/cpp_check.yaml/badge.svg)](https://github.com/Team846/monkey_menace/actions/workflows/cpp_check.yaml)
+[![Compilation Check](https://github.com/Team846/pongo/actions/workflows/compilation_check.yaml/badge.svg)](https://github.com/Team846/pongo/actions/workflows/compilation_check.yaml)
+[![Formatting Check](https://github.com/Team846/pongo/actions/workflows/formatting_check.yaml/badge.svg)](https://github.com/Team846/pongo/actions/workflows/formatting_check.yaml)
+[![CppCheck](https://github.com/Team846/pongo/actions/workflows/cpp_check.yaml/badge.svg)](https://github.com/Team846/pongo/actions/workflows/cpp_check.yaml)
 
 ## Overview
 
@@ -81,10 +81,10 @@ If unfamiliar with GitHub, go through tutorials in the [Using Git](#using-git) s
 ### --Setup--
 
 - Clone the repository.
-  - Run: `git clone https://github.com/Team846/monkey_menace.git` in terminal.
+  - Run: `git clone https://github.com/Team846/pongo.git` in terminal.
 - Open WPILib VSCode
 - In WPILib VSCode, open the folder containing the cloned repository.
-  - The path will be `path the clone command was run in + howler_monkey`
+  - The path will be `path the clone command was run in + pongo`
 - DO NOT change the gradle file. If WPILib VSCode prompts an update to the gradle file, click CANCEL.
 - Click on the WPILib icon (the W in the top right corner).
 - In the dropdown list, click on `C++: Refresh C++ Intellisense`.
@@ -117,7 +117,7 @@ WPILib VSCode is installed in a hard-to-find directory on MacOS. It is usually l
 
 It is a good idea to rename the file or move it into your Applications folder and pin it in dock for easy access and differentiation from normal VSCode.
 
-WPILib VSCode will have a W icon in the top right corner, wherease normal VSCode will not.
+WPILib VSCode will have a W icon in the top right corner, whereas normal VSCode will not.
 
 ## First Build
 
@@ -173,6 +173,6 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
-src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
-src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
+src\frc846\cpp\frc846\math\collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 ```

@@ -1,5 +1,7 @@
 #include "commands/teleop/drive_command.h"
 
+#include <utility>
+
 #include "calculators/AntiTippingCalculator.h"
 
 DriveCommand::DriveCommand(RobotContainer &container)
@@ -95,6 +97,9 @@ void DriveCommand::Periodic() {
   }
 
   target.angular_velocity = rotation * max_omega;
+
+  if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue)
+    target.velocity = target.velocity.rotate(180_deg);
 
   container_.drivetrain_.SetTarget({target});
 }

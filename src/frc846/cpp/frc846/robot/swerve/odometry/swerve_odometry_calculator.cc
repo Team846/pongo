@@ -20,7 +20,7 @@ SwerveOdometryOutput SwerveOdometryCalculator::calculate(
 
   last_position_ += displacement;
 
-  return {last_position_};
+  return {last_position_ + position_offset_};
 }
 
 }  // namespace frc846::robot::swerve::odometry

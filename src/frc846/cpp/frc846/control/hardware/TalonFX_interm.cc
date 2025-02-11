@@ -84,29 +84,33 @@ void TalonFX_interm::WritePosition(units::radian_t position) {
 }
 
 void TalonFX_interm::EnableStatusFrames(
-    std::vector<frc846::control::config::StatusFrame> frames) {
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
   last_error_ =
       getErrorCode(talon_.OptimizeBusUtilization(0_Hz, max_wait_time_));
   if (last_error_ != ControllerErrorCodes::kAllOK) { return; }
+
   for (auto frame : frames) {
     ctre::phoenix::StatusCode last_status_code = ctre::phoenix::StatusCode::OK;
     switch (frame) {
     case frc846::control::config::StatusFrame::kCurrentFrame:
-      last_status_code =
-          talon_.GetSupplyCurrent().SetUpdateFrequency(10_Hz, max_wait_time_);
+      last_status_code = talon_.GetSupplyCurrent().SetUpdateFrequency(
+          1.0 / velocity_ms, max_wait_time_);
       break;
     case frc846::control::config::StatusFrame::kPositionFrame:
-      last_status_code =
-          talon_.GetPosition().SetUpdateFrequency(50_Hz, max_wait_time_);
+      last_status_code = talon_.GetPosition().SetUpdateFrequency(
+          1.0 / encoder_position_ms, max_wait_time_);
       if (last_status_code != ctre::phoenix::StatusCode::OK) break;
 
       [[fallthrough]];  // Latency compensation requires vel, acc frames
     case frc846::control::config::StatusFrame::kVelocityFrame:
-      last_status_code =
-          talon_.GetVelocity().SetUpdateFrequency(40_Hz, max_wait_time_);
+      last_status_code = talon_.GetVelocity().SetUpdateFrequency(
+          1 / velocity_ms, max_wait_time_);
       if (last_status_code != ctre::phoenix::StatusCode::OK) break;
-      last_status_code =
-          talon_.GetAcceleration().SetUpdateFrequency(40_Hz, max_wait_time_);
+      last_status_code = talon_.GetAcceleration().SetUpdateFrequency(
+          1 / velocity_ms, max_wait_time_);
       break;
 
     default: break;

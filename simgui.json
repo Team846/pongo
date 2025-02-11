@@ -1,7 +1,40 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/get_prune_list": "Command",
+      "/SmartDashboard/prune_prefs": "Command",
+      "/SmartDashboard/set_cancoder_offsets": "Command",
+      "/SmartDashboard/verify_hardware": "Command",
+      "/SmartDashboard/zero_bearing": "Command"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        ".metadata": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "SwerveDrivetrain": {
+          "open": true,
+          "readings": {
+            "open": true
+          },
+          "target": {
+            "open": true
+          }
+        },
+        "open": true,
+        "verify_hardware": {
+          "open": true
+        },
+        "zero_bearing": {
+          "open": true
+        }
+      }
     }
   },
   "NetworkTables Info": {

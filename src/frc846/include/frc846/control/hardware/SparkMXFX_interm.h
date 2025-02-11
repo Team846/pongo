@@ -117,7 +117,11 @@ public:
   @param frames the frames to be enabled
   */
   void EnableStatusFrames(
-      std::vector<frc846::control::config::StatusFrame> frames) override;
+      std::vector<frc846::control::config::StatusFrame> frames,
+      units::millisecond_t faults_ms = 20_ms,
+      units::millisecond_t velocity_ms = 20_ms,
+      units::millisecond_t encoder_position_ms = 20_ms,
+      units::millisecond_t analog_position_ms = 20_ms) override;
 
   void OverrideStatusFramePeriod(frc846::control::config::StatusFrame frame,
       units::millisecond_t period) override;
@@ -252,7 +256,7 @@ private:
 
   rev::spark::SparkBaseConfig configs{};
 
-  std::variant<units::radian_t, units::radians_per_second_t, double>
+  std::variant<units::turn_t, units::revolutions_per_minute_t, double>
       last_command_;
   frc846::control::base::MotorGains gains_;
 

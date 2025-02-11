@@ -101,7 +101,10 @@ void MCSimulator::DisablePositionPacket() { position_packet_enabled = false; }
 void MCSimulator::DisableVelocityPacket() { velocity_packet_enabled = false; }
 
 void MCSimulator::EnableStatusFrames(
-    std::vector<frc846::control::config::StatusFrame> frames) {
+    std::vector<frc846::control::config::StatusFrame> frames,
+    units::millisecond_t faults_ms, units::millisecond_t velocity_ms,
+    units::millisecond_t encoder_position_ms,
+    units::millisecond_t analog_position_ms) {
   bool disable_pos = true;
   bool disable_vel = true;
   for (auto frame : frames) {

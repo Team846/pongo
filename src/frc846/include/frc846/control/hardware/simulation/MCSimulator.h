@@ -92,7 +92,11 @@ public:
   void DisableVelocityPacket();
 
   void EnableStatusFrames(
-      std::vector<frc846::control::config::StatusFrame> frames) override;
+      std::vector<frc846::control::config::StatusFrame> frames,
+      units::millisecond_t faults_ms = 20_ms,
+      units::millisecond_t velocity_ms = 20_ms,
+      units::millisecond_t encoder_position_ms = 20_ms,
+      units::millisecond_t analog_position_ms = 20_ms) override;
   void OverrideStatusFramePeriod(frc846::control::config::StatusFrame frame,
       units::millisecond_t period) override {
     (void)frame;

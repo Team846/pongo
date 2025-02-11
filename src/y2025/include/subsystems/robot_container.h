@@ -2,6 +2,7 @@
 
 #include "frc846/robot/GenericRobotContainer.h"
 #include "subsystems/abstract/control_input.h"
+#include "subsystems/abstract/gpd.h"
 #include "subsystems/hardware/DrivetrainConstructor.h"
 #include "subsystems/hardware/algal/algal_ss.h"
 #include "subsystems/hardware/climber.h"
@@ -17,6 +18,8 @@ public:
   frc846::robot::swerve::DrivetrainSubsystem drivetrain_{
       drivetrain_constructor_.getDrivetrainConfigs()};
 
+  GPDSubsystem GPD_{&drivetrain_};
+  
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
 
@@ -25,6 +28,7 @@ public:
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
     RegisterPreference("init_leds", true);
+    RegisterPreference("init_gpd", true);
 
     RegisterPreference("init_coral_ss", true);
     RegisterPreference("init_algal_ss", true);
@@ -32,6 +36,7 @@ public:
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
+    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
     bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
     bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
@@ -41,6 +46,7 @@ public:
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
     RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});

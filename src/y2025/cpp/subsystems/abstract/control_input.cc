@@ -74,6 +74,9 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.lock_left_reef = dr_readings.left_bumper;
   ci_readings_.lock_right_reef = dr_readings.right_bumper;
 
+
+  ci_readings_.targeting_algae = dr_readings.left_trigger;
+
   ci_readings_.auto_align = dr_readings.a_button;
 
   if (dr_readings.b_button && !previous_driver_.b_button)

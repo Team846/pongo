@@ -31,10 +31,16 @@ public:
 
   SwerveOdometryOutput calculate(SwerveOdometryInputs inputs) override;
 
+  void SetPosition(frc846::math::Vector2D position) {
+    position_offset_ = position - last_position_;
+  }
+
 private:
   frc846::math::VectorND<units::inch, 4> previous_module_positions_;
 
   frc846::math::Vector2D last_position_;
+
+  frc846::math::Vector2D position_offset_{};
 };
 
 }  // namespace frc846::robot::swerve::odometry

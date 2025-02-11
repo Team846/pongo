@@ -1,5 +1,4 @@
 #pragma once
-
 #include "HigherMotorController.h"
 
 namespace frc846::control {
