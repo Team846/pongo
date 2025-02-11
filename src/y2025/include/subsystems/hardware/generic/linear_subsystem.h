@@ -12,6 +12,7 @@
 #include "frc846/control/HMCHelper.h"
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "subsystems/robot_constants.h"
 
 struct LinearSubsystemReadings {
   units::inch_t position;
@@ -31,7 +32,7 @@ public:
   LinearSubsystem(std::string name,
       frc846::control::base::MotorMonkeyType mmtype,
       frc846::control::config::MotorConstructionParameters motor_configs_,
-      linear_pos_conv_t conversion);
+      linear_pos_conv_t conversion, units::inch_t hall_effect_loc);
 
   void Setup() override final;
 
@@ -52,4 +53,6 @@ protected:
   LinearSubsystemReadings ReadFromHardware() override final;
 
   void WriteToHardware(LinearSubsystemTarget target) override final;
+  bool is_homed_ = false;
+  units::inch_t hall_effect_loc_;
 };

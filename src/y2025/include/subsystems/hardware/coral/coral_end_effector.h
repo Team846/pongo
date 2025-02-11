@@ -15,6 +15,7 @@
 
 struct CoralEEReadings {
   bool has_piece_;
+  bool see_reef;
 };
 
 struct CoralEETarget {

@@ -37,6 +37,7 @@ struct ports {
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 16;
+      static constexpr int kWristCANCoder_CANID = 18;
     };
     struct end_effector_ {
       static constexpr int kEE_CANID = 22;  // 17
@@ -49,10 +50,11 @@ struct ports {
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 20;
+      static constexpr int kWristCANCoder_CANID = 21;
     };
     struct end_effector_ {
       static constexpr int kEE1_CANID = 21;
-      static constexpr int kEE2_CANID = 22;
+      static constexpr int kEE2_CANID = 23;  // 22
     };
   };
 

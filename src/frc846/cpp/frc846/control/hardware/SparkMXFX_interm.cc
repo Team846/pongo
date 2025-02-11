@@ -210,9 +210,9 @@ void SparkMXFX_interm::ConfigForwardLimitSwitch(
     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
   rev::spark::LimitSwitchConfig::Type d_type;
   if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
-    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
-  } else {
     d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
   }
   configs.limitSwitch.ForwardLimitSwitchEnabled(stop_motor)
       .ForwardLimitSwitchType(d_type);
@@ -223,10 +223,10 @@ void SparkMXFX_interm::ConfigForwardLimitSwitch(
 void SparkMXFX_interm::ConfigReverseLimitSwitch(
     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
   rev::spark::LimitSwitchConfig::Type d_type;
-  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOff) {
-    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
-  } else {
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
     d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
   }
   configs.limitSwitch.ReverseLimitSwitchEnabled(stop_motor)
       .ReverseLimitSwitchType(d_type);

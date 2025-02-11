@@ -32,6 +32,10 @@ public:
 
   bool VerifyHardware() override;
 
+  frc846::control::config::MotorConstructionParameters getModifiedConfig(
+      frc846::control::config::MotorConstructionParameters ogconfig,
+      bool isOtherMotor);
+
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 

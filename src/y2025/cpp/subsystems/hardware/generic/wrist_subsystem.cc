@@ -46,6 +46,7 @@ bool WristSubsystem::VerifyHardware() {
 WristReadings WristSubsystem::ReadFromHardware() {
   WristReadings readings;
   readings.position = wrist_esc_helper_.GetPosition();
+  readings.velocity = wrist_esc_helper_.GetVelocity();
 
   wrist_esc_.SetLoad(
       1_Nm *
@@ -55,6 +56,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
           GetPreferenceValue_unit_type<units::degree_t>("cg_offset")));
 
   Graph("readings/position", readings.position);
+  Graph("readings/velocity", readings.velocity);
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }

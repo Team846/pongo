@@ -19,7 +19,23 @@ AlgalEESubsystem::AlgalEESubsystem()
       },
       esc_1_{frc846::control::base::SPARK_MAX_NEO550,
           motor_configs_},  // TODO: invert one of them
-      esc_2_{frc846::control::base::SPARK_MAX_NEO550, motor_configs_} {}
+      esc_2_{frc846::control::base::SPARK_MAX_NEO550,
+          getModifiedConfig(motor_configs_, true)} {}
+
+frc846::control::config::MotorConstructionParameters
+AlgalEESubsystem::getModifiedConfig(
+    frc846::control::config::MotorConstructionParameters ogconfig,
+    bool isOtherMotor) {
+  frc846::control::config::MotorConstructionParameters modifiedConfig =
+      ogconfig;
+
+  if (isOtherMotor) {
+    modifiedConfig.can_id = ports::algal_ss_::end_effector_::kEE2_CANID;
+    modifiedConfig.inverted = !ogconfig.inverted;
+  }
+
+  return modifiedConfig;
+}
 
 void AlgalEESubsystem::Setup() {
   esc_1_.Setup();

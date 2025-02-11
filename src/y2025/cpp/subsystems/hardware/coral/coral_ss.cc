@@ -77,7 +77,9 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   telescope.SetTarget({setpoint.height});
   coral_wrist.SetTarget({setpoint.angle});
 
-  if (target.score)
+  // TODO: Check setpoint state of each subsystem
+  if (target.score || (!GetPreferenceValue_bool("Override_distance_sensor") &&
+                          coral_end_effector.GetReadings().has_piece_))
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
   else
     coral_end_effector.SetTarget({setpoint.ee_dc});
