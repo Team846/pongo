@@ -80,7 +80,12 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
   elevator.SetTarget({setpoint.height});
-  algal_wrist.SetTarget({setpoint.angle});
+
+  if (target.separate_wrist_state.has_value())
+    algal_wrist.SetTarget(
+        {getSetpoint(target.separate_wrist_state.value()).angle});
+  else
+    algal_wrist.SetTarget({setpoint.angle});
 
   if (target.score)
     algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});

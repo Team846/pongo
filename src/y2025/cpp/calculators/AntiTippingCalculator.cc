@@ -21,13 +21,15 @@ void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
         ((robot_constants::elevator::elevator_weight *
              robot_constants::elevator::min_height_off_base / 2.0) +
             (robot_constants::elevator::end_effector_weight * height)) /
-        (robot_constants::elevator::elevator_weight +
-            robot_constants::elevator::end_effector_weight);
+        (robot_constants::elevator::total_weight);
   }
 }
 
 void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
-  tele_cg_position_[2] = height / 2.0;
+  tele_cg_position_[2] =
+      (robot_constants::telescope::telescope_weight * (height / 2.0) +
+          robot_constants::telescope::end_effector_weight * height) /
+      (robot_constants::telescope::total_weight);
 }
 
 frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {

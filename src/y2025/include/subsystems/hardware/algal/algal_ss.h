@@ -25,6 +25,7 @@ struct AlgalSSReadings {};
 struct AlgalSSTarget {
   AlgalStates state;
   bool score;
+  std::optional<AlgalStates> separate_wrist_state = std::nullopt;
 };
 
 class AlgalSuperstructure

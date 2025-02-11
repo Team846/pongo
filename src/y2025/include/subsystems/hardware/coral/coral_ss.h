@@ -23,6 +23,7 @@ struct CoralSSReadings {};
 struct CoralSSTarget {
   CoralStates state;
   bool score;
+  std::optional<CoralStates> separate_wrist_state = std::nullopt;
 };
 
 class CoralSuperstructure

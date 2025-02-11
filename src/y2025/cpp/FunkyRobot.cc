@@ -66,7 +66,6 @@ void FunkyRobot::InitTeleop() {
 void FunkyRobot::OnPeriodic() {
   LEDsLogic::UpdateLEDs(&container_);
 
-  // TODO: fix AntiTippingCalculator cg calc from heights
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
   AntiTippingCalculator::SetElevatorHeight(
