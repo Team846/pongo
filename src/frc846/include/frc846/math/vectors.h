@@ -219,6 +219,12 @@ public:
     return other.angle(angleIsBearing) - angle(angleIsBearing);
   }
 
+  // Returns a modified vector with a given delta added to its magnitude
+  VectorND<UT, N> AddToMagnitude(T delta) {
+    assert(N == 2 && "AddToMagnitude is only defined for 2D vectors.");
+    return {magnitude() + delta, angle(true), true};
+  }
+
   // Const and non-const accessors for vector elements
   const T& operator[](size_t i) const { return data[i]; }
   T& operator[](size_t i) { return data[i]; }

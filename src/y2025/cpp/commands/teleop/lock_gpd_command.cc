@@ -28,10 +28,15 @@ LockGPDCommand::LockGPDCommand(RobotContainer& container)
                         "use_diff_thresh"))
               return std::pair<frc846::math::FieldPoint, bool>{{}, false};
 
-            return std::pair<frc846::math::FieldPoint, bool>{
-                frc846::math::FieldPoint{gpd_pos,
-                    (gpd_pos - cnt.drivetrain_.GetReadings().pose.position)
-                        .angle(true),
-                    0_fps},
-                true};
+            auto tt_vec =
+                (gpd_pos - cnt.drivetrain_.GetReadings().pose.position);
+            if (tt_vec.magnitude() > 6_in)
+              return std::pair<frc846::math::FieldPoint, bool>{
+                  frc846::math::FieldPoint{gpd_pos,
+                      (gpd_pos - cnt.drivetrain_.GetReadings().pose.position)
+                          .angle(true),
+                      0_fps},
+                  true};
+            else
+              return std::pair<frc846::math::FieldPoint, bool>{{}, false};
           }} {}

@@ -42,7 +42,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BL = 3;
   unsigned int num_connectors_BR = 3;
 
-  double drive_gear_ratio = 6.12;
+  double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
       (frc846::math::constants::geometry::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
@@ -141,6 +141,12 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
+
+  configs.camera_x_offsets = {4.5_in, 3.5_in};
+  configs.camera_y_offsets = {-6_in, -11_in};
+  configs.cams = 2;
+  configs.april_locations = {{18, {0_in, 0_in}}, {19, {-22.25_in, 0_in}},
+      {7, {155.25_in, 144_in}}, {8, {196.17_in, 652.73_in}}};
 
   return configs;
 }

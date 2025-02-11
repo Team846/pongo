@@ -1,5 +1,6 @@
 #include "frc846/base/Loggable.h"
 
+#include <iostream>
 #include <sstream>
 
 namespace frc846::base {
