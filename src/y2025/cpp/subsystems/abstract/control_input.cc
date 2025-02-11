@@ -34,10 +34,17 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
   if (readings.lock_left_reef != previous_readings_.lock_left_reef) {
     Log("ControlInput [Lock Left Reef] state changed to {}",
         readings.lock_left_reef ? 1 : 0);
+    base_adj = {0_in, 0_in};
   }
   if (readings.lock_right_reef != previous_readings_.lock_right_reef) {
     Log("ControlInput [Lock Right Reef] state changed to {}",
         readings.lock_right_reef ? 1 : 0);
+    base_adj = {0_in, 0_in};
+  }
+  if (readings.lock_processor != previous_readings_.lock_processor) {
+    Log("ControlInput [Lock Processor] state changed to {}",
+        readings.lock_processor ? 1 : 0);
+    base_adj = {0_in, 0_in};
   }
 
   previous_readings_ = readings;
@@ -77,6 +84,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.lock_left_reef = dr_readings.left_bumper;
   ci_readings_.lock_right_reef = dr_readings.right_bumper;
+
+  ci_readings_.lock_processor = dr_readings.right_trigger;  // TODO: change this
 
   ci_readings_.targeting_algae = dr_readings.left_trigger;
 

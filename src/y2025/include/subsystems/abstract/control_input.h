@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frc846/math/vectors.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/xbox.h"
 
@@ -19,6 +20,7 @@ struct ControlInputReadings {
   bool test_bearing_pid;
   bool lock_left_reef;
   bool lock_right_reef;
+  bool lock_processor;
 
   bool zero_bearing;
 
@@ -43,6 +45,8 @@ public:
   bool VerifyHardware() override;
 
   ControlInputReadings UpdateWithInput();
+
+  frc846::math::Vector2D base_adj{0_in, 0_in};
 
 private:
   ControlInputReadings previous_readings_{};

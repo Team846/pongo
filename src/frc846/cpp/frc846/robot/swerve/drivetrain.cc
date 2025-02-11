@@ -37,6 +37,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("drive_to_subtract", 2_in);
 
+  RegisterPreference("bearing_latency", 100_ms);
+  RegisterPreference("drive_latency", 0_ms);
+
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
@@ -49,6 +52,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("pose_estimator/pose_variance", 0.01);
   RegisterPreference("pose_estimator/velocity_variance", 1.0);
   RegisterPreference("pose_estimator/accel_variance", 1.0);
+  RegisterPreference("pose_estimator/override", false);
 
   RegisterPreference("april_tags/april_variance_coeff", 0.33);
   RegisterPreference("april_tags/fudge_latency", 20_ms);
@@ -61,8 +65,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("vel_stopped_thresh", 1.0_fps);
   RegisterPreference("stopped_num_loops", 25);
 
-  RegisterPreference("reef_drive_early", 12_in);
-  RegisterPreference("reef_drive_fvel", 1_fps);
+  RegisterPreference("lock_drive_early", 12_in);
+  RegisterPreference("lock_drive_fvel", 1_fps);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -114,6 +118,7 @@ void DrivetrainSubsystem::ZeroBearing() {
 
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
+
   for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
     Log("Gyro zero attempt {}/{}", attempts, kMaxAttempts);
     if (navX_.IsConnected() && !navX_.IsCalibrating()) {
@@ -226,9 +231,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
       .position = odometry_
-                      .calculate({bearing, steer_positions, drive_positions,
-                          GetPreferenceValue_double("odom_fudge_factor")})
-                      .position,
+          .calculate({bearing, steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -245,10 +250,12 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   };  // Initialize estimated pose
 
   frc846::robot::calculators::ATCalculatorOutput tag_pos =
-      tag_pos_calculator.calculate({estimated_pose, yaw_rate,
+      tag_pos_calculator.calculate({new_pose, GetReadings().pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
           GetPreferenceValue_unit_type<units::millisecond_t>(
-              "april_tags/fudge_latency")});
+              "april_tags/fudge_latency"),
+          GetPreferenceValue_unit_type<units::millisecond_t>(
+              "bearing_latency")});
 
   if (tag_pos.variance >= 0) {
     pose_estimator.AddVisionMeasurement(
@@ -314,8 +321,12 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   Graph("readings/accel_vel", accel_vel);
 
-  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
-      last_accel_spike_};
+  if (GetPreferenceValue_bool("pose_estimator/override")) {
+    estimated_pose = new_pose;
+  }
+
+  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate accel_mag,
+      accel_vel, last_accel_spike_};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>

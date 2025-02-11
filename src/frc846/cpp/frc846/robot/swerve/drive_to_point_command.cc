@@ -114,7 +114,7 @@ bool DriveToPointCommand::IsFinished() {
              drivetrain_->GetPreferenceValue_int("stopped_num_loops")
 
          || (end_when_close_ &&
-                (target_.point - current_point).magnitude() < 1_ft);
+                (target_.point - current_point).magnitude() < 4_in);
 }
 
 }  // namespace frc846::robot::swerve

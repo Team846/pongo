@@ -42,7 +42,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BL = 3;
   unsigned int num_connectors_BR = 3;
 
-  double drive_gear_ratio = 6.12;
+  double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
       (frc846::math::constants::geometry::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
@@ -142,11 +142,18 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
-  configs.camera_x_offsets = {4.5_in, 3.5_in};
-  configs.camera_y_offsets = {-6_in, -11_in};
+  configs.camera_x_offsets = {4.5_in, 4.5_in};
+  configs.camera_y_offsets = {-12_in, -12_in};
   configs.cams = 2;
-  configs.april_locations = {{18, {0_in, 0_in}}, {19, {-22.25_in, 0_in}},
-      {7, {155.25_in, 144_in}}, {8, {196.17_in, 652.73_in}}};
+  configs.april_locations = {{3, {317.15_in, 238.975_in}},
+      {6, {128.5_in, 163.18_in}}, {7, {155.25_in, 144_in}},
+      {8, {184.53_in, 158.1_in}}, {9, {189_in, 190.3_in}},
+      {10, {161.75_in, 209.5_in}}, {11, {131.7_in, 195.9_in}},
+      {16, {-0.15_in, 451.895_in}}, {17, {131.76_in, 533.44_in}},
+      {18, {161.75_in, 546.875_in}}, {19, {169.29_in, 527.87_in}},
+      {20, {166.04_in, 490.28_in}}, {21, {155.25_in, 481.375_in}},
+
+      {22, {128.51_in, 495.91_in}}};
 
   return configs;
 }

@@ -6,6 +6,7 @@
 
 #include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/processor_auto_align.h"
 #include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
@@ -26,10 +27,9 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().test_move_10_ft;
   }};
 
-  test_move_10_ft_trigger.WhileTrue(
-      frc2::InstantCommand{[&]() {
-        container.drivetrain_.SetPosition({3_ft, 4_ft});
-      }}
+  test_move_10_ft_trigger.WhileTrue(frc2::InstantCommand{[&]() {
+    container.drivetrain_.SetPosition({3_ft, 4_ft});
+  }}
           .AndThen(
               frc846::robot::swerve::DriveToPointCommand{&container.drivetrain_,
                   {{3_ft, 13_ft}, 0_deg, 0_fps}, 12_fps, 20_fps_sq, 20_fps_sq}
@@ -61,14 +61,19 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{
-      container, true, 5_fps, 15_fps_sq, 15_fps_sq}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, true, 5_fps, 15_fps_sq,
+      15_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{
-      container, false, 5_fps, 15_fps_sq, 15_fps_sq}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, false, 5_fps, 15_fps_sq,
+      15_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().lock_processor;
+  }}.WhileTrue(ProcessorAutoAlignCommand{
+      container, 5_fps, 10_fps_sq, 10_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&
