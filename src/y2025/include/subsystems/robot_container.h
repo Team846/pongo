@@ -19,7 +19,7 @@ public:
       drivetrain_constructor_.getDrivetrainConfigs()};
 
   GPDSubsystem GPD_{&drivetrain_};
-  
+
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
 

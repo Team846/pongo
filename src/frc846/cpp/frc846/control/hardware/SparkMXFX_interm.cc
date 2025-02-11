@@ -107,10 +107,10 @@ void SparkMXFX_interm::WriteDC(double duty_cycle) {
   last_command_ = duty_cycle;
 }
 void SparkMXFX_interm::WriteVelocity(units::radians_per_second_t velocity) {
-  last_command_ = units::revolutions_per_minute_t(velocity);
+  last_command_ = velocity;
 }
 void SparkMXFX_interm::WritePosition(units::radian_t position) {
-  last_command_ = units::turn_t(position);
+  last_command_ = position;
 }
 
 void SparkMXFX_interm::EnableStatusFrames(
@@ -180,14 +180,14 @@ bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(
     units::radians_per_second_t velocity) {
-  if (units::revolutions_per_minute_t* vel =
-          std::get_if<units::revolutions_per_minute_t>(&last_command_)) {
+  if (units::radians_per_second_t* vel =
+          std::get_if<units::radians_per_second_t>(&last_command_)) {
     return *vel == velocity;
   }
   return false;
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(units::radian_t position) {
-  if (units::turn_t* pos = std::get_if<units::turn_t>(&last_command_)) {
+  if (units::radian_t* pos = std::get_if<units::radian_t>(&last_command_)) {
     return *pos == position;
   }
   return false;

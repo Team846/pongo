@@ -256,7 +256,7 @@ private:
 
   rev::spark::SparkBaseConfig configs{};
 
-  std::variant<units::turn_t, units::revolutions_per_minute_t, double>
+  std::variant<units::radian_t, units::radians_per_second_t, double>
       last_command_;
   frc846::control::base::MotorGains gains_;
 
