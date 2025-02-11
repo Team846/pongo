@@ -41,12 +41,13 @@ A templated class to help create SoftLimits objects from system units.
 */
 template <typename T> class SoftLimitsHelper {
 public:
+  using pos_unit = units::unit_t<T>;
   using conv_unit =
       units::unit_t<units::compound_unit<T, units::inverse<units::turn>>>;
 
   static SoftLimits CreateSoftLimits(conv_unit conversion, bool using_limits,
-      T forward_limit, T reverse_limit, T forward_reduce, T reverse_reduce,
-      double reduce_max_dc) {
+      pos_unit forward_limit, pos_unit reverse_limit, pos_unit forward_reduce,
+      pos_unit reverse_reduce, double reduce_max_dc) {
     return SoftLimits{using_limits, forward_limit / conversion,
         reverse_limit / conversion, forward_reduce / conversion,
         reverse_reduce / conversion, reduce_max_dc};
