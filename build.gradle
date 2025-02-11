@@ -186,7 +186,7 @@ task runCppcheck(type: Exec) {
             }
         }
 
-        def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.trim()}\n```"
+        def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.replaceAll('\\\\', '/').trim()}\n```"
 
         def readmeFile = file('README.md')
         def readmeContent = readmeFile.text.trim()

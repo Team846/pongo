@@ -1,48 +1,22 @@
 #pragma once
 
-#include <units/current.h>
-#include <units/voltage.h>
-
 #include "frc846/base/Loggable.h"
 
-inline std::string MakeKey(std::string base, std::string suffix) {
-  return std::string(frc846::base::Loggable::Join(base, suffix));
-}
+#define REGISTER_MOTOR_CONFIG(current_limit, smart_current_limit)   \
+  RegisterPreference("motor_configs/current_limit", current_limit); \
+  RegisterPreference("motor_configs/smart_current_limit", smart_current_limit)
 
-// TODO: remove motor configs
+#define REGISTER_PIDF_CONFIG(p, i, d, f) \
+  RegisterPreference("gains/_kP", p);    \
+  RegisterPreference("gains/_kI", i);    \
+  RegisterPreference("gains/_kD", d);    \
+  RegisterPreference("gains/_kF", f)
 
-#define REGISTER_MOTOR_CONFIG(name, inverted, brake_mode, current_limit, \
-    smart_current_limit, voltage_compensation)                           \
-  RegisterPreference(MakeKey(name, "inverted"), inverted);               \
-  RegisterPreference(MakeKey(name, "brake_mode"), brake_mode);           \
-  RegisterPreference(MakeKey(name, "current_limit"), current_limit);     \
-  RegisterPreference(                                                    \
-      MakeKey(name, "smart_current_limit"), smart_current_limit);        \
-  RegisterPreference(                                                    \
-      MakeKey(name, "voltage_compensation"), voltage_compensation)
-
-#define GET_MOTOR_CONFIG(name, can_id, circuit_resistance, rotational_inertia) \
-  {can_id, GetPreferenceValue_bool(MakeKey(name, "inverted")),                 \
-      GetPreferenceValue_bool(MakeKey(name, "brake_mode")),                    \
-      GetPreferenceValue_unit_type<units::ampere_t>(                           \
-          MakeKey(name, "current_limit")),                                     \
-      GetPreferenceValue_unit_type<units::ampere_t>(                           \
-          MakeKey(name, "smart_current_limit")),                               \
-      GetPreferenceValue_unit_type<units::volt_t>(                             \
-          MakeKey(name, "voltage_compensation")),                              \
-      circuit_resistance, rotational_inertia}
-
-#define REGISTER_PIDF_CONFIG(name, p, i, d, f) \
-  RegisterPreference(MakeKey(name, "_kP"), p); \
-  RegisterPreference(MakeKey(name, "_kI"), i); \
-  RegisterPreference(MakeKey(name, "_kD"), d); \
-  RegisterPreference(MakeKey(name, "_kF"), f)
-
-#define GET_PIDF_GAINS(name)                           \
-  {GetPreferenceValue_double(MakeKey(name, "_kP")),    \
-      GetPreferenceValue_double(MakeKey(name, "_kI")), \
-      GetPreferenceValue_double(MakeKey(name, "_kD")), \
-      GetPreferenceValue_double(MakeKey(name, "_kF"))}
+#define GET_PIDF_GAINS()                      \
+  {GetPreferenceValue_double("gains/_kP"),    \
+      GetPreferenceValue_double("gains/_kI"), \
+      GetPreferenceValue_double("gains/_kD"), \
+      GetPreferenceValue_double("gains/_kF")}
 
 #define REGISTER_SOFTLIMIT_CONFIG(                                       \
     use_limits, upper, lower, reduce_upper, reduce_lower, reduce_max_dc) \

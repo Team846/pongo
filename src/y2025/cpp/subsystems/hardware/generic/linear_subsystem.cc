@@ -8,14 +8,29 @@ LinearSubsystem::LinearSubsystem(std::string name,
     linear_pos_conv_t conversion, units::inch_t hall_effect_loc_)
     : frc846::robot::GenericSubsystem<LinearSubsystemReadings,
           LinearSubsystemTarget>(name),
-      linear_esc_(mmtype, motor_configs_),
+      linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       hall_effect_loc_(hall_effect_loc_) {
-  REGISTER_PIDF_CONFIG("gains", 0.0, 0.0, 0.0, 0.0);
+  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
   // REGISTER_SOFTLIMIT_CONFIG("limits", true, 30_in, 0_in, 30_in, 0_in, 0.3);
 
   linear_esc_helper_.SetConversion(conversion);
 
   linear_esc_helper_.bind(&linear_esc_);
+}
+
+frc846::control::config::MotorConstructionParameters
+LinearSubsystem::GetCurrentConfig(
+    frc846::control::config::MotorConstructionParameters original_config) {
+  frc846::control::config::MotorConstructionParameters modifiedConfig =
+      original_config;
+  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  modifiedConfig.motor_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/current_limit");
+  modifiedConfig.smart_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/smart_current_limit");
+  return modifiedConfig;
 }
 
 void LinearSubsystem::Setup() {
@@ -66,7 +81,6 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   if (forward_limit && !is_homed_) {
     is_homed_ = true;
     linear_esc_helper_.SetPosition(hall_effect_loc_);
-    linear_esc_helper_.SetPosition(hall_effect_loc_);
   }
 
   return readings;
@@ -74,8 +88,8 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   Graph("target/position", target.position);
+  linear_esc_.SetGains(GET_PIDF_GAINS());
 
-  linear_esc_.SetGains(GET_PIDF_GAINS("gains"));
   if (!is_homed_) {
     linear_esc_helper_.WriteDC(0.1);
   } else {

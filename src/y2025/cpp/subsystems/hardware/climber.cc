@@ -12,12 +12,11 @@ ClimberSubsystem::ClimberSubsystem()
               .inverted = false,
               .brake_mode = true,
               .motor_current_limit = 40_A,
-              .smart_current_limit =
-                  30_A,  // TODO: prefify current limits (only)
+              .smart_current_limit = 30_A,
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::climber_::wire_resistance,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
-          1.0_tr / 2.0_tr) {
+          225_tr / 1_tr) {
   RegisterPreference("pre_climb_setpoint", 270_deg);
   RegisterPreference("climb_setpoint", 100_deg);
   RegisterPreference("stow_setpoint", 0_deg);

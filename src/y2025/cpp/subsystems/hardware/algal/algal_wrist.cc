@@ -12,14 +12,11 @@ AlgalWristSubsystem::AlgalWristSubsystem()
               .inverted = false,
               .brake_mode = true,
               .motor_current_limit = 40_A,
-              .smart_current_limit =
-                  30_A,  // TODO: prefify current limits (only)
+              .smart_current_limit = 30_A,
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0}
-
-          },
-          1.0_tr / 4.0_tr),
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0}},
+          cancoder_reduction * cancoder_to_subsystem_reduction),
       cancoder_{ports::algal_ss_::wrist_::kWristCANCoder_CANID, "rio"} {}
 
 WristTarget AlgalWristSubsystem::ZeroTarget() const {

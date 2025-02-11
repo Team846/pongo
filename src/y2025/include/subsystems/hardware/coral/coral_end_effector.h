@@ -29,6 +29,9 @@ public:
 
   CoralEETarget ZeroTarget() const override { return {0.0}; }
 
+  frc846::control::config::MotorConstructionParameters GetCurrentConfig(
+      frc846::control::config::MotorConstructionParameters original_config);
+
   void Setup() override;
 
   bool VerifyHardware() override;

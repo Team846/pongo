@@ -12,14 +12,11 @@ ElevatorSubsystem::ElevatorSubsystem()
               .inverted = false,
               .brake_mode = true,
               .motor_current_limit = 40_A,
-              .smart_current_limit =
-                  30_A,  // TODO: prefify current limits (only)
+              .smart_current_limit = 30_A,
               .voltage_compensation = 12_V,
               .circuit_resistance =
                   robot_constants::algae_ss_::wire_resistance_base,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}
-
-          },
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
           1.0_in / 2.0_tr, robot_constants::elevator::elevator_hall_effect) {}
 
 LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {

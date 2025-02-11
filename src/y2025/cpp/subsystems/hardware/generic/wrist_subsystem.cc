@@ -7,8 +7,8 @@ WristSubsystem::WristSubsystem(std::string name,
     frc846::control::config::MotorConstructionParameters motor_configs_,
     wrist_pos_conv_t conversion)
     : frc846::robot::GenericSubsystem<WristReadings, WristTarget>(name),
-      wrist_esc_(mmtype, motor_configs_) {
-  REGISTER_PIDF_CONFIG("gains", 0.0, 0.0, 0.0, 0.0);
+      wrist_esc_(mmtype, GetCurrentConfig(motor_configs_)) {
+  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
   REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
   wrist_esc_helper_.SetConversion(conversion);
@@ -17,6 +17,21 @@ WristSubsystem::WristSubsystem(std::string name,
   RegisterPreference("flip_position_load_sign", false);
 
   wrist_esc_helper_.bind(&wrist_esc_);
+}
+
+frc846::control::config::MotorConstructionParameters
+WristSubsystem::GetCurrentConfig(
+    frc846::control::config::MotorConstructionParameters original_config) {
+  frc846::control::config::MotorConstructionParameters modifiedConfig =
+      original_config;
+  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  modifiedConfig.motor_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/current_limit");
+  modifiedConfig.smart_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/smart_current_limit");
+  return modifiedConfig;
 }
 
 void WristSubsystem::Setup() {
@@ -70,6 +85,6 @@ WristReadings WristSubsystem::ReadFromHardware() {
 void WristSubsystem::WriteToHardware(WristTarget target) {
   Graph("target/position", target.position);
 
-  wrist_esc_.SetGains(GET_PIDF_GAINS("gains"));
+  wrist_esc_.SetGains(GET_PIDF_GAINS());
   wrist_esc_helper_.WritePosition(target.position);
 }

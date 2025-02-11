@@ -2,6 +2,7 @@
 
 #include "frc846/control/calculators/CircuitResistanceCalculator.h"
 #include "ports.h"
+#include "subsystems/SubsystemHelper.h"
 #include "subsystems/robot_constants.h"
 
 CoralEESubsystem::CoralEESubsystem()
@@ -11,12 +12,28 @@ CoralEESubsystem::CoralEESubsystem()
           .inverted = false,
           .brake_mode = true,
           .motor_current_limit = 40_A,
-          .smart_current_limit = 30_A,  // TODO: prefify current limits (only)
+          .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
           .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
           .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0},
       },
-      esc_{frc846::control::base::SPARK_MAX_NEO550, motor_configs_} {}
+      esc_{frc846::control::base::SPARK_MAX_NEO550,
+          GetCurrentConfig(motor_configs_)} {}
+
+frc846::control::config::MotorConstructionParameters
+CoralEESubsystem::GetCurrentConfig(
+    frc846::control::config::MotorConstructionParameters original_config) {
+  frc846::control::config::MotorConstructionParameters modifiedConfig =
+      original_config;
+  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  modifiedConfig.motor_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/current_limit");
+  modifiedConfig.smart_current_limit =
+      GetPreferenceValue_unit_type<units::ampere_t>(
+          "motor_configs/smart_current_limit");
+  return modifiedConfig;
+}
 
 void CoralEESubsystem::Setup() {
   esc_.Setup();

@@ -28,13 +28,12 @@ public:
 
   AlgalEETarget ZeroTarget() const override { return {0.0}; }
 
+  frc846::control::config::MotorConstructionParameters GetCurrentConfig(
+      frc846::control::config::MotorConstructionParameters original_config);
+
   void Setup() override;
 
   bool VerifyHardware() override;
-
-  frc846::control::config::MotorConstructionParameters getModifiedConfig(
-      frc846::control::config::MotorConstructionParameters ogconfig,
-      bool isOtherMotor);
 
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
@@ -46,3 +45,13 @@ protected:
 
   void WriteToHardware(AlgalEETarget target) override;
 };
+
+inline frc846::control::config::MotorConstructionParameters GetModifiedConfig(
+    frc846::control::config::MotorConstructionParameters original_config,
+    int can_id, bool inverted) {
+  frc846::control::config::MotorConstructionParameters modifiedConfig =
+      original_config;
+  modifiedConfig.can_id = can_id;
+  modifiedConfig.inverted = inverted;
+  return modifiedConfig;
+}
