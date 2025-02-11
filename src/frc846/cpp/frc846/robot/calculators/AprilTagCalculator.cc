@@ -45,8 +45,10 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
       for (size_t j = 0; j < tags.size(); j++) {
         if (constants_.tag_locations.contains(tags[j])) {
           frc846::math::Vector2D velComp = {
-              (input.pose.velocity[0]+input.old_pose.velocity[0])/2 * (tl + input.fudge_latency),
-              (input.pose.velocity[1]+input.old_pose.velocity[1])/2  * (tl + input.fudge_latency)};
+              (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
+                  (tl + input.fudge_latency),
+              (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
+                  (tl + input.fudge_latency)};
           output.pos += (getPos(bearingAtCapture, tx.at(j), distances.at(j),
                              tags.at(j), i) +
                             velComp) *

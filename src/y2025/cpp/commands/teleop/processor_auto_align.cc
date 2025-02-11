@@ -12,7 +12,5 @@ ProcessorAutoAlignCommand::ProcessorAutoAlignCommand(RobotContainer& container,
           frc2::SequentialCommandGroup>{container, "Processor_auto_align",
           frc2::SequentialCommandGroup{
               DriveToProcessorCommand{&(container.drivetrain_), max_speed,
-                  max_acceleration, max_deceleration}
-                  ,
-              LockToProcessorCommand{container, base_adj}
-              }} {}
+                  max_acceleration, max_deceleration},
+              LockToProcessorCommand{container, base_adj}}} {}

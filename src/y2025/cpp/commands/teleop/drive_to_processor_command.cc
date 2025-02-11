@@ -7,17 +7,15 @@ DriveToProcessorCommand::DriveToProcessorCommand(
     units::feet_per_second_t max_speed,
     units::feet_per_second_squared_t max_acceleration,
     units::feet_per_second_squared_t max_deceleration)
-    : DriveToPointCommand{drivetrain, {{0_in, 100_in}, 0_deg, 0_fps},
-          max_speed, max_acceleration, max_deceleration
-          , true
-          } {}
+    : DriveToPointCommand{drivetrain, {{0_in, 100_in}, 0_deg, 0_fps}, max_speed,
+          max_acceleration, max_deceleration, true} {}
 
 std::pair<frc846::math::FieldPoint, bool>
 DriveToProcessorCommand::GetTargetPoint() {
   auto cpos = drivetrain_->GetReadings().estimated_pose.position;
 
   frc846::math::FieldPoint target_pos = {
-                {295.75_in, 235.73_in}, -90_deg, 0_fps};
+      {295.75_in, 235.73_in}, -90_deg, 0_fps};
   target_pos = target_pos.mirror(
       frc::DriverStation::GetAlliance() ==
       frc::DriverStation::kBlue);  // TODO: make these points scriptable

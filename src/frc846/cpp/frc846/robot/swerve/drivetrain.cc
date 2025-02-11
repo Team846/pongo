@@ -325,8 +325,8 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
     estimated_pose = new_pose;
   }
 
-  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate accel_mag,
-      accel_vel, last_accel_spike_};
+  return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
+      last_accel_spike_};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>
