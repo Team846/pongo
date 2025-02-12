@@ -4,6 +4,7 @@
 
 #include "frc846/math/fieldpoints.h"
 #include "frc846/wpilib/time.h"
+#include "iostream"
 
 GPDSubsystem::GPDSubsystem(
     frc846::robot::swerve::DrivetrainSubsystem* drivetrain)
@@ -29,6 +30,88 @@ GPDTarget GPDSubsystem::ZeroTarget() const { return GPDTarget{}; }
 bool GPDSubsystem::VerifyHardware() { return true; }
 
 void GPDSubsystem::Setup() {}
+
+frc846::math::VectorND<units::feet_per_second, 2>
+GPDSubsystem::calculateVelocity(std::vector<gp_past_loc> pastPositions) {
+  if (pastPositions.size() <= 2) {
+    return frc846::math::VectorND<units::feet_per_second, 2>{0_fps, 0_fps};
+  }
+
+  gp_past_loc previous = pastPositions[pastPositions.size() - 1];
+  gp_past_loc current = pastPositions[pastPositions.size() - 2];
+
+  auto elapsedTime = current.time - previous.time;
+
+  units::second_t dt = elapsedTime.count() / 1000.0 * 1_s;
+
+  if (dt == 0_s) {
+    return frc846::math::VectorND<units::feet_per_second, 2>{0_fps, 0_fps};
+  }
+
+  frc846::math::Vector2D diff = current.position - previous.position;
+  pastPositions.pop_back();
+  units::feet_per_second_t vx = diff[0] / dt;
+  units::feet_per_second_t vy = diff[1] / dt;
+
+  vx = smoothervx.Calculate(vx.to<double>()) * 1_fps;
+  vy = smoothervx.Calculate(vy.to<double>()) * 1_fps;
+
+  return frc846::math::VectorND<units::feet_per_second, 2>{vx, vy};
+}
+
+std::vector<gp_track> GPDSubsystem::update(
+    std::vector<frc846::math::Vector2D>& detections) {
+  std::vector<bool> matched(detections.size(), false);
+  for (const auto& detection : detections) {
+    units::inch_t bestDistance = maxDistance;
+    int bestIndex = -1;
+    for (size_t i = 0; i < tracks.size(); i++) {
+      units::inch_t dist = (tracks[i].position - detection).magnitude();
+      if (dist < bestDistance && !matched[i]) {
+        bestDistance = dist;
+        bestIndex = static_cast<int>(i);
+      }
+    }
+
+    if (bestIndex != -1) {
+      tracks[bestIndex].position = detection;
+      tracks[bestIndex].missedFrames = 0;
+      gp_past_loc past_loc;
+      past_loc.time = std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::system_clock::now().time_since_epoch());
+      past_loc.position = detection;
+      tracks[bestIndex].pastPositions.push_back(past_loc);
+      tracks[bestIndex].velocity =
+          calculateVelocity(tracks[bestIndex].pastPositions);
+      matched[bestIndex] = true;
+    } else {
+      gp_track newTrack;
+      newTrack.id = nextId++;
+      newTrack.position = detection;
+      gp_past_loc past_loc;
+      past_loc.time = std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::system_clock::now().time_since_epoch());
+      past_loc.position = detection;
+      newTrack.pastPositions.push_back(past_loc);
+      newTrack.missedFrames = 0;
+      tracks.push_back(newTrack);
+      matched.push_back(true);
+    }
+
+    for (size_t i = 0; i < tracks.size();) {
+      if (!matched[i]) { tracks[i].missedFrames++; }
+      // Remove track if missed for more than max_missed_frames
+      if (tracks[i].missedFrames > max_missed_frames) {
+        tracks.erase(tracks.begin() + i);
+        matched.erase(matched.begin() + i);
+      } else {
+        i++;
+      }
+    }
+  }
+
+  return tracks;
+}
 
 std::pair<frc846::math::Vector2D, bool> GPDSubsystem::getBestGP(
     const std::vector<frc846::math::Vector2D> algae) {
@@ -112,12 +195,20 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
 
   gp_spin_ += 5_deg;
 
+  Graph("next_id", nextId);
+
+  readings.tracks = update(readings.gamepieces);
+
 #ifndef _WIN32
-  for (int i = 0; i < std::min(20, num_gps); i++) {
-    auto pos = readings.gamepieces[i];
+  for (int i = 0; i < std::min(20, (int)tracks.size()); i++) {
+    gp_track gp = tracks[i];
+    Graph("algaex" + std::to_string(gp.id % 5), gp.position[0]);
+    Graph("algaey" + std::to_string(gp.id % 5), gp.position[1]);
+    Graph("algaevy" + std::to_string(gp.id % 5), gp.velocity[1]);
+    Graph("algaevx" + std::to_string(gp.id % 5), gp.velocity[0]);
     g_field.GetObject(std::to_string(i))
-        ->SetPose(
-            frc846::math::FieldPoint::field_size_y - pos[1], pos[0], gp_spin_);
+        ->SetPose(frc846::math::FieldPoint::field_size_y - gp.position[1],
+            gp.position[0], gp_spin_);
   }
   for (int i = std::min(20, num_gps); i < 20; i++) {
     g_field.GetObject(std::to_string(i))->SetPose(100_m, 100_m, 0_deg);
