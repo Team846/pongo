@@ -12,8 +12,8 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
     target.state = kLEDsAutonomous;
   } else if (container->control_input_.GetReadings().auto_align ||
              container->control_input_.GetReadings().lock_left_reef ||
-             container->control_input_.GetReadings().lock_right_reef) {
-    // TODO: add GPD and other sequencing to LEDs as well
+             container->control_input_.GetReadings().lock_right_reef ||
+             container->control_input_.GetReadings().targeting_algae) {
     target.state = kLEDsSequencing;
   } else if (container->control_input_.GetReadings().climb_state != 0) {
     target.state = kLEDsClimbing;

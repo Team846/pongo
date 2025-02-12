@@ -9,4 +9,4 @@
 //          convertToComposition({kCoral_StowNoPiece, kAlgae_Stow}),
 //          convertToComposition({kCoral_StowWithPiece, kAlgae_Stow})},
 //         CompositionMonkeyState{{kCoral_ScoreL3, kCoral_StowNoPiece},
-//             {kAlgae_Stow, kAlgae_Stow}}}};  // TODO: Add real states
+//             {kAlgae_Stow, kAlgae_Stow}}}};

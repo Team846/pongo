@@ -84,10 +84,12 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   else
     coral_wrist.SetTarget({setpoint.angle});
 
-  // TODO: Check setpoint state of each subsystem
-  if (target.score || (!GetPreferenceValue_bool("override_distance_sensor") &&
-                          coral_end_effector.GetReadings().has_piece_ &&
-                          coral_end_effector.GetReadings().see_reef))
+  if (target.score ||
+      (!GetPreferenceValue_bool("override_distance_sensor") &&
+          coral_end_effector.GetReadings().has_piece_ &&
+          coral_end_effector.GetReadings().see_reef &&
+          (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
+              target.state == kCoral_ScoreL4)))
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
   else
     coral_end_effector.SetTarget({setpoint.ee_dc});

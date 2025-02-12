@@ -226,7 +226,6 @@ ControllerErrorCodes TalonFX_interm::GetLastErrorCode() {
   return toReturn;
 }
 
-// TODO: Expand list of errors
 frc846::control::hardware::ControllerErrorCodes TalonFX_interm::getErrorCode(
     ctre::phoenix::StatusCode code) {
   switch (code) {

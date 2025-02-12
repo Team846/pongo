@@ -44,6 +44,9 @@ void AlgalEESubsystem::Setup() {
 
   esc_2_.Setup();
   esc_2_.EnableStatusFrames({});
+
+  esc_1_.ConfigReverseLimitSwitch(
+      true, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
 }
 
 bool AlgalEESubsystem::VerifyHardware() {
@@ -55,7 +58,7 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
-  readings.has_piece_ = false;  // TODO: add piece sensor
+  readings.has_piece_ = esc_1_.GetReverseLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }
