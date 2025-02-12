@@ -64,6 +64,13 @@ void FunkyRobot::InitTeleop() {
 }
 
 void FunkyRobot::OnPeriodic() {
+  if (!home_switch_.Get()) {
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::elevator_hall_effect);
+    container_.coral_ss_.telescope.HomeSubsystem(
+        robot_constants::telescope::telescope_hall_effect);
+  }
+
   LEDsLogic::UpdateLEDs(&container_);
 
   AntiTippingCalculator::SetTelescopeHeight(
