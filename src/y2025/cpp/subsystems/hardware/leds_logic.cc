@@ -2,7 +2,8 @@
 
 void LEDsLogic::UpdateLEDs(RobotContainer* container) {
   LEDsTarget target{kLEDsUnready};
-  if (!container->coral_ss_.isHomed() || !container->algal_ss_.isHomed()) {
+  if (frc::DriverStation::IsDisabled() &&
+      (!container->coral_ss_.isHomed() || !container->algal_ss_.isHomed())) {
     target.state = kLEDsUnready;
   } else if (frc::DriverStation::IsDisabled()) {
     target.state = kLEDsDisabled;

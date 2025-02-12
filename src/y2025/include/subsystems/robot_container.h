@@ -34,13 +34,14 @@ public:
     RegisterPreference("init_algal_ss", true);
     RegisterPreference("init_climber", true);
 
-    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    bool drivetrain_init =
+        false;  //(GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
+    bool gpd_init = false;  //(GetPreferenceValue_bool("init_gpd"));
 
-    bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
-    bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
-    bool climber_init = (GetPreferenceValue_bool("init_climber"));
+    bool coral_ss_init = false;  //(GetPreferenceValue_bool("init_coral_ss"));
+    bool algal_ss_init = false;  //(GetPreferenceValue_bool("init_algal_ss"));
+    bool climber_init = false;   //(GetPreferenceValue_bool("init_climber"));
 
     RegisterSubsystemGroupA({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
