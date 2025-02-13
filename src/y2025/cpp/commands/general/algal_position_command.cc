@@ -14,7 +14,7 @@ void AlgalPositionCommand::OnInit() {}
 void AlgalPositionCommand::Periodic() {
   AlgalSSTarget algal_target{};
   algal_target.state = where_;
-  algal_target.score = false && score_;  // TODO: check if reached
+  algal_target.score = container_.algal_ss_.hasReached(where_) && score_;
 
   container_.algal_ss_.SetTarget(algal_target);
 }
@@ -23,7 +23,8 @@ void AlgalPositionCommand::OnEnd(bool interrupted) {}
 
 bool AlgalPositionCommand::IsFinished() {
   return !container_.algal_ss_.is_initialized() ||
-         (false && (!container_.coral_ss_.coral_end_effector.GetReadings()
-                           .has_piece_ ||
-                       !score_));  // TODO add end condition
+         (container_.algal_ss_.hasReached(where_) &&
+             (!container_.coral_ss_.coral_end_effector.GetReadings()
+                     .has_piece_ ||
+                 !score_));
 }

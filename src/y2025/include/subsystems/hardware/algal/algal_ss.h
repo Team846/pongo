@@ -47,6 +47,8 @@ public:
 
   bool isHomed() { return elevator.isHomed(); }
 
+  bool hasReached(AlgalStates state);
+
 protected:
   AlgalSSReadings ReadFromHardware() override;
 

@@ -31,6 +31,9 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("init_ee", true);
 
   RegisterPreference("disable_distance_sensor", false);
+
+  RegisterPreference("telescope_tolerance", 1.2_in);
+  RegisterPreference("wrist_tolerance", 5_deg);
 }
 
 void CoralSuperstructure::Setup() {
@@ -63,6 +66,20 @@ CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
   case kCoral_ScoreL4: return GET_SETPOINT("score_l4");
   default: return GET_SETPOINT("stow_no_piece");
   }
+}
+
+bool CoralSuperstructure::hasReached(CoralStates state) {
+  CoralSetpoint setpoint = getSetpoint(state);
+
+  if (units::math::abs(telescope.GetReadings().position - setpoint.height) >
+      GetPreferenceValue_unit_type<units::inch_t>("telescope_tolerance"))
+    return false;
+
+  if (units::math::abs(coral_wrist.GetReadings().position - setpoint.angle) >
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))
+    return false;
+
+  return true;
 }
 
 CoralSSReadings CoralSuperstructure::ReadFromHardware() {

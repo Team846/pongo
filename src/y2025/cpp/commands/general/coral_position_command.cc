@@ -14,7 +14,7 @@ void CoralPositionCommand::OnInit() {}
 void CoralPositionCommand::Periodic() {
   CoralSSTarget coral_target{};
   coral_target.state = where_;
-  coral_target.score = score_ && false;  // TODO: check if reached
+  coral_target.score = score_ && container_.coral_ss_.hasReached(where_);
 
   container_.coral_ss_.SetTarget(coral_target);
 }
@@ -23,7 +23,8 @@ void CoralPositionCommand::OnEnd(bool interrupted) {}
 
 bool CoralPositionCommand::IsFinished() {
   return !container_.coral_ss_.is_initialized() ||
-         (false && (!container_.algal_ss_.algal_end_effector.GetReadings()
-                           .has_piece_ ||
-                       !score_));  // TODO add end condition
+         (container_.coral_ss_.hasReached(where_) &&
+             (!container_.algal_ss_.algal_end_effector.GetReadings()
+                     .has_piece_ ||
+                 !score_));
 }

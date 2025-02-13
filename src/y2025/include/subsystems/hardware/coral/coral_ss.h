@@ -45,6 +45,8 @@ public:
 
   bool isHomed() { return telescope.isHomed(); }
 
+  bool hasReached(CoralStates state);
+
 protected:
   CoralSSReadings ReadFromHardware() override;
 

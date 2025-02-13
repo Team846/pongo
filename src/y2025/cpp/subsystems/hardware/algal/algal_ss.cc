@@ -31,6 +31,9 @@ AlgalSuperstructure::AlgalSuperstructure()
   RegisterPreference("init_elevator", false);
   RegisterPreference("init_wrist", false);
   RegisterPreference("init_ee", false);
+
+  RegisterPreference("elevator_tolerance", 3_in);
+  RegisterPreference("wrist_tolerance", 7_deg);
 }
 
 void AlgalSuperstructure::Setup() {
@@ -66,6 +69,20 @@ AlgalSetpoint AlgalSuperstructure::getSetpoint(AlgalStates state) {
   case kAlgae_L3Pick: return GET_SETPOINT("l3_pick");
   default: return GET_SETPOINT("stow");
   }
+}
+
+bool AlgalSuperstructure::hasReached(AlgalStates state) {
+  AlgalSetpoint setpoint = getSetpoint(state);
+
+  if (units::math::abs(elevator.GetReadings().position - setpoint.height) >
+      GetPreferenceValue_unit_type<units::inch_t>("elevator_tolerance"))
+    return false;
+
+  if (units::math::abs(algal_wrist.GetReadings().position - setpoint.angle) >
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))
+    return false;
+
+  return true;
 }
 
 AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
