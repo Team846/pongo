@@ -26,9 +26,7 @@ WristTarget ClimberSubsystem::ZeroTarget() const {
   return WristTarget{0.0_deg};
 }
 
-void ClimberSubsystem::ExtendedSetup() {
-  // TODO: implement
-}
+void ClimberSubsystem::ExtendedSetup() {}
 
 std::pair<units::degree_t, bool> ClimberSubsystem::GetSensorPos() {
   return {0_deg, false};

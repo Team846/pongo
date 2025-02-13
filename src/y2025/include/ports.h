@@ -9,8 +9,7 @@ struct ports {
     static constexpr int kXbox_DSPort = 1;
   };
 
-  struct drivetrain_ {  // TODO: change all ports (preferably, when setting
-                        // them, make them ascending in this order)
+  struct drivetrain_ {
     static constexpr int kFRDrive_CANID = 2;
     static constexpr int kFLDrive_CANID = 5;
     static constexpr int kBLDrive_CANID = 8;

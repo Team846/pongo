@@ -23,11 +23,4 @@ LinearSubsystemTarget TelescopeSubsystem::ZeroTarget() const {
   return LinearSubsystemTarget{0_in};
 }
 
-void TelescopeSubsystem::ExtendedSetup() {
-  // TODO: implement
-}
-
-std::pair<units::inch_t, bool> TelescopeSubsystem::GetSensorPos() {
-  // TODO: implement
-  return {0_in, false};
-}
+void TelescopeSubsystem::ExtendedSetup() {}

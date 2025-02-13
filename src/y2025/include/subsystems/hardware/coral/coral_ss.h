@@ -23,6 +23,7 @@ struct CoralSSReadings {};
 struct CoralSSTarget {
   CoralStates state;
   bool score;
+  std::optional<CoralStates> separate_wrist_state = std::nullopt;
 };
 
 class CoralSuperstructure
@@ -42,11 +43,9 @@ public:
 
   CoralSetpoint getSetpoint(CoralStates state);
 
-  bool isHomed() { return is_homed; }
+  bool isHomed() { return telescope.isHomed(); }
 
 protected:
-  bool is_homed = false;
-
   CoralSSReadings ReadFromHardware() override;
 
   void WriteToHardware(CoralSSTarget target) override;

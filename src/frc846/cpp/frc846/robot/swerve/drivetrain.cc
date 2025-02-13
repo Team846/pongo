@@ -312,7 +312,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("estimated_pose/velocity_y", estimated_pose.velocity[1]);
   Graph("estimated_pose/variance", pose_estimator.getVariance());
 
-  // TODO: consider bearing simulation
+  // Note: consider bearing simulation
 
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);

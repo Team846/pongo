@@ -19,12 +19,12 @@ AlgalSuperstructure::AlgalSuperstructure()
       algal_wrist(),
       algal_end_effector() {
   REGISTER_SETPOINT("stow", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("processor", 0_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("ground_intake", 0_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("on_top_intake", 0_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("net", 0_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("l2_pick", 0_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("l3_pick", 0_in, 0_deg, 0.2);
+  REGISTER_SETPOINT("processor", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("ground_intake", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("on_top_intake", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("net", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("l2_pick", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("l3_pick", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
 
@@ -80,7 +80,12 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
   elevator.SetTarget({setpoint.height});
-  algal_wrist.SetTarget({setpoint.angle});
+
+  if (target.separate_wrist_state.has_value())
+    algal_wrist.SetTarget(
+        {getSetpoint(target.separate_wrist_state.value()).angle});
+  else
+    algal_wrist.SetTarget({setpoint.angle});
 
   if (target.score)
     algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});

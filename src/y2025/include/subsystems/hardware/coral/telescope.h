@@ -10,7 +10,6 @@ public:
 
 protected:
   void ExtendedSetup() override;
-  std::pair<units::inch_t, bool> GetSensorPos() override;
 
 private:
 };

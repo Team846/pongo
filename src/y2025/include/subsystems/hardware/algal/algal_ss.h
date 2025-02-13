@@ -25,6 +25,7 @@ struct AlgalSSReadings {};
 struct AlgalSSTarget {
   AlgalStates state;
   bool score;
+  std::optional<AlgalStates> separate_wrist_state = std::nullopt;
 };
 
 class AlgalSuperstructure
@@ -44,11 +45,9 @@ public:
 
   AlgalSetpoint getSetpoint(AlgalStates state);
 
-  bool isHomed() { return is_homed; }
+  bool isHomed() { return elevator.isHomed(); }
 
 protected:
-  bool is_homed = false;
-
   AlgalSSReadings ReadFromHardware() override;
 
   void WriteToHardware(AlgalSSTarget target) override;
