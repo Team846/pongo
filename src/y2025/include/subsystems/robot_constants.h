@@ -7,8 +7,8 @@
 
 struct robot_constants {
   struct base {
-    static constexpr units::inch_t wheelbase_x = 28_in;
-    static constexpr units::inch_t wheelbase_y = 28_in;
+    static constexpr units::inch_t wheelbase_x = 22.5_in;
+    static constexpr units::inch_t wheelbase_y = 25.5_in;
     static constexpr units::pound_t weight = 75_lb;
 
     static constexpr units::inch_t height = 6_in;

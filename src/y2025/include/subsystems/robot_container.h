@@ -34,8 +34,7 @@ public:
     RegisterPreference("init_algal_ss", true);
     RegisterPreference("init_climber", true);
 
-    bool drivetrain_init =
-        false;  //(GetPreferenceValue_bool("init_drivetrain"));
+    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
     bool gpd_init = false;  //(GetPreferenceValue_bool("init_gpd"));
 

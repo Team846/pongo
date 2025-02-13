@@ -44,16 +44,15 @@ void LEDsSubsystem::Flash(int loops_on) {
 #define GREEN 0, 255, 0
 #define ORANGE 255, 17, 0
 
-#define SLOW_FLASH 25
+#define SLOW_FLASH 30
 #define MED_FLASH 12
 #define RAPID_FLASH 7
 
 void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
   if (target.state == kLEDsUnready) {
     SetStrip(RED);
-    Flash(MED_FLASH);
   } else if (target.state == kLEDsDisabled) {
-    SetStrip(RED);
+    SetStrip(ORANGE);
   } else if (target.state == kLEDsAutonomous) {
     SetStrip(BLUE);
   } else if (target.state == kLEDsSequencing) {
