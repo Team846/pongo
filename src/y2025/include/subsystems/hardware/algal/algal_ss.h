@@ -18,6 +18,8 @@ enum AlgalStates {
   kAlgae_Net,
   kAlgae_L2Pick,
   kAlgae_L3Pick,
+  kAlgae_DINOSAUR_A,
+  kAlgae_DINOSAUR_B,
 };
 
 struct AlgalSSReadings {};

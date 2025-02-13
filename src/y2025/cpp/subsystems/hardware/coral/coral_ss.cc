@@ -24,6 +24,9 @@ CoralSuperstructure::CoralSuperstructure()
   REGISTER_SETPOINT("score_l3", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
 
+  REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
+
   RegisterPreference("score_dc", -0.5);
 
   RegisterPreference("init_telescope", false);
@@ -64,6 +67,8 @@ CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
   case kCoral_ScoreL2: return GET_SETPOINT("score_l2");
   case kCoral_ScoreL3: return GET_SETPOINT("score_l3");
   case kCoral_ScoreL4: return GET_SETPOINT("score_l4");
+  case kCoral_DINOSAUR_A: return GET_SETPOINT("dinosaur_A");
+  case kCoral_DINOSAUR_B: return GET_SETPOINT("dinosaur_B");
   default: return GET_SETPOINT("stow_no_piece");
   }
 }
@@ -98,8 +103,7 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   CoralSetpoint setpoint = getSetpoint(target.state);
 
-  if (target.state == kCoral_StowNoPiece ||
-      target.state == kCoral_StowWithPiece)
+  if (target.state == kCoral_StowNoPiece)
     coral_wrist.SetTarget({setpoint.angle});
   if (hasReachedWrist(target.state))
     telescope.SetTarget({setpoint.height});

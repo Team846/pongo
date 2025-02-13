@@ -16,6 +16,8 @@ enum CoralStates {
   kCoral_ScoreL2,
   kCoral_ScoreL3,
   kCoral_ScoreL4,
+  kCoral_DINOSAUR_A,
+  kCoral_DINOSAUR_B,
 };
 
 struct CoralSSReadings {};

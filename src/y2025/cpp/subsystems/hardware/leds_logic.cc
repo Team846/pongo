@@ -18,7 +18,8 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
   } else if (container->control_input_.GetReadings().climb_state != 0) {
     target.state = kLEDsClimbing;
   } else if (container->algal_ss_.algal_end_effector.GetReadings().has_piece_ ||
-             container->coral_ss_.coral_end_effector.GetReadings().has_piece_) {
+             container->coral_ss_.coral_end_effector.GetReadings().has_piece_ ||
+             frc::DriverStation::IsTest()) {
     target.state = kLEDsHavePiece;
   } else if (frc::DriverStation::IsTeleop()) {
     target.state = kLEDsTeleop;

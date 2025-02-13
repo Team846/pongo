@@ -26,6 +26,9 @@ AlgalSuperstructure::AlgalSuperstructure()
   REGISTER_SETPOINT("l2_pick", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("l3_pick", 0_in, 0_deg, 0.0);
 
+  REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
+
   RegisterPreference("score_dc", -0.5);
 
   RegisterPreference("init_elevator", false);

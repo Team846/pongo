@@ -20,6 +20,9 @@ ClimberSubsystem::ClimberSubsystem()
   RegisterPreference("pre_climb_setpoint", 270_deg);
   RegisterPreference("climb_setpoint", 100_deg);
   RegisterPreference("stow_setpoint", 0_deg);
+
+  RegisterPreference("dinosaur_A_setpoint", 0_deg);
+  RegisterPreference("dinosaur_B_setpoint", 0_deg);
 }
 
 WristTarget ClimberSubsystem::ZeroTarget() const {
