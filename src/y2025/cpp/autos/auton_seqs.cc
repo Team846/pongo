@@ -70,6 +70,21 @@ using FPT = frc846::math::FieldPoint;
     &(container.drivetrain_), bearing + (is_blue_side ? 180_deg : 0_deg) \
   }
 
+#include "commands/general/algal_position_command.h"
+#include "commands/general/coral_position_command.h"
+
+#define ALGAL_POS(where) \
+  AlgalPositionCommand { container, where }
+#define CORAL_POS(where) \
+  CoralPositionCommand { container, where }
+
+#include <frc2/command/ParallelDeadlineGroup.h>
+
+#define PARALLEL_DEADLINE(deadline, parallel) \
+  frc2::ParallelDeadlineGroup { deadline, parallel }
+
+// TODO: add scoring
+
 ThreePieceAuto::ThreePieceAuto(
     RobotContainer& container, bool is_blue_side, bool is_left_side)
     : frc846::robot::GenericCommandGroup<RobotContainer, ThreePieceAuto,
@@ -78,13 +93,21 @@ ThreePieceAuto::ThreePieceAuto(
               START(158.5_in - 73.25_in, START_Y, 180_deg),
               WAIT{0.25_s},
               DRIVE_TO_REEF(3PC, 3),
+              CORAL_POS(kCoral_ScoreL4),
               WAIT{1_s},
+              CORAL_POS(kCoral_StowNoPiece),
               DRIVE(3PC, 75_in, 180_in, 40_deg, 10_fps),
               DRIVE_TO_SOURCE(3PC),
-              DRIVE_TO_REEF(3PC, 4),
+              PARALLEL_DEADLINE(
+                  DRIVE_TO_REEF(3PC, 4), CORAL_POS(kCoral_StowWithPiece)),
+              CORAL_POS(kCoral_ScoreL4),
               WAIT{1_s},
+              CORAL_POS(kCoral_StowNoPiece),
               DRIVE_TO_SOURCE(3PC),
-              DRIVE_TO_REEF(3PC, 5),
+              PARALLEL_DEADLINE(
+                  DRIVE_TO_REEF(3PC, 5), CORAL_POS(kCoral_StowWithPiece)),
+              CORAL_POS(kCoral_ScoreL4),
+              WAIT{1_s},
           }} {}
 
 OnePieceAndNetAuto::OnePieceAndNetAuto(
@@ -95,9 +118,15 @@ OnePieceAndNetAuto::OnePieceAndNetAuto(
               START(158.5_in, START_Y, 180_deg),
               WAIT{0.25_s},
               DRIVE_TO_REEF(1PC, 1),
+              CORAL_POS(kCoral_ScoreL4),
+              WAIT{1_s},
+              CORAL_POS(kCoral_StowNoPiece),
+              ALGAL_POS(kAlgae_L3Pick),
               WAIT{1_s},
               DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
               DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps),
+              ALGAL_POS(kAlgae_Net),
+              WAIT{1_s},
           }} {}
 
 LeaveAuto::LeaveAuto(
