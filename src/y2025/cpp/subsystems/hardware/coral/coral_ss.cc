@@ -69,17 +69,22 @@ CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
 }
 
 bool CoralSuperstructure::hasReached(CoralStates state) {
+  return hasReachedTelescope(state) && hasReachedWrist(state);
+}
+
+bool CoralSuperstructure::hasReachedTelescope(CoralStates state) {
   CoralSetpoint setpoint = getSetpoint(state);
 
-  if (units::math::abs(telescope.GetReadings().position - setpoint.height) >
-      GetPreferenceValue_unit_type<units::inch_t>("telescope_tolerance"))
-    return false;
+  return (units::math::abs(telescope.GetReadings().position - setpoint.height) <
+          GetPreferenceValue_unit_type<units::inch_t>("telescope_tolerance"));
+}
 
-  if (units::math::abs(coral_wrist.GetReadings().position - setpoint.angle) >
-      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))
-    return false;
+bool CoralSuperstructure::hasReachedWrist(CoralStates state) {
+  CoralSetpoint setpoint = getSetpoint(state);
 
-  return true;
+  return (
+      units::math::abs(coral_wrist.GetReadings().position - setpoint.angle) <
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"));
 }
 
 CoralSSReadings CoralSuperstructure::ReadFromHardware() {
@@ -91,24 +96,29 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
-  // TODO: add sequencing
-
   CoralSetpoint setpoint = getSetpoint(target.state);
 
-  telescope.SetTarget({setpoint.height});
+  if (target.state == kCoral_StowNoPiece ||
+      target.state == kCoral_StowWithPiece)
+    coral_wrist.SetTarget({setpoint.angle});
+  if (hasReachedWrist(target.state))
+    telescope.SetTarget({setpoint.height});
+  else
+    telescope.SetTarget({setpoint.height});
+  if (hasReachedTelescope(target.state))
+    coral_wrist.SetTarget({setpoint.angle});
 
   if (target.separate_wrist_state.has_value())
     coral_wrist.SetTarget(
         {getSetpoint(target.separate_wrist_state.value()).angle});
-  else
-    coral_wrist.SetTarget({setpoint.angle});
 
   if (target.score ||
       (!GetPreferenceValue_bool("disable_distance_sensor") &&
           coral_end_effector.GetReadings().has_piece_ &&
           coral_end_effector.GetReadings().see_reef &&
           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
-              target.state == kCoral_ScoreL4)))
+              target.state == kCoral_ScoreL4) &&
+          hasReached(target.state)))
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
   else
     coral_end_effector.SetTarget({setpoint.ee_dc});
