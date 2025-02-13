@@ -74,6 +74,8 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
+  // TODO: add sequencing
+
   CoralSetpoint setpoint = getSetpoint(target.state);
 
   telescope.SetTarget({setpoint.height});

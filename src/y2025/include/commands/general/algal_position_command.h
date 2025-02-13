@@ -7,7 +7,8 @@ class AlgalPositionCommand
     : public frc846::robot::GenericCommand<RobotContainer,
           AlgalPositionCommand> {
 public:
-  AlgalPositionCommand(RobotContainer& container, AlgalStates where);
+  AlgalPositionCommand(
+      RobotContainer& container, AlgalStates where, bool score);
 
   void OnInit() override;
 
@@ -19,4 +20,5 @@ public:
 
 private:
   AlgalStates where_;
+  bool score_;
 };

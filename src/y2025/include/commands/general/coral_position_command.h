@@ -7,7 +7,8 @@ class CoralPositionCommand
     : public frc846::robot::GenericCommand<RobotContainer,
           CoralPositionCommand> {
 public:
-  CoralPositionCommand(RobotContainer& container, CoralStates where);
+  CoralPositionCommand(
+      RobotContainer& container, CoralStates where, bool score);
 
   void OnInit() override;
 
@@ -19,4 +20,5 @@ public:
 
 private:
   CoralStates where_;
+  bool score_;
 };
