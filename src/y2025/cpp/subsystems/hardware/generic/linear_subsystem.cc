@@ -23,7 +23,8 @@ LinearSubsystem::GetCurrentConfig(
     frc846::control::config::MotorConstructionParameters original_config) {
   frc846::control::config::MotorConstructionParameters modifiedConfig =
       original_config;
-  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  REGISTER_MOTOR_CONFIG(
+      original_config.motor_current_limit, original_config.smart_current_limit);
   modifiedConfig.motor_current_limit =
       GetPreferenceValue_unit_type<units::ampere_t>(
           "motor_configs/current_limit");

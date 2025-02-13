@@ -30,7 +30,7 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("init_wrist", false);
   RegisterPreference("init_ee", true);
 
-  RegisterPreference("override_distance_sensor", false);
+  RegisterPreference("disable_distance_sensor", false);
 }
 
 void CoralSuperstructure::Setup() {
@@ -85,7 +85,7 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
     coral_wrist.SetTarget({setpoint.angle});
 
   if (target.score ||
-      (!GetPreferenceValue_bool("override_distance_sensor") &&
+      (!GetPreferenceValue_bool("disable_distance_sensor") &&
           coral_end_effector.GetReadings().has_piece_ &&
           coral_end_effector.GetReadings().see_reef &&
           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
