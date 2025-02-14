@@ -20,15 +20,14 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     container.drivetrain_.ZeroBearing();
   }).ToPtr());
 
-
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{container, true, 5_fps, 15_fps_sq,
+  }}.WhileTrue(ReefAutoAlignCommand{container, true, 12.5_fps, 35_fps_sq,
       15_fps_sq, container.control_input_.base_adj}
           .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{container, false, 5_fps, 15_fps_sq,
+  }}.WhileTrue(ReefAutoAlignCommand{container, false, 12.5_fps, 35_fps_sq,
       15_fps_sq, container.control_input_.base_adj}
           .ToPtr());
   frc2::Trigger{[&] {
