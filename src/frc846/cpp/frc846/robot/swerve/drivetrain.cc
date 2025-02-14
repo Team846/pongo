@@ -119,7 +119,7 @@ void DrivetrainSubsystem::ZeroBearing() {
 
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
-  
+
   if (!frc::DriverStation::IsAutonomous()) {
     if (frc::DriverStation::GetAlliance() ==
         frc::DriverStation::Alliance::kBlue)
@@ -216,15 +216,6 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
-  frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
-      navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
-      navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
-  accl.rotate(bearing_offset_);
-
-  Graph("navX/acclX", accl[0]);
-  Graph("navX/acclY", accl[1]);
-  pose_estimator.AddAccelerationMeasurement(accl);
-
   Graph("readings/bearing", bearing);
   Graph("readings/yaw_rate", yaw_rate);
 
@@ -251,15 +242,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odometry_
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -322,15 +311,18 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  units::meters_per_second_squared_t accel_x{navX_.GetWorldLinearAccelX()};
-  units::meters_per_second_squared_t accel_y{navX_.GetWorldLinearAccelY()};
-  units::meters_per_second_squared_t accel_z{navX_.GetWorldLinearAccelZ()};
-  Graph("readings/accel_x", accel_x);
-  Graph("readings/accel_y", accel_y);
-  Graph("readings/accel_z", accel_z);
+  frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
+      navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
+      navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
 
-  units::meters_per_second_squared_t accel_mag = units::math::sqrt(
-      accel_x * accel_x + accel_y * accel_y + accel_z * accel_z);
+  Graph("readings/accel_x", accl[0]);
+  Graph("readings/accel_y", accl[1]);
+
+  accl.rotate(bearing_offset_);
+  pose_estimator.AddAccelerationMeasurement(accl);
+
+  units::meters_per_second_squared_t accel_mag =
+      units::math::sqrt(accl[0] * accl[0] + accl[1] * accl[1]);
   Graph("readings/accel_mag", accel_mag);
 
   last_accel_spike_ += 1;
