@@ -17,6 +17,11 @@ enum MotorMonkeyType {
   SPARK_MAX_NEO550,
 };
 
+enum LimitSwitchDefaultState {
+  kNormallyOn,
+  kNormallyOff,
+};
+
 /*
 MotorMonkeyTypeHelper
 

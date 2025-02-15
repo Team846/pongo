@@ -42,13 +42,16 @@ void SparkMXFX_interm::Tick() {
   if (double* dc = std::get_if<double>(&last_command_)) {
     last_status_code = pid_controller_->SetReference(
         *dc, rev::spark::SparkBase::ControlType::kDutyCycle);
-  } else if (units::revolutions_per_minute_t* vel =
-                 std::get_if<units::revolutions_per_minute_t>(&last_command_)) {
+  } else if (units::radians_per_second_t* vel =
+                 std::get_if<units::radians_per_second_t>(&last_command_)) {
+    units::revolutions_per_minute_t rev_ms_t = *vel;
     last_status_code = pid_controller_->SetReference(
-        vel->to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
-  } else if (units::turn_t* pos = std::get_if<units::turn_t>(&last_command_)) {
+        rev_ms_t.to<double>(), rev::spark::SparkBase::ControlType::kVelocity);
+  } else if (units::radian_t* pos =
+                 std::get_if<units::radian_t>(&last_command_)) {
+    units::turn_t pos_ms_t = *pos;
     last_status_code = pid_controller_->SetReference(
-        pos->to<double>(), rev::spark::SparkBase::ControlType::kPosition);
+        pos_ms_t.to<double>(), rev::spark::SparkBase::ControlType::kPosition);
   }
   set_last_error(last_status_code);
 }
@@ -75,10 +78,12 @@ void SparkMXFX_interm::SetCurrentLimit(units::ampere_t current_limit) {
 
 void SparkMXFX_interm::SetSoftLimits(
     units::radian_t forward_limit, units::radian_t reverse_limit) {
+  units::turn_t limit_fwd = forward_limit;
+  units::turn_t limit_rev = reverse_limit;
   configs.softLimit.ForwardSoftLimitEnabled(true)
-      .ForwardSoftLimit(units::turn_t(forward_limit).to<double>())
+      .ForwardSoftLimit(limit_fwd.to<double>())
       .ReverseSoftLimitEnabled(true)
-      .ReverseSoftLimit(units::turn_t(reverse_limit).to<double>());
+      .ReverseSoftLimit(limit_rev.to<double>());
 
   APPLY_CONFIG_NO_RESET();
 }
@@ -92,7 +97,8 @@ void SparkMXFX_interm::SetVoltageCompensation(
 
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
-  configs.closedLoop.Pidf(gains_.kP, gains_.kI, gains_.kD, gains_.kFF);
+  configs.closedLoop.Pidf(
+      gains_.kP, gains_.kI, std::abs(gains_.kD), gains_.kFF);
 
   APPLY_CONFIG_NO_RESET();
 }
@@ -101,10 +107,10 @@ void SparkMXFX_interm::WriteDC(double duty_cycle) {
   last_command_ = duty_cycle;
 }
 void SparkMXFX_interm::WriteVelocity(units::radians_per_second_t velocity) {
-  last_command_ = units::revolutions_per_minute_t(velocity);
+  last_command_ = velocity;
 }
 void SparkMXFX_interm::WritePosition(units::radian_t position) {
-  last_command_ = units::turn_t(position);
+  last_command_ = position;
 }
 
 void SparkMXFX_interm::EnableStatusFrames(
@@ -174,21 +180,22 @@ bool SparkMXFX_interm::IsDuplicateControlMessage(double duty_cycle) {
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(
     units::radians_per_second_t velocity) {
-  if (units::revolutions_per_minute_t* vel =
-          std::get_if<units::revolutions_per_minute_t>(&last_command_)) {
+  if (units::radians_per_second_t* vel =
+          std::get_if<units::radians_per_second_t>(&last_command_)) {
     return *vel == velocity;
   }
   return false;
 }
 bool SparkMXFX_interm::IsDuplicateControlMessage(units::radian_t position) {
-  if (units::turn_t* pos = std::get_if<units::turn_t>(&last_command_)) {
+  if (units::radian_t* pos = std::get_if<units::radian_t>(&last_command_)) {
     return *pos == position;
   }
   return false;
 }
 
 void SparkMXFX_interm::ZeroEncoder(units::radian_t position) {
-  set_last_error(encoder_->SetPosition(units::turn_t(position).to<double>()));
+  units::turn_t npos = position;
+  set_last_error(encoder_->SetPosition(npos.to<double>()));
 }
 
 units::radians_per_second_t SparkMXFX_interm::GetVelocity() {
@@ -200,6 +207,42 @@ units::radian_t SparkMXFX_interm::GetPosition() {
 }
 units::ampere_t SparkMXFX_interm::GetCurrent() {
   return units::make_unit<units::ampere_t>(esc_->GetOutputCurrent());
+}
+
+void SparkMXFX_interm::ConfigForwardLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  rev::spark::LimitSwitchConfig::Type d_type;
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
+  }
+  configs.limitSwitch.ForwardLimitSwitchEnabled(stop_motor)
+      .ForwardLimitSwitchType(d_type);
+
+  APPLY_CONFIG_NO_RESET();
+}
+
+void SparkMXFX_interm::ConfigReverseLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  rev::spark::LimitSwitchConfig::Type d_type;
+  if (type == frc846::control::base::LimitSwitchDefaultState::kNormallyOn) {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyClosed;
+  } else {
+    d_type = rev::spark::LimitSwitchConfig::Type::kNormallyOpen;
+  }
+  configs.limitSwitch.ReverseLimitSwitchEnabled(stop_motor)
+      .ReverseLimitSwitchType(d_type);
+
+  APPLY_CONFIG_NO_RESET();
+}
+
+bool SparkMXFX_interm::GetForwardLimitSwitchState() {
+  return esc_->GetForwardLimitSwitch().Get();
+}
+
+bool SparkMXFX_interm::GetReverseLimitSwitchState() {
+  return esc_->GetReverseLimitSwitch().Get();
 }
 
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {

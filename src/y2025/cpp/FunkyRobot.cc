@@ -10,19 +10,21 @@
 #include <frc2/command/button/Trigger.h>
 #include <hal/Notifier.h>
 
+#include "autos/auton_seqs.h"
 #include "calculators/AntiTippingCalculator.h"
+#include "commands/teleop/algal_command.h"
+#include "commands/teleop/climber_command.h"
+#include "commands/teleop/coral_command.h"
 #include "commands/teleop/drive_command.h"
-#include "commands/teleop/leds_command.h"
 #include "control_triggers.h"
 #include "field.h"
 #include "frc846/wpilib/NTAction.h"
 #include "rsighandler.h"
+#include "subsystems/hardware/leds_logic.h"
 
 FunkyRobot::FunkyRobot() : GenericRobot{&container_} {}
 
 void FunkyRobot::OnInitialize() {
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
-
   Field::Setup();
 
   // for (auto x : Field::getAllAutoData()) {
@@ -32,6 +34,10 @@ void FunkyRobot::OnInitialize() {
   //   AddAuto(x.name + "_blue", new GenericAuto{container_, x, true});
   // }
 
+  ADD_AUTO_VARIANTS(ThreePieceAuto, "3PC");
+  ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
+  ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
+
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",
       new frc846::wpilib::NTAction(
@@ -40,27 +46,31 @@ void FunkyRobot::OnInitialize() {
       "zero_bearing", new frc846::wpilib::NTAction(
                           [this] { container_.drivetrain_.ZeroBearing(); }));
 
-  // frc::SmartDashboard::PutData(
-  //     "zero_odometry", new frc846::ntinf::NTAction(
-  //                          [this] { container_.drivetrain_.ZeroOdometry();
-  //                          }));
+  frc::SmartDashboard::PutData("zero_odometry",
+      new frc846::wpilib::NTAction(
+          [this] { container_.drivetrain_.SetPosition({0_in, 0_in}); }));
 }
 
-void FunkyRobot::OnDisable() {
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
-}
+void FunkyRobot::OnDisable() {}
 
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  container_.leds_.SetDefaultCommand(LEDsCommand{container_});
+
+  container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
+  container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
+  container_.climber_.SetDefaultCommand(ClimberCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
 void FunkyRobot::OnPeriodic() {
-  // TODO: plug real heights into AntiTippingCalculator
-  AntiTippingCalculator::SetTelescopeHeight(36_in);
-  AntiTippingCalculator::SetElevatorHeight(45_in);
+  LEDsLogic::UpdateLEDs(&container_);
+
+  // TODO: fix AntiTippingCalculator cg calc from heights
+  AntiTippingCalculator::SetTelescopeHeight(
+      container_.coral_ss_.telescope.GetReadings().position);
+  AntiTippingCalculator::SetElevatorHeight(
+      container_.algal_ss_.elevator.GetReadings().position);
 
   auto cg = AntiTippingCalculator::CalculateRobotCG();
   Graph("robot_cg_x", cg[0]);

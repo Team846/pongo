@@ -63,6 +63,9 @@ void HigherMotorController::WriteVelocity(
 }
 
 void HigherMotorController::WritePosition(units::radian_t position) {
+  if (soft_limits_.has_value()) {
+    position = soft_limits_.value().LimitPosition(position);
+  }
   double dc_target = gains_.calculate((position - GetPosition()).to<double>(),
       0.0, GetVelocity().to<double>(), load_.to<double>());
   WriteDC(dc_target);
@@ -94,6 +97,26 @@ units::radian_t HigherMotorController::GetPosition() {
 
 units::ampere_t HigherMotorController::GetCurrent() {
   return frc846::control::MotorMonkey::GetCurrent(slot_id_);
+}
+
+void HigherMotorController::ConfigForwardLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  frc846::control::MotorMonkey::ConfigForwardLimitSwitch(
+      slot_id_, stop_motor, type);
+}
+
+void HigherMotorController::ConfigReverseLimitSwitch(
+    bool stop_motor, frc846::control::base::LimitSwitchDefaultState type) {
+  frc846::control::MotorMonkey::ConfigReverseLimitSwitch(
+      slot_id_, stop_motor, type);
+}
+
+bool HigherMotorController::GetForwardLimitSwitchState() {
+  return frc846::control::MotorMonkey::GetForwardLimitSwitchState(slot_id_);
+}
+
+bool HigherMotorController::GetReverseLimitSwitchState() {
+  return frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
 }
 
 void HigherMotorController::SetPosition(units::radian_t position) {

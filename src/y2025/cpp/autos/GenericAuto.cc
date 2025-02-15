@@ -3,12 +3,12 @@
 // #include <frc2/command/WaitCommand.h>
 
 // #include "autos/ActionMaker.h"
+// #include "frc846/robot/swerve/drive_to_point_command.h"
 
-// GenericAuto::GenericAuto(RobotContainer& container, AutoData data,
-//                          bool is_blue_side)
+// GenericAuto::GenericAuto(
+//     RobotContainer& container, AutoData data, bool is_blue_side)
 //     : frc846::robot::GenericCommandGroup<RobotContainer, GenericAuto,
-//                                          frc2::SequentialCommandGroup>{
-//           container, data.name,
+//           frc2::SequentialCommandGroup>{container, data.name,
 //           frc2::SequentialCommandGroup{
 //               std::move(buildActionsGroup(data, container, is_blue_side))}}
 //               {}
@@ -45,7 +45,7 @@
 //             start.point[1].to<double>());
 //         Log("Setting bearing to {} deg.", start.bearing.to<double>());
 
-//         container.drivetrain_.SetPoint(start.point);
+//         container.drivetrain_.SetPosition(start.point);
 //         container.drivetrain_.SetBearing(start.bearing);
 //       }));
 //   for (auto& action : data.actions) {
@@ -53,8 +53,10 @@
 //       cmds.push_back(ActionMaker::GetAction(*action_name, container));
 //     } else if (auto* fp = std::get_if<std::vector<frc846::math::FieldPoint>>(
 //                    &action)) {
-//       cmds.push_back(std::make_unique<frc846::swerve::FollowTrajectoryCommand>(
-//           container, *fp, is_blue_side ? (int)data.blue : (int)data.red));
+//       cmds.push_back(
+//           std::make_unique<frc846::robot::swerve::DriveToPointCommand>(
+//               &(container_.drivetrain_), *fp,
+//               is_blue_side ? (int)data.blue : (int)data.red));
 //     }
 //   }
 

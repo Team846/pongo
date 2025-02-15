@@ -37,7 +37,7 @@ deploy {
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = true
+def includeDesktopSupport = false
 
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = true
@@ -186,7 +186,7 @@ task runCppcheck(type: Exec) {
             }
         }
 
-        def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.trim()}\n```"
+        def cppcheckSection = "## CppCheck Warnings\n```\n${reportContent.replaceAll('\\\\', '/').trim()}\n```"
 
         def readmeFile = file('README.md')
         def readmeContent = readmeFile.text.trim()

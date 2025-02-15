@@ -62,6 +62,15 @@ public:
   units::radians_per_second_t GetVelocity() override;
   units::ampere_t GetCurrent() override;
 
+  virtual void ConfigForwardLimitSwitch(bool stop_motor,
+      frc846::control::base::LimitSwitchDefaultState type) override {}
+
+  virtual void ConfigReverseLimitSwitch(bool stop_motor,
+      frc846::control::base::LimitSwitchDefaultState type) override {}
+
+  virtual bool GetForwardLimitSwitchState() override { return false; }
+  virtual bool GetReverseLimitSwitchState() override { return false; }
+
   /*
   ZeroEncoder()
 

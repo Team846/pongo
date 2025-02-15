@@ -84,6 +84,7 @@ public:
 
   void ZeroBearing();
 
+  void SetBearing(units::degree_t bearing);
   void SetPosition(frc846::math::Vector2D position);
 
   void SetCANCoderOffsets();
@@ -118,6 +119,8 @@ private:
           units::feet_per_second_squared_t(0)}};
 
   bool first_loop = true;
+
+  units::degree_t bearing_offset_ = 0_deg;
 };
 
 }  // namespace frc846::robot::swerve

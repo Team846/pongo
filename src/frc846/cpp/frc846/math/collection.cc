@@ -62,4 +62,9 @@ units::degree_t CoterminalSum(
   }
 }
 
+units::degree_t modulo(units::degree_t a, units::degree_t b) {
+  units::degree_t result = units::math::fmod(a, b);
+  return result < units::degree_t{0} ? result + b : result;
+}
+
 }  // namespace frc846::math

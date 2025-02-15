@@ -10,8 +10,8 @@ DriveToReefCommand::DriveToReefCommand(
     units::feet_per_second_squared_t max_acceleration,
     units::feet_per_second_squared_t max_deceleration)
     : DriveToPointCommand{drivetrain,
-          ReefProvider::getReefScoringLocations()[0], 5_fps, max_acceleration,
-          max_deceleration, true},
+          ReefProvider::getReefScoringLocations()[0], max_speed,
+          max_acceleration, max_deceleration, true},
       is_left_{is_left} {}
 
 std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {

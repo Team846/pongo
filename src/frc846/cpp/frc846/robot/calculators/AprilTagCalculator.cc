@@ -1,7 +1,5 @@
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 
-#include <iostream>
-
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/wpilib/time.h"
 
@@ -94,7 +92,6 @@ frc846::math::VectorND<units::inch, 2> AprilTagCalculator::getPos(
       center_to_cam + cam_to_tag;
   local_tag_pos = local_tag_pos.rotate(bearing);
 
-  std::cout << local_tag_pos.angle().to<double>() << std::endl;
   return {
       constants_.tag_locations[tag].x_pos - local_tag_pos[0],
       constants_.tag_locations[tag].y_pos - local_tag_pos[1],
