@@ -6,10 +6,9 @@
 #include "frc846/robot/swerve/lock_to_point_command.h"
 #include "subsystems/robot_container.h"
 
-class LockToReefCommand : public frc846::robot::swerve::LockToPointCommand {
+class LockToProcessorCommand
+    : public frc846::robot::swerve::LockToPointCommand {
 public:
-  LockToReefCommand(RobotContainer& container, bool is_left,
-      frc846::math::Vector2D& base_adj);
-
-  // frc846::math::Vector2D base_adj{0_in, 0_in};
+  LockToProcessorCommand(
+      RobotContainer& container, frc846::math::Vector2D& base_adj);
 };

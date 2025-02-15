@@ -1,16 +1,14 @@
-#include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/lock_to_processor_command.h"
 
+#include "frc/DriverStation.h"
 #include "reef.h"
 
-LockToReefCommand::LockToReefCommand(
-    RobotContainer& container, bool is_left, frc846::math::Vector2D& base_adj)
+LockToProcessorCommand::LockToProcessorCommand(
+    RobotContainer& container, frc846::math::Vector2D& base_adj)
     : frc846::robot::swerve::LockToPointCommand{&(container.drivetrain_), {},
-          [&, &cnt = container, lft = is_left, &ba = base_adj](
+          [&, &cnt = container, &ba = base_adj](
               frc846::math::FieldPoint ctarget, frc846::math::FieldPoint start,
               bool firstLoop) {
-            auto pos = cnt.drivetrain_.GetReadings().estimated_pose.position;
-            int reef_target_pos = ReefProvider::getClosestReefSide(pos);
-
             auto ci_readings_ = cnt.control_input_.GetReadings();
             units::inch_t adj_rate =
                 cnt.drivetrain_.GetPreferenceValue_unit_type<units::inch_t>(
@@ -25,12 +23,15 @@ LockToReefCommand::LockToReefCommand(
               ba[1] += adj_rate;
             }
 
-            auto target_pos =
-                ReefProvider::getReefScoringLocations()[2 * reef_target_pos +
-                                                        (lft ? 0 : 1)];
+            frc846::math::FieldPoint target_pos = {
+                {295.75_in, 235.73_in}, -90_deg, 0_fps};
+            target_pos = target_pos.mirror(
+                frc::DriverStation::GetAlliance() ==
+                frc::DriverStation::kBlue);  // TODO: make these points
+                                             // scriptable
 
             auto bearing = cnt.drivetrain_.GetReadings().pose.bearing;
-            target_pos.point += ba.rotate(bearing);
+            target_pos.point += ba;
 
             return std::pair<frc846::math::FieldPoint, bool>{target_pos, true};
           }} {

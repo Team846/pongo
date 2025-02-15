@@ -3,11 +3,11 @@
 #include "frc846/robot/GenericCommand.h"
 #include "subsystems/robot_container.h"
 
-class ReefAutoAlignCommand
+class ProcessorAutoAlignCommand
     : public frc846::robot::GenericCommandGroup<RobotContainer,
-          ReefAutoAlignCommand, frc2::SequentialCommandGroup> {
+          ProcessorAutoAlignCommand, frc2::SequentialCommandGroup> {
 public:
-  ReefAutoAlignCommand(RobotContainer& container, bool is_left,
+  ProcessorAutoAlignCommand(RobotContainer& container,
       units::feet_per_second_t max_speed,
       units::feet_per_second_squared_t max_acceleration,
       units::feet_per_second_squared_t max_deceleration,
