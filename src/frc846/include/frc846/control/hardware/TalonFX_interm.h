@@ -240,6 +240,16 @@ public:
   bool GetReverseLimitSwitchState();
 
   /*
+  GetAbsoluteEncoderPosition()
+
+  Gets the position output of an encoder. You must enable the Absolute status
+  frame.
+
+  @return position in rotations
+  */
+  units::turn_t GetAbsoluteEncoderPosition();
+
+  /*
   GetLastErrorCode()
 
   Gets the the last error code from the motor controller.

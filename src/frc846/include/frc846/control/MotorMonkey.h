@@ -127,6 +127,8 @@ public:
   static bool GetForwardLimitSwitchState(size_t slot_id);
   static bool GetReverseLimitSwitchState(size_t slot_id);
 
+  static units::turn_t GetAbsoluteEncoderPosition(size_t slot_id);
+
   static void SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
       units::radian_t reverse_limit);
 

@@ -102,15 +102,7 @@ public:
   bool GetForwardLimitSwitchState();
   bool GetReverseLimitSwitchState();
 
-  // void ConfigForwardLimitSwitch(
-  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
-  // void ConfigReverseLimitSwitch(
-  //     bool stop_motor, frc846::control::base::LimitSwitchDefaultState type);
-
-  // bool GetForwardLimitSwitchState();
-  // bool GetReverseLimitSwitchState();
-
-  // units::volt_t GetAnalogDeviceOutput();
+  units::turn_t GetAbsoluteEncoderPosition();
 
   void OverrideStatusFramePeriod(
       config::StatusFrame frame, units::millisecond_t period);

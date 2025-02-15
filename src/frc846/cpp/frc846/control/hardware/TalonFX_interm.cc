@@ -220,6 +220,9 @@ bool TalonFX_interm::GetReverseLimitSwitchState() {
          ctre::phoenix6::signals::ForwardLimitValue::ClosedToGround;
 }
 
+// TODO: Use the API to make this function work
+units::turn_t TalonFX_interm::GetAbsoluteEncoderPosition() { return 0.0_tr; }
+
 ControllerErrorCodes TalonFX_interm::GetLastErrorCode() {
   ControllerErrorCodes toReturn = last_error_;
   last_error_ = ControllerErrorCodes::kAllOK;

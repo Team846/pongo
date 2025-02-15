@@ -1,5 +1,6 @@
 #pragma once
 
+#include <rev/AbsoluteEncoder.h>
 #include <rev/SparkFlex.h>
 #include <rev/SparkMax.h>
 
@@ -240,6 +241,16 @@ public:
   @return bool If the limit switch is enabled
   */
   bool GetReverseLimitSwitchState();
+
+  /*
+  GetAbsoluteEncoderPosition()
+
+  Gets the position output of an encoder. You must enable the Absolute status
+  frame.
+
+  @return position in rotations
+  */
+  units::turn_t GetAbsoluteEncoderPosition();
 
   /*
   GetLastErrorCode()

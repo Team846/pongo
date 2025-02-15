@@ -119,6 +119,10 @@ bool HigherMotorController::GetReverseLimitSwitchState() {
   return frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
 }
 
+units::turn_t HigherMotorController::GetAbsoluteEncoderPosition() {
+  return frc846::control::MotorMonkey::GetAbsoluteEncoderPosition(slot_id_);
+}
+
 void HigherMotorController::SetPosition(units::radian_t position) {
   frc846::control::MotorMonkey::ZeroEncoder(slot_id_, position);
 }

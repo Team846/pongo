@@ -153,6 +153,15 @@ void SparkMXFX_interm::EnableStatusFrames(
     configs.signals.AnalogPositionAlwaysOn(false);
   }
 
+  if (vector_has(frames, config::StatusFrame::kAbsoluteFrame)) {
+    configs.signals.AbsoluteEncoderPositionPeriodMs(20);
+    configs.signals.AbsoluteEncoderPositionAlwaysOn(true);
+    configs.absoluteEncoder.SetSparkMaxDataPortConfig();
+  } else {
+    configs.signals.AbsoluteEncoderPositionPeriodMs(32767);
+    configs.signals.AbsoluteEncoderPositionAlwaysOn(false);
+  }
+
   APPLY_CONFIG_NO_RESET();
 }
 
@@ -243,6 +252,11 @@ bool SparkMXFX_interm::GetForwardLimitSwitchState() {
 
 bool SparkMXFX_interm::GetReverseLimitSwitchState() {
   return esc_->GetReverseLimitSwitch().Get();
+}
+
+units::turn_t SparkMXFX_interm::GetAbsoluteEncoderPosition() {
+  return units::make_unit<units::turn_t>(
+      esc_->GetAbsoluteEncoder().GetPosition());
 }
 
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {
