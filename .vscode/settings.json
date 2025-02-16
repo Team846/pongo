@@ -117,7 +117,13 @@
     "queue": "cpp",
     "expected": "cpp",
     "source_location": "cpp",
-    "version": "cpp"
+    "version": "cpp",
+    "__bit_reference": "cpp",
+    "__hash_table": "cpp",
+    "__locale": "cpp",
+    "__node_handle": "cpp",
+    "__split_buffer": "cpp",
+    "__verbose_abort": "cpp"
   },
   "wpilib.useWindbgX": true,
   "C_Cpp.errorSquiggles": "enabled",

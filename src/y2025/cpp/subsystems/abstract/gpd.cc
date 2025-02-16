@@ -32,48 +32,6 @@ bool GPDSubsystem::VerifyHardware() { return true; }
 
 void GPDSubsystem::Setup() {}
 
-units::second_t GPDSubsystem::calculateTotalBounceTime(
-    units::feet_per_second_t vel, double energy_loss_percent,
-    units::inch_t threshold) {
-  units::inch_t h0 = (vel * vel) / (2 * frc846::math::constants::physics::g);
-  if (h0 < threshold) { return 2 * vel / frc846::math::constants::physics::g; }
-  double r = std::sqrt(1 - energy_loss_percent / 100.0);
-  int N_last = static_cast<int>(
-      std::floor(std::log(threshold.value() / h0.value()) / (2 * std::log(r))));
-  units::second_t total_time = 0_s;
-  for (int n = 0; n < N_last; ++n) {
-    double rn = std::pow(r, n);
-    units::second_t T_n = 2 * vel * rn / frc846::math::constants::physics::g;
-    total_time += T_n;
-  }
-
-  double rn_last = std::pow(r, N_last);
-  units::second_t T_last =
-      2 * vel * rn_last / frc846::math::constants::physics::g;
-  total_time += T_last;
-
-  return total_time;
-}
-
-units::feet_per_second_t GPDSubsystem::calculateZVelocity(
-    std::vector<gp_past_loc>& pastPositions) {
-  if (pastPositions.size() <= 2) { return 0_fps; }
-
-  gp_past_loc previous = pastPositions[pastPositions.size() - 1];
-  gp_past_loc current = pastPositions[pastPositions.size() - 2];
-
-  auto elapsedTime = current.time - previous.time;
-  units::second_t dt = elapsedTime.count() / 1000.0 * 1_s;
-
-  if (dt == 0_s) { return 0_fps; }
-
-  units::inch_t height_diff = current.height - previous.height;
-  units::feet_per_second_t vz = height_diff / dt;
-
-  vz = smoothervz.Calculate(vz.to<double>()) * 1_fps;
-  return vz;
-}
-
 frc846::math::VectorND<units::feet_per_second, 2>
 GPDSubsystem::calculateVelocity(std::vector<gp_past_loc> pastPositions) {
   if (pastPositions.size() <= 2) {
@@ -92,9 +50,11 @@ GPDSubsystem::calculateVelocity(std::vector<gp_past_loc> pastPositions) {
   }
 
   frc846::math::Vector2D diff = current.position - previous.position;
-  pastPositions.pop_back();
+  units::inch_t h_diff = current.height - previous.height;
+  // pastPositions.pop_back();
   units::feet_per_second_t vx = diff[0] / dt;
   units::feet_per_second_t vy = diff[1] / dt;
+  units::feet_per_second_t vz = h_diff / dt;
 
   vx = smoothervx.Calculate(vx.to<double>()) * 1_fps;
   vy = smoothervx.Calculate(vy.to<double>()) * 1_fps;
@@ -102,14 +62,33 @@ GPDSubsystem::calculateVelocity(std::vector<gp_past_loc> pastPositions) {
   return frc846::math::VectorND<units::feet_per_second, 2>{vx, vy};
 }
 
+units::feet_per_second_t GPDSubsystem::calculateZVelocity(
+    std::vector<gp_past_loc> pastPositions) {
+  if (pastPositions.size() <= 2) { return 0_fps; }
+
+  gp_past_loc previous = pastPositions[pastPositions.size() - 2];
+  gp_past_loc current = pastPositions[pastPositions.size() - 1];
+
+  auto elapsedTime = current.time - previous.time;
+  units::second_t dt = elapsedTime.count() / 1000.0 * 1_s;
+
+  if (dt == 0_s) { return 0_fps; }
+  std::cout << std::to_string(current.height.to<double>());
+
+  units::inch_t height_diff = current.height - previous.height;
+  units::feet_per_second_t vz = height_diff / dt;
+
+  vz = smoothervz.Calculate(vz.to<double>()) * 1_fps;
+  return vz;
+}
+
 std::vector<gp_track> GPDSubsystem::update(
     std::vector<frc846::math::Vector2D>& detections,
-    const std::vector<units::inch_t>& heights) {
+    std::vector<units::inch_t>& heightsklk) {
   std::vector<bool> matched(detections.size(), false);
   for (size_t j = 0; j < detections.size(); j++) {
-    auto detection = detections[j];
-    auto height = heights[j];
-
+    frc846::math::Vector2D detection = detections[j];
+    units::inch_t height = heightsklk[j];
     units::inch_t bestDistance = maxDistance;
     int bestIndex = -1;
     for (size_t i = 0; i < tracks.size(); i++) {
@@ -129,11 +108,9 @@ std::vector<gp_track> GPDSubsystem::update(
       past_loc.position = detection;
       past_loc.height = height;
       tracks[bestIndex].pastPositions.push_back(past_loc);
-
-      // Update both planar and vertical velocities
       tracks[bestIndex].velocity =
           calculateVelocity(tracks[bestIndex].pastPositions);
-      tracks[bestIndex].z_velocity =
+      tracks[bestIndex].zvelocity =
           calculateZVelocity(tracks[bestIndex].pastPositions);
       matched[bestIndex] = true;
     } else {
@@ -147,9 +124,7 @@ std::vector<gp_track> GPDSubsystem::update(
       past_loc.height = height;
       newTrack.pastPositions.push_back(past_loc);
       newTrack.missedFrames = 0;
-      newTrack.velocity =
-          frc846::math::VectorND<units::feet_per_second, 2>{0_fps, 0_fps};
-      newTrack.z_velocity = 0_fps;
+      newTrack.zvelocity = 0_fps;
       tracks.push_back(newTrack);
       matched.push_back(true);
     }
@@ -225,11 +200,12 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
   Graph("latency", latency);
 
   std::vector<double> theta_x = gpdTable->GetNumberArray("tx", {});
-  std::vector<double> height = gpdTable->GetNumberArray("h", {});
+  std::vector<double> h = gpdTable->GetNumberArray("heights", {});
 
   readings.gamepieces.clear();
 
-  for (size_t i = 0; i < distances.size() && i < theta_x.size(); ++i) {
+  for (size_t i = 0; i < distances.size() && i < theta_x.size() && i < h.size();
+       ++i) {
     readings.gamepieces.push_back(
         frc846::math::Vector2D{units::inch_t(distances[i]),
             drivetrain_readings.pose.bearing -
@@ -244,12 +220,9 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
             GetPreferenceValue_unit_type<units::inch_t>("intake_to_cam_x"),
             GetPreferenceValue_unit_type<units::inch_t>("intake_to_cam_y")}
             .rotate(drivetrain_readings.pose.bearing));
+    readings.heights.push_back(units::inch_t(h[i]));
   }
 
-  std::vector<units::inch_t> heights_converted;
-  for (auto h : height) {
-    heights_converted.push_back(h * 1_in);
-  }
   int num_gps = readings.gamepieces.size();
 
   Graph("num_gps", num_gps);
@@ -258,7 +231,7 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
 
   Graph("next_id", nextId);
 
-  readings.tracks = update(readings.gamepieces, heights_converted);
+  readings.tracks = update(readings.gamepieces, readings.heights);
 
 #ifndef _WIN32
   for (int i = 0; i < std::min(20, (int)tracks.size()); i++) {
@@ -267,6 +240,7 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
     Graph("algaey" + std::to_string(gp.id % 5), gp.position[1]);
     Graph("algaevy" + std::to_string(gp.id % 5), gp.velocity[1]);
     Graph("algaevx" + std::to_string(gp.id % 5), gp.velocity[0]);
+    Graph("algaevz" + std::to_string(gp.id % 5), gp.zvelocity);
     g_field.GetObject(std::to_string(i))
         ->SetPose(frc846::math::FieldPoint::field_size_y - gp.position[1],
             gp.position[0], gp_spin_);

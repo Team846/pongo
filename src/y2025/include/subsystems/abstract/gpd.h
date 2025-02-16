@@ -22,17 +22,18 @@ struct gp_past_loc {
 };
 
 struct gp_track {
-  int id;
-  frc846::math::Vector2D position;
+  int id;                           // Unique identifier for the ball
+  frc846::math::Vector2D position;  // Last known position
   frc846::math::VectorND<units::feet_per_second, 2> velocity;
-  units::feet_per_second_t z_velocity;
+  int missedFrames;  // Counter for missed detections
   std::vector<gp_past_loc> pastPositions;
-  int missedFrames;
+  units::feet_per_second_t zvelocity;
 };
 
 struct GPDReadings {
   std::vector<frc846::math::Vector2D> gamepieces;
   std::vector<gp_track> tracks;
+  std::vector<units::inch_t> heights;
 };
 
 class GPDSubsystem
@@ -48,16 +49,13 @@ public:
   GPDTarget ZeroTarget() const override;
 
   std::vector<gp_track> update(std::vector<frc846::math::Vector2D>& detections,
-      const std::vector<units::inch_t>& heights);
+      std::vector<units::inch_t>& heightsklk);
 
   units::feet_per_second_t calculateZVelocity(
-      std::vector<gp_past_loc>& pastPositions);
+      std::vector<gp_past_loc> pastPositions);
 
   frc846::math::VectorND<units::feet_per_second, 2> calculateVelocity(
       std::vector<gp_past_loc> pastPositions);
-
-  units::second_t calculateTotalBounceTime(units::feet_per_second_t vel,
-      double energy_loss_percent, units::inch_t threshold);
 
   bool VerifyHardware() override;
 
@@ -69,11 +67,11 @@ private:
   std::vector<gp_track> tracks;
   int nextId = 1;
 
+  // std::vector<units::inch_t> heightsklk;
+
   frc846::math::Smoother smoothervx{0.01};
   frc846::math::Smoother smoothervy{0.01};
   frc846::math::Smoother smoothervz{0.01};
-
-  double energy_loss = 0.5;
 
   std::shared_ptr<nt::NetworkTable> gpdTable =
       nt::NetworkTableInstance::GetDefault().GetTable("GPDCam1");
