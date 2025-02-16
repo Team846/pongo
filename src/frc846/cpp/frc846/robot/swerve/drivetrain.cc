@@ -292,13 +292,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
 
-  if (frc::DriverStation::IsAutonomous() ||
-      frc::DriverStation::IsAutonomousEnabled()) {
-    estimated_pose = new_pose;
-    Graph("overriding_kalman_pose_auton", true);
-  } else {
-    Graph("overriding_kalman_pose_auton", false);
-  }
+  // if (frc::DriverStation::IsAutonomous() ||
+  //     frc::DriverStation::IsAutonomousEnabled()) {
+  //   estimated_pose = new_pose;
+  //   Graph("overriding_kalman_pose_auton", true);
+  // } else {
+  //   Graph("overriding_kalman_pose_auton", false);
+  // }
 
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
   Graph("estimated_pose/position_y", estimated_pose.position[1]);
