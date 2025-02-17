@@ -48,6 +48,8 @@ private:
   int num_stalled_loops_ = 0;
 
   bool end_when_close_ = false;
+
+  units::degree_t direction_offset;
 };
 
 }  // namespace frc846::robot::swerve

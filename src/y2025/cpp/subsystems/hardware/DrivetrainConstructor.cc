@@ -142,16 +142,17 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
-  configs.camera_x_offsets = {-6.5_in, -4.5_in};
-  configs.camera_y_offsets = {-8.25_in, -8_in};
+  configs.camera_x_offsets = {-6.5_in, -7_in};
+  configs.camera_y_offsets = {-8.25_in, -9.25_in};
   configs.cams = 2;
-  configs.april_locations = {{3, {317.15_in, 238.975_in}},
-      {6, {128.5_in, 163.18_in}}, {7, {155.25_in, 144_in}},
-      {8, {184.53_in, 158.1_in}}, {9, {189_in, 190.3_in}},
-      {10, {161.75_in, 209.5_in}}, {11, {131.7_in, 195.9_in}},
-      {16, {-0.15_in, 451.895_in}}, {17, {131.76_in, 533.44_in}},
-      {18, {161.75_in, 546.875_in}}, {19, {169.29_in, 527.87_in}},
-      {20, {166.04_in, 490.28_in}}, {21, {155.25_in, 481.375_in}},
+  configs.april_locations = {{1, {23.89_in, 36.134_in}},
+      {3, {317.15_in, 238.975_in}}, {6, {128.5_in, 163.18_in}},
+      {7, {155.25_in, 144_in}}, {8, {184.53_in, 158.1_in}},
+      {9, {189_in, 190.3_in}}, {10, {161.75_in, 209.5_in}},
+      {11, {131.7_in, 195.9_in}}, {16, {-0.15_in, 451.895_in}},
+      {17, {131.76_in, 533.44_in}}, {18, {161.75_in, 546.875_in}},
+      {19, {169.29_in, 527.87_in}}, {20, {166.04_in, 490.28_in}},
+      {21, {155.25_in, 481.375_in}},
 
       {22, {128.51_in, 495.91_in}}};
 
