@@ -22,6 +22,7 @@ struct ATCalculatorInput {
   units::degrees_per_second_t angular_velocity;
 
   double aprilVarianceCoeff;
+  double triangularVarianceCoeff;
   units::second_t fudge_latency;
   units::second_t bearing_latency;
 };

@@ -2,6 +2,7 @@
 
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/wpilib/time.h"
+#include <units/math.h>
 
 namespace frc846::robot::calculators {
 
@@ -39,29 +40,71 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
         input.pose.bearing -
         input.angular_velocity *
             (tl + input.bearing_latency);  // TODO: fix bearing latency, accl?
-    if (distances.size() == tx.size() && tx.size() == tags.size()) {
-      for (size_t j = 0; j < tags.size(); j++) {
-        if (constants_.tag_locations.contains(tags[j])) {
-          frc846::math::Vector2D velComp = {
-              (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
-                  (tl + input.fudge_latency),
-              (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
-                  (tl + input.fudge_latency)};
-          output.pos += (getPos(bearingAtCapture, tx.at(j), distances.at(j),
-                             tags.at(j), i) +
-                            velComp) *
-                        (48) / distances.at(j).to<double>();
-          variance +=
-              1 /
-              std::max(
-                  (input.aprilVarianceCoeff *
-                      std::sqrt(distances.at(j).to<double>()) *
+
+    // CASE 1: Triangulate with 2 tags
+    if (tags.size() >= 2 && tags.size() == distances.size() &&
+        tags.size() == tx.size()) {
+      frc846::math::Vector2D loc_tag_1 = {constants_.tag_locations[tags[0]].x_pos, constants_.tag_locations[tags[0]].y_pos};
+      frc846::math::Vector2D loc_tag_2 = {constants_.tag_locations[tags[1]].x_pos, constants_.tag_locations[tags[1]].y_pos};
+
+      units::degree_t fieldTag1Tx = tx[0] + bearingAtCapture;
+      units::degree_t fieldTag2Tx = tx[1] + bearingAtCapture;
+
+      double tag1Slope=1/units::math::tan(fieldTag1Tx);
+      double tag2Slope=1/units::math::tan(fieldTag2Tx);
+
+      units::foot_t camera_x = ((loc_tag_2[1]-tag2Slope*loc_tag_2[0]) - (loc_tag_1[1]-tag1Slope*loc_tag_1[0]))/(tag1Slope-tag2Slope);
+      units::foot_t camera_y = (camera_x-loc_tag_1[0])*tag1Slope+loc_tag_1[1];
+    
+      frc846::math::Vector2D camera_pos = {camera_x, camera_y};
+      frc846::math::Vector2D cam_offset = {constants_.camera_x_offsets[i], constants_.camera_y_offsets[i]};
+      cam_offset=cam_offset.rotate(bearingAtCapture);
+
+      frc846::math::Vector2D uncompensatedPos = camera_pos-cam_offset;
+
+      frc846::math::Vector2D velComp = {
+          (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
+              (tl + input.fudge_latency),
+          (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
+              (tl + input.fudge_latency)};
+
+      frc846::math::Vector2D est_pos = uncompensatedPos+velComp;
+
+
+      output.pos += (est_pos) * 1.2;
+      variance +=
+          1 / std::max(
+                  (input.triangularVarianceCoeff *
+                      std::sqrt(distances.at(0).to<double>()) *
                       std::pow(
                           1 + input.pose.velocity.magnitude().to<double>(), 2) *
                       std::pow(1 + input.angular_velocity.to<double>(), 2)),
                   0.0000000001);
-          totalTagWeight += (48) / distances.at(j).to<double>();
-        }
+      totalTagWeight += 1.2;
+
+    }
+    // CASE 2: Single tag estimate
+    else if (tags.size() == 1 && distances.size() == 1 && tx.size() == 1) {
+      if (constants_.tag_locations.contains(tags[0])) {
+        frc846::math::Vector2D velComp = {
+            (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
+                (tl + input.fudge_latency),
+            (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
+                (tl + input.fudge_latency)};
+        output.pos += (getPos(bearingAtCapture, tx.at(0), distances.at(0),
+                           tags.at(0), i) +
+                          velComp) *
+                      (48) / distances.at(0).to<double>();
+        variance +=
+            1 /
+            std::max(
+                (input.aprilVarianceCoeff *
+                    std::sqrt(distances.at(0).to<double>()) *
+                    std::pow(
+                        1 + input.pose.velocity.magnitude().to<double>(), 2) *
+                    std::pow(1 + input.angular_velocity.to<double>(), 2)),
+                0.0000000001);
+        totalTagWeight += (48) / distances.at(0).to<double>();
       }
     }
   }

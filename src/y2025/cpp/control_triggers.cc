@@ -23,6 +23,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
+
   }}.WhileTrue(ReefAutoAlignCommand{container, true,
       container.drivetrain_
           .GetPreferenceValue_unit_type<units::feet_per_second_t>(
