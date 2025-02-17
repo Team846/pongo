@@ -37,6 +37,8 @@ CoralSuperstructure::CoralSuperstructure()
 
   RegisterPreference("telescope_tolerance", 1.2_in);
   RegisterPreference("wrist_tolerance", 5_deg);
+
+  last_state = kCoral_StowNoPiece;
 }
 
 void CoralSuperstructure::Setup() {
@@ -102,20 +104,47 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   CoralSetpoint setpoint = getSetpoint(target.state);
+  
+  //change last_state if you've reached that state
+  if (target.state != last_state) {
+    if (hasReached(target.state))
+      last_state = target.state;
+  }
 
-  if (target.state == kCoral_StowNoPiece)
-    coral_wrist.SetTarget({setpoint.angle});
-  if (hasReachedWrist(target.state))
+
+  if (last_state == CoralStates::kCoral_StowWithPiece){
+    //if at stow with piece, move telescope first
     telescope.SetTarget({setpoint.height});
-  else
-    telescope.SetTarget({setpoint.height});
-  if (hasReachedTelescope(target.state))
+
+    if (hasReachedTelescope(target.state)){
+      coral_wrist.SetTarget({setpoint.angle});
+    }
+  }
+  //if you're currently placing, and you want to change levels
+  //'change mind coral'
+  else if ((last_state == kCoral_ScoreL2 || last_state == kCoral_ScoreL3 ||
+          last_state == kCoral_ScoreL4) && 
+              (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
+              target.state == kCoral_ScoreL4) &&
+              (last_state != target.state)
+              ){
+    
+    coral_wrist.SetTarget({getSetpoint(kCoral_StowWithPiece).angle});
+    
+    if (hasReachedWrist(kCoral_StowWithPiece)) {
+      last_state == kCoral_StowWithPiece; //fake stow with piece
+    }
+  }
+  //if going to stow or holding position
+  else {
     coral_wrist.SetTarget({setpoint.angle});
 
-  if (target.separate_wrist_state.has_value())
-    coral_wrist.SetTarget(
-        {getSetpoint(target.separate_wrist_state.value()).angle});
-
+    if (hasReachedTelescope(target.state)){
+      telescope.SetTarget({setpoint.height});
+    }
+  }
+  
+  
   if (target.score ||
       (!GetPreferenceValue_bool("disable_distance_sensor") &&
           coral_end_effector.GetReadings().has_piece_ &&
