@@ -154,12 +154,7 @@ void SparkMXFX_interm::EnableStatusFrames(
   }
 
   if (vector_has(frames, config::StatusFrame::kAbsoluteFrame)) {
-    configs.signals.AbsoluteEncoderPositionPeriodMs(20);
-    configs.signals.AbsoluteEncoderPositionAlwaysOn(true);
     configs.absoluteEncoder.SetSparkMaxDataPortConfig();
-  } else {
-    configs.signals.AbsoluteEncoderPositionPeriodMs(32767);
-    configs.signals.AbsoluteEncoderPositionAlwaysOn(false);
   }
 
   APPLY_CONFIG_NO_RESET();

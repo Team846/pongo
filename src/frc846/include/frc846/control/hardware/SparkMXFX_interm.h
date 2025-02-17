@@ -229,7 +229,7 @@ public:
 
   Gets the limit switch's state.
 
-  @return bool If the limit switch is enabled
+  @return boolean If the limit switch is enabled
   */
   bool GetForwardLimitSwitchState();
 
@@ -238,7 +238,7 @@ public:
 
   Gets the limit switch's state.
 
-  @return bool If the limit switch is enabled
+  @return boolean If the limit switch is enabled
   */
   bool GetReverseLimitSwitchState();
 
