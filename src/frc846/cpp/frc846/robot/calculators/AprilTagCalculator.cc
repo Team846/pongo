@@ -2,6 +2,7 @@
 
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/wpilib/time.h"
+#include <units/math.h>
 
 namespace frc846::robot::calculators {
 
@@ -43,22 +44,23 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     // CASE 1: Triangulate with 2 tags
     if (tags.size() >= 2 && tags.size() == distances.size() &&
         tags.size() == tx.size()) {
-      auto loc_tag_1 = constants_.tag_locations.find(tags[0]);
-      auto loc_tag_2 = constants_.tag_locations.find(tags[1]);
+      frc846::math::Vector2D loc_tag_1 = {constants_.tag_locations[tags[0]].x_pos, constants_.tag_locations[tags[0]].y_pos};
+      frc846::math::Vector2D loc_tag_2 = {constants_.tag_locations[tags[1]].x_pos, constants_.tag_locations[tags[1]].y_pos};
 
-      frc846::math::Vector2D tag_1_pos = {
-          loc_tag_1->second.x_pos, loc_tag_1->second.y_pos};
-      frc846::math::Vector2D tag_2_pos = {
-          loc_tag_2->second.x_pos, loc_tag_2->second.y_pos};
+      units::degree_t fieldTag1Tx = tx[0] + bearingAtCapture;
+      units::degree_t fieldTag2Tx = tx[1] + bearingAtCapture;
 
-      auto delta_tag_pos = tag_1_pos - tag_2_pos;
-      auto sum_slope_vecs = frc846::math::Vector2D{1_in, tx[0], true} +
-                            frc846::math::Vector2D{1_in, tx[1], true};
+      double tag1Slope=1/units::math::tan(fieldTag1Tx);
+      double tag2Slope=1/units::math::tan(fieldTag2Tx);
 
-      double t = -delta_tag_pos[0] / sum_slope_vecs[0];
+      units::foot_t camera_x = ((loc_tag_2[1]-tag2Slope*loc_tag_2[0]) - (loc_tag_1[1]-tag1Slope*loc_tag_1[0]))/(tag1Slope-tag2Slope);
+      units::foot_t camera_y = (camera_x-loc_tag_1[0])*tag1Slope+loc_tag_1[1];
+    
+      frc846::math::Vector2D camera_pos = {camera_x, camera_y};
+      frc846::math::Vector2D cam_offset = {constants_.camera_x_offsets[i], constants_.camera_y_offsets[i]};
+      cam_offset=cam_offset.rotate(bearingAtCapture);
 
-      frc846::math::Vector2D est_pos =
-          tag_1_pos - (frc846::math::Vector2D{1_in, tx[0], true} * t);
+      frc846::math::Vector2D uncompensatedPos = camera_pos-cam_offset;
 
       frc846::math::Vector2D velComp = {
           (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
@@ -66,7 +68,10 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
           (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
               (tl + input.fudge_latency)};
 
-      output.pos += (est_pos + velComp) * 1.2;
+      frc846::math::Vector2D est_pos = uncompensatedPos+velComp;
+
+
+      output.pos += (est_pos) * 1.2;
       variance +=
           1 / std::max(
                   (input.triangularVarianceCoeff *
