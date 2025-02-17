@@ -1,20 +1,23 @@
 #include "autos/auton_seqs.h"
 
+#include <frc2/command/ParallelDeadlineGroup.h>
 #include <frc2/command/WaitCommand.h>
 
+#include "commands/teleop/lock_to_reef_command.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
 #include "reef.h"
 
 using INSTANT = frc2::InstantCommand;
 using SEQUENCE = frc2::SequentialCommandGroup;
+using PARALLEL = frc2::ParallelCommandGroup;
 using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
 #define MAX_ACCEL_3PC 20_fps_sq
-#define MAX_DECEL_3PC 20_fps_sq
-#define MAX_VEL_3PC 12_fps
+#define MAX_DECEL_3PC 15_fps_sq
+#define MAX_VEL_3PC 5_fps
 
 #define MAX_ACCEL_1PC 7_fps_sq
 #define MAX_DECEL_1PC 7_fps_sq
@@ -48,20 +51,26 @@ using FPT = frc846::math::FieldPoint;
     &(container.drivetrain_), MKPT(x, y, bearing, final_velocity),        \
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
-
-#define DRIVE_TO_SOURCE(auto_name)                                        \
-  frc846::robot::swerve::DriveToPointCommand {                            \
-    &(container.drivetrain_), MKPT(50_in, 68.5_in, 36_deg, 0_fps),        \
-        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
+// TODO: Fix field point
+#define DRIVE_TO_SOURCE(auto_name)                   \
+  frc846::robot::swerve::DriveToPointCommand {       \
+    &(container.drivetrain_), MKPT(23.7_in, 62_in, 54_deg, 0_fps),        \ 
+        MAX_VEL_##auto_name,                         \
+        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
+
+#define LOCK_TO_REEF(is_left) \
+  LockToReefCommand { container, is_left, container.control_input_.base_adj }
+
+#define LOCK_AND_PLACE_L1(is_left) \
+  frc2::ParallelDeadlineGroup { WAIT(1_s), LOCK_TO_REEF(is_left) }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)                         \
   frc846::robot::swerve::DriveToPointCommand {                            \
     &(container.drivetrain_),                                             \
         ReefProvider::getReefScoringLocations(false)[number_on_right]     \
             .mirror(is_blue_side)                                         \
-            .mirrorOnlyX(is_left_side)                                    \
-            .flipDirection(),                                             \
+            .mirrorOnlyX(is_left_side),                                   \
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
 
@@ -76,15 +85,16 @@ ThreePieceAuto::ThreePieceAuto(
           SEQUENCE>{container, AUTO_NAME("3PC"),
           SEQUENCE{
               START(158.5_in - 73.25_in, START_Y, 180_deg),
-              WAIT{0.25_s},
+              WAIT{0.25_s},  // TODO: maybe increase for testing?
               DRIVE_TO_REEF(3PC, 3),
-              WAIT{1_s},
+              LOCK_AND_PLACE_L1(false),
               DRIVE(3PC, 75_in, 180_in, 40_deg, 10_fps),
               DRIVE_TO_SOURCE(3PC),
               DRIVE_TO_REEF(3PC, 4),
-              WAIT{1_s},
+              LOCK_AND_PLACE_L1(false),
               DRIVE_TO_SOURCE(3PC),
               DRIVE_TO_REEF(3PC, 5),
+              LOCK_AND_PLACE_L1(true),
           }} {}
 
 OnePieceAndNetAuto::OnePieceAndNetAuto(

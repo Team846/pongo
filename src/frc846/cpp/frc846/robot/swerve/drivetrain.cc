@@ -34,6 +34,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/deadband", 2_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 7_fps);
+  RegisterPreference("auto_max_speed", 15_fps);
 
   RegisterPreference("drive_to_subtract", 2_in);
 
@@ -300,6 +301,10 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   //   Graph("overriding_kalman_pose_auton", false);
   // }
 
+  if (GetPreferenceValue_bool("pose_estimator/override")) {
+    estimated_pose = new_pose;
+  }
+
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
   Graph("estimated_pose/position_y", estimated_pose.position[1]);
   Graph("estimated_pose/velocity_x", estimated_pose.velocity[0]);
@@ -346,10 +351,6 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       units::math::pow<2>(accel_vel_z));
 
   Graph("readings/accel_vel", accel_vel);
-
-  if (GetPreferenceValue_bool("pose_estimator/override")) {
-    estimated_pose = new_pose;
-  }
 
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
       last_accel_spike_};
