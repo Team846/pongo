@@ -207,9 +207,11 @@ void GenericRobot::StartCompetition() {
     Graph("loop_time", loop_time);
 
     // Check loop time
-    if (loop_time > kPeriod * 0x03) {
+    if (loop_time > kPeriod) {
       Warn("Loop overrun: {} (loop period: {})",
           loop_time.convert<units::millisecond>(), kPeriod);
+
+      next_loop_time_ += ((int)(loop_time / kPeriod)) * kPeriod;
     }
   }
 }

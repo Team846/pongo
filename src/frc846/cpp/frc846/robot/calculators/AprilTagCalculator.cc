@@ -39,29 +39,67 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
         input.pose.bearing -
         input.angular_velocity *
             (tl + input.bearing_latency);  // TODO: fix bearing latency, accl?
-    if (distances.size() == tx.size() && tx.size() == tags.size()) {
-      for (size_t j = 0; j < tags.size(); j++) {
-        if (constants_.tag_locations.contains(tags[j])) {
-          frc846::math::Vector2D velComp = {
-              (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
-                  (tl + input.fudge_latency),
-              (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
-                  (tl + input.fudge_latency)};
-          output.pos += (getPos(bearingAtCapture, tx.at(j), distances.at(j),
-                             tags.at(j), i) +
-                            velComp) *
-                        (48) / distances.at(j).to<double>();
-          variance +=
-              1 /
-              std::max(
-                  (input.aprilVarianceCoeff *
-                      std::sqrt(distances.at(j).to<double>()) *
+
+    // CASE 1: Triangulate with 2 tags
+    if (tags.size() >= 2 && tags.size() == distances.size() &&
+        tags.size() == tx.size()) {
+      auto loc_tag_1 = constants_.tag_locations.find(tags[0]);
+      auto loc_tag_2 = constants_.tag_locations.find(tags[1]);
+
+      frc846::math::Vector2D tag_1_pos = {
+          loc_tag_1->second.x_pos, loc_tag_1->second.y_pos};
+      frc846::math::Vector2D tag_2_pos = {
+          loc_tag_2->second.x_pos, loc_tag_2->second.y_pos};
+
+      auto delta_tag_pos = tag_1_pos - tag_2_pos;
+      auto sum_slope_vecs = frc846::math::Vector2D{1_in, tx[0], true} +
+                            frc846::math::Vector2D{1_in, tx[1], true};
+
+      double t = -delta_tag_pos[0] / sum_slope_vecs[0];
+
+      frc846::math::Vector2D est_pos =
+          tag_1_pos - (frc846::math::Vector2D{1_in, tx[0], true} * t);
+
+      frc846::math::Vector2D velComp = {
+          (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
+              (tl + input.fudge_latency),
+          (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
+              (tl + input.fudge_latency)};
+
+      output.pos += (est_pos + velComp) * 1.2;
+      variance +=
+          1 / std::max(
+                  (input.triangularVarianceCoeff *
+                      std::sqrt(distances.at(0).to<double>()) *
                       std::pow(
                           1 + input.pose.velocity.magnitude().to<double>(), 2) *
                       std::pow(1 + input.angular_velocity.to<double>(), 2)),
                   0.0000000001);
-          totalTagWeight += (48) / distances.at(j).to<double>();
-        }
+      totalTagWeight += 1.2;
+
+    }
+    // CASE 2: Single tag estimate
+    else if (tags.size() == 1 && distances.size() == 1 && tx.size() == 1) {
+      if (constants_.tag_locations.contains(tags[0])) {
+        frc846::math::Vector2D velComp = {
+            (input.pose.velocity[0] + input.old_pose.velocity[0]) / 2 *
+                (tl + input.fudge_latency),
+            (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
+                (tl + input.fudge_latency)};
+        output.pos += (getPos(bearingAtCapture, tx.at(0), distances.at(0),
+                           tags.at(0), i) +
+                          velComp) *
+                      (48) / distances.at(0).to<double>();
+        variance +=
+            1 /
+            std::max(
+                (input.aprilVarianceCoeff *
+                    std::sqrt(distances.at(0).to<double>()) *
+                    std::pow(
+                        1 + input.pose.velocity.magnitude().to<double>(), 2) *
+                    std::pow(1 + input.angular_velocity.to<double>(), 2)),
+                0.0000000001);
+        totalTagWeight += (48) / distances.at(0).to<double>();
       }
     }
   }

@@ -56,6 +56,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("pose_estimator/override", false);
 
   RegisterPreference("april_tags/april_variance_coeff", 0.33);
+  RegisterPreference("april_tags/triangular_variance_coeff", 0.22);
   RegisterPreference("april_tags/fudge_latency", 20_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
@@ -242,13 +243,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position = odometry_
-          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                    "bearing_latency") *
-                                    GetReadings().yaw_rate,
-              steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+      .position =
+          odometry_
+              .calculate(
+                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                 "bearing_latency") *
+                                 GetReadings().yaw_rate,
+                      steer_positions, drive_positions,
+                      GetPreferenceValue_double("odom_fudge_factor")})
+              .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -267,6 +270,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   frc846::robot::calculators::ATCalculatorOutput tag_pos =
       tag_pos_calculator.calculate({new_pose, GetReadings().pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
+          GetPreferenceValue_double("april_tags/triangular_variance_coeff"),
           GetPreferenceValue_unit_type<units::millisecond_t>(
               "april_tags/fudge_latency"),
           GetPreferenceValue_unit_type<units::millisecond_t>(
