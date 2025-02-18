@@ -7,6 +7,7 @@
 #include "subsystems/hardware/algal/algal_ss.h"
 #include "subsystems/hardware/climber.h"
 #include "subsystems/hardware/coral/coral_ss.h"
+#include "subsystems/hardware/coralgae.h"
 #include "subsystems/hardware/leds.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
@@ -22,6 +23,8 @@ public:
 
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
+  Coralgae coralgae_{&algal_ss_, &coral_ss_};
+  // Coralage coralge_{};
 
   ClimberSubsystem climber_{};
 
@@ -42,7 +45,7 @@ public:
     bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
     bool climber_init = (GetPreferenceValue_bool("init_climber"));
 
-    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupAB({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});

@@ -51,6 +51,8 @@ public:
 
   bool hasReached(AlgalStates state);
 
+  AlgalStates last_state;
+
 protected:
   AlgalSSReadings ReadFromHardware() override;
 

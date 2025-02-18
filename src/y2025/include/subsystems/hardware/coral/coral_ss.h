@@ -51,11 +51,12 @@ public:
   bool hasReachedTelescope(CoralStates state);
   bool hasReachedWrist(CoralStates state);
 
+  CoralStates last_state;
+
 protected:
   CoralSSReadings ReadFromHardware() override;
 
   void WriteToHardware(CoralSSTarget target) override;
 
 private:
-  CoralStates last_state;
 };

@@ -18,6 +18,7 @@
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
+#include "commands/teleop/coralgae_command.h"
 #include "commands/teleop/drive_command.h"
 #include "control_triggers.h"
 #include "field.h"
@@ -59,9 +60,10 @@ void FunkyRobot::OnDisable() {}
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
 
-  container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
-  container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
+  // container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
+  // container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
   container_.climber_.SetDefaultCommand(ClimberCommand{container_});
+  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
@@ -90,6 +92,7 @@ void FunkyRobot::OnPeriodic() {
 void FunkyRobot::InitTest() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
   container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
+  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
   frc2::Trigger start_dinosaur_a([] { return true; });
   start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{
