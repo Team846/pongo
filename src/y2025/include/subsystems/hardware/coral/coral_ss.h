@@ -44,7 +44,7 @@ public:
   CoralEESubsystem coral_end_effector;
 
   CoralSetpoint getSetpoint(CoralStates state);
-  
+
   bool isHomed() { return telescope.isHomed(); }
 
   bool hasReached(CoralStates state);
@@ -55,7 +55,6 @@ protected:
   CoralSSReadings ReadFromHardware() override;
 
   void WriteToHardware(CoralSSTarget target) override;
-
 
 private:
   CoralStates last_state;

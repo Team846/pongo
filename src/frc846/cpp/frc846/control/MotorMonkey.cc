@@ -183,7 +183,6 @@ void MotorMonkey::Tick(bool disabled) {
 
 units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   units::ampere_t total_current = 0.0_A;
-  units::ampere_t second_total_current = 0.0_A;
   std::queue<MotorMessage> temp_messages{control_messages};
 
   double scale_factor = 1.0;
@@ -227,11 +226,12 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
     } else if (velocity < 0_rad_per_s && pred_draw > 0_A) {
       (void)pred_draw;  // Regen braking mode
     } else {
-      second_total_current += units::math::abs(pred_draw);
+      total_current += units::math::abs(pred_draw);
     }
-    total_current += units::math::abs(pred_draw);
     temp_messages.pop();
   }
+
+  if (total_current > 1000_A) { total_current = 1000_A; }
 
   if (total_current > max_draw && max_draw > 0.0_A) {
     scale_factor = max_draw / total_current;
@@ -258,10 +258,10 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
 
     switch (msg.type) {
     case MotorMessage::Type::DC: {
-      double scaled_duty_cycle =
-          frc846::control::calculators::CurrentTorqueCalculator::
-              scale_current_draw(scale_factor, std::get<double>(msg.value),
-                  velocity, battery_voltage, motor_type);
+      double scaled_duty_cycle = std::get<double>(msg.value);
+      frc846::control::calculators::CurrentTorqueCalculator::scale_current_draw(
+          scale_factor, std::get<double>(msg.value), velocity, battery_voltage,
+          motor_type);
       if (!controller->IsDuplicateControlMessage(scaled_duty_cycle) ||
           controller->GetLastErrorCode() !=
               frc846::control::hardware::ControllerErrorCodes::kAllOK) {
@@ -294,7 +294,7 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
 
     control_messages.pop();
   }
-  return second_total_current;
+  return total_current;
 }
 
 bool MotorMonkey::VerifyConnected() {
