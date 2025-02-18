@@ -99,18 +99,46 @@ AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
 void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
-  elevator.SetTarget({setpoint.height});
+  // elevator.SetTarget({setpoint.height});
 
-  if (target.separate_wrist_state.has_value())
-    algal_wrist.SetTarget(
-        {getSetpoint(target.separate_wrist_state.value()).angle});
-  else
+  // if (target.separate_wrist_state.has_value())
+  //   algal_wrist.SetTarget(
+  //       {getSetpoint(target.separate_wrist_state.value()).angle});
+  // else
+  //   algal_wrist.SetTarget({setpoint.angle});
+
+  // if (target.score)
+  //   algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
+  // else
+  //   algal_end_effector.SetTarget({setpoint.ee_dc});
+
+  if (target.state != last_state) {
+    if (hasReached(target.state)) last_state = target.state;
+  }
+
+  if (last_state == AlgalStates::kAlgae_Stow) {
+    // if at stow with piece, move elevator first
+    elevator.SetTarget({setpoint.height});
+
+    if (hasReached(target.state)) { algal_wrist.SetTarget({setpoint.angle}); }
+  }
+  // if you're currently placing, and you want to change levels
+  //'change mind algae'
+  else if ((last_state == kAlgae_L2Pick || last_state == kAlgae_L3Pick) &&
+           (target.state == kAlgae_L2Pick || target.state == kAlgae_L3Pick) &&
+           (last_state != target.state)) {
+    algal_wrist.SetTarget({getSetpoint(kAlgae_Stow).angle});
+
+    if (hasReached(kAlgae_Stow)) {
+      last_state = kAlgae_Stow;  // fake stow with piece
+    }
+  }
+  // if going to stow or holding position
+  else {
     algal_wrist.SetTarget({setpoint.angle});
 
-  if (target.score)
-    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
-  else
-    algal_end_effector.SetTarget({setpoint.ee_dc});
+    if (hasReached(target.state)) { elevator.SetTarget({setpoint.height}); }
+  }
 
   elevator.UpdateHardware();
   algal_wrist.UpdateHardware();
