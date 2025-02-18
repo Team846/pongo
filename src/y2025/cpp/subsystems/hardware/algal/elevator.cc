@@ -23,11 +23,4 @@ LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {
   return LinearSubsystemTarget{0_in};
 }
 
-void ElevatorSubsystem::ExtendedSetup() {
-  // TODO: implement
-}
-
-std::pair<units::inch_t, bool> ElevatorSubsystem::GetSensorPos() {
-  // TODO: implement
-  return {0_in, false};
-}
+void ElevatorSubsystem::ExtendedSetup() {}

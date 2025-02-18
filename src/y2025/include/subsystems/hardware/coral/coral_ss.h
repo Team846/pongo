@@ -16,6 +16,8 @@ enum CoralStates {
   kCoral_ScoreL2,
   kCoral_ScoreL3,
   kCoral_ScoreL4,
+  kCoral_DINOSAUR_A,
+  kCoral_DINOSAUR_B,
 };
 
 struct CoralSSReadings {};
@@ -23,6 +25,7 @@ struct CoralSSReadings {};
 struct CoralSSTarget {
   CoralStates state;
   bool score;
+  std::optional<CoralStates> separate_wrist_state = std::nullopt;
 };
 
 class CoralSuperstructure
@@ -42,12 +45,18 @@ public:
 
   CoralSetpoint getSetpoint(CoralStates state);
 
-  bool isHomed() { return is_homed; }
+  bool isHomed() { return telescope.isHomed(); }
+
+  bool hasReached(CoralStates state);
+  bool hasReachedTelescope(CoralStates state);
+  bool hasReachedWrist(CoralStates state);
+
+  CoralStates last_state;
 
 protected:
-  bool is_homed = false;
-
   CoralSSReadings ReadFromHardware() override;
 
   void WriteToHardware(CoralSSTarget target) override;
+
+private:
 };

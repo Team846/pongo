@@ -32,15 +32,15 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   units::inch_t wheel_diameter = 4_in;
 
-  units::inch_t wire_length_FL = 14_in;
-  units::inch_t wire_length_FR = 14_in;
-  units::inch_t wire_length_BL = 14_in;
-  units::inch_t wire_length_BR = 14_in;
+  units::inch_t wire_length_FL = 15_in;
+  units::inch_t wire_length_FR = 15_in;
+  units::inch_t wire_length_BL = 35_in;
+  units::inch_t wire_length_BR = 42_in;
 
-  unsigned int num_connectors_FR = 3;
-  unsigned int num_connectors_FL = 3;
-  unsigned int num_connectors_BL = 3;
-  unsigned int num_connectors_BR = 3;
+  unsigned int num_connectors_FR = 0;
+  unsigned int num_connectors_FL = 1;
+  unsigned int num_connectors_BL = 2;
+  unsigned int num_connectors_BR = 2;
 
   double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =

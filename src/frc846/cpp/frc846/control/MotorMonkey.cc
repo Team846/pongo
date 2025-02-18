@@ -494,6 +494,12 @@ bool MotorMonkey::GetReverseLimitSwitchState(size_t slot_id) {
   return controller_registry[slot_id]->GetReverseLimitSwitchState();
 }
 
+units::turn_t MotorMonkey::GetAbsoluteEncoderPosition(size_t slot_id) {
+  CHECK_SLOT_ID();
+
+  return controller_registry[slot_id]->GetAbsoluteEncoderPosition();
+}
+
 void MotorMonkey::SetSoftLimits(size_t slot_id, units::radian_t forward_limit,
     units::radian_t reverse_limit) {
   CHECK_SLOT_ID();

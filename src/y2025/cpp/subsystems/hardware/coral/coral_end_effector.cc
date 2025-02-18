@@ -11,8 +11,8 @@ CoralEESubsystem::CoralEESubsystem()
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
           .brake_mode = true,
-          .motor_current_limit = 40_A,
-          .smart_current_limit = 30_A,
+          .motor_current_limit = 10_A,
+          .smart_current_limit = 5_A,
           .voltage_compensation = 12_V,
           .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
           .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0},
@@ -25,7 +25,8 @@ CoralEESubsystem::GetCurrentConfig(
     frc846::control::config::MotorConstructionParameters original_config) {
   frc846::control::config::MotorConstructionParameters modifiedConfig =
       original_config;
-  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  REGISTER_MOTOR_CONFIG(
+      original_config.motor_current_limit, original_config.smart_current_limit);
   modifiedConfig.motor_current_limit =
       GetPreferenceValue_unit_type<units::ampere_t>(
           "motor_configs/current_limit");

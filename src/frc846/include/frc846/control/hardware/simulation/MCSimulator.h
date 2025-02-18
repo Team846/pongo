@@ -71,6 +71,8 @@ public:
   virtual bool GetForwardLimitSwitchState() override { return false; }
   virtual bool GetReverseLimitSwitchState() override { return false; }
 
+  virtual units::turn_t GetAbsoluteEncoderPosition() override { return 0.0_tr; }
+
   /*
   ZeroEncoder()
 

@@ -38,7 +38,7 @@ private:
   void Flash(int loops_on);
 
   // Number of LEDs.
-  static constexpr int kLength = 30;
+  static constexpr int kLength = 23;
 
   std::array<frc::AddressableLED::LEDData, kLength> leds_buffer_;
 

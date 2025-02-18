@@ -24,13 +24,21 @@ CoralSuperstructure::CoralSuperstructure()
   REGISTER_SETPOINT("score_l3", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
 
+  REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
+
   RegisterPreference("score_dc", -0.5);
 
   RegisterPreference("init_telescope", false);
   RegisterPreference("init_wrist", false);
   RegisterPreference("init_ee", true);
 
-  RegisterPreference("override_distance_sensor", false);
+  RegisterPreference("disable_distance_sensor", false);
+
+  RegisterPreference("telescope_tolerance", 1.2_in);
+  RegisterPreference("wrist_tolerance", 5_deg);
+
+  last_state = kCoral_StowNoPiece;
 }
 
 void CoralSuperstructure::Setup() {
@@ -61,8 +69,29 @@ CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
   case kCoral_ScoreL2: return GET_SETPOINT("score_l2");
   case kCoral_ScoreL3: return GET_SETPOINT("score_l3");
   case kCoral_ScoreL4: return GET_SETPOINT("score_l4");
+  case kCoral_DINOSAUR_A: return GET_SETPOINT("dinosaur_A");
+  case kCoral_DINOSAUR_B: return GET_SETPOINT("dinosaur_B");
   default: return GET_SETPOINT("stow_no_piece");
   }
+}
+
+bool CoralSuperstructure::hasReached(CoralStates state) {
+  return hasReachedTelescope(state) && hasReachedWrist(state);
+}
+
+bool CoralSuperstructure::hasReachedTelescope(CoralStates state) {
+  CoralSetpoint setpoint = getSetpoint(state);
+
+  return (units::math::abs(telescope.GetReadings().position - setpoint.height) <
+          GetPreferenceValue_unit_type<units::inch_t>("telescope_tolerance"));
+}
+
+bool CoralSuperstructure::hasReachedWrist(CoralStates state) {
+  CoralSetpoint setpoint = getSetpoint(state);
+
+  return (
+      units::math::abs(coral_wrist.GetReadings().position - setpoint.angle) <
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"));
 }
 
 CoralSSReadings CoralSuperstructure::ReadFromHardware() {
@@ -76,13 +105,48 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   CoralSetpoint setpoint = getSetpoint(target.state);
 
-  telescope.SetTarget({setpoint.height});
-  coral_wrist.SetTarget({setpoint.angle});
+  // change last_state if you've reached that state
+  if (target.state != last_state) {
+    if (hasReached(target.state)) last_state = target.state;
+  }
 
-  // TODO: Check setpoint state of each subsystem
-  if (target.score || (!GetPreferenceValue_bool("override_distance_sensor") &&
-                          coral_end_effector.GetReadings().has_piece_ &&
-                          coral_end_effector.GetReadings().see_reef))
+  if (last_state == CoralStates::kCoral_StowWithPiece) {
+    // if at stow with piece, move telescope first
+    telescope.SetTarget({setpoint.height});
+
+    if (hasReachedTelescope(target.state)) {
+      coral_wrist.SetTarget({setpoint.angle});
+    }
+  }
+  // if you're currently placing, and you want to change levels
+  //'change mind coral'
+  else if ((last_state == kCoral_ScoreL2 || last_state == kCoral_ScoreL3 ||
+               last_state == kCoral_ScoreL4) &&
+           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
+               target.state == kCoral_ScoreL4) &&
+           (last_state != target.state)) {
+    coral_wrist.SetTarget({getSetpoint(kCoral_StowWithPiece).angle});
+
+    if (hasReachedWrist(kCoral_StowWithPiece)) {
+      last_state = kCoral_StowWithPiece;  // fake stow with piece
+    }
+  }
+  // if going to stow or holding position
+  else {
+    coral_wrist.SetTarget({setpoint.angle});
+
+    if (hasReachedTelescope(target.state)) {
+      telescope.SetTarget({setpoint.height});
+    }
+  }
+
+  if (target.score ||
+      (!GetPreferenceValue_bool("disable_distance_sensor") &&
+          coral_end_effector.GetReadings().has_piece_ &&
+          coral_end_effector.GetReadings().see_reef &&
+          (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
+              target.state == kCoral_ScoreL4) &&
+          hasReached(target.state)))
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
   else
     coral_end_effector.SetTarget({setpoint.ee_dc});

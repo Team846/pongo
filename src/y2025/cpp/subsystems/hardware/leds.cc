@@ -16,20 +16,20 @@ bool LEDsSubsystem::VerifyHardware() { return true; }
 LEDsReadings LEDsSubsystem::ReadFromHardware() { return {}; }
 
 void LEDsSubsystem::SetRainbow() {
-  int kRange = 70;
-  int kStart = 45;
+  int kRange = 180;
+  int kStart = 0;
   for (int i = 0; i < kLength; i++) {
     const auto pixelHue =
         ((first_pixel_hue_ + (i * kRange / kLength)) % kRange + kStart) % 180;
     leds_buffer_[i].SetHSV(pixelHue, 255, 255);
   }
-  first_pixel_hue_ += 2;
+  first_pixel_hue_ += 7;
   first_pixel_hue_ %= kRange;
 }
 
 void LEDsSubsystem::SetStrip(int R, int G, int B) {
   for (int i = 0; i < kLength; i++) {
-    leds_buffer_[i].SetRGB(R, G, B);
+    leds_buffer_[i].SetRGB(G, R, B);
   }
 }
 
@@ -44,16 +44,15 @@ void LEDsSubsystem::Flash(int loops_on) {
 #define GREEN 0, 255, 0
 #define ORANGE 255, 17, 0
 
-#define SLOW_FLASH 25
+#define SLOW_FLASH 30
 #define MED_FLASH 12
 #define RAPID_FLASH 7
 
 void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
   if (target.state == kLEDsUnready) {
     SetStrip(RED);
-    Flash(MED_FLASH);
   } else if (target.state == kLEDsDisabled) {
-    SetStrip(RED);
+    SetStrip(ORANGE);
   } else if (target.state == kLEDsAutonomous) {
     SetStrip(BLUE);
   } else if (target.state == kLEDsSequencing) {
@@ -61,6 +60,7 @@ void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
     Flash(RAPID_FLASH);
   } else if (target.state == kLEDsTeleop) {
     SetStrip(ORANGE);
+    Flash(SLOW_FLASH);
   } else if (target.state == kLEDsClimbing) {
     SetStrip(GREEN);
     Flash(SLOW_FLASH);

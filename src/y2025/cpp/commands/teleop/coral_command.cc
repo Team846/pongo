@@ -14,9 +14,10 @@ void CoralCommand::Periodic() {
 
   if (ci_readings.position_algal)
     coral_target.state = ci_readings.coral_state;
+  else if (container_.coral_ss_.coral_end_effector.GetReadings().has_piece_)
+    coral_target.state = kCoral_StowWithPiece;
   else
-    coral_target.state = kCoral_StowNoPiece;  // TODO: fix coral stow
-
+    coral_target.state = kCoral_StowNoPiece;
   coral_target.score = ci_readings.score_coral;
 
   container_.coral_ss_.SetTarget(coral_target);

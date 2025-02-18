@@ -17,6 +17,7 @@
 struct WristReadings {
   units::degree_t position;
   units::degrees_per_second_t velocity;
+  units::turn_t absolute_position;
 };
 
 struct WristTarget {

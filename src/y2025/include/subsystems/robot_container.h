@@ -7,6 +7,7 @@
 #include "subsystems/hardware/algal/algal_ss.h"
 #include "subsystems/hardware/climber.h"
 #include "subsystems/hardware/coral/coral_ss.h"
+#include "subsystems/hardware/coralgae.h"
 #include "subsystems/hardware/leds.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
@@ -22,6 +23,8 @@ public:
 
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
+  Coralgae coralgae_{&algal_ss_, &coral_ss_};
+  // Coralage coralge_{};
 
   ClimberSubsystem climber_{};
 
@@ -36,13 +39,14 @@ public:
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
+    bool gpd_init = false;  //(GetPreferenceValue_bool("init_gpd"));
 
     bool coral_ss_init = false;  //(GetPreferenceValue_bool("init_coral_ss"));
     bool algal_ss_init = false;  //(GetPreferenceValue_bool("init_algal_ss"));
     bool climber_init = false;   //(GetPreferenceValue_bool("init_climber"));
+    bool coralgae_init = false;
 
-    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupAB({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
@@ -52,5 +56,7 @@ public:
     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
     RegisterSubsystemGroupB({{&climber_, climber_init}});
+
+    RegisterSubsystemGroupB({{&coralgae_, coralgae_init}});
   }
 };

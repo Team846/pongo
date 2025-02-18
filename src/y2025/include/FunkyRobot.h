@@ -21,4 +21,7 @@ public:
 
 private:
   RobotContainer container_;
+
+  frc::DigitalInput home_switch_{0};
+  frc::DigitalInput coast_switch_{1};
 };

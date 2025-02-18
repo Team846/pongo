@@ -12,9 +12,13 @@
 
 #include "autos/auton_seqs.h"
 #include "calculators/AntiTippingCalculator.h"
+#include "commands/general/algal_position_command.h"
+#include "commands/general/coral_position_command.h"
+#include "commands/general/dinosaur_climber.h"
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
+#include "commands/teleop/coralgae_command.h"
 #include "commands/teleop/drive_command.h"
 #include "control_triggers.h"
 #include "field.h"
@@ -56,17 +60,24 @@ void FunkyRobot::OnDisable() {}
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
 
-  container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
-  container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
+  // container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
+  // container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
   container_.climber_.SetDefaultCommand(ClimberCommand{container_});
+  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
 void FunkyRobot::OnPeriodic() {
+  if (!home_switch_.Get()) {
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::elevator_hall_effect);
+    container_.coral_ss_.telescope.HomeSubsystem(
+        robot_constants::telescope::telescope_hall_effect);
+  }
+
   LEDsLogic::UpdateLEDs(&container_);
 
-  // TODO: fix AntiTippingCalculator cg calc from heights
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
   AntiTippingCalculator::SetElevatorHeight(
@@ -78,7 +89,25 @@ void FunkyRobot::OnPeriodic() {
   Graph("robot_cg_z", cg[2]);
 }
 
-void FunkyRobot::InitTest() {}
+void FunkyRobot::InitTest() {
+  container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
+  container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
+  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
+
+  frc2::Trigger start_dinosaur_a([] { return true; });
+  start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{
+      AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
+      frc2::WaitCommand{0.5_s},
+      AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
+
+  frc2::Trigger start_dinosaur_c([] { return true; });
+  start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
+      CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
+      frc2::WaitCommand{0.5_s},
+      CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {

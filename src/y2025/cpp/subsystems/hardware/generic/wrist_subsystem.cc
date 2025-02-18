@@ -24,7 +24,8 @@ WristSubsystem::GetCurrentConfig(
     frc846::control::config::MotorConstructionParameters original_config) {
   frc846::control::config::MotorConstructionParameters modifiedConfig =
       original_config;
-  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  REGISTER_MOTOR_CONFIG(
+      original_config.motor_current_limit, original_config.smart_current_limit);
   modifiedConfig.motor_current_limit =
       GetPreferenceValue_unit_type<units::ampere_t>(
           "motor_configs/current_limit");
@@ -40,7 +41,8 @@ void WristSubsystem::Setup() {
   wrist_esc_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame,
-          frc846::control::config::StatusFrame::kFaultFrame});
+          frc846::control::config::StatusFrame::kFaultFrame,
+          frc846::control::config::StatusFrame::kAbsoluteFrame});
 
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
   wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
@@ -62,6 +64,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
   WristReadings readings;
   readings.position = wrist_esc_helper_.GetPosition();
   readings.velocity = wrist_esc_helper_.GetVelocity();
+  readings.absolute_position = wrist_esc_.GetAbsoluteEncoderPosition();
 
   wrist_esc_.SetLoad(
       1_Nm *
@@ -72,6 +75,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
 
   Graph("readings/position", readings.position);
   Graph("readings/velocity", readings.velocity);
+  Graph("readings/absolute_position", readings.absolute_position);
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }

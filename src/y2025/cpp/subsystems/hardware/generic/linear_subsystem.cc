@@ -11,7 +11,7 @@ LinearSubsystem::LinearSubsystem(std::string name,
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       hall_effect_loc_(hall_effect_loc_) {
   REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
-  // REGISTER_SOFTLIMIT_CONFIG("limits", true, 30_in, 0_in, 30_in, 0_in, 0.3);
+  REGISTER_SOFTLIMIT_CONFIG(true, 45_in, 2_in, 40_in, 10_in, 0.3);
 
   linear_esc_helper_.SetConversion(conversion);
 
@@ -23,7 +23,8 @@ LinearSubsystem::GetCurrentConfig(
     frc846::control::config::MotorConstructionParameters original_config) {
   frc846::control::config::MotorConstructionParameters modifiedConfig =
       original_config;
-  REGISTER_MOTOR_CONFIG(40_A, 30_A);
+  REGISTER_MOTOR_CONFIG(
+      original_config.motor_current_limit, original_config.smart_current_limit);
   modifiedConfig.motor_current_limit =
       GetPreferenceValue_unit_type<units::ampere_t>(
           "motor_configs/current_limit");
@@ -41,17 +42,18 @@ void LinearSubsystem::Setup() {
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
 
-  // linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS("limits", units::inch_t));
-  // linear_esc_helper_.SetControllerSoftLimits(
-  //     GET_SOFTLIMITS("limits", units::inch_t));
+  linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
+  linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
 
   linear_esc_.ConfigForwardLimitSwitch(
-      true, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
-
-  const auto [sensor_pos, is_valid] = GetSensorPos();
-  if (is_valid) { linear_esc_helper_.SetPosition(sensor_pos); }
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 
   ExtendedSetup();
+}
+
+void LinearSubsystem::HomeSubsystem(units::inch_t pos) {
+  if (is_initialized()) linear_esc_helper_.SetPosition(pos);
+  is_homed_ = true;
 }
 
 bool LinearSubsystem::VerifyHardware() {
@@ -67,12 +69,6 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   linear_esc_.SetLoad(1_Nm);
 
   Graph("readings/position", readings.position);
-
-  const auto [sensor_pos, is_valid] = GetSensorPos();
-  if (is_valid) { linear_esc_helper_.SetPosition(sensor_pos); }
-
-  Graph("readings/sensor_pos", sensor_pos);
-  Graph("readings/sensor_pos_valid", is_valid);
 
   bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
 
@@ -90,9 +86,5 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
 
-  if (!is_homed_) {
-    linear_esc_helper_.WriteDC(0.1);
-  } else {
-    linear_esc_helper_.WritePosition(target.position);
-  }
+  linear_esc_helper_.WritePosition(target.position);
 }
