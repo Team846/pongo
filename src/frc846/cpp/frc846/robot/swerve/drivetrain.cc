@@ -6,6 +6,9 @@
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
+//TODO: add LED indicator
+//TOOD: add button for alignment against field wall
+
 namespace frc846::robot::swerve {
 
 DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
@@ -58,7 +61,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("april_tags/april_variance_coeff", 0.33);
   RegisterPreference("april_tags/triangular_variance_coeff", 0.22);
-  RegisterPreference("april_tags/fudge_latency", 20_ms);
+  RegisterPreference("april_tags/fudge_latency1", 70_ms);
+  RegisterPreference("april_tags/fudge_latency2", 110_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
@@ -70,6 +74,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("lock_drive_early", 12_in);
   RegisterPreference("lock_drive_fvel", 1_fps);
+  RegisterPreference("drive_correctional_gain", 1.0);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -158,10 +163,14 @@ void DrivetrainSubsystem::ZeroBearing() {
 
 void DrivetrainSubsystem::SetBearing(units::degree_t bearing) {
   bearing_offset_ = bearing - (GetReadings().pose.bearing - bearing_offset_);
+  Log("setting bearing to {}", bearing);
 }
 
 void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
   odometry_.SetPosition(position);
+  Log("setting position x to {} and position y to {}", position[0],
+      position[1]);
+  pose_estimator.SetPoint({position[0], position[1]});
 }
 
 void DrivetrainSubsystem::SetCANCoderOffsets() {
@@ -244,23 +253,24 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odometry_
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
 
   frc846::math::Vector2D delta_pos =
       new_pose.position - GetReadings().pose.position;
-  pose_estimator.AddOdometryMeasurement(
-      {delta_pos[0], delta_pos[1]}, GetPreferenceValue_double("odom_variance"));
+
+  if (delta_pos.magnitude() < 10_in) {
+    pose_estimator.AddOdometryMeasurement({delta_pos[0], delta_pos[1]},
+        GetPreferenceValue_double("odom_variance"));
+  }
 
   frc846::robot::swerve::odometry::SwervePose estimated_pose{
       .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
@@ -272,8 +282,10 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       tag_pos_calculator.calculate({new_pose, GetReadings().pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
           GetPreferenceValue_double("april_tags/triangular_variance_coeff"),
-          GetPreferenceValue_unit_type<units::millisecond_t>(
-              "april_tags/fudge_latency"),
+          {GetPreferenceValue_unit_type<units::millisecond_t>(
+               "april_tags/fudge_latency1"),
+              GetPreferenceValue_unit_type<units::millisecond_t>(
+                  "april_tags/fudge_latency1")},
           GetPreferenceValue_unit_type<units::millisecond_t>(
               "bearing_latency")});
 

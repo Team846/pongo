@@ -110,7 +110,7 @@ void DriveCommand::Periodic() {
                ci_readings_.position_algal) {
       target_bearing = 0_deg;
     } else if (!container_.coral_ss_.coral_end_effector.GetReadings()
-                    .has_piece_) {
+                   .has_piece_) {
       if (container_.drivetrain_.GetReadings().estimated_pose.position[0] <
           158.5_in)
         target_bearing = 234_deg + 180_deg;

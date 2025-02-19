@@ -23,7 +23,7 @@ struct ATCalculatorInput {
 
   double aprilVarianceCoeff;
   double triangularVarianceCoeff;
-  units::second_t fudge_latency;
+  std::vector<units::second_t> fudge_latency;
   units::second_t bearing_latency;
 };
 

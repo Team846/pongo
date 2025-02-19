@@ -118,7 +118,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.algal_state = previous_readings_.algal_state;
 
   if (op_readings.left_bumper) ci_readings_.score_coral = true;
-  if (dr_readings.right_trigger) ci_readings_.score_algae = true;
+  // if (dr_readings.right_trigger) ci_readings_.score_algae = true;
 
   if (op_readings.left_trigger && !previous_operator_.left_trigger) {
     climb_state_ += 1;
