@@ -18,7 +18,9 @@ CoralEESubsystem::CoralEESubsystem()
           .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.5},
       },
       esc_{frc846::control::base::SPARK_MAX_NEO550,
-          GetCurrentConfig(motor_configs_)} {}
+          GetCurrentConfig(motor_configs_)} {
+  RegisterPreference("idle_speed", 0.05);
+}
 
 frc846::control::config::MotorConstructionParameters
 CoralEESubsystem::GetCurrentConfig(
@@ -41,9 +43,9 @@ void CoralEESubsystem::Setup() {
   esc_.EnableStatusFrames({frc846::control::config::kFaultFrame});
 
   esc_.ConfigForwardLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
   esc_.ConfigReverseLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 }
 
 bool CoralEESubsystem::VerifyHardware() {
@@ -54,8 +56,8 @@ bool CoralEESubsystem::VerifyHardware() {
 
 CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
-  readings.has_piece_ = esc_.GetReverseLimitSwitchState();
-  readings.see_reef = esc_.GetForwardLimitSwitchState();
+  readings.has_piece_ = esc_.GetForwardLimitSwitchState();
+  readings.see_reef = esc_.GetReverseLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   Graph("readings/see_reef", readings.see_reef);
   return readings;
@@ -63,5 +65,8 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
 
 void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
   Graph("target/duty_cycle", target.duty_cycle_);
-  esc_.WriteDC(target.duty_cycle_);
+  if (GetReadings().has_piece_)
+    esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
+  else
+    esc_.WriteDC(target.duty_cycle_);
 }

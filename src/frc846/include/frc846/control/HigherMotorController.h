@@ -30,6 +30,8 @@ public:
 
   void SetGains(frc846::control::base::MotorGains gains);
 
+  void SetNeutralMode(bool brake);
+
   /*
   SetLoad()
 

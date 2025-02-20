@@ -47,7 +47,7 @@ void AlgalEESubsystem::Setup() {
   esc_2_.EnableStatusFrames({});
 
   esc_1_.ConfigReverseLimitSwitch(
-      true, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 }
 
 bool AlgalEESubsystem::VerifyHardware() {

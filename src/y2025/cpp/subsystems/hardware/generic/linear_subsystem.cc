@@ -42,6 +42,8 @@ void LinearSubsystem::Setup() {
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
 
+  linear_esc_helper_.SetPosition(0_in);
+
   linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
   // linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
 
@@ -87,4 +89,12 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   linear_esc_.SetGains(GET_PIDF_GAINS());
 
   linear_esc_helper_.WritePosition(target.position);
+}
+
+void LinearSubsystem::BrakeSubsystem() {
+  if (is_initialized()) linear_esc_.SetNeutralMode(true);
+}
+
+void LinearSubsystem::CoastSubsystem() {
+  if (is_initialized()) linear_esc_.SetNeutralMode(false);
 }

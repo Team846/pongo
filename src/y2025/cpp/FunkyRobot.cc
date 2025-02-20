@@ -18,7 +18,7 @@
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
-#include "commands/teleop/coralgae_command.h"
+// #include "commands/teleop/coralgae_command.h"
 #include "commands/teleop/drive_command.h"
 #include "control_triggers.h"
 #include "field.h"
@@ -26,7 +26,9 @@
 #include "rsighandler.h"
 #include "subsystems/hardware/leds_logic.h"
 
-FunkyRobot::FunkyRobot() : GenericRobot{&container_} {}
+FunkyRobot::FunkyRobot() : GenericRobot{&container_} {
+  RegisterPreference("num_coasting_loops", 1000);
+}
 
 void FunkyRobot::OnInitialize() {
   Field::Setup();
@@ -50,6 +52,16 @@ void FunkyRobot::OnInitialize() {
       "zero_bearing", new frc846::wpilib::NTAction(
                           [this] { container_.drivetrain_.ZeroBearing(); }));
 
+  frc::SmartDashboard::PutData(
+      "brake_for_time", new frc846::wpilib::NTAction([this] {
+        container_.algal_ss_.elevator.CoastSubsystem();
+        container_.coral_ss_.telescope.CoastSubsystem();
+        container_.climber_.CoastSubsystem();
+        container_.algal_ss_.algal_wrist.CoastSubsystem();
+        container_.coral_ss_.coral_wrist.CoastSubsystem();
+        coast_count_ = GetPreferenceValue_int("num_coasting_loops");
+      }));
+
   frc::SmartDashboard::PutData("zero_odometry",
       new frc846::wpilib::NTAction(
           [this] { container_.drivetrain_.SetPosition({0_in, 0_in}); }));
@@ -60,15 +72,17 @@ void FunkyRobot::OnDisable() {}
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
 
-  // container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
-  // container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
+  container_.coral_ss_.SetDefaultCommand(CoralCommand{container_});
+  container_.algal_ss_.SetDefaultCommand(AlgalCommand{container_});
   container_.climber_.SetDefaultCommand(ClimberCommand{container_});
-  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
+  // container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
   ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
 void FunkyRobot::OnPeriodic() {
+  if (!gyro_switch_.Get()) { container_.drivetrain_.SetBearing(0_deg); }
+
   if (!home_switch_.Get()) {
     container_.algal_ss_.elevator.HomeSubsystem(
         robot_constants::elevator::elevator_hall_effect);
@@ -76,7 +90,28 @@ void FunkyRobot::OnPeriodic() {
         robot_constants::telescope::telescope_hall_effect);
   }
 
-  LEDsLogic::UpdateLEDs(&container_);
+  if (coast_count_ > 0) coast_count_--;
+  if (coast_count_ == 1 || coast_count_ == 7) {
+    container_.algal_ss_.elevator.BrakeSubsystem();
+    container_.coral_ss_.telescope.BrakeSubsystem();
+    container_.climber_.BrakeSubsystem();
+    container_.algal_ss_.algal_wrist.BrakeSubsystem();
+    container_.coral_ss_.coral_wrist.BrakeSubsystem();
+  }
+  if (!coast_switch_.Get() && !IsTeleopEnabled()) {
+    container_.algal_ss_.elevator.CoastSubsystem();
+    container_.coral_ss_.telescope.CoastSubsystem();
+    container_.climber_.CoastSubsystem();
+    container_.algal_ss_.algal_wrist.CoastSubsystem();
+    container_.coral_ss_.coral_wrist.CoastSubsystem();
+    coast_count_ = GetPreferenceValue_int("num_coasting_loops");
+  }
+
+  if (coast_count_ > 0 && !IsTeleopEnabled())
+    LEDsLogic::CoastingLEDs(&container_,
+        (1.0 * coast_count_) / GetPreferenceValue_int("num_coasting_loops"));
+  else
+    LEDsLogic::UpdateLEDs(&container_);
 
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
@@ -92,7 +127,7 @@ void FunkyRobot::OnPeriodic() {
 void FunkyRobot::InitTest() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
   container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
-  container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
+  // container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
   frc2::Trigger start_dinosaur_a([] { return true; });
   start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{

@@ -49,6 +49,8 @@ void WristSubsystem::Setup() {
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
   // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
+  wrist_esc_helper_.SetPosition(0_deg);
+
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
 
@@ -81,7 +83,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid &&
-      units::math::abs(sensor_pos - readings.position) <
+      units::math::abs(sensor_pos - readings.position) >
           GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
     wrist_esc_helper_.SetPosition(sensor_pos);
   }
@@ -97,4 +99,12 @@ void WristSubsystem::WriteToHardware(WristTarget target) {
 
   wrist_esc_.SetGains(GET_PIDF_GAINS());
   wrist_esc_helper_.WritePosition(target.position);
+}
+
+void WristSubsystem::BrakeSubsystem() {
+  if (is_initialized()) wrist_esc_.SetNeutralMode(true);
+}
+
+void WristSubsystem::CoastSubsystem() {
+  if (is_initialized()) wrist_esc_.SetNeutralMode(false);
 }

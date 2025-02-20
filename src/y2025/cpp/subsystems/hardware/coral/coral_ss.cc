@@ -105,40 +105,41 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   CoralSetpoint setpoint = getSetpoint(target.state);
 
-  // change last_state if you've reached that state
-  if (target.state != last_state) {
-    if (hasReached(target.state)) last_state = target.state;
-  }
+  // // change last_state if you've reached that state
+  // if (target.state != last_state) {
+  //   if (hasReached(target.state)) last_state = target.state;
+  // }
 
-  if (last_state == CoralStates::kCoral_StowWithPiece) {
-    // if at stow with piece, move telescope first
-    telescope.SetTarget({setpoint.height});
+  // if (last_state == CoralStates::kCoral_StowWithPiece) {
+  //   // if at stow with piece, move telescope first
+  //   telescope.SetTarget({setpoint.height});
 
-    if (hasReachedTelescope(target.state)) {
-      coral_wrist.SetTarget({setpoint.angle});
-    }
-  }
-  // if you're currently placing, and you want to change levels
-  //'change mind coral'
-  else if ((last_state == kCoral_ScoreL2 || last_state == kCoral_ScoreL3 ||
-               last_state == kCoral_ScoreL4) &&
-           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
-               target.state == kCoral_ScoreL4) &&
-           (last_state != target.state)) {
-    coral_wrist.SetTarget({getSetpoint(kCoral_StowWithPiece).angle});
+  //   if (hasReachedTelescope(target.state)) {
+  //     coral_wrist.SetTarget({setpoint.angle});
+  //   }
+  // }
+  // // if you're currently placing, and you want to change levels
+  // //'change mind coral'
+  // else if ((last_state == kCoral_ScoreL2 || last_state == kCoral_ScoreL3 ||
+  //              last_state == kCoral_ScoreL4) &&
+  //          (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3
+  //          ||
+  //              target.state == kCoral_ScoreL4) &&
+  //          (last_state != target.state)) {
+  //   coral_wrist.SetTarget({getSetpoint(kCoral_StowWithPiece).angle});
 
-    if (hasReachedWrist(kCoral_StowWithPiece)) {
-      last_state = kCoral_StowWithPiece;  // fake stow with piece
-    }
-  }
-  // if going to stow or holding position
-  else {
-    coral_wrist.SetTarget({setpoint.angle});
+  //   if (hasReachedWrist(kCoral_StowWithPiece)) {
+  //     last_state = kCoral_StowWithPiece;  // fake stow with piece
+  //   }
+  // }
+  // // if going to stow or holding position
+  // else {
+  //   coral_wrist.SetTarget({setpoint.angle});
 
-    if (hasReachedTelescope(target.state)) {
-      telescope.SetTarget({setpoint.height});
-    }
-  }
+  //   if (hasReachedTelescope(target.state)) {
+  //     telescope.SetTarget({setpoint.height});
+  //   }
+  // }
 
   if (target.score ||
       (!GetPreferenceValue_bool("disable_distance_sensor") &&

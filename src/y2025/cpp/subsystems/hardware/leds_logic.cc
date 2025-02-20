@@ -27,3 +27,7 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
 
   container->leds_.SetTarget(target);
 }
+
+void LEDsLogic::CoastingLEDs(RobotContainer* container, double percent) {
+  container->leds_.SetTarget(LEDsCoastingTarget{percent});
+}

@@ -15,6 +15,10 @@ void HigherMotorController::Setup() {
       mmtype_, constr_params_);
 }
 
+void HigherMotorController::SetNeutralMode(bool brake) {
+  frc846::control::MotorMonkey::SetNeutralMode(slot_id_, brake);
+}
+
 bool HigherMotorController::VerifyConnected() {
   return frc846::control::MotorMonkey::VerifyConnected();
 }
