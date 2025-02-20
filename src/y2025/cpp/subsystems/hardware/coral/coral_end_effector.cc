@@ -6,7 +6,7 @@
 #include "subsystems/robot_constants.h"
 
 CoralEESubsystem::CoralEESubsystem()
-    : GenericSubsystem("Coral_end_effector"),
+    : GenericSubsystem("coral_end_effector"),
       motor_configs_{
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
@@ -14,8 +14,8 @@ CoralEESubsystem::CoralEESubsystem()
           .motor_current_limit = 10_A,
           .smart_current_limit = 5_A,
           .voltage_compensation = 12_V,
-          .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
-          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0},
+          .circuit_resistance = robot_constants::coral_ss_::wire_resistance,
+          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.5},
       },
       esc_{frc846::control::base::SPARK_MAX_NEO550,
           GetCurrentConfig(motor_configs_)} {}

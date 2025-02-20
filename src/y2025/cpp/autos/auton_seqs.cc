@@ -19,8 +19,8 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
-#define MAX_ACCEL_3PC 36_fps_sq
-#define MAX_DECEL_3PC 17.4_fps_sq
+#define MAX_ACCEL_3PC 40_fps_sq
+#define MAX_DECEL_3PC 20_fps_sq
 #define MAX_VEL_3PC 13_fps
 
 #define MAX_ACCEL_1PC 7_fps_sq
@@ -58,7 +58,8 @@ using FPT = frc846::math::FieldPoint;
       start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
       container.drivetrain_.SetBearing(start_point.bearing);     \
       container.drivetrain_.UpdateReadings();\
-      container.drivetrain_.SetPosition(container.drivetrain_.GetReadings().april_point);\ 
+      container.drivetrain_.SetPosition(container.drivetrain_.GetReadings().april_point);\
+      Log("hey there");\ 
     }                                                            \
   }
 
@@ -71,32 +72,16 @@ using FPT = frc846::math::FieldPoint;
   frc2::SequentialCommandGroup {                                             \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_),     \
            MKPT(24.5_in, 62_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,         \
-        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name, true},                 \
-        frc2::ParallelRaceGroup {                                        \
-      frc846::robot::swerve::WaitUntilClose{                                 \
-          &(container.drivetrain_),    MKPT(24.5_in, 62_in, 53.5_deg, 0_fps)}, \
-          frc846::robot::swerve::LockToPointCommand {                        \
-        &(container.drivetrain_),    MKPT(24.5_in, 62_in, 53.5_deg, 0_fps)     \
-      }          , frc2::WaitCommand{4_s}\
+        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name}                 \
                                                                   \
-    }                                                                        \
   }
 
 
-
-#define DRIVE_TO_SOURCE_END(auto_name)                                    \
-  frc2::SequentialCommandGroup {                                             \
+#define DRIVE_TO_SOURCE_END(auto_name)                                              \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_),     \
-        MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,         \
-        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name, true},                 \
-        frc2::ParallelRaceGroup {                                        \
-      frc846::robot::swerve::WaitUntilClose{                                 \
-          &(container.drivetrain_), MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps)}, \
-          frc846::robot::swerve::LockToPointCommand {                        \
-        &(container.drivetrain_), MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps)     \
-      }      , frc2::WaitCommand{4_s}                                                                 \
-    }                                                                        \
-  }
+            MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,         \
+        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name}                 \
+                                                                  \
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)                          \
   frc2::SequentialCommandGroup {                                           \
@@ -142,7 +127,7 @@ ThreePieceAuto::ThreePieceAuto(
               // CORAL_POS(kCoral_ScoreL4, true),
               WAIT{.1_s},
               // CORAL_POS(kCoral_StowNoPiece, false),
-              // DRIVE(3PC, 75_in, 120_in, 40_deg, 10_fps),
+              DRIVE(3PC, 75_in, 120_in, 40_deg, 10_fps),
               DRIVE_TO_SOURCE(3PC),
               WAIT{.65_s},
               DRIVE_TO_REEF(3PC, 8),
@@ -151,9 +136,9 @@ ThreePieceAuto::ThreePieceAuto(
               WAIT{.1_s},
               DRIVE_TO_REEF(3PC, 9),
               // CORAL_POS(kCoral_StowWithPiece, false),
-              // // CORAL_POS(kCoral_ScoreL4, true),
+              // CORAL_POS(kCoral_ScoreL4, true),
               WAIT{.1_s},
-              // CORAL_POS(kCoral_StowNoPiece, false),
+              CORAL_POS(kCoral_StowNoPiece, false),
               DRIVE_TO_SOURCE_END(3PC),
               WAIT{.65_s},
               DRIVE_TO_REEF(3PC, 6),

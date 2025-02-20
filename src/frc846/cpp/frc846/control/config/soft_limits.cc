@@ -11,15 +11,15 @@ SoftLimits::SoftLimits(bool using_limits, units::radian_t forward_limit,
       forward_reduce_(forward_reduce),
       reverse_reduce_(reverse_reduce),
       reduce_max_dc_(reduce_max_dc) {
-  assert(forward_limit >= reverse_limit &&
-         "Forward limit must be greater than reverse limit");
-  assert(forward_reduce_ <= forward_limit_ &&
-         "Forward reduce must be less than forward limit");
-  assert(reverse_reduce_ >= reverse_limit_ &&
-         "Reverse reduce must be greater than reverse limit");
-  assert(forward_reduce_ >= reverse_reduce_ &&
-         "Forward reduce must be greater than reverse reduce");
-  assert(reduce_max_dc_ > 0 && "Reduce max DC must be greater than 0");
+  // assert(forward_limit >= reverse_limit &&
+  //        "Forward limit must be greater than reverse limit");
+  // assert(forward_reduce_ <= forward_limit_ &&
+  //        "Forward reduce must be less than forward limit");
+  // assert(reverse_reduce_ >= reverse_limit_ &&
+  //        "Reverse reduce must be greater than reverse limit");
+  // assert(forward_reduce_ >= reverse_reduce_ &&
+  //        "Forward reduce must be greater than reverse reduce");
+  // assert(reduce_max_dc_ > 0 && "Reduce max DC must be greater than 0");
 }
 
 units::radian_t SoftLimits::LimitPosition(units::radian_t position) {

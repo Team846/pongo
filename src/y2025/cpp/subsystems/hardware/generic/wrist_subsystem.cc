@@ -16,6 +16,8 @@ WristSubsystem::WristSubsystem(std::string name,
   RegisterPreference("cg_offset", 0.0_deg);
   RegisterPreference("flip_position_load_sign", false);
 
+  RegisterPreference("rezero_thresh", 2_deg);
+
   wrist_esc_helper_.bind(&wrist_esc_);
 }
 
@@ -45,7 +47,7 @@ void WristSubsystem::Setup() {
           frc846::control::config::StatusFrame::kAbsoluteFrame});
 
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
-  wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
+  // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
@@ -78,7 +80,11 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/absolute_position", readings.absolute_position);
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
-  if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
+  if (is_valid &&
+      units::math::abs(sensor_pos - readings.position) <
+          GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
+    wrist_esc_helper_.SetPosition(sensor_pos);
+  }
 
   Graph("readings/sensor_pos", sensor_pos);
   Graph("readings/sensor_pos_valid", is_valid);
