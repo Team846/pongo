@@ -21,6 +21,7 @@
 #include "frc846/wpilib/time.h"
 
 namespace frc846::robot {
+frc::SendableChooser<std::string> GenericRobot::auto_chooser_;
 
 GenericRobot::GenericRobot(GenericRobotContainer* container)
     : frc846::base::Loggable{"Robot"}, generic_robot_container_{container} {

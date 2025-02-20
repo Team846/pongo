@@ -52,7 +52,12 @@ void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
   if (target.state == kLEDsUnready) {
     SetStrip(RED);
   } else if (target.state == kLEDsDisabled) {
-    SetStrip(ORANGE);
+    if (target.state == kisLinedUp) {
+      SetStrip(GREEN);
+      Flash(MED_FLASH);
+    } else {
+      SetStrip(ORANGE);
+    }
   } else if (target.state == kLEDsAutonomous) {
     SetStrip(BLUE);
   } else if (target.state == kLEDsSequencing) {
@@ -66,6 +71,9 @@ void LEDsSubsystem::WriteToHardware(LEDsTarget target) {
     Flash(SLOW_FLASH);
   } else if (target.state == kLEDsHavePiece) {
     SetRainbow();
+  } else if (target.state == kisLinedUp) {
+    SetStrip(GREEN);
+    Flash(MED_FLASH);
   }
 
   loops++;
