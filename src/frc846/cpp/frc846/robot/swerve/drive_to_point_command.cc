@@ -118,9 +118,9 @@ void DriveToPointCommand::Execute() {
       (target_.point - dt_readings.estimated_pose.position).magnitude() *
       units::math::sin(
           (target_.point - dt_readings.estimated_pose.position).angle() -
-          direction_offset)*(drivetrain_->GetPreferenceValue_double("drive_correctional_gain")*max_speed_.to<double>());
-
-  
+          direction_offset) *
+      (drivetrain_->GetPreferenceValue_double("drive_correctional_gain") *
+          max_speed_.to<double>());
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> corr_accl;
 
@@ -194,8 +194,7 @@ bool DriveToPointCommand::IsFinished() {
              drivetrain_readings.pose.velocity.magnitude() <
                  drivetrain_
                      ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                         "vel_stopped_thresh") &&
-             (target_.point - current_point).magnitude() < 1.5_in)
+                         "vel_stopped_thresh"))
 
          //                  ||
          //  num_stalled_loops_ >l

@@ -62,9 +62,12 @@ void LockToPointCommand::Execute() {
                         .estimated_pose.velocity.magnitude()
                         .to<double>(),
                     0.0);
-    speed_target = units::math::min(units::math::max(speed_target,
-        -drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-            "lock_max_speed")), drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+    speed_target = units::math::min(
+        units::math::max(speed_target,
+            -drivetrain_
+                ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                    "lock_max_speed")),
+        drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "lock_max_speed"));
 
     drivetrain_->SetTarget(frc846::robot::swerve::DrivetrainOLControlTarget{
@@ -78,7 +81,3 @@ void LockToPointCommand::End(bool interrupted) { drivetrain_->SetTargetZero(); }
 bool LockToPointCommand::IsFinished() { return false; }
 
 }  // namespace frc846::robot::swerve
-
-//deadband .5, 
-//p -2
-//d .01

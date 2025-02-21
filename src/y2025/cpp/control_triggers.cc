@@ -7,10 +7,10 @@
 #include "commands/teleop/complete_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
 #include "commands/teleop/processor_auto_align.h"
-#include "frc846/robot/swerve/lock_to_point_command.h"
 #include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
+#include "frc846/robot/swerve/lock_to_point_command.h"
 #include "reef.h"
 
 void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
@@ -39,7 +39,8 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
           .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_processor;
-  }}.WhileTrue(frc846::robot::swerve::AimCommand{&(container.drivetrain_), 0_deg}
+  }}.WhileTrue(frc846::robot::swerve::AimCommand{
+      &(container.drivetrain_), 0_deg}
           .ToPtr());
 
   frc2::Trigger{[&] {

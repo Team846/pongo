@@ -65,7 +65,7 @@ void FunkyRobot::InitTeleop() {
   // container_.climber_.SetDefaultCommand(ClimberCommand{container_});
   // container_.coralgae_.SetDefaultCommand(CoralgaeCommand{container_});
 
-  // ControlTriggerInitializer::InitTeleopTriggers(container_);
+  ControlTriggerInitializer::InitTeleopTriggers(container_);
 }
 
 void FunkyRobot::OnPeriodic() {

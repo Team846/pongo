@@ -25,7 +25,7 @@ using FPT = frc846::math::FieldPoint;
 
 #define MAX_ACCEL_1PC 7_fps_sq
 #define MAX_DECEL_1PC 7_fps_sq
-#define MAX_VEL_1PC 6_fps
+#define MAX_VEL_1PC 5_fps
 
 #define MAX_ACCEL_LEAVE 10_fps_sq
 #define MAX_DECEL_LEAVE 10_fps_sq
@@ -123,11 +123,12 @@ ThreePieceAuto::ThreePieceAuto(
               START(158.5_in - 73.25_in, START_Y,
                   180_deg),  // Fix to use April Tags instead.
               // WAIT{0.25_s},
+              // PARALLEL_DEADLINE
               DRIVE_TO_REEF(3PC, 11),
               // CORAL_POS(kCoral_ScoreL4, true),
               WAIT{.1_s},
               // CORAL_POS(kCoral_StowNoPiece, false),
-              DRIVE(3PC, 75_in, 120_in, 40_deg, 10_fps),
+              // DRIVE(3PC, 75_in, 120_in, 40_deg, 10_fps),
               DRIVE_TO_SOURCE(3PC),
               WAIT{.65_s},
               DRIVE_TO_REEF(3PC, 8),
@@ -156,14 +157,14 @@ OnePieceAndNetAuto::OnePieceAndNetAuto(
               START(158.5_in, START_Y, 180_deg),
               WAIT{0.25_s},
               DRIVE_TO_REEF(1PC, 1),
-              CORAL_POS(kCoral_ScoreL4, true),
+              // CORAL_POS(kCoral_ScoreL4, true),
               WAIT{1_s},
-              CORAL_POS(kCoral_StowNoPiece, false),
-              ALGAL_POS(kAlgae_L3Pick, false),
+              // CORAL_POS(kCoral_StowNoPiece, false),
+              // ALGAL_POS(kAlgae_L3Pick, false),
               WAIT{1_s},
               DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
               DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps),
-              ALGAL_POS(kAlgae_Net, true),
+              // ALGAL_POS(kAlgae_Net, true),
               WAIT{1_s},
           }} {}
 
