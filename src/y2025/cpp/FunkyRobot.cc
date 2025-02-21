@@ -158,14 +158,16 @@ void FunkyRobot::InitTest() {
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}.Repeatedly());
+      frc2::WaitCommand{0.5_s}}
+          .Repeatedly());
 
   frc2::Trigger start_dinosaur_c([] { return true; });
   start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
       CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}.Repeatedly());
+      frc2::WaitCommand{0.5_s}}
+          .Repeatedly());
 }
 
 #ifndef RUNNING_FRC_TESTS

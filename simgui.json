@@ -2,11 +2,14 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/GPDField": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/get_prune_list": "Command",
       "/SmartDashboard/prune_prefs": "Command",
       "/SmartDashboard/set_cancoder_offsets": "Command",
       "/SmartDashboard/verify_hardware": "Command",
-      "/SmartDashboard/zero_bearing": "Command"
+      "/SmartDashboard/zero_bearing": "Command",
+      "/SmartDashboard/zero_odometry": "Command"
     }
   },
   "NetworkTables": {

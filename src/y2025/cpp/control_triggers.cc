@@ -8,9 +8,11 @@
 #include "commands/teleop/gpd_ss_command.h"
 #include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/processor_auto_align.h"
 #include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
+#include "frc846/robot/swerve/lock_to_point_command.h"
 #include "reef.h"
 
 void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
@@ -23,14 +25,25 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{
-      container, true, 5_fps, 15_fps_sq, 15_fps_sq}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, true,
+      container.drivetrain_
+          .GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "lock_max_speed"),
+      35_fps_sq, 15_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{
-      container, false, 5_fps, 15_fps_sq, 15_fps_sq}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, false,
+      container.drivetrain_
+          .GetPreferenceValue_unit_type<units::feet_per_second_t>(
+              "lock_max_speed"),
+      35_fps_sq, 15_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().lock_processor;
+  }}.WhileTrue(frc846::robot::swerve::AimCommand{
+      &(container.drivetrain_), 0_deg}
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&

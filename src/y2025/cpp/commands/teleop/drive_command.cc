@@ -129,6 +129,31 @@ void DriveCommand::Periodic() {
           container_.drivetrain_.ApplyBearingPID(target_angle);
   }
 
+  if (ci_readings_.auto_align) {
+    units::degree_t target_bearing = 0_deg;
+    if (ci_readings_.algal_state == kAlgae_Processor &&
+        ci_readings_.position_algal) {
+      target_bearing = -90_deg;
+    } else if (ci_readings_.algal_state == kAlgae_Net &&
+               ci_readings_.position_algal) {
+      target_bearing = 0_deg;
+    } else if (!container_.coral_ss_.coral_end_effector.GetReadings()
+                   .has_piece_) {
+      if (container_.drivetrain_.GetReadings().estimated_pose.position[0] <
+          158.5_in)
+        target_bearing = 234_deg + 180_deg;
+      else
+        target_bearing = 126_deg + 180_deg;
+    }
+
+    if (frc::DriverStation::GetAlliance() ==
+        frc::DriverStation::Alliance::kBlue)
+      target_bearing = 180_deg - target_bearing;
+
+    target.angular_velocity =
+        container_.drivetrain_.ApplyBearingPID(target_bearing);
+  }
+
   container_.drivetrain_.SetTarget({target});
 }
 

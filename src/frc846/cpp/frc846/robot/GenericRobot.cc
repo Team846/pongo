@@ -21,6 +21,7 @@
 #include "frc846/wpilib/time.h"
 
 namespace frc846::robot {
+frc::SendableChooser<std::string> GenericRobot::auto_chooser_;
 
 GenericRobot::GenericRobot(GenericRobotContainer* container)
     : frc846::base::Loggable{"Robot"}, generic_robot_container_{container} {
@@ -207,9 +208,11 @@ void GenericRobot::StartCompetition() {
     Graph("loop_time", loop_time);
 
     // Check loop time
-    if (loop_time > kPeriod * 0x03) {
+    if (loop_time > kPeriod) {
       Warn("Loop overrun: {} (loop period: {})",
           loop_time.convert<units::millisecond>(), kPeriod);
+
+      next_loop_time_ += ((int)(loop_time / kPeriod)) * kPeriod;
     }
   }
 }

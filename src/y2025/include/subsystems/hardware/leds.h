@@ -2,7 +2,9 @@
 
 #include <frc/AddressableLED.h>
 
+#include "frc846/robot/GenericRobot.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/swerve/drivetrain.h"
 #include "ports.h"
 
 enum LEDsState {
@@ -13,6 +15,7 @@ enum LEDsState {
   kLEDsTeleop,
   kLEDsClimbing,
   kLEDsHavePiece,
+  kisLinedUp,
   kLEDsHomingGyro,
   kLEDsHoming,
 };

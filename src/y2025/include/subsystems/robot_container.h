@@ -36,7 +36,7 @@ public:
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
+    bool gpd_init = true;  //(GetPreferenceValue_bool("init_gpd"));
 
     bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
     bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
@@ -49,7 +49,7 @@ public:
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
     // RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-    RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+    // RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
     // RegisterSubsystemGroupB({{&climber_, climber_init}});
   }

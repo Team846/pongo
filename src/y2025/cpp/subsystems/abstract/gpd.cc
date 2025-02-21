@@ -71,9 +71,9 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
       drivetrain_->GetReadings();
 
   g_field.SetRobotPose(frc846::math::FieldPoint::field_size_y -
-                           drivetrain_readings.pose.position[1],
-      drivetrain_readings.pose.position[0],
-      180_deg - drivetrain_readings.pose.bearing);
+                           drivetrain_readings.estimated_pose.position[1],
+      drivetrain_readings.estimated_pose.position[0],
+      180_deg - drivetrain_readings.estimated_pose.bearing);
 
   std::vector<double> distances = gpdTable->GetNumberArray("distances", {});
 
@@ -92,18 +92,19 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
   for (size_t i = 0; i < distances.size() && i < theta_x.size(); ++i) {
     readings.gamepieces.push_back(
         frc846::math::Vector2D{units::inch_t(distances[i]),
-            drivetrain_readings.pose.bearing -
+            drivetrain_readings.estimated_pose.bearing -
                 drivetrain_readings.yaw_rate * latency +
                 units::degree_t(theta_x[i]) +
                 GetPreferenceValue_unit_type<units::degree_t>("cam_h_angle"),
             true} +
-        drivetrain_readings.pose.position -
-        frc846::math::Vector2D{drivetrain_readings.pose.velocity[0] * latency,
-            drivetrain_readings.pose.velocity[1] * latency} +
+        drivetrain_readings.estimated_pose.position -
+        frc846::math::Vector2D{
+            drivetrain_readings.estimated_pose.velocity[0] * latency,
+            drivetrain_readings.estimated_pose.velocity[1] * latency} +
         frc846::math::Vector2D{
             GetPreferenceValue_unit_type<units::inch_t>("intake_to_cam_x"),
             GetPreferenceValue_unit_type<units::inch_t>("intake_to_cam_y")}
-            .rotate(drivetrain_readings.pose.bearing));
+            .rotate(drivetrain_readings.estimated_pose.bearing));
   }
 
   int num_gps = readings.gamepieces.size();

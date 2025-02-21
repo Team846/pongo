@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frc846/math/vectors.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/xbox.h"
 #include "subsystems/hardware/algal/algal_ss.h"
@@ -24,6 +25,7 @@ struct ControlInputReadings {
   bool lock_left_reef;
   bool lock_right_reef;
   bool auto_align;
+  bool lock_processor;
 
   // Superstructure
   bool position_algal;
@@ -71,6 +73,8 @@ public:
   bool VerifyHardware() override;
 
   ControlInputReadings UpdateWithInput();
+
+  frc846::math::Vector2D base_adj{0_in, 0_in};
 
 private:
   ControlInputReadings previous_readings_{};
