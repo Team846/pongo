@@ -56,8 +56,8 @@ bool CoralEESubsystem::VerifyHardware() {
 
 CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
-  readings.has_piece_ = esc_.GetForwardLimitSwitchState();
-  readings.see_reef = esc_.GetReverseLimitSwitchState();
+  readings.has_piece_ = esc_.GetReverseLimitSwitchState();
+  readings.see_reef = esc_.GetForwardLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   Graph("readings/see_reef", readings.see_reef);
   return readings;
@@ -65,7 +65,7 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
 
 void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
   Graph("target/duty_cycle", target.duty_cycle_);
-  if (GetReadings().has_piece_)
+  if (GetReadings().has_piece_ && target.duty_cycle_ < 0.0)
     esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
   else
     esc_.WriteDC(target.duty_cycle_);

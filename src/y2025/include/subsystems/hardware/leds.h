@@ -12,7 +12,9 @@ enum LEDsState {
   kLEDsSequencing,
   kLEDsTeleop,
   kLEDsClimbing,
-  kLEDsHavePiece
+  kLEDsHavePiece,
+  kLEDsHomingGyro,
+  kLEDsHoming,
 };
 
 struct LEDsReadings {};

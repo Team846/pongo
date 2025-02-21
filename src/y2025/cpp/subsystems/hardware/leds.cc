@@ -44,6 +44,7 @@ void LEDsSubsystem::Flash(int loops_on) {
 #define LIGHT_BLUE 25, 25, 255
 #define GREEN 0, 255, 0
 #define ORANGE 255, 17, 0
+#define PURPLE 255, 0, 255
 
 #define SLOW_FLASH 30
 #define MED_FLASH 12
@@ -51,7 +52,13 @@ void LEDsSubsystem::Flash(int loops_on) {
 
 void LEDsSubsystem::WriteToHardware(TLTGT target) {
   if (auto* tgt = std::get_if<LEDsTarget>(&target)) {
-    if (tgt->state == kLEDsUnready) {
+    if (tgt->state == kLEDsHoming) {
+      SetStrip(PURPLE);
+      Flash(RAPID_FLASH);
+    } else if (tgt->state == kLEDsHomingGyro) {
+      SetStrip(GREEN);
+      Flash(RAPID_FLASH);
+    } else if (tgt->state == kLEDsUnready) {
       SetStrip(RED);
     } else if (tgt->state == kLEDsDisabled) {
       SetStrip(ORANGE);

@@ -37,6 +37,9 @@ AlgalSuperstructure::AlgalSuperstructure()
 
   RegisterPreference("elevator_tolerance", 3_in);
   RegisterPreference("wrist_tolerance", 7_deg);
+
+  RegisterPreference("elevator_adjustment", 0.04_in);
+  RegisterPreference("wrist_adjustment", 0.2_deg);
 }
 
 void AlgalSuperstructure::Setup() {
@@ -75,16 +78,34 @@ AlgalSetpoint AlgalSuperstructure::getSetpoint(AlgalStates state) {
 }
 
 bool AlgalSuperstructure::hasReached(AlgalStates state) {
+  bool has_reached = hasReachedWrist(state) && hasReachedElevator(state);
+
+  Graph("has_reached", has_reached);
+
+  return has_reached;
+}
+
+bool AlgalSuperstructure::hasReachedWrist(AlgalStates state) {
   AlgalSetpoint setpoint = getSetpoint(state);
 
-  if (units::math::abs(elevator.GetReadings().position - setpoint.height) >
-      GetPreferenceValue_unit_type<units::inch_t>("elevator_tolerance"))
+  if (algal_wrist.is_initialized() &&
+      (units::math::abs(algal_wrist.GetReadings().position - setpoint.angle) >
+          GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))) {
+    Graph("has_reached", false);
     return false;
+  }
+  return true;
+}
 
-  if (units::math::abs(algal_wrist.GetReadings().position - setpoint.angle) >
-      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))
+bool AlgalSuperstructure::hasReachedElevator(AlgalStates state) {
+  AlgalSetpoint setpoint = getSetpoint(state);
+
+  if (elevator.is_initialized() &&
+      (units::math::abs(elevator.GetReadings().position - setpoint.height) >
+          GetPreferenceValue_unit_type<units::inch_t>("elevator_tolerance"))) {
+    Graph("has_reached", false);
     return false;
-
+  }
   return true;
 }
 
@@ -99,48 +120,70 @@ AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
 void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
-  // elevator.SetTarget({setpoint.height});
-
-  // if (target.separate_wrist_state.has_value())
-  //   algal_wrist.SetTarget(
-  //       {getSetpoint(target.separate_wrist_state.value()).angle});
-  // else
-  //   algal_wrist.SetTarget({setpoint.angle});
-
-  // if (target.score)
-  //   algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
-  // else
-  //   algal_end_effector.SetTarget({setpoint.ee_dc});
+  if (target.score)
+    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
+  else
+    algal_end_effector.SetTarget({setpoint.ee_dc});
 
   if (target.state != last_state) {
+    clearAdjustments();
     if (hasReached(target.state)) last_state = target.state;
   }
 
+  bool lastIsHigh = last_state == AlgalStates::kAlgae_L2Pick ||
+                    last_state == AlgalStates::kAlgae_L3Pick ||
+                    last_state == AlgalStates::kAlgae_Net ||
+                    last_state == AlgalStates::kAlgae_GroundIntake ||
+                    last_state == AlgalStates::kAlgae_OnTopIntake;
+  bool targetIsHigh = target.state == AlgalStates::kAlgae_L2Pick ||
+                      target.state == AlgalStates::kAlgae_L3Pick ||
+                      target.state == AlgalStates::kAlgae_Net ||
+                      target.state == AlgalStates::kAlgae_GroundIntake ||
+                      target.state == AlgalStates::kAlgae_OnTopIntake;
+
   if (last_state == AlgalStates::kAlgae_Stow) {
-    // if at stow with piece, move elevator first
-    elevator.SetTarget({setpoint.height});
-
-    if (hasReached(target.state)) { algal_wrist.SetTarget({setpoint.angle}); }
-  }
-  // if you're currently placing, and you want to change levels
-  //'change mind algae'
-  else if ((last_state == kAlgae_L2Pick || last_state == kAlgae_L3Pick) &&
-           (target.state == kAlgae_L2Pick || target.state == kAlgae_L3Pick) &&
-           (last_state != target.state)) {
-    algal_wrist.SetTarget({getSetpoint(kAlgae_Stow).angle});
-
-    if (hasReached(kAlgae_Stow)) {
-      last_state = kAlgae_Stow;  // fake stow with piece
+    elevator.SetTarget({setpoint.height + elevator_adjustment_});
+    if (hasReachedElevator(target.state))
+      algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+  } else if (lastIsHigh && (target.state == AlgalStates::kAlgae_Stow)) {
+    algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+    if (hasReachedWrist(target.state))
+      elevator.SetTarget({setpoint.height + elevator_adjustment_});
+  } else if ((target.state == kAlgae_GroundIntake &&
+                 last_state == kAlgae_OnTopIntake) ||
+             (last_state == kAlgae_GroundIntake &&
+                 target.state == kAlgae_OnTopIntake)) {
+    elevator.SetTarget({setpoint.height + elevator_adjustment_});
+    algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+  } else if (lastIsHigh && targetIsHigh) {
+    algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).angle});
+    if (hasReachedWrist(AlgalStates::kAlgae_Stow)) {
+      last_state = AlgalStates::kAlgae_Stow;
+      elevator.SetTarget({setpoint.height + elevator_adjustment_});
     }
-  }
-  // if going to stow or holding position
-  else {
-    algal_wrist.SetTarget({setpoint.angle});
-
-    if (hasReached(target.state)) { elevator.SetTarget({setpoint.height}); }
+  } else {
+    elevator.SetTarget({setpoint.height + elevator_adjustment_});
+    algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
   }
 
   elevator.UpdateHardware();
   algal_wrist.UpdateHardware();
   algal_end_effector.UpdateHardware();
+}
+
+void AlgalSuperstructure::adjustElevator(bool upwards) {
+  elevator_adjustment_ +=
+      (upwards ? 1 : -1) *
+      GetPreferenceValue_unit_type<units::inch_t>("elevator_adjustment");
+}
+
+void AlgalSuperstructure::adjustWrist(bool upwards) {
+  wrist_adjustment_ +=
+      (upwards ? 1 : -1) *
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_adjustment");
+}
+
+void AlgalSuperstructure::clearAdjustments() {
+  elevator_adjustment_ = 0_in;
+  wrist_adjustment_ = 0_deg;
 }

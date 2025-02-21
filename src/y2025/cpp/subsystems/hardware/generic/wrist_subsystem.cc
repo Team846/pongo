@@ -70,14 +70,17 @@ WristReadings WristSubsystem::ReadFromHardware() {
   readings.velocity = wrist_esc_helper_.GetVelocity();
   readings.absolute_position = wrist_esc_.GetAbsoluteEncoderPosition();
 
-  wrist_esc_.SetLoad(
-      1_Nm *
-      units::math::cos(
-          readings.position *
-              (GetPreferenceValue_bool("flip_position_load_sign") ? -1 : 1) +
-          GetPreferenceValue_unit_type<units::degree_t>("cg_offset")));
+  units::degree_t cg_pos =
+      readings.position *
+          (GetPreferenceValue_bool("flip_position_load_sign") ? -1 : 1) +
+      GetPreferenceValue_unit_type<units::degree_t>("cg_offset");
+
+  wrist_esc_.SetLoad(1_Nm * units::math::cos(cg_pos));
+
+  Graph("readings/cg_pos", cg_pos);
 
   Graph("readings/position", readings.position);
+  Graph("readings/error", GetTarget().position - readings.position);
   Graph("readings/velocity", readings.velocity);
   Graph("readings/absolute_position", readings.absolute_position);
 

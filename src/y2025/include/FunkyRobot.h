@@ -27,4 +27,6 @@ private:
   frc::DigitalInput gyro_switch_{2};
 
   int coast_count_{0};
+  int homing_count_gyro{0};
+  int homing_count_{0};
 };

@@ -98,7 +98,7 @@ void SparkMXFX_interm::SetVoltageCompensation(
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
   configs.closedLoop.Pidf(
-      gains_.kP, gains_.kI, std::abs(gains_.kD), gains_.kFF);
+      gains_.kP, gains_.kI, std::abs(gains_.kD), std::abs(gains_.kFF));
 
   APPLY_CONFIG_NO_RESET();
 }

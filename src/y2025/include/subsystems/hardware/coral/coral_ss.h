@@ -25,7 +25,6 @@ struct CoralSSReadings {};
 struct CoralSSTarget {
   CoralStates state;
   bool score;
-  std::optional<CoralStates> separate_wrist_state = std::nullopt;
 };
 
 class CoralSuperstructure
@@ -51,12 +50,19 @@ public:
   bool hasReachedTelescope(CoralStates state);
   bool hasReachedWrist(CoralStates state);
 
+  void adjustTelescope(bool upwards);
+  void adjustWrist(bool upwards);
+  void clearAdjustments();
+
   CoralStates last_state;
 
 protected:
   CoralSSReadings ReadFromHardware() override;
 
   void WriteToHardware(CoralSSTarget target) override;
+
+  units::inch_t telescope_adjustment_ = 0_in;
+  units::degree_t wrist_adjustment_ = 0_deg;
 
 private:
 };
