@@ -16,7 +16,7 @@ CoralWristSubsystem::CoralWristSubsystem()
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::coral_ss_::wire_resistance,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
-          encoder_reduction * encoder_to_subsystem_reduction) {
+          subsystem_reduction) {
   RegisterPreference("use_sensor_threshold", 5_deg_per_s);
   RegisterPreference("encoder_offset", 10_deg);
 }
@@ -30,10 +30,9 @@ void CoralWristSubsystem::ExtendedSetup() {}
 std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
   units::degree_t raw_enc_pos =
       CoralWristSubsystem::GetReadings().absolute_position;
-  if (raw_enc_pos > 180_deg) raw_enc_pos -= 360_deg;
-  return {-raw_enc_pos * encoder_to_subsystem_reduction +
+  if (raw_enc_pos > 340_deg) raw_enc_pos -= 360_deg;
+  return {raw_enc_pos +
               GetPreferenceValue_unit_type<units::degree_t>("encoder_offset"),
-
       units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
           GetPreferenceValue_unit_type<units::degrees_per_second_t>(
               "use_sensor_threshold")};

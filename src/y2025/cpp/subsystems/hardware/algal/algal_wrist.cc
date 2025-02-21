@@ -10,7 +10,7 @@ AlgalWristSubsystem::AlgalWristSubsystem()
           frc846::control::config::MotorConstructionParameters{
               .can_id = ports::algal_ss_::wrist_::kWristMotor_CANID,
               .inverted = true,
-              .brake_mode = false,
+              .brake_mode = true,
               .motor_current_limit = 20_A,
               .smart_current_limit = 10_A,
               .voltage_compensation = 12_V,
@@ -30,7 +30,7 @@ void AlgalWristSubsystem::ExtendedSetup() {}
 std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos() {
   units::degree_t raw_enc_pos =
       AlgalWristSubsystem::GetReadings().absolute_position;
-  if (raw_enc_pos > 180_deg) raw_enc_pos -= 360_deg;
+  if (raw_enc_pos > 120_deg) raw_enc_pos -= 360_deg;
   return {-raw_enc_pos * encoder_to_subsystem_reduction +
               GetPreferenceValue_unit_type<units::degree_t>("encoder_offset"),
 

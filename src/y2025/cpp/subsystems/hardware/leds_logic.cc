@@ -72,10 +72,10 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
   } else if (frc::DriverStation::IsAutonomous() ||
              frc::DriverStation::IsAutonomousEnabled()) {
     target.state = kLEDsAutonomous;
-  } else if (container->control_input_.GetReadings().auto_align ||
-             container->control_input_.GetReadings().lock_left_reef ||
+  } else if (container->control_input_.GetReadings().lock_left_reef ||
              container->control_input_.GetReadings().lock_right_reef ||
-             container->control_input_.GetReadings().targeting_algae) {
+             (container->control_input_.GetReadings().targeting_algae &&
+                 container->GPD_.GetReadings().gamepieces.size() != 0U)) {
     target.state = kLEDsSequencing;
   } else if (container->control_input_.GetReadings().climb_state != 0) {
     target.state = kLEDsClimbing;
@@ -88,4 +88,13 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
   }
 
   container->leds_.SetTarget(target);
+}
+
+void LEDsLogic::SetLEDsState(RobotContainer* container, LEDsState state) {
+  LEDsTarget target{state};
+  container->leds_.SetTarget(target);
+}
+
+void LEDsLogic::CoastingLEDs(RobotContainer* container, double percent) {
+  container->leds_.SetTarget(LEDsCoastingTarget{percent});
 }

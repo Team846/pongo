@@ -28,7 +28,6 @@ struct ControlInputReadings {
   bool lock_processor;
 
   // Superstructure
-  bool position_coral;
   bool position_algal;
   AlgalStates algal_state;
   CoralStates coral_state;
@@ -42,6 +41,16 @@ struct ControlInputReadings {
 
   // Resets
   bool zero_bearing;
+
+  // Adjustments
+  bool inc_telescope;
+  bool dec_telescope;
+  bool inc_c_wrist;
+  bool dec_c_wrist;
+  bool inc_elevator;
+  bool dec_elevator;
+  bool inc_a_wrist;
+  bool dec_a_wrist;
 
   bool targeting_algae;
 };

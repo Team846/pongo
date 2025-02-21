@@ -49,6 +49,8 @@ void WristSubsystem::Setup() {
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
   // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
+  wrist_esc_helper_.SetPosition(0_deg);
+
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
 
@@ -68,20 +70,23 @@ WristReadings WristSubsystem::ReadFromHardware() {
   readings.velocity = wrist_esc_helper_.GetVelocity();
   readings.absolute_position = wrist_esc_.GetAbsoluteEncoderPosition();
 
-  wrist_esc_.SetLoad(
-      1_Nm *
-      units::math::cos(
-          readings.position *
-              (GetPreferenceValue_bool("flip_position_load_sign") ? -1 : 1) +
-          GetPreferenceValue_unit_type<units::degree_t>("cg_offset")));
+  units::degree_t cg_pos =
+      readings.position *
+          (GetPreferenceValue_bool("flip_position_load_sign") ? -1 : 1) +
+      GetPreferenceValue_unit_type<units::degree_t>("cg_offset");
+
+  wrist_esc_.SetLoad(1_Nm * units::math::cos(cg_pos));
+
+  Graph("readings/cg_pos", cg_pos);
 
   Graph("readings/position", readings.position);
+  Graph("readings/error", GetTarget().position - readings.position);
   Graph("readings/velocity", readings.velocity);
   Graph("readings/absolute_position", readings.absolute_position);
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid &&
-      units::math::abs(sensor_pos - readings.position) <
+      units::math::abs(sensor_pos - readings.position) >
           GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
     wrist_esc_helper_.SetPosition(sensor_pos);
   }
@@ -97,4 +102,12 @@ void WristSubsystem::WriteToHardware(WristTarget target) {
 
   wrist_esc_.SetGains(GET_PIDF_GAINS());
   wrist_esc_helper_.WritePosition(target.position);
+}
+
+void WristSubsystem::BrakeSubsystem() {
+  if (is_initialized()) wrist_esc_.SetNeutralMode(true);
+}
+
+void WristSubsystem::CoastSubsystem() {
+  if (is_initialized()) wrist_esc_.SetNeutralMode(false);
 }

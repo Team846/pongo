@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "calculators/AntiTippingCalculator.h"
+#include "frc846/math/fieldpoints.h"
 
 DriveCommand::DriveCommand(RobotContainer &container)
     : frc846::robot::GenericCommand<RobotContainer, DriveCommand>{
@@ -98,8 +99,35 @@ void DriveCommand::Periodic() {
 
   target.angular_velocity = rotation * max_omega;
 
-  if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue)
-    target.velocity = target.velocity.rotate(180_deg);
+  bool isBlue = (frc::DriverStation::GetAlliance() ==
+                 frc::DriverStation::Alliance::kBlue);
+
+  if (isBlue) target.velocity = target.velocity.rotate(180_deg);
+
+  if (ci_readings_.auto_align) {
+    units::degree_t target_angle = 1000_deg;
+    if (ci_readings_.algal_state == kAlgae_Net &&
+        container_.algal_ss_.algal_end_effector.GetReadings().has_piece_) {
+      target_angle = isBlue ? 180_deg : 0_deg;
+    } else if (ci_readings_.algal_state == kAlgae_Processor &&
+               container_.algal_ss_.algal_end_effector.GetReadings()
+                   .has_piece_) {
+      target_angle = isBlue ? -90_deg : 90_deg;
+    } else if (ci_readings_.coral_state == kCoral_StowNoPiece &&
+               !container_.coral_ss_.coral_end_effector.GetReadings()
+                    .has_piece_) {
+      if (container_.drivetrain_.GetReadings().pose.position[0] >
+          (frc846::math::FieldPoint::field_size_x / 2))
+        target_angle = 180_deg - 54_deg;
+      else
+        target_angle = 180_deg + 54_deg;
+
+      if (isBlue) target_angle = 180_deg - target_angle;
+    }
+    if (target_angle <= 720_deg)
+      target.angular_velocity =
+          container_.drivetrain_.ApplyBearingPID(target_angle);
+  }
 
   if (ci_readings_.auto_align) {
     units::degree_t target_bearing = 0_deg;

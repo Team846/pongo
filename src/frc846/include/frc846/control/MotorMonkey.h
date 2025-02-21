@@ -42,6 +42,8 @@ public:
   */
   static void Tick(bool disabled);
 
+  static void SetNeutralMode(size_t slot_id, bool brake_mode);
+
   /*
   WriteMessages()
 

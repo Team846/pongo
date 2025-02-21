@@ -42,6 +42,9 @@ public:
 
   bool VerifyHardware() override final;
 
+  void BrakeSubsystem();
+  void CoastSubsystem();
+
 protected:
   virtual void ExtendedSetup() = 0;
 

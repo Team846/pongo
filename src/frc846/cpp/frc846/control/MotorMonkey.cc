@@ -181,6 +181,12 @@ void MotorMonkey::Tick(bool disabled) {
   }
 }
 
+void MotorMonkey::SetNeutralMode(size_t slot_id, bool brake_mode) {
+  CHECK_SLOT_ID();
+  controller_registry[slot_id]->SetNeutralMode(brake_mode);
+  LOG_IF_ERROR("SetNeutralMode");
+}
+
 units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   units::ampere_t total_current = 0.0_A;
   std::queue<MotorMessage> temp_messages{control_messages};

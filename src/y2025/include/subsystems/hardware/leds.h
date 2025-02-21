@@ -16,6 +16,8 @@ enum LEDsState {
   kLEDsClimbing,
   kLEDsHavePiece,
   kisLinedUp,
+  kLEDsHomingGyro,
+  kLEDsHoming,
 };
 
 struct LEDsReadings {};
@@ -24,14 +26,20 @@ struct LEDsTarget {
   LEDsState state;
 };
 
+struct LEDsCoastingTarget {
+  double percent;
+};
+
+using TLTGT = std::variant<LEDsTarget, LEDsCoastingTarget>;
+
 class LEDsSubsystem
-    : public frc846::robot::GenericSubsystem<LEDsReadings, LEDsTarget> {
+    : public frc846::robot::GenericSubsystem<LEDsReadings, TLTGT> {
 public:
   LEDsSubsystem();
 
   void Setup() override;
 
-  LEDsTarget ZeroTarget() const override;
+  TLTGT ZeroTarget() const override;
 
   bool VerifyHardware() override;
 
@@ -41,7 +49,7 @@ private:
   void Flash(int loops_on);
 
   // Number of LEDs.
-  static constexpr int kLength = 23;
+  static constexpr int kLength = 18;
 
   std::array<frc::AddressableLED::LEDData, kLength> leds_buffer_;
 
@@ -52,5 +60,5 @@ private:
   int loops = 0;
   int first_pixel_hue_ = 0;
 
-  void WriteToHardware(LEDsTarget target) override;
+  void WriteToHardware(TLTGT target) override;
 };

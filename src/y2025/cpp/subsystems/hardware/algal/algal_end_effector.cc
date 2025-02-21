@@ -21,7 +21,9 @@ AlgalEESubsystem::AlgalEESubsystem()
           GetCurrentConfig(motor_configs_)},
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
-              ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {}
+              ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
+  RegisterPreference("idle_speed", -0.04);
+}
 
 frc846::control::config::MotorConstructionParameters
 AlgalEESubsystem::GetCurrentConfig(
@@ -41,13 +43,13 @@ AlgalEESubsystem::GetCurrentConfig(
 
 void AlgalEESubsystem::Setup() {
   esc_1_.Setup();
-  esc_1_.EnableStatusFrames({frc846::control::config::kFaultFrame});
+  esc_1_.EnableStatusFrames({});
 
   esc_2_.Setup();
-  esc_2_.EnableStatusFrames({});
+  esc_2_.EnableStatusFrames({frc846::control::config::kFaultFrame});
 
-  esc_1_.ConfigReverseLimitSwitch(
-      true, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+  esc_2_.ConfigReverseLimitSwitch(
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 }
 
 bool AlgalEESubsystem::VerifyHardware() {
@@ -59,7 +61,7 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
-  readings.has_piece_ = esc_1_.GetReverseLimitSwitchState();
+  readings.has_piece_ = esc_2_.GetReverseLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }
@@ -67,6 +69,9 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
 void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   Graph("target/duty_cycle", target.duty_cycle_);
 
+  if (GetReadings().has_piece_ && target.duty_cycle_ > 0.0) {
+    target.duty_cycle_ = GetPreferenceValue_double("idle_speed");
+  }
   esc_1_.WriteDC(target.duty_cycle_);
   esc_2_.WriteDC(target.duty_cycle_);
 }
