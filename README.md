@@ -6,7 +6,7 @@
 
 ## Overview
 
-Key features will be posted here soon...
+Key features will be posted here very soon...
 
 ## General Project Structure
 
