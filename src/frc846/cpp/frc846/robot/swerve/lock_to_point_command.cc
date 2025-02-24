@@ -65,8 +65,8 @@ void LockToPointCommand::Execute() {
     speed_target = units::math::min(
         units::math::max(speed_target,
             -drivetrain_
-                ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                    "lock_max_speed")),
+                 ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                     "lock_max_speed")),
         drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "lock_max_speed"));
 

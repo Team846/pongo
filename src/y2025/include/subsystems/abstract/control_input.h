@@ -25,7 +25,6 @@ struct ControlInputReadings {
   bool lock_left_reef;
   bool lock_right_reef;
   bool auto_align;
-  bool lock_processor;
 
   // Superstructure
   bool position_algal;
@@ -64,7 +63,7 @@ class ControlInputSubsystem
     : public frc846::robot::GenericSubsystem<ControlInputReadings,
           ControlInputTarget> {
 public:
-  ControlInputSubsystem();
+  ControlInputSubsystem(CoralSuperstructure* coral_ss);
 
   void Setup() override;
 
@@ -78,6 +77,8 @@ public:
 
 private:
   ControlInputReadings previous_readings_{};
+
+  CoralSuperstructure* coral_ss_;
 
   frc846::robot::XboxReadings previous_driver_{};
   frc846::robot::XboxReadings previous_operator_{};

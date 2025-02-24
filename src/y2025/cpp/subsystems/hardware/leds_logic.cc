@@ -7,59 +7,62 @@
 LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
   std::string selected_auto = frc846::robot::GenericRobot::GetSelectedAuto();
 
-  // if (selected_auto.empty()) { return target.state = kLEDsDisabled; }
   units::inch_t auto_y = (290_in);
 
   units::inch_t auto_3pc = (158.5_in - 73.25_in);
   units::inch_t auto_1pc = (158.5_in);
-  units::inch_t auto_leave = (158.5_in);                      
-  if (selected_auto.substr(0, 3) == "3PC") {                                                                                                       
-    std::string blue_red = selected_auto.substr(4, 5);
-    std::string left_right = selected_auto.substr(6);
+  units::inch_t auto_leave = (158.5_in);
 
-    frc846::math::FieldPoint auto_start = {{auto_3pc, auto_y}, 0_deg, 0_fps};
+  try {
+    if (selected_auto.substr(0, 3) == "3PC") {
+      std::string blue_red = selected_auto.substr(4, 5);
+      std::string left_right = selected_auto.substr(6);
 
-    if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-    if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
+      frc846::math::FieldPoint auto_start = {{auto_3pc, auto_y}, 0_deg, 0_fps};
 
-    if ((auto_start.point -
-            container->drivetrain_.GetReadings().estimated_pose.position)
-            .magnitude() < 1_ft) {
-      return kisLinedUp;
+      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
+      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
+
+      if ((auto_start.point -
+              container->drivetrain_.GetReadings().estimated_pose.position)
+              .magnitude() < 1_ft) {
+        return kisLinedUp;
+      }
     }
-  }
-  if (selected_auto.substr(0, 4) == "1PCN") {
-    std::string blue_red = selected_auto.substr(5, 6);
-    std::string left_right = selected_auto.substr(7);
+    if (selected_auto.substr(0, 4) == "1PCN") {
+      std::string blue_red = selected_auto.substr(5, 6);
+      std::string left_right = selected_auto.substr(7);
 
-    frc846::math::FieldPoint auto_start = {{auto_1pc, auto_y}, 0_deg, 0_fps};
+      frc846::math::FieldPoint auto_start = {{auto_1pc, auto_y}, 0_deg, 0_fps};
 
-    // if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-    // if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
+      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
+      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
 
-    if ((auto_start.point -
-            container->drivetrain_.GetReadings().estimated_pose.position)
-            .magnitude() < 1_ft) {
-      return kisLinedUp;
+      if ((auto_start.point -
+              container->drivetrain_.GetReadings().estimated_pose.position)
+              .magnitude() < 1_ft) {
+        return kisLinedUp;
+      }
     }
-  }
-  if (selected_auto.substr(0, 5) == "LEAVE") {
-    std::string blue_red = selected_auto.substr(6, 7);
-    std::string left_right = selected_auto.substr(8);
+    if (selected_auto.substr(0, 5) == "LEAVE") {
+      std::string blue_red = selected_auto.substr(6, 7);
+      std::string left_right = selected_auto.substr(8);
 
-    frc846::math::FieldPoint auto_start = {{auto_leave, auto_y}, 0_deg, 0_fps};
+      frc846::math::FieldPoint auto_start = {
+          {auto_leave, auto_y}, 0_deg, 0_fps};
 
-    if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-    if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
+      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
+      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
 
-    if ((auto_start.point -
-            container->drivetrain_.GetReadings().estimated_pose.position)
-            .magnitude() < 1_ft) {
-      return kisLinedUp;
+      if ((auto_start.point -
+              container->drivetrain_.GetReadings().estimated_pose.position)
+              .magnitude() < 1_ft) {
+        return kisLinedUp;
+      }
     }
-  } else {
-    return kLEDsDisabled;
-  }
+  } catch (const std::exception& exc) { (void)exc; }
+
+  return kLEDsDisabled;
 }
 
 void LEDsLogic::UpdateLEDs(RobotContainer* container) {

@@ -67,11 +67,9 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData(
       "home_telescope_elevator", new frc846::wpilib::NTAction([this] {
         container_.coral_ss_.telescope.HomeSubsystem(
-            GetPreferenceValue_unit_type<units::inch_t>(
-                "telescope_home_height"));
+            robot_constants::elevator::min_height_off_base);
         container_.algal_ss_.elevator.HomeSubsystem(
-            GetPreferenceValue_unit_type<units::inch_t>(
-                "telescope_home_height"));
+            robot_constants::telescope::min_height);
       }));
 
   frc::SmartDashboard::PutData("zero_odometry",
@@ -98,10 +96,10 @@ void FunkyRobot::OnPeriodic() {
   }
 
   if (!home_switch_.Get()) {
-    container_.algal_ss_.elevator.HomeSubsystem(
-        GetPreferenceValue_unit_type<units::inch_t>("elevator_home_height"));
     container_.coral_ss_.telescope.HomeSubsystem(
-        GetPreferenceValue_unit_type<units::inch_t>("telescope_home_height"));
+        robot_constants::elevator::min_height_off_base);
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::telescope::min_height);
 
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
@@ -158,16 +156,14 @@ void FunkyRobot::InitTest() {
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}
-          .Repeatedly());
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
 
   frc2::Trigger start_dinosaur_c([] { return true; });
   start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
       CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}
-          .Repeatedly());
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
 }
 
 #ifndef RUNNING_FRC_TESTS

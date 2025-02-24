@@ -142,8 +142,8 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           steer_params, mmtype, steer_reduction, drive_reduction, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
-  configs.camera_x_offsets = {-6.5_in, -6.5_in};
-  configs.camera_y_offsets = {-8.25_in, -11.25_in};
+  configs.camera_x_offsets = {-10_in, 7_in};
+  configs.camera_y_offsets = {10_in, -14.5_in};
   configs.cams = 2;
   configs.april_locations = {{1, {28.429_in, 31.594_in}},
       {2, {293.83_in, 35.41_in}}, {3, {317.15_in, 238.975_in}},

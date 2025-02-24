@@ -1,8 +1,9 @@
 #include "subsystems/abstract/control_input.h"
 
-ControlInputSubsystem::ControlInputSubsystem()
-    : frc846::robot::GenericSubsystem<ControlInputReadings, ControlInputTarget>{
-          "control_input"} {}
+ControlInputSubsystem::ControlInputSubsystem(CoralSuperstructure* coral_ss)
+    : frc846::robot::GenericSubsystem<ControlInputReadings,
+          ControlInputTarget>{"control_input"},
+      coral_ss_{coral_ss} {}
 
 void ControlInputSubsystem::Setup() {
   RegisterPreference("trigger_threshold", 0.3);
@@ -43,11 +44,6 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
         readings.lock_right_reef ? 1 : 0);
     base_adj = {0_in, 0_in};
   }
-  if (readings.lock_processor != previous_readings_.lock_processor) {
-    Log("ControlInput [Lock Processor] state changed to {}",
-        readings.lock_processor ? 1 : 0);
-    base_adj = {0_in, 0_in};
-  }
 
   previous_readings_ = readings;
 
@@ -82,8 +78,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.lock_left_reef = dr_readings.left_bumper;
   ci_readings_.lock_right_reef = dr_readings.right_bumper;
-
-  ci_readings_.lock_processor = dr_readings.right_trigger;  // TODO: change this
 
   ci_readings_.targeting_algae = dr_readings.left_trigger;
 

@@ -20,7 +20,9 @@ enum CoralStates {
   kCoral_DINOSAUR_B,
 };
 
-struct CoralSSReadings {};
+struct CoralSSReadings {
+  bool autostow_valid;
+};
 
 struct CoralSSTarget {
   CoralStates state;
@@ -63,6 +65,8 @@ protected:
 
   units::inch_t telescope_adjustment_ = 0_in;
   units::degree_t wrist_adjustment_ = 0_deg;
+
+  int no_piece_count_;
 
 private:
 };

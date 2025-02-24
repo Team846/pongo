@@ -41,6 +41,9 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("telescope_adjustment", 0.04_in);
   RegisterPreference("wrist_adjustment", 0.2_deg);
 
+  RegisterPreference("autostow", false);
+  RegisterPreference("stow_no_piece_loop_thresh", 20);
+
   last_state = kCoral_StowNoPiece;
 }
 
@@ -108,7 +111,19 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
   coral_wrist.UpdateReadings();
   coral_end_effector.UpdateReadings();
 
-  return {};
+  if (coral_end_effector.GetReadings().has_piece_) {
+    no_piece_count_ = 0;
+
+  } else {
+    no_piece_count_++;
+  }
+  Graph("no_piece_count", no_piece_count_);
+
+  bool autostow_valid =
+      GetPreferenceValue_bool("autostow") &&
+      (no_piece_count_ > GetPreferenceValue_int("stow_no_piece_loop_thresh"));
+
+  return {autostow_valid};
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
