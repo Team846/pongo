@@ -47,15 +47,13 @@ units::radians_per_second_t SoftLimits::LimitVelocity(
 double SoftLimits::LimitDC(double dc, units::radian_t position) {
   if (!using_limits_) return dc;
 
-  if (dc < 0 && position <= reverse_limit_) {
-    return 0.0;
-  } else if (dc > 0 && position >= forward_limit_) {
-    return 0.0;
-  }
+  if (dc < 0 && position <= reverse_limit_) { return 0.0; }
+  if (dc > 0 && position >= forward_limit_) { return 0.0; }
 
   if (position > forward_reduce_ && dc > reduce_max_dc_) {
     return reduce_max_dc_;
-  } else if (position < reverse_reduce_ && dc < -reduce_max_dc_) {
+  }
+  if (position < reverse_reduce_ && dc < -reduce_max_dc_) {
     return -reduce_max_dc_;
   }
 

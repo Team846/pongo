@@ -6,9 +6,6 @@
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
-// TODO: add LED indicator
-// TOOD: add button for alignment against field wall
-
 namespace frc846::robot::swerve {
 
 DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)

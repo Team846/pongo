@@ -12,8 +12,7 @@ void CoralCommand::Periodic() {
   CoralSSTarget coral_target{};
   auto ci_readings = container_.control_input_.GetReadings();
 
-  if ((ci_readings.coral_state != kCoral_StowNoPiece) &&
-      (!container_.coral_ss_.GetReadings().autostow_valid))
+  if (ci_readings.coral_state != kCoral_StowNoPiece)
     coral_target.state = ci_readings.coral_state;
   else if (container_.coral_ss_.coral_end_effector.GetReadings().has_piece_)
     coral_target.state = kCoral_StowWithPiece;

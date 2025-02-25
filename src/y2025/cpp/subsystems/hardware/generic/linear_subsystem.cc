@@ -44,13 +44,13 @@ void LinearSubsystem::Setup() {
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
 
-  linear_esc_helper_.SetPosition(0_in);
+  linear_esc_helper_.SetPosition(28.5_in);
 
   linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
   // linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
 
-  linear_esc_.ConfigForwardLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
+  // linear_esc_.ConfigForwardLimitSwitch(
+  //     false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 
   ExtendedSetup();
 }

@@ -88,14 +88,14 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
-  if (dr_readings.y_button)
+  if (coral_ss_->GetReadings().autostow_valid || dr_readings.b_button)
+    ci_readings_.coral_state = CoralStates::kCoral_StowNoPiece;
+  else if (dr_readings.y_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL4;
   else if (dr_readings.x_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL3;
   else if (dr_readings.a_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL2;
-  else if (dr_readings.b_button)
-    ci_readings_.coral_state = CoralStates::kCoral_StowNoPiece;
   else
     ci_readings_.coral_state = previous_readings_.coral_state;
 
@@ -137,11 +137,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.score_coral = op_readings.left_bumper;
   ci_readings_.score_algae = (dr_readings.pov == frc846::robot::XboxPOV::kDown);
 
-  if (op_readings.left_trigger && !previous_operator_.left_trigger) {
-    climb_state_ += 1;
-    if (climb_state_ == 3) climb_state_ = 0;
-  }
-  ci_readings_.climb_state = climb_state_;
+  // TODO: add back climbing state
+  // if (op_readings.left_trigger && !previous_operator_.left_trigger) {
+  //   climb_state_ += 1;
+  //   if (climb_state_ == 3) climb_state_ = 0;
+  // }
+  // ci_readings_.climb_state = climb_state_;
 
   Graph("climb_state", climb_state_);
 

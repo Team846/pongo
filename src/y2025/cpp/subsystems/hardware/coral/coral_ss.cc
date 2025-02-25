@@ -122,8 +122,16 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
   bool autostow_valid =
       GetPreferenceValue_bool("autostow") &&
       (no_piece_count_ > GetPreferenceValue_int("stow_no_piece_loop_thresh"));
+  Graph("autostow_valid", autostow_valid);
 
-  return {autostow_valid};
+  bool chute_piece = !chute_sensor_.Get();
+  Graph("chute_piece", chute_piece);
+
+  bool piece_entered =
+      chute_piece || coral_end_effector.GetReadings().has_piece_;
+  Graph("piece_entered", piece_entered);
+
+  return {autostow_valid, piece_entered};
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {

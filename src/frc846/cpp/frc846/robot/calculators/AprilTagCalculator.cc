@@ -41,7 +41,8 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     units::degree_t bearingAtCapture =
         input.pose.bearing -
         input.angular_velocity *
-            (tl + input.bearing_latency);  // TODO: fix bearing latency, accl?
+            (tl + input.bearing_latency);  // TODO: modify latency compensation
+                                           // if there is angular acceleration?
 
     // CASE 1: Triangulate with 2 tags
     if (tags.size() >= 2 && tags.size() == distances.size() &&

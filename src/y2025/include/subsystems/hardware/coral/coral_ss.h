@@ -1,5 +1,7 @@
 #pragma once
 
+#include <frc/DigitalInput.h>
+
 #include "subsystems/hardware/coral/coral_end_effector.h"
 #include "subsystems/hardware/coral/coral_wrist.h"
 #include "subsystems/hardware/coral/telescope.h"
@@ -22,6 +24,7 @@ enum CoralStates {
 
 struct CoralSSReadings {
   bool autostow_valid;
+  bool piece_entered;
 };
 
 struct CoralSSTarget {
@@ -67,6 +70,8 @@ protected:
   units::degree_t wrist_adjustment_ = 0_deg;
 
   int no_piece_count_;
+
+  frc::DigitalInput chute_sensor_{4};
 
 private:
 };

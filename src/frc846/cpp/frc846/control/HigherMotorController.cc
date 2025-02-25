@@ -34,14 +34,14 @@ void HigherMotorController::SetLoad(units::newton_meter_t load) {
 }
 
 void HigherMotorController::WriteDC(double duty_cycle) {
-  if (soft_limits_.has_value()) {
-    duty_cycle = soft_limits_.value().LimitDC(duty_cycle, GetPosition());
-  }
   duty_cycle =
       frc846::control::calculators::CurrentTorqueCalculator::limit_current_draw(
           duty_cycle, constr_params_.smart_current_limit, GetVelocity(), 12.0_V,
           constr_params_.circuit_resistance,
           frc846::control::base::MotorSpecificationPresets::get(mmtype_));
+  if (soft_limits_.has_value()) {
+    duty_cycle = soft_limits_.value().LimitDC(duty_cycle, GetPosition());
+  }
   MotorMonkey::WriteDC(slot_id_, duty_cycle);
 }
 

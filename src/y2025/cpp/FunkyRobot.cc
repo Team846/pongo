@@ -42,7 +42,7 @@ void FunkyRobot::OnInitialize() {
   //   AddAuto(x.name + "_blue", new GenericAuto{container_, x, true});
   // }
 
-  ADD_AUTO_VARIANTS(ThreePieceAuto, "3PC");
+  ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
 
@@ -90,12 +90,12 @@ void FunkyRobot::InitTeleop() {
 }
 
 void FunkyRobot::OnPeriodic() {
-  if (!gyro_switch_.Get()) {
+  if (!gyro_switch_.Get() && !IsEnabled()) {
     container_.drivetrain_.SetBearing(0_deg);
     homing_count_gyro = GetPreferenceValue_int("homing_flash_loops");
   }
 
-  if (!home_switch_.Get()) {
+  if (!home_switch_.Get() && !IsEnabled()) {
     container_.coral_ss_.telescope.HomeSubsystem(
         robot_constants::elevator::min_height_off_base);
     container_.algal_ss_.elevator.HomeSubsystem(
@@ -112,7 +112,7 @@ void FunkyRobot::OnPeriodic() {
     container_.algal_ss_.algal_wrist.BrakeSubsystem();
     container_.coral_ss_.coral_wrist.BrakeSubsystem();
   }
-  if (!coast_switch_.Get() && !IsTeleopEnabled()) {
+  if (!coast_switch_.Get() && !IsEnabled()) {
     container_.algal_ss_.elevator.CoastSubsystem();
     container_.coral_ss_.telescope.CoastSubsystem();
     container_.climber_.CoastSubsystem();

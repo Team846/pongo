@@ -3,6 +3,7 @@
 #include <frc2/command/ParallelDeadlineGroup.h>
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/WaitCommand.h>
+#include <frc2/command/WaitUntilCommand.h>
 
 #include "commands/general/algal_position_command.h"
 #include "commands/general/coral_position_command.h"
@@ -11,6 +12,12 @@
 #include "frc846/robot/swerve/lock_to_point_command.h"
 #include "frc846/robot/swerve/wait_until_close.h"
 #include "reef.h"
+
+/************************
+AUTONOMOUS HELPER MACROS
+
+START DEFINE MACROS
+*************************/
 
 using INSTANT = frc2::InstantCommand;
 using SEQUENCE = frc2::SequentialCommandGroup;
@@ -63,18 +70,20 @@ using FPT = frc846::math::FieldPoint;
     &(container.drivetrain_), MKPT(x, y, bearing, final_velocity),        \
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
-#define DRIVE_TO_SOURCE(auto_name)                                          \
-  frc2::SequentialCommandGroup {                                            \
-    frc846::robot::swerve::DriveToPointCommand {                            \
-      &(container.drivetrain_), MKPT(24.5_in, 62_in, 53.5_deg, 0_fps),      \
-          MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
-    }                                                                       \
+#define DRIVE_TO_SOURCE(auto_name)                                       \
+  frc2::ParallelDeadlineGroup {                                          \
+    frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
+        MKPT(24.5_in, 62_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,      \
+        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
+        CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
-#define DRIVE_TO_SOURCE_END(auto_name)                                    \
-  frc846::robot::swerve::DriveToPointCommand {                            \
-    &(container.drivetrain_), MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps),   \
-        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
+#define DRIVE_TO_SOURCE_END(auto_name)                                   \
+  frc2::ParallelDeadlineGroup {                                          \
+    frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
+        MKPT(47.25_in, 24.5_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,   \
+        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
+        CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)                             \
@@ -94,7 +103,9 @@ using FPT = frc846::math::FieldPoint;
               ReefProvider::getReefScoringLocations(false)[number_on_right]   \
                   .mirror(is_blue_side)                                       \
                   .mirrorOnlyX(!is_left_side)},                               \
-          frc2::WaitCommand{4_s}                                              \
+          frc2::WaitCommand {                                                 \
+        4_s                                                                   \
+      }                                                                       \
     }                                                                         \
   }
 
@@ -108,64 +119,77 @@ using FPT = frc846::math::FieldPoint;
 #define CORAL_POS(where, score) \
   CoralPositionCommand { container, where, score }
 
-ThreePieceAuto::ThreePieceAuto(
-    RobotContainer& container, bool is_blue_side, bool is_left_side)
-    : frc846::robot::GenericCommandGroup<RobotContainer, ThreePieceAuto,
-          SEQUENCE>{container, AUTO_NAME("3PC"),
-          SEQUENCE{
-              START(158.5_in - 73.25_in, START_Y,
-                  180_deg),  // TODO: Fix to use April Tags instead.
-              // WAIT{0.25_s},
-              PARALLEL_DEADLINE(
-                  DRIVE_TO_REEF(3PC, 11), CORAL_POS(kCoral_ScoreL4, false)),
-              CORAL_POS(kCoral_ScoreL4, true),
-              DRIVE_TO_SOURCE(3PC),
-              WAIT{.65_s},
-              PARALLEL_DEADLINE(
-                  DRIVE_TO_REEF(3PC, 8), CORAL_POS(kCoral_ScoreL4, false)),
-              CORAL_POS(kCoral_ScoreL4, true),
-              WAIT{.1_s},
-              DRIVE_TO_SOURCE(3PC),
-              WAIT{.1_s},
-              PARALLEL_DEADLINE(
-                  DRIVE_TO_REEF(3PC, 9), CORAL_POS(kCoral_ScoreL4, false)),
-              CORAL_POS(kCoral_ScoreL4, true),
-              WAIT{.1_s},
-              CORAL_POS(kCoral_StowNoPiece, false),
-              DRIVE_TO_SOURCE_END(3PC),
-              WAIT{.65_s},
-              PARALLEL_DEADLINE(
-                  DRIVE_TO_REEF(3PC, 6), CORAL_POS(kCoral_ScoreL4, false)),
-              CORAL_POS(kCoral_ScoreL4, true),
-              WAIT{.25_s},
+#define WAIT_FOR_PIECE()                                      \
+  frc2::WaitUntilCommand {                                    \
+    [&] {                                                     \
+      return container.coral_ss_.GetReadings().piece_entered; \
+    }                                                         \
+  }
 
-          }} {}
+#define DRIVE_SCORE_REEF_3PC(reefNum)                                 \
+  PARALLEL_DEADLINE(                                                  \
+      DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false)), \
+      CORAL_POS(kCoral_ScoreL4, true)
 
-OnePieceAndNetAuto::OnePieceAndNetAuto(
-    RobotContainer& container, bool is_blue_side, bool is_left_side)
-    : frc846::robot::GenericCommandGroup<RobotContainer, OnePieceAndNetAuto,
-          SEQUENCE>{container, AUTO_NAME("1PCN"),
-          SEQUENCE{
-              START(158.5_in, START_Y, 180_deg),
-              WAIT{0.25_s},
-              DRIVE_TO_REEF(1PC, 1),
-              CORAL_POS(kCoral_ScoreL4, true),
-              WAIT{1_s},
-              CORAL_POS(kCoral_StowNoPiece, false),
-              ALGAL_POS(kAlgae_L3Pick, false),
-              WAIT{1_s},
-              DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
-              DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps),
-              ALGAL_POS(kAlgae_Net, true),
-              WAIT{1_s},
-          }} {}
+#define __AUTO__(codeName, stringName)                                 \
+  codeName::codeName(                                                  \
+      RobotContainer& container, bool is_blue_side, bool is_left_side) \
+      : frc846::robot::GenericCommandGroup<RobotContainer, codeName,   \
+            SEQUENCE> {                                                \
+    container, AUTO_NAME(stringName),
 
-LeaveAuto::LeaveAuto(
-    RobotContainer& container, bool is_blue_side, bool is_left_side)
-    : frc846::robot::GenericCommandGroup<RobotContainer, LeaveAuto, SEQUENCE>{
-          container, AUTO_NAME("LEAVE"),
-          SEQUENCE{
-              START(158.5_in, START_Y, 180_deg),
-              WAIT{0.25_s},
-              DRIVE(LEAVE, 158.5_in, START_Y - 3_ft, 180_deg, 0_fps),
-          }} {}
+// TODO: Use AprilTags for start point?
+
+/***********************
+AUTONOMOUS HELPER MACROS
+
+END DEFINE MACROS
+************************/
+
+/************************
+| ---------------------- |
+|  AUTONOMOUS SEQUENCES  |
+|                        |
+| START DEFINE SEQUENCES |
+| ---------------------- |
+*************************/
+
+__AUTO__(FourAndPickAuto, "5PC")
+SEQUENCE {
+  START(158.5_in - 73.25_in, START_Y, 180_deg),
+      // WAIT{0.25_s},
+      DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
+      DRIVE_SCORE_REEF_3PC(8), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
+      DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE_END(3PC), WAIT_FOR_PIECE(),
+      DRIVE_SCORE_REEF_3PC(6),
+}
+}
+{}
+
+__AUTO__(OnePieceAndNetAuto, "1PCN")
+SEQUENCE {
+  START(158.5_in, START_Y, 180_deg), WAIT{0.25_s}, DRIVE_TO_REEF(1PC, 1),
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{1_s},
+      CORAL_POS(kCoral_StowNoPiece, false), ALGAL_POS(kAlgae_L3Pick, false),
+      WAIT{1_s}, DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
+      DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps), ALGAL_POS(kAlgae_Net, true),
+      WAIT{1_s},
+}
+}
+{}
+
+__AUTO__(LeaveAuto, "LEAVE")
+SEQUENCE {
+  START(158.5_in, START_Y, 180_deg), WAIT{0.25_s},
+      DRIVE(LEAVE, 158.5_in, START_Y - 3_ft, 180_deg, 0_fps),
+}
+}
+{}
+
+/***********************
+| --------------------- |
+| AUTONOMOUS SEQUENCES  |
+|                       |
+| END DEFINE SEQUENCES  |
+| --------------------- |
+************************/
