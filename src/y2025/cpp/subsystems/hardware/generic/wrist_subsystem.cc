@@ -8,13 +8,7 @@ WristSubsystem::WristSubsystem(std::string name,
     wrist_pos_conv_t conversion)
     : frc846::robot::GenericSubsystem<WristReadings, WristTarget>(name),
       wrist_esc_(mmtype, GetCurrentConfig(motor_configs_)) {
-  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
-
   wrist_esc_helper_.SetConversion(conversion);
-
-  RegisterPreference("cg_offset", 0.0_deg);
-  RegisterPreference("flip_position_load_sign", false);
 
   RegisterPreference("rezero_thresh", 2_deg);
 

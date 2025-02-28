@@ -23,55 +23,55 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
-  RegisterPreference("bearing_gains/_kP", 0.5);
+  RegisterPreference("bearing_gains/_kP", 9);
   RegisterPreference("bearing_gains/_kI", 0.0);
-  RegisterPreference("bearing_gains/_kD", 0.0);
+  RegisterPreference("bearing_gains/_kD", -0.6);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP", 0.5);
+  RegisterPreference("lock_gains/_kP", -2);
   RegisterPreference("lock_gains/_kI", 0.0);
-  RegisterPreference("lock_gains/_kD", 0.0);
-  RegisterPreference("lock_gains/deadband", 2_in);
+  RegisterPreference("lock_gains/_kD", 0.01);
+  RegisterPreference("lock_gains/deadband", .5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 7_fps);
   RegisterPreference("auto_max_speed", 15_fps);
 
   RegisterPreference("drive_to_subtract", 2_in);
 
-  RegisterPreference("bearing_latency", 100_ms);
+  RegisterPreference("bearing_latency", 0_ms);
   RegisterPreference("drive_latency", 0_ms);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
-  RegisterPreference("odom_fudge_factor", 0.875);
+  RegisterPreference("odom_fudge_factor", 1.0);
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
   RegisterPreference("bearing_latency", 0.01_s);
 
-  RegisterPreference("pose_estimator/pose_variance", 0.01);
+  RegisterPreference("pose_estimator/pose_variance", 0.1);
   RegisterPreference("pose_estimator/velocity_variance", 1.0);
   RegisterPreference("pose_estimator/accel_variance", 1.0);
   RegisterPreference("pose_estimator/override", false);
 
-  RegisterPreference("april_tags/april_variance_coeff", 0.33);
-  RegisterPreference("april_tags/triangular_variance_coeff", 0.22);
-  RegisterPreference("april_tags/fudge_latency1", 70_ms);
-  RegisterPreference("april_tags/fudge_latency2", 110_ms);
+  RegisterPreference("april_tags/april_variance_coeff", 0.08);
+  RegisterPreference("april_tags/triangular_variance_coeff", 0.001);
+  RegisterPreference("april_tags/fudge_latency1", 140_ms);
+  RegisterPreference("april_tags/fudge_latency2", 350_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
   RegisterPreference("accel_spike_thresh", 45_fps_sq);
   RegisterPreference("max_past_accel_spike", 25);
   RegisterPreference("accel_vel_stopped_thresh", 0.7_fps);
-  RegisterPreference("vel_stopped_thresh", 1.0_fps);
+  RegisterPreference("vel_stopped_thresh", 0.7_fps);
   RegisterPreference("stopped_num_loops", 25);
 
   RegisterPreference("lock_drive_early", 12_in);
   RegisterPreference("lock_drive_fvel", 1_fps);
-  RegisterPreference("drive_correctional_gain", 1.0);
+  RegisterPreference("drive_correctional_gain", 0.1);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({

@@ -67,12 +67,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.translate_x = dr_readings.left_stick_x;
   ci_readings_.translate_y = dr_readings.left_stick_y;
 
-  ci_readings_.rc_p_y = (int)dr_readings.pov == 0;
-  ci_readings_.rc_p_x = (int)dr_readings.pov == 90;
-  ci_readings_.rc_n_y = (int)dr_readings.pov == 180;
-  ci_readings_.rc_n_x = (int)dr_readings.pov == 270;
-  ci_readings_.rc_control = ci_readings_.rc_p_y || ci_readings_.rc_n_y ||
-                            ci_readings_.rc_p_x || ci_readings_.rc_n_x;
+  // ci_readings_.rc_p_y = (int)dr_readings.pov == 0;  // TODO: potentially
+  // wrong? ci_readings_.rc_p_x = (int)dr_readings.pov == 90;
+  // ci_readings_.rc_n_y = (int)dr_readings.pov == 180;
+  // ci_readings_.rc_n_x = (int)dr_readings.pov == 270;
+  // ci_readings_.rc_control = ci_readings_.rc_p_y || ci_readings_.rc_n_y ||
+  //                           ci_readings_.rc_p_x || ci_readings_.rc_n_x;
 
   ci_readings_.rotation = dr_readings.right_stick_x;
 

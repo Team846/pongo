@@ -37,7 +37,7 @@ public:
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = true;  //(GetPreferenceValue_bool("init_gpd"));
+    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
     bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
     bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));

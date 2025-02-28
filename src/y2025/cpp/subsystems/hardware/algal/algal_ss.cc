@@ -18,25 +18,25 @@ AlgalSuperstructure::AlgalSuperstructure()
       elevator(),
       algal_wrist(),
       algal_end_effector() {
-  REGISTER_SETPOINT("stow", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("processor", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("ground_intake", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("on_top_intake", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("net", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("l2_pick", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("l3_pick", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("stow", 29_in, 0_deg, 0.3);
+  REGISTER_SETPOINT("processor", 29_in, 25_deg, 0.2);
+  REGISTER_SETPOINT("ground_intake", 29_in, 40_deg, 0.9);
+  REGISTER_SETPOINT("on_top_intake", 29_in, 40_deg, 0.9);
+  REGISTER_SETPOINT("net", 68.4_in, 0_deg, 0.2);
+  REGISTER_SETPOINT("l2_pick", 36_in, 30_deg, 0.7);
+  REGISTER_SETPOINT("l3_pick", 45_in, 30_deg, 0.7);
 
   REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
 
-  RegisterPreference("init_elevator", false);
-  RegisterPreference("init_wrist", false);
-  RegisterPreference("init_ee", false);
+  RegisterPreference("init_elevator", true);
+  RegisterPreference("init_wrist", true);
+  RegisterPreference("init_ee", true);
 
-  RegisterPreference("elevator_tolerance", 3_in);
-  RegisterPreference("wrist_tolerance", 7_deg);
+  RegisterPreference("elevator_tolerance", 5_in);
+  RegisterPreference("wrist_tolerance", 12_deg);
 
   RegisterPreference("elevator_adjustment", 0.04_in);
   RegisterPreference("wrist_adjustment", 0.2_deg);

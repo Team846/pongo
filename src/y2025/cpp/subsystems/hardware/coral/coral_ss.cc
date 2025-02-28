@@ -18,30 +18,30 @@ CoralSuperstructure::CoralSuperstructure()
       telescope(),
       coral_wrist(),
       coral_end_effector() {
-  REGISTER_SETPOINT("stow_no_piece", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("stow_with_piece", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l2", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l3", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("stow_no_piece", 29_in, 20_deg, -0.7);
+  REGISTER_SETPOINT("stow_with_piece", 35_in, 120_deg, -0.15);
+  REGISTER_SETPOINT("score_l2", 29_in, 220_deg, -0.15);
+  REGISTER_SETPOINT("score_l3", 48_in, 213.9_deg, -0.15);
+  REGISTER_SETPOINT("score_l4", 90_in, 263_deg, -0.15);  // 74.5, 39, 23.5
 
   REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
   REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
 
-  RegisterPreference("init_telescope", false);
-  RegisterPreference("init_wrist", false);
+  RegisterPreference("init_telescope", true);
+  RegisterPreference("init_wrist", true);
   RegisterPreference("init_ee", true);
 
   RegisterPreference("disable_distance_sensor", false);
 
-  RegisterPreference("telescope_tolerance", 1.2_in);
-  RegisterPreference("wrist_tolerance", 5_deg);
+  RegisterPreference("telescope_tolerance", 3_in);
+  RegisterPreference("wrist_tolerance", 9_deg);
 
   RegisterPreference("telescope_adjustment", 0.04_in);
   RegisterPreference("wrist_adjustment", 0.2_deg);
 
-  RegisterPreference("autostow", false);
+  RegisterPreference("autostow", true);
   RegisterPreference("stow_no_piece_loop_thresh", 20);
 
   last_state = kCoral_StowNoPiece;

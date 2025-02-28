@@ -10,9 +10,6 @@ LinearSubsystem::LinearSubsystem(std::string name,
           LinearSubsystemTarget>(name),
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       hall_effect_loc_(hall_effect_loc_) {
-  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG(true, 45_in, 2_in, 40_in, 10_in, 0.3);
-
   linear_esc_helper_.SetConversion(conversion);
 
   linear_esc_helper_.bind(&linear_esc_);
