@@ -84,7 +84,7 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 }
 
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
-  Graph("target/position", target.position);
+  // Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
 
   linear_esc_.SetLoad(1_Nm);

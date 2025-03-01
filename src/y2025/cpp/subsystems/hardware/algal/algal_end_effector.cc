@@ -23,6 +23,7 @@ AlgalEESubsystem::AlgalEESubsystem()
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
   RegisterPreference("idle_speed", -0.04);
+  RegisterPreference("piece_thresh", 2_tps);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -61,7 +62,11 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
-  readings.has_piece_ = esc_2_.GetReverseLimitSwitchState();
+  readings.has_piece_ =
+      esc_2_.GetReverseLimitSwitchState() &&
+      units::math::abs(esc_2_.GetVelocity()) <=
+          GetPreferenceValue_unit_type<units::turns_per_second_t>(
+              "piece_thresh");
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }

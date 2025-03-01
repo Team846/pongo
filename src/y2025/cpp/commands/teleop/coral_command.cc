@@ -20,9 +20,9 @@ void CoralCommand::Periodic() {
     coral_target.state = kCoral_StowNoPiece;
   coral_target.score = ci_readings.score_coral;
 
-  if (ci_readings.inc_elevator)
+  if (ci_readings.inc_telescope)
     container_.coral_ss_.adjustTelescope(true);
-  else if (ci_readings.dec_elevator)
+  else if (ci_readings.dec_telescope)
     container_.coral_ss_.adjustTelescope(false);
 
   if (ci_readings.inc_c_wrist)

@@ -14,7 +14,7 @@ LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
   units::inch_t auto_leave = (158.5_in);
 
   try {
-    if (selected_auto.substr(0, 3) == "3PC") {
+    if (selected_auto.substr(0, 3) == "5PC") {
       std::string blue_red = selected_auto.substr(4, 5);
       std::string left_right = selected_auto.substr(6);
 

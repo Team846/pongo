@@ -7,4 +7,5 @@ CompleteGPDCommand::CompleteGPDCommand(RobotContainer& container)
     : GenericCommandGroup<RobotContainer, CompleteGPDCommand,
           frc2::ParallelDeadlineGroup>{container, "complete_gpd_command",
           frc2::ParallelDeadlineGroup{
-              GPDSSCommand{container_}, LockGPDCommand{container_}}} {}
+              GPDSSCommand{container_} /*, LockGPDCommand{container_}*/
+          }} {}

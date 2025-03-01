@@ -48,12 +48,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
            container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
   }));
 
-  frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().targeting_algae &&
-           container.GPD_.GetReadings().gamepieces.size() != 0U &&
-           !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  }}.OnTrue(LockGPDCommand{container}.Until([&] {
-    return !container.control_input_.GetReadings().targeting_algae ||
-           container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  }));
+  // frc2::Trigger{[&] {
+  //   return container.control_input_.GetReadings().targeting_algae &&
+  //          container.GPD_.GetReadings().gamepieces.size() != 0U &&
+  //          !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  // }}.OnTrue(LockGPDCommand{container}.Until([&] {
+  //   return !container.control_input_.GetReadings().targeting_algae ||
+  //          container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  // }));
 }

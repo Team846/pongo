@@ -151,6 +151,7 @@ void MotorMonkey::Tick(bool disabled) {
 
   if (disabled) {
     last_disabled_voltage = battery_voltage;
+    WriteMessages(400_A);  // TODO: fix
     return;
   }
 

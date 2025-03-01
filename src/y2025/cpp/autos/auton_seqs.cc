@@ -35,7 +35,7 @@ using FPT = frc846::math::FieldPoint;
 
 #define MAX_ACCEL_LEAVE 10_fps_sq
 #define MAX_DECEL_LEAVE 10_fps_sq
-#define MAX_VEL_LEAVE 10_fps
+#define MAX_VEL_LEAVE 5_fps
 
 #define START_Y (311.5_in - 16.5_in)
 
@@ -64,7 +64,17 @@ using FPT = frc846::math::FieldPoint;
       Log("Auto Start");                                         \
     }                                                            \
   }
-
+#define START2(x, y, start_bearing)                              \
+  INSTANT {                                                      \
+    [&, blue = is_blue_side, left = is_left_side]() {            \
+      FPT start_point{{x, y}, start_bearing, 0_fps};             \
+      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.SetBearing(start_point.bearing);     \
+      container.drivetrain_.UpdateReadings();                    \
+      container.drivetrain_.SetPosition({x, y});                 \
+      Log("Auto Start");                                         \
+    }                                                            \
+  }
 #define DRIVE(auto_name, x, y, bearing, final_velocity)                   \
   frc846::robot::swerve::DriveToPointCommand {                            \
     &(container.drivetrain_), MKPT(x, y, bearing, final_velocity),        \
@@ -129,7 +139,9 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                 \
   PARALLEL_DEADLINE(                                                  \
       DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false)), \
-      CORAL_POS(kCoral_ScoreL4, true)
+      CORAL_POS(kCoral_ScoreL4, true), WAIT {                         \
+    0.25_s                                                            \
+  }
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
@@ -156,9 +168,9 @@ END DEFINE MACROS
 
 __AUTO__(FourAndPickAuto, "5PC")
 SEQUENCE {
-  START(158.5_in - 73.25_in, START_Y, 180_deg),
-      // WAIT{0.25_s},
-      DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
+  // START(158.5_in - 73.25_in, START_Y, 180_deg),
+  // WAIT{0.25_s},
+  DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
       DRIVE_SCORE_REEF_3PC(8), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
       DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE_END(3PC), WAIT_FOR_PIECE(),
       DRIVE_SCORE_REEF_3PC(6),
@@ -180,7 +192,7 @@ SEQUENCE {
 
 __AUTO__(LeaveAuto, "LEAVE")
 SEQUENCE {
-  START(158.5_in, START_Y, 180_deg), WAIT{0.25_s},
+  START2(158.5_in, START_Y, 180_deg), WAIT{0.25_s},
       DRIVE(LEAVE, 158.5_in, START_Y - 3_ft, 180_deg, 0_fps),
 }
 }

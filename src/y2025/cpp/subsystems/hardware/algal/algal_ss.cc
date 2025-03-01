@@ -80,7 +80,7 @@ AlgalSetpoint AlgalSuperstructure::getSetpoint(AlgalStates state) {
 bool AlgalSuperstructure::hasReached(AlgalStates state) {
   bool has_reached = hasReachedWrist(state) && hasReachedElevator(state);
 
-  Graph("has_reached", has_reached);
+  // Graph("has_reached", has_reached);
 
   return has_reached;
 }
@@ -91,7 +91,7 @@ bool AlgalSuperstructure::hasReachedWrist(AlgalStates state) {
   if (algal_wrist.is_initialized() &&
       (units::math::abs(algal_wrist.GetReadings().position - setpoint.angle) >
           GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"))) {
-    Graph("has_reached", false);
+    // Graph("has_reached", false);
     return false;
   }
   return true;
@@ -103,7 +103,7 @@ bool AlgalSuperstructure::hasReachedElevator(AlgalStates state) {
   if (elevator.is_initialized() &&
       (units::math::abs(elevator.GetReadings().position - setpoint.height) >
           GetPreferenceValue_unit_type<units::inch_t>("elevator_tolerance"))) {
-    Graph("has_reached", false);
+    // Graph("has_reached", false);
     return false;
   }
   return true;
@@ -155,7 +155,7 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
                  target.state == kAlgae_OnTopIntake)) {
     elevator.SetTarget({setpoint.height + elevator_adjustment_});
     algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
-  } else if (lastIsHigh && targetIsHigh) {
+  } else if (lastIsHigh && targetIsHigh && last_state != target.state) {
     algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).angle});
     if (hasReachedWrist(AlgalStates::kAlgae_Stow)) {
       last_state = AlgalStates::kAlgae_Stow;

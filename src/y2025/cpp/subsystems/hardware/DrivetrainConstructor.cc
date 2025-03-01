@@ -154,7 +154,6 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       {16, {-0.15_in, 451.895_in}}, {17, {127.87_in, 528.19_in}},
       {18, {161.75_in, 546.875_in}}, {19, {189.12_in, 532.68_in}},
       {20, {184.53_in, 495.48_in}}, {21, {155.25_in, 481.375_in}},
-
       {22, {132.47_in, 500.07_in}}};
 
   return configs;

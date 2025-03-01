@@ -13,10 +13,10 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
 
   frc846::math::Vector2D reef_center = reefPoint.point;
   frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{0.5_in, 50.5_in};
+      frc846::math::Vector2D{0.5_in, 46.75_in};
 
   frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-13.5_in, 50.5_in};
+      frc846::math::Vector2D{-11.5_in, 46.75_in};
 
   bool mirror = mirrorIfBlue && (frc::DriverStation::GetAlliance() ==
                                     frc::DriverStation::kBlue);

@@ -53,7 +53,7 @@ void GenericRobot::StartCompetition() {
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog(), false);
 
-  frc846::base::FunkyLogSystem::Start(20000);
+  // frc846::base::FunkyLogSystem::Start(20000);
 
   // Setup MotorMonkey
   frc846::control::MotorMonkey::Setup();
@@ -182,33 +182,37 @@ void GenericRobot::StartCompetition() {
     frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
 
     // Update dashboards
-    frc::SmartDashboard::UpdateValues();
-    frc::Shuffleboard::Update();
+    if (x_ == 7) {
+      frc::SmartDashboard::UpdateValues();
+      frc::Shuffleboard::Update();
+      x_ = 0;
+    }
+    x_ += 1;
 
     // Update graphs
-    Graph("time_remaining", frc::DriverStation::GetMatchTime().to<int>());
-    Graph("mode", static_cast<int>(mode));
+    // Graph("time_remaining", frc::DriverStation::GetMatchTime().to<int>());
+    // Graph("mode", static_cast<int>(mode));
 
     Graph("ds_battery_voltage", frc::DriverStation::GetBatteryVoltage());
 
-    Graph("error_count", (int)frc846::base::Loggable::GetErrorCount());
-    Graph("warn_count", (int)frc846::base::Loggable::GetWarnCount());
+    // Graph("error_count", (int)frc846::base::Loggable::GetErrorCount());
+    // Graph("warn_count", (int)frc846::base::Loggable::GetWarnCount());
 
     Graph("can_bus_usage",
         (double)(100 *
                  frc::RobotController::GetCANStatus().percentBusUtilization));
     Graph(
         "can_bus_off_count", frc::RobotController::GetCANStatus().busOffCount);
-    Graph("can_tx_error_count",
-        frc::RobotController::GetCANStatus().transmitErrorCount);
-    Graph("can_rx_error_count",
-        frc::RobotController::GetCANStatus().receiveErrorCount);
+    // Graph("can_tx_error_count",
+    //     frc::RobotController::GetCANStatus().transmitErrorCount);
+    // Graph("can_rx_error_count",
+    //     frc::RobotController::GetCANStatus().receiveErrorCount);
 
     auto loop_time = frc846::wpilib::CurrentFPGATime() - loop_start_time;
     Graph("loop_time", loop_time);
 
     // Check loop time
-    if (loop_time > kPeriod) {
+    if (loop_time > 2.5 * kPeriod) {
       Warn("Loop overrun: {} (loop period: {})",
           loop_time.convert<units::millisecond>(), kPeriod);
 

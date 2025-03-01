@@ -73,6 +73,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_drive_fvel", 1_fps);
   RegisterPreference("drive_correctional_gain", 0.1);
 
+  RegisterPreference("override_at_auto", true);
+
   odometry_.setConstants({});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
@@ -160,13 +162,13 @@ void DrivetrainSubsystem::ZeroBearing() {
 
 void DrivetrainSubsystem::SetBearing(units::degree_t bearing) {
   bearing_offset_ = bearing - (GetReadings().pose.bearing - bearing_offset_);
-  Log("setting bearing to {}", bearing);
+  // Log("setting bearing to {}", bearing);
 }
 
 void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
   odometry_.SetPosition(position);
-  Log("setting position x to {} and position y to {}", position[0],
-      position[1]);
+  // Log("setting position x to {} and position y to {}", position[0],
+  //     position[1]);
   pose_estimator.SetPoint({position[0], position[1]});
 }
 
@@ -308,13 +310,14 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
 
-  // if (frc::DriverStation::IsAutonomous() ||
-  //     frc::DriverStation::IsAutonomousEnabled()) {
-  //   estimated_pose = new_pose;
-  //   Graph("overriding_kalman_pose_auton", true);
-  // } else {
-  //   Graph("overriding_kalman_pose_auton", false);
-  // }
+  if ((frc::DriverStation::IsAutonomous() ||
+          frc::DriverStation::IsAutonomousEnabled()) &&
+      GetPreferenceValue_bool("override_at_auto")) {
+    estimated_pose = new_pose;
+    Graph("overriding_kalman_pose_auton", true);
+  } else {
+    Graph("overriding_kalman_pose_auton", false);
+  }
 
   if (GetPreferenceValue_bool("pose_estimator/override")) {
     estimated_pose = new_pose;
