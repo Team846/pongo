@@ -113,10 +113,17 @@ using FPT = frc846::math::FieldPoint;
               ReefProvider::getReefScoringLocations(false)[number_on_right]   \
                   .mirror(is_blue_side)                                       \
                   .mirrorOnlyX(!is_left_side)},                               \
-          frc2::WaitCommand {                                                 \
-        4_s                                                                   \
-      }                                                                       \
+          frc2::WaitCommand{4_s}                                              \
     }                                                                         \
+  }
+
+#define DRIVE_TO_REEF_NOAT(auto_name, number_on_right)                    \
+  frc846::robot::swerve::DriveToPointCommand {                            \
+    &(container.drivetrain_),                                             \
+        ReefProvider::getReefScoringLocations(false)[number_on_right]     \
+            .mirror(is_blue_side)                                         \
+            .mirrorOnlyX(!is_left_side),                                  \
+        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
 
 #define AIM(bearing)                                                     \
@@ -139,9 +146,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                 \
   PARALLEL_DEADLINE(                                                  \
       DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false)), \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                         \
-    0.25_s                                                            \
-  }
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
@@ -180,12 +185,12 @@ SEQUENCE {
 
 __AUTO__(OnePieceAndNetAuto, "1PCN")
 SEQUENCE {
-  START(158.5_in, START_Y, 180_deg), WAIT{0.25_s}, DRIVE_TO_REEF(1PC, 1),
+  START(158.5_in, START_Y, 180_deg), WAIT{0.25_s}, DRIVE_TO_REEF_NOAT(1PC, 1),
       CORAL_POS(kCoral_ScoreL4, true), WAIT{1_s},
-      CORAL_POS(kCoral_StowNoPiece, false), ALGAL_POS(kAlgae_L3Pick, false),
+      CORAL_POS(kCoral_StowNoPiece, false), ALGAL_POS(kAlgae_L2Pick, false),
       WAIT{1_s}, DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
-      DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps), ALGAL_POS(kAlgae_Net, true),
-      WAIT{1_s},
+      DRIVE(1PC, 100_in, START_Y, 0_deg, 0_fps), ALGAL_POS(kAlgae_Net, false),
+      ALGAL_POS(kAlgae_Net, true), WAIT{1_s},
 }
 }
 {}
