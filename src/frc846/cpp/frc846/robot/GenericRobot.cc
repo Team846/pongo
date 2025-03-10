@@ -182,8 +182,9 @@ void GenericRobot::StartCompetition() {
     frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
 
     // Update dashboards
-    if (x_ == 7) {
+    if (x_ == 4) {
       frc::SmartDashboard::UpdateValues();
+    } else if (x_ == 9) {
       frc::Shuffleboard::Update();
       x_ = 0;
     }

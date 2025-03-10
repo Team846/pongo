@@ -53,7 +53,7 @@ void LockToPointCommand::Execute() {
         {0_fps, 0_fps}, drivetrain_->ApplyBearingPID(target_.bearing)});
   } else {
     frc846::control::base::MotorGains lock_gains{
-        drivetrain_->GetPreferenceValue_double("lock_gains/_kP"),
+        drivetrain_->GetPreferenceValue_double("lock_gains/_kP_f"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kI"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kD"), 0.0};
     units::feet_per_second_t speed_target =
@@ -65,8 +65,8 @@ void LockToPointCommand::Execute() {
     speed_target = units::math::min(
         units::math::max(speed_target,
             -drivetrain_
-                 ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                     "lock_max_speed")),
+                ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                    "lock_max_speed")),
         drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "lock_max_speed"));
 

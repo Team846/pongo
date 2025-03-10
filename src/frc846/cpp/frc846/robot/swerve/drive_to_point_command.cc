@@ -47,9 +47,11 @@ void DriveToPointCommand::Execute() {
 
   // Motion Profiling in direction of target point
 
-  units::feet_per_second_squared_t directional_max_dcl = max_deceleration_ * .9;
+  double DIRECTIONAL_GAIN = 0.9;  // TODO: prefify
+  units::feet_per_second_squared_t directional_max_dcl =
+      max_deceleration_ * DIRECTIONAL_GAIN;
   units::feet_per_second_squared_t directional_max_accl =
-      max_acceleration_ * .9;
+      max_acceleration_ * DIRECTIONAL_GAIN;
 
   units::feet_per_second_t directional_velocity =
       units::math::cos(
@@ -92,7 +94,7 @@ void DriveToPointCommand::Execute() {
               directional_max_dcl, direction_offset + 180_deg, true);
   } else {
     is_decelerating_ = false;
-    if (directional_velocity < .9 * max_speed_) {
+    if (directional_velocity < DIRECTIONAL_GAIN * max_speed_) {
       directional_accl =
           frc846::math::VectorND<units::feet_per_second_squared, 2>(
               directional_max_accl, direction_offset, true);
@@ -101,8 +103,11 @@ void DriveToPointCommand::Execute() {
   }
 
   // Motion Profiling in Corrective way
-  units::feet_per_second_squared_t corr_max_dcl = max_deceleration_ * .4;
-  units::feet_per_second_squared_t corr_max_accl = max_acceleration_ * .4;
+  double CORRECTIONAL_GAIN = 0.4;  // TODO: prefify
+  units::feet_per_second_squared_t corr_max_dcl =
+      max_deceleration_ * CORRECTIONAL_GAIN;
+  units::feet_per_second_squared_t corr_max_accl =
+      max_acceleration_ * CORRECTIONAL_GAIN;
 
   units::feet_per_second_t corr_velocity =
       units::math::sin(
@@ -125,21 +130,11 @@ void DriveToPointCommand::Execute() {
   frc846::math::VectorND<units::feet_per_second_squared, 2> corr_accl;
 
   if (units::math::abs(dist_to_target_corr) <= stopping_distance_corr) {
-    // if (dist_to_target_corr < 3_in)
-    //   corr_accl=frc846::math::VectorND<units::feet_per_second_squared,
-    //   2>(corr_max_dcl *
-    //                                   units::math::abs(stopping_distance_corr)
-    //                                   /
-    //                                   units::math::abs(dist_to_target_corr),
-    //                                   direction_offset +
-    //                                   (corr_velocity>0_fps?-90_deg:90_deg),
-    //                                   true);
-    // else
     corr_accl = frc846::math::VectorND<units::feet_per_second_squared, 2>(
         corr_max_dcl,
         direction_offset + (corr_velocity > 0_fps ? -90_deg : 90_deg), true);
   } else {
-    if (corr_velocity < .4 * max_speed_ &&
+    if (corr_velocity < CORRECTIONAL_GAIN * max_speed_ &&
         units::math::abs(dist_to_target_corr) > .5_in)
       corr_accl = frc846::math::VectorND<units::feet_per_second_squared, 2>(
           corr_max_accl,
@@ -196,12 +191,11 @@ bool DriveToPointCommand::IsFinished() {
                      ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
                          "vel_stopped_thresh"))
 
-         //                  ||
-         //  num_stalled_loops_ >l
-         //      drivetrain_->GetPreferenceValue_int("stopped_num_loops")
+         || num_stalled_loops_ >
+                drivetrain_->GetPreferenceValue_int("stopped_num_loops")
 
-         || (end_when_close_ &&
-                (target_.point - current_point).magnitude() < 3_in);
+         || (end_when_close_ && (target_.point - current_point).magnitude() <
+                                    3_in);  // TODO: prefify
 }
 
 }  // namespace frc846::robot::swerve

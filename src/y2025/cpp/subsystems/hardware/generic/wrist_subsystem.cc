@@ -76,7 +76,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/position", readings.position);
   // Graph("readings/error", GetTarget().position - readings.position);
   // Graph("readings/velocity", readings.velocity);
-  // Graph("readings/absolute_position", readings.absolute_position);
+  Graph("readings/absolute_position", readings.absolute_position);
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid &&
@@ -85,14 +85,14 @@ WristReadings WristSubsystem::ReadFromHardware() {
     wrist_esc_helper_.SetPosition(sensor_pos);
   }
 
-  // Graph("readings/sensor_pos", sensor_pos);
-  // Graph("readings/sensor_pos_valid", is_valid);
+  Graph("readings/sensor_pos", sensor_pos);
+  Graph("readings/sensor_pos_valid", is_valid);
 
   return readings;
 }
 
 void WristSubsystem::WriteToHardware(WristTarget target) {
-  // Graph("target/position", target.position);
+  Graph("target/position", target.position);
 
   wrist_esc_.SetGains(GET_PIDF_GAINS());
   wrist_esc_helper_.WritePosition(target.position);

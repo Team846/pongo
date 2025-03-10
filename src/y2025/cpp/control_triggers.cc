@@ -24,20 +24,14 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_left_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{container, true,
-      container.drivetrain_
-          .GetPreferenceValue_unit_type<units::feet_per_second_t>(
-              "lock_max_speed"),
-      35_fps_sq, 15_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, true, 13_fps, 4_fps, 25_fps_sq,
+      10_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
-  }}.WhileTrue(ReefAutoAlignCommand{container, false,
-      container.drivetrain_
-          .GetPreferenceValue_unit_type<units::feet_per_second_t>(
-              "lock_max_speed"),
-      35_fps_sq, 15_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+  }}.WhileTrue(ReefAutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
+      10_fps_sq, container.control_input_.base_adj}
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&
@@ -48,12 +42,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
            container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
   }));
 
-  // frc2::Trigger{[&] {
-  //   return container.control_input_.GetReadings().targeting_algae &&
-  //          container.GPD_.GetReadings().gamepieces.size() != 0U &&
-  //          !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  // }}.OnTrue(LockGPDCommand{container}.Until([&] {
-  //   return !container.control_input_.GetReadings().targeting_algae ||
-  //          container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  // }));
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().targeting_algae &&
+           container.GPD_.GetReadings().gamepieces.size() != 0U &&
+           !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  }}.OnTrue(LockGPDCommand{container}.Until([&] {
+    return !container.control_input_.GetReadings().targeting_algae ||
+           container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  }));
 }

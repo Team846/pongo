@@ -28,7 +28,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("bearing_gains/_kD", -0.6);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP", -2);
+  RegisterPreference("lock_gains/_kP_f", -0.6);
   RegisterPreference("lock_gains/_kI", 0.0);
   RegisterPreference("lock_gains/_kD", 0.01);
   RegisterPreference("lock_gains/deadband", .5_in);
@@ -252,15 +252,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odometry_
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };

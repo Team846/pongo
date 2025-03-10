@@ -107,22 +107,23 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
                 (tl + input.fudge_latency[i]),
             (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
                 (tl + input.fudge_latency[i])};
-        // if (distances.at(0) < 120_in) {
-        output.pos += (getPos(bearingAtCapture, tx.at(0), distances.at(0),
-                           tags.at(0), i) +
-                          velComp) *
-                      (48) / distances.at(0).to<double>();
-        variance +=  // -0.247, 0.0699
-            1 /
-            std::max(
-                (input.aprilVarianceCoeff * distances.at(0).to<double>() *
-                    std::pow(
-                        1 + input.pose.velocity.magnitude().to<double>() / 12,
-                        2) *
-                    std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
-                0.0000000001);
-        totalTagWeight += (48) / distances.at(0).to<double>();
-        // }
+        if (distances.at(0) < 120_in) {
+          output.pos += (getPos(bearingAtCapture, tx.at(0), distances.at(0),
+                             tags.at(0), i) +
+                            velComp) *
+                        (48) / distances.at(0).to<double>();
+          variance +=  // -0.247, 0.0699
+              1 /
+              std::max(
+                  (input.aprilVarianceCoeff * distances.at(0).to<double>() *
+                      std::pow(
+                          1 + input.pose.velocity.magnitude().to<double>() / 12,
+                          2) *
+                      std::pow(
+                          1 + input.angular_velocity.to<double>() / 300, 2)),
+                  0.0000000001);
+          totalTagWeight += (48) / distances.at(0).to<double>();
+        }
       }
     }
   }

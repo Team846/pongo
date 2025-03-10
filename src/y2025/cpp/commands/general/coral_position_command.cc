@@ -24,7 +24,7 @@ void CoralPositionCommand::OnEnd(bool interrupted) {}
 bool CoralPositionCommand::IsFinished() {
   return !container_.coral_ss_.is_initialized() ||
          (container_.coral_ss_.hasReached(where_) &&
-             (!container_.algal_ss_.algal_end_effector.GetReadings()
+             (!container_.coral_ss_.coral_end_effector.GetReadings()
                      .has_piece_ ||
                  !score_));
 }

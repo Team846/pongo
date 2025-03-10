@@ -18,13 +18,13 @@ struct robot_constants {
     static constexpr units::pound_t elevator_weight = 20_lb;
     static constexpr units::inch_t min_height_off_base = 28_in;
 
-    static constexpr units::pound_t end_effector_weight = 17_lb;
+    static constexpr units::pound_t end_effector_weight = 32_lb;
 
     static constexpr units::pound_t total_weight =
         elevator_weight + end_effector_weight;
 
-    static constexpr units::inch_t pos_x = -5_in;
-    static constexpr units::inch_t pos_y = -7_in;
+    static constexpr units::inch_t pos_x = 5_in;
+    static constexpr units::inch_t pos_y = 9_in;
 
     static constexpr units::inch_t elevator_hall_effect = 15_in;
   };
@@ -37,8 +37,8 @@ struct robot_constants {
 
     static constexpr units::inch_t min_height = 29_in;
 
-    static constexpr units::inch_t pos_x = 5_in;
-    static constexpr units::inch_t pos_y = -7_in;
+    static constexpr units::inch_t pos_x = -10_in;
+    static constexpr units::inch_t pos_y = 9_in;
 
     static constexpr units::inch_t telescope_hall_effect = 10_in;
   };
