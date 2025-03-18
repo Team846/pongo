@@ -20,14 +20,15 @@ LockToPointCommand::LockToPointCommand(DrivetrainSubsystem* drivetrain,
 
 void LockToPointCommand::Initialize() {
   Log("LockToPointCommand initialized");
-  start_ = frc846::math::FieldPoint{drivetrain_->GetReadings().pose.position,
+  start_ = frc846::math::FieldPoint{
+      drivetrain_->GetReadings().estimated_pose.position,
       drivetrain_->GetReadings().pose.bearing,
-      drivetrain_->GetReadings().pose.velocity.magnitude()};
+      drivetrain_->GetReadings().estimated_pose.velocity.magnitude()};
   first_loop_ = true;
 }
 
 void LockToPointCommand::Execute() {
-  auto pos = drivetrain_->GetReadings().pose.position;
+  auto pos = drivetrain_->GetReadings().estimated_pose.position;
 
   if (updateTarget_ != nullptr) {
     const auto [target, is_valid] = updateTarget_(target_, start_, first_loop_);
@@ -56,13 +57,17 @@ void LockToPointCommand::Execute() {
         drivetrain_->GetPreferenceValue_double("lock_gains/_kI"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kD"), 0.0};
     units::feet_per_second_t speed_target =
-        1_fps *
-        lock_gains.calculate(r_vec.magnitude().to<double>(), 0.0,
-            drivetrain_->GetReadings().pose.velocity.magnitude().to<double>(),
-            0.0);
-
-    speed_target = units::math::max(speed_target,
-        -drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+        1_fps * lock_gains.calculate(r_vec.magnitude().to<double>(), 0.0,
+                    drivetrain_->GetReadings()
+                        .estimated_pose.velocity.magnitude()
+                        .to<double>(),
+                    0.0);
+    speed_target = units::math::min(
+        units::math::max(speed_target,
+            -drivetrain_
+                 ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                     "lock_max_speed")),
+        drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "lock_max_speed"));
 
     drivetrain_->SetTarget(frc846::robot::swerve::DrivetrainOLControlTarget{

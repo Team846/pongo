@@ -13,10 +13,11 @@
   AddAuto(std::string(name_string) + "/B/R",       \
       new class_name{container_, true, false});
 
-class ThreePieceAuto : public frc846::robot::GenericCommandGroup<RobotContainer,
-                           ThreePieceAuto, frc2::SequentialCommandGroup> {
+class FourAndPickAuto
+    : public frc846::robot::GenericCommandGroup<RobotContainer, FourAndPickAuto,
+          frc2::SequentialCommandGroup> {
 public:
-  ThreePieceAuto(
+  FourAndPickAuto(
       RobotContainer& container, bool is_blue_side, bool is_left_side);
 };
 

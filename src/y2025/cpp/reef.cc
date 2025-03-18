@@ -13,10 +13,10 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
 
   frc846::math::Vector2D reef_center = reefPoint.point;
   frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{6.5_in, 48.5_in};
+      frc846::math::Vector2D{0.5_in, 46.75_in};
 
   frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-6.5_in, 48.5_in};
+      frc846::math::Vector2D{-11.5_in, 46.75_in};
 
   bool mirror = mirrorIfBlue && (frc::DriverStation::GetAlliance() ==
                                     frc::DriverStation::kBlue);
@@ -24,11 +24,11 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
   for (int i = 0; i < 6; i++) {
     reefScoringLocations.push_back(frc846::math::FieldPoint{
         reef_center + left_reef_displacement.rotate(60_deg * i, true),
-        60_deg * i, 0_fps}
+        60_deg * i + 180_deg, 0_fps}
                                        .mirror(mirror));
     reefScoringLocations.push_back(frc846::math::FieldPoint{
         reef_center + right_reef_displacement.rotate(60_deg * i, true),
-        60_deg * i, 0_fps}
+        60_deg * i + 180_deg, 0_fps}
                                        .mirror(mirror));
   }
 

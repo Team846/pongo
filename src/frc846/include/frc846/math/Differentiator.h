@@ -5,7 +5,7 @@
 namespace frc846::math {
 
 /*
-Differentiator class
+Differentiator
 
 A class that differentiates a given value with respect to time
 */
@@ -24,5 +24,7 @@ private:
   double last_value_;
   double last_timestamp_;
   double rate_;
+
+  bool first_loop_;
 };
 }  // namespace frc846::math

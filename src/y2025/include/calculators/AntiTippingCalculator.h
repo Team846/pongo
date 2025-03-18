@@ -7,6 +7,8 @@
 #include <units/mass.h>
 #include <units/velocity.h>
 
+#include "frc846/math/Differentiator.h"
+#include "frc846/math/Smoother.h"
 #include "frc846/math/calculator.h"
 #include "frc846/math/constants.h"
 #include "frc846/math/vectors.h"
@@ -53,4 +55,15 @@ public:
 private:
   static frc846::math::Vector3D elev_cg_position_;
   static frc846::math::Vector3D tele_cg_position_;
+
+  static frc846::math::Differentiator elev_df_vel;
+  static frc846::math::Differentiator elev_df_acc;
+  static frc846::math::Smoother elev_acc_smoother;
+
+  static frc846::math::Differentiator tele_df_vel;
+  static frc846::math::Differentiator tele_df_acc;
+  static frc846::math::Smoother tele_acc_smoother;
+
+  static units::newton_t tele_force;
+  static units::newton_t elev_force;
 };

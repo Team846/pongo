@@ -98,7 +98,7 @@ void SparkMXFX_interm::SetVoltageCompensation(
 void SparkMXFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
   configs.closedLoop.Pidf(
-      gains_.kP, gains_.kI, std::abs(gains_.kD), gains_.kFF);
+      gains_.kP, gains_.kI, std::abs(gains_.kD), std::abs(gains_.kFF));
 
   APPLY_CONFIG_NO_RESET();
 }
@@ -151,6 +151,10 @@ void SparkMXFX_interm::EnableStatusFrames(
   } else {
     configs.signals.AnalogPositionPeriodMs(32767);
     configs.signals.AnalogPositionAlwaysOn(false);
+  }
+
+  if (vector_has(frames, config::StatusFrame::kAbsoluteFrame)) {
+    configs.absoluteEncoder.SetSparkMaxDataPortConfig();
   }
 
   APPLY_CONFIG_NO_RESET();
@@ -243,6 +247,11 @@ bool SparkMXFX_interm::GetForwardLimitSwitchState() {
 
 bool SparkMXFX_interm::GetReverseLimitSwitchState() {
   return esc_->GetReverseLimitSwitch().Get();
+}
+
+units::turn_t SparkMXFX_interm::GetAbsoluteEncoderPosition() {
+  return units::make_unit<units::turn_t>(
+      esc_->GetAbsoluteEncoder().GetPosition());
 }
 
 ControllerErrorCodes SparkMXFX_interm::GetLastErrorCode() {

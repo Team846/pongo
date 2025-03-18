@@ -14,6 +14,7 @@ enum StatusFrame {
   kCurrentFrame,
   kFaultFrame,
   kSensorFrame,
+  kAbsoluteFrame,
   kLeader
 };
 

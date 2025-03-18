@@ -17,9 +17,9 @@ Contains known resistances for various components, such as:
 */
 struct KnownResistances {
   static constexpr frc846::wpilib::unit_ohm kBatteryResistance{0.001};
-  static constexpr frc846::wpilib::unit_ohm kPDPResistance{0.05};
+  static constexpr frc846::wpilib::unit_ohm kPDPResistance{0.007};
 
-  static constexpr frc846::wpilib::unit_ohm kConnectorResistance{0.01};
+  static constexpr frc846::wpilib::unit_ohm kConnectorResistance{0.002};
 
   static constexpr frc846::wpilib::unit_ohms_per_meter kTwelveGaugeResistance{
       0.00521};

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frc846/math/vectors.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/xbox.h"
 #include "subsystems/hardware/algal/algal_ss.h"
@@ -26,7 +27,6 @@ struct ControlInputReadings {
   bool auto_align;
 
   // Superstructure
-  bool position_coral;
   bool position_algal;
   AlgalStates algal_state;
   CoralStates coral_state;
@@ -41,6 +41,16 @@ struct ControlInputReadings {
   // Resets
   bool zero_bearing;
 
+  // Adjustments
+  bool inc_telescope;
+  bool dec_telescope;
+  bool inc_c_wrist;
+  bool dec_c_wrist;
+  bool inc_elevator;
+  bool dec_elevator;
+  bool inc_a_wrist;
+  bool dec_a_wrist;
+
   bool targeting_algae;
 };
 
@@ -53,7 +63,7 @@ class ControlInputSubsystem
     : public frc846::robot::GenericSubsystem<ControlInputReadings,
           ControlInputTarget> {
 public:
-  ControlInputSubsystem();
+  ControlInputSubsystem(CoralSuperstructure* coral_ss);
 
   void Setup() override;
 
@@ -63,8 +73,12 @@ public:
 
   ControlInputReadings UpdateWithInput();
 
+  frc846::math::Vector2D base_adj{0_in, 0_in};
+
 private:
   ControlInputReadings previous_readings_{};
+
+  CoralSuperstructure* coral_ss_;
 
   frc846::robot::XboxReadings previous_driver_{};
   frc846::robot::XboxReadings previous_operator_{};

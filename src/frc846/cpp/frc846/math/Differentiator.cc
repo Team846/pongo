@@ -9,6 +9,7 @@ void Differentiator::Reset() {
   last_value_ = 0.0;
   last_timestamp_ = 0.0;
   rate_ = 0.0;
+  first_loop_ = true;
 }
 
 double Differentiator::Calculate(double value) {
@@ -17,6 +18,13 @@ double Differentiator::Calculate(double value) {
           std::chrono::system_clock::now().time_since_epoch())
           .count() /
       1000.0;
+
+  if (first_loop_) {
+    last_value_ = value;
+    last_timestamp_ = current_timestamp;
+    first_loop_ = false;
+    return 0.0;
+  }
 
   if (last_timestamp_ == 0.0) {
     last_value_ = value;

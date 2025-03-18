@@ -18,6 +18,8 @@ enum AlgalStates {
   kAlgae_Net,
   kAlgae_L2Pick,
   kAlgae_L3Pick,
+  kAlgae_DINOSAUR_A,
+  kAlgae_DINOSAUR_B,
 };
 
 struct AlgalSSReadings {};
@@ -44,12 +46,23 @@ public:
 
   AlgalSetpoint getSetpoint(AlgalStates state);
 
-  bool isHomed() { return is_homed; }
+  bool isHomed() { return elevator.isHomed(); }
+
+  bool hasReached(AlgalStates state);
+  bool hasReachedWrist(AlgalStates state);
+  bool hasReachedElevator(AlgalStates state);
+
+  void adjustElevator(bool upwards);
+  void adjustWrist(bool upwards);
+  void clearAdjustments();
+
+  AlgalStates last_state;
 
 protected:
-  bool is_homed = false;
-
   AlgalSSReadings ReadFromHardware() override;
 
   void WriteToHardware(AlgalSSTarget target) override;
+
+  units::inch_t elevator_adjustment_ = 0_in;
+  units::degree_t wrist_adjustment_ = 0_deg;
 };

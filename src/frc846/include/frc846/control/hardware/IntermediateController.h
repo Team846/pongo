@@ -80,6 +80,8 @@ public:
   virtual bool GetForwardLimitSwitchState() = 0;
   virtual bool GetReverseLimitSwitchState() = 0;
 
+  virtual units::turn_t GetAbsoluteEncoderPosition() = 0;
+
   virtual ControllerErrorCodes GetLastErrorCode() = 0;
 
   virtual bool VerifyConnected() = 0;

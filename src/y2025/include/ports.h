@@ -9,8 +9,7 @@ struct ports {
     static constexpr int kXbox_DSPort = 1;
   };
 
-  struct drivetrain_ {  // TODO: change all ports (preferably, when setting
-                        // them, make them ascending in this order)
+  struct drivetrain_ {
     static constexpr int kFRDrive_CANID = 2;
     static constexpr int kFLDrive_CANID = 5;
     static constexpr int kBLDrive_CANID = 8;
@@ -37,7 +36,6 @@ struct ports {
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 16;
-      static constexpr int kWristCANCoder_CANID = 17;
     };
     struct end_effector_ {
       static constexpr int kEE_CANID = 18;
@@ -50,7 +48,6 @@ struct ports {
     };
     struct wrist_ {
       static constexpr int kWristMotor_CANID = 21;
-      static constexpr int kWristCANCoder_CANID = 22;
     };
     struct end_effector_ {
       static constexpr int kEE1_CANID = 23;

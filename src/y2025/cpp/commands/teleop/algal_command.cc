@@ -19,6 +19,16 @@ void AlgalCommand::Periodic() {
 
   algal_target.score = ci_readings.score_algae;
 
+  if (ci_readings.inc_elevator)
+    container_.algal_ss_.adjustElevator(true);
+  else if (ci_readings.dec_elevator)
+    container_.algal_ss_.adjustElevator(false);
+
+  if (ci_readings.inc_a_wrist)
+    container_.algal_ss_.adjustWrist(true);
+  else if (ci_readings.dec_a_wrist)
+    container_.algal_ss_.adjustWrist(false);
+
   container_.algal_ss_.SetTarget(algal_target);
 }
 

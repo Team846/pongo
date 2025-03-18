@@ -41,12 +41,15 @@ public:
 
   bool VerifyHardware() override final;
 
+  void HomeSubsystem(units::inch_t pos);
+
+  bool isHomed() { return is_homed_; }
+
+  void BrakeSubsystem();
+  void CoastSubsystem();
+
 protected:
   virtual void ExtendedSetup() = 0;
-
-  virtual std::pair<units::inch_t, bool> GetSensorPos() {
-    return {0_in, false};
-  }
 
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
@@ -56,6 +59,7 @@ protected:
   LinearSubsystemReadings ReadFromHardware() override final;
 
   void WriteToHardware(LinearSubsystemTarget target) override final;
+
   bool is_homed_ = false;
   units::inch_t hall_effect_loc_;
 };

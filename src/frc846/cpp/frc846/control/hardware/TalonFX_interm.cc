@@ -220,23 +220,49 @@ bool TalonFX_interm::GetReverseLimitSwitchState() {
          ctre::phoenix6::signals::ForwardLimitValue::ClosedToGround;
 }
 
+// TODO: Use the API to make this function work
+units::turn_t TalonFX_interm::GetAbsoluteEncoderPosition() { return 0.0_tr; }
+
 ControllerErrorCodes TalonFX_interm::GetLastErrorCode() {
   ControllerErrorCodes toReturn = last_error_;
   last_error_ = ControllerErrorCodes::kAllOK;
   return toReturn;
 }
 
-// TODO: Expand list of errors
 frc846::control::hardware::ControllerErrorCodes TalonFX_interm::getErrorCode(
     ctre::phoenix::StatusCode code) {
   switch (code) {
   case ctre::phoenix::StatusCode::OK: return ControllerErrorCodes::kAllOK;
+  case ctre::phoenix::StatusCode::ApiTooOld:
+  case ctre::phoenix::StatusCode::FirmwareTooOld:
+  case ctre::phoenix::StatusCode::FirmwareTooNew:
+  case ctre::phoenix::StatusCode::FirmwareVersNotCompatible:
+    return ControllerErrorCodes::kConfigFailed;
+  case ctre::phoenix::StatusCode::TxFailed:
+  case ctre::phoenix::StatusCode::CouldNotSendCanFrame:
+  case ctre::phoenix::StatusCode::CanOverflowed:
+    return ControllerErrorCodes::kCANDisconnected;
+  case ctre::phoenix::StatusCode::CanMessageStale:
+  case ctre::phoenix::StatusCode::RxTimeout:
+  case ctre::phoenix::StatusCode::TxTimeout:
+    return ControllerErrorCodes::kCANMessageStale;
   case ctre::phoenix::StatusCode::InvalidDeviceSpec:
+  case ctre::phoenix::StatusCode::EcuIsNotPresent:
+  case ctre::phoenix::StatusCode::NodeIsInvalid:
+  case ctre::phoenix::StatusCode::DeviceIsNull:
+  case ctre::phoenix::StatusCode::NoDevicesOnBus:
     return ControllerErrorCodes::kDeviceDisconnected;
   case ctre::phoenix::StatusCode::ConfigFailed:
+  case ctre::phoenix::StatusCode::ConfigReadWriteMismatch:
+  case ctre::phoenix::StatusCode::CouldNotReqSetConfigs:
+  case ctre::phoenix::StatusCode::InvalidParamValue:
     return ControllerErrorCodes::kConfigFailed;
-  case ctre::phoenix::StatusCode::ApiTooOld:
-    return ControllerErrorCodes::kVersionMismatch;
+  case ctre::phoenix::StatusCode::InvalidIDToFollow:
+  case ctre::phoenix::StatusCode::CouldNotFindDynamicId:
+    return ControllerErrorCodes::kFollowingError;
+  case ctre::phoenix::StatusCode::TimeoutIso15Response:
+  case ctre::phoenix::StatusCode::TimeoutCannotBeZero:
+    return ControllerErrorCodes::kTimeout;
   }
 
   if (code.IsWarning()) {

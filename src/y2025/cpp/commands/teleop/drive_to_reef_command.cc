@@ -10,8 +10,8 @@ DriveToReefCommand::DriveToReefCommand(
     units::feet_per_second_squared_t max_acceleration,
     units::feet_per_second_squared_t max_deceleration)
     : DriveToPointCommand{drivetrain,
-          ReefProvider::getReefScoringLocations()[0], 5_fps, max_acceleration,
-          max_deceleration},
+          ReefProvider::getReefScoringLocations()[0], max_speed,
+          max_acceleration, max_deceleration, true},
       is_left_{is_left} {}
 
 std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
@@ -22,15 +22,21 @@ std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
       ReefProvider::getReefScoringLocations()[2 * reef_target_pos +
                                               (is_left_ ? 0 : 1)];
 
-  units::inch_t reef_drive_subtract =
-      (drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-          "reef_drive_early"));
-  target_pos.point =
-      cpos + (target_pos.point - cpos).AddToMagnitude(-reef_drive_subtract);
+  //   units::inch_t reef_drive_subtract =
+  //       (drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
+  //           "lock_drive_early"));
+  //   target_pos.point =
+  //       cpos + (target_pos.point -
+  //       cpos).AddToMagnitude(-reef_drive_subtract);
 
-  target_pos.velocity =
-      drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-          "reef_drive_fvel");
+  //   if ((target_pos.point - start_point_).magnitude() <= reef_drive_subtract)
+  //   {
+  //     target_pos.point = start_point_;
+  //   }
+
+  //   target_pos.velocity =
+  //       drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+  //           "lock_drive_fvel");
 
   return {target_pos, true};
 }
