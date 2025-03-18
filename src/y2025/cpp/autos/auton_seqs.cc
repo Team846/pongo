@@ -113,7 +113,9 @@ using FPT = frc846::math::FieldPoint;
               ReefProvider::getReefScoringLocations(false)[number_on_right]   \
                   .mirror(is_blue_side)                                       \
                   .mirrorOnlyX(!is_left_side)},                               \
-          frc2::WaitCommand{4_s}                                              \
+          frc2::WaitCommand {                                                 \
+        4_s                                                                   \
+      }                                                                       \
     }                                                                         \
   }
 
@@ -146,7 +148,9 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                 \
   PARALLEL_DEADLINE(                                                  \
       DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false)), \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
+      CORAL_POS(kCoral_ScoreL4, true), WAIT {                         \
+    0.25_s                                                            \
+  }
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
