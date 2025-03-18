@@ -149,7 +149,7 @@ void FunkyRobot::OnPeriodic() {
 
 void FunkyRobot::InitTest() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
+  // container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
 
   frc2::Trigger start_dinosaur_a([] { return true; });
   start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{

@@ -74,7 +74,8 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/position", readings.position);
   Graph("readings/error", GetTarget().position - readings.position);
   Graph("readings/velocity", readings.velocity);
-  Graph("readings/absolute_position", readings.absolute_position);
+  units::degree_t abs_pos_deg = readings.absolute_position;
+  Graph("readings/absolute_position", abs_pos_deg);
 
   Graph("readings/current_draw", wrist_esc_.GetCurrent());
 

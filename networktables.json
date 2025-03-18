@@ -50,7 +50,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -75.76171875,
+    "value": -74.8828125,
     "properties": {
       "persistent": true
     }
@@ -58,7 +58,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -108.28125,
+    "value": -107.40234375,
     "properties": {
       "persistent": true
     }
@@ -66,7 +66,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.013671875,
+    "value": -83.14453125,
     "properties": {
       "persistent": true
     }
@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.62890625,
+    "value": -80.244140625,
     "properties": {
       "persistent": true
     }
@@ -226,7 +226,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/max_speed (fps)",
     "type": "double",
-    "value": 15.0,
+    "value": 14.99,
     "properties": {
       "persistent": true
     }
@@ -410,7 +410,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_correctional_gain",
     "type": "double",
-    "value": 0.38,
+    "value": 0.34,
     "properties": {
       "persistent": true
     }
@@ -458,7 +458,7 @@
   {
     "name": "/Preferences/telescope/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 90.0,
+    "value": 60.0,
     "properties": {
       "persistent": true
     }
@@ -474,7 +474,7 @@
   {
     "name": "/Preferences/telescope/pidf_deadband (in)",
     "type": "double",
-    "value": 0.275,
+    "value": 0.5,
     "properties": {
       "persistent": true
     }
@@ -482,7 +482,7 @@
   {
     "name": "/Preferences/telescope/gains/_kP",
     "type": "double",
-    "value": 0.025,
+    "value": 0.035,
     "properties": {
       "persistent": true
     }
@@ -498,7 +498,7 @@
   {
     "name": "/Preferences/telescope/gains/_kD",
     "type": "double",
-    "value": -0.001,
+    "value": -0.0005,
     "properties": {
       "persistent": true
     }
@@ -506,7 +506,7 @@
   {
     "name": "/Preferences/telescope/gains/_kF",
     "type": "double",
-    "value": 0.007,
+    "value": 0.006,
     "properties": {
       "persistent": true
     }
@@ -522,7 +522,7 @@
   {
     "name": "/Preferences/telescope/limits/upper_limit (in)",
     "type": "double",
-    "value": 94.25,
+    "value": 91.25,
     "properties": {
       "persistent": true
     }
@@ -538,7 +538,7 @@
   {
     "name": "/Preferences/telescope/limits/reduce_upper (in)",
     "type": "double",
-    "value": 78.0,
+    "value": 87.0,
     "properties": {
       "persistent": true
     }
@@ -546,7 +546,7 @@
   {
     "name": "/Preferences/telescope/limits/reduce_lower (in)",
     "type": "double",
-    "value": 90.0,
+    "value": 40.0,
     "properties": {
       "persistent": true
     }
@@ -554,7 +554,7 @@
   {
     "name": "/Preferences/telescope/limits/reduce_max_dc",
     "type": "double",
-    "value": 0.35,
+    "value": 0.45,
     "properties": {
       "persistent": true
     }
@@ -562,7 +562,7 @@
   {
     "name": "/Preferences/coral_wrist/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 60.0,
+    "value": 80.0,
     "properties": {
       "persistent": true
     }
@@ -570,7 +570,7 @@
   {
     "name": "/Preferences/coral_wrist/motor_configs/smart_current_limit (A)",
     "type": "double",
-    "value": 30.0,
+    "value": 60.0,
     "properties": {
       "persistent": true
     }
@@ -578,7 +578,7 @@
   {
     "name": "/Preferences/coral_wrist/rezero_thresh (deg)",
     "type": "double",
-    "value": 2.0,
+    "value": 0.5,
     "properties": {
       "persistent": true
     }
@@ -586,7 +586,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kP",
     "type": "double",
-    "value": 0.016,
+    "value": 0.0053,
     "properties": {
       "persistent": true
     }
@@ -602,7 +602,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kD",
     "type": "double",
-    "value": -0.001,
+    "value": -0.0005,
     "properties": {
       "persistent": true
     }
@@ -610,7 +610,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kF",
     "type": "double",
-    "value": 0.017,
+    "value": 0.037,
     "properties": {
       "persistent": true
     }
@@ -642,7 +642,7 @@
   {
     "name": "/Preferences/coral_wrist/limits/reduce_upper (deg)",
     "type": "double",
-    "value": 245.0,
+    "value": 230.0,
     "properties": {
       "persistent": true
     }
@@ -658,7 +658,7 @@
   {
     "name": "/Preferences/coral_wrist/limits/reduce_max_dc",
     "type": "double",
-    "value": 0.3,
+    "value": 0.15,
     "properties": {
       "persistent": true
     }
@@ -666,7 +666,7 @@
   {
     "name": "/Preferences/coral_wrist/cg_offset (deg)",
     "type": "double",
-    "value": -78.0,
+    "value": -90.0,
     "properties": {
       "persistent": true
     }
@@ -682,7 +682,7 @@
   {
     "name": "/Preferences/coral_wrist/use_sensor_threshold (deg_per_s)",
     "type": "double",
-    "value": 2.0,
+    "value": 250.0,
     "properties": {
       "persistent": true
     }
@@ -746,7 +746,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_with_piece/height (in)",
     "type": "double",
-    "value": 35.0,
+    "value": 40.0,
     "properties": {
       "persistent": true
     }
@@ -778,7 +778,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l2/angle (deg)",
     "type": "double",
-    "value": 200.0,
+    "value": 190.0,
     "properties": {
       "persistent": true
     }
@@ -794,7 +794,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l3/height (in)",
     "type": "double",
-    "value": 49.5,
+    "value": 48.5,
     "properties": {
       "persistent": true
     }
@@ -802,7 +802,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l3/angle (deg)",
     "type": "double",
-    "value": 200.0,
+    "value": 190.0,
     "properties": {
       "persistent": true
     }
@@ -818,7 +818,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l4/height (in)",
     "type": "double",
-    "value": 93.5,
+    "value": 89.0,
     "properties": {
       "persistent": true
     }
@@ -826,7 +826,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l4/angle (deg)",
     "type": "double",
-    "value": 250.0,
+    "value": 220.0,
     "properties": {
       "persistent": true
     }
@@ -970,7 +970,7 @@
   {
     "name": "/Preferences/coral_ss/stow_no_piece_loop_thresh",
     "type": "int",
-    "value": 25,
+    "value": 22,
     "properties": {
       "persistent": true
     }
@@ -978,7 +978,7 @@
   {
     "name": "/Preferences/elevator/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 90.0,
+    "value": 60.0,
     "properties": {
       "persistent": true
     }
@@ -986,7 +986,7 @@
   {
     "name": "/Preferences/elevator/motor_configs/smart_current_limit (A)",
     "type": "double",
-    "value": 120.0,
+    "value": 80.0,
     "properties": {
       "persistent": true
     }
@@ -1210,7 +1210,7 @@
   {
     "name": "/Preferences/algal_wrist/encoder_offset (deg)",
     "type": "double",
-    "value": 30.0,
+    "value": 0.0,
     "properties": {
       "persistent": true
     }
@@ -1242,7 +1242,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/height (in)",
     "type": "double",
-    "value": 29.25,
+    "value": 30.0,
     "properties": {
       "persistent": true
     }
@@ -1466,7 +1466,7 @@
   {
     "name": "/Preferences/algal_ss/init_elevator",
     "type": "boolean",
-    "value": false,
+    "value": true,
     "properties": {
       "persistent": true
     }
@@ -1698,7 +1698,7 @@
   {
     "name": "/Preferences/robot_container/init_algal_ss",
     "type": "boolean",
-    "value": false,
+    "value": true,
     "properties": {
       "persistent": true
     }
@@ -1706,7 +1706,7 @@
   {
     "name": "/Preferences/robot_container/init_climber",
     "type": "boolean",
-    "value": true,
+    "value": false,
     "properties": {
       "persistent": true
     }
@@ -1818,7 +1818,7 @@
   {
     "name": "/Preferences/control_input/translation_exponent",
     "type": "int",
-    "value": 3,
+    "value": 2,
     "properties": {
       "persistent": true
     }
@@ -1867,6 +1867,14 @@
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kP_f",
     "type": "double",
     "value": -0.6,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/see_reef_loop_thresh",
+    "type": "int",
+    "value": 3,
     "properties": {
       "persistent": true
     }

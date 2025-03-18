@@ -7,7 +7,7 @@
 
 ClimberSubsystem::ClimberSubsystem()
     : WristSubsystem("climber",
-          frc846::control::base::MotorMonkeyType::SPARK_FLEX_VORTEX,
+          frc846::control::base::MotorMonkeyType::SPARK_MAX_NEO550,
           frc846::control::config::MotorConstructionParameters{
               .can_id = ports::climber_::kClimber_CANID,
               .inverted = false,

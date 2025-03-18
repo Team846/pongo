@@ -55,6 +55,8 @@ struct ControlInputReadings {
   bool dec_a_wrist;
 
   bool targeting_algae;
+
+  bool first_enable_exception;
 };
 
 struct ControlInputTarget {
@@ -94,4 +96,6 @@ private:
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;
+
+  bool first_enable_exception = true;
 };
