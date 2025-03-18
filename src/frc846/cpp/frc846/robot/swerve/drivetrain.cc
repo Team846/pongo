@@ -252,13 +252,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position = odometry_
-          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                    "bearing_latency") *
-                                    GetReadings().yaw_rate,
-              steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+      .position =
+          odometry_
+              .calculate(
+                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                 "bearing_latency") *
+                                 GetReadings().yaw_rate,
+                      steer_positions, drive_positions,
+                      GetPreferenceValue_double("odom_fudge_factor")})
+              .position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -291,7 +293,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   if (tag_pos.variance >= 0) {
     pose_estimator.AddVisionMeasurement(
         {tag_pos.pos[0], tag_pos.pos[1]}, tag_pos.variance);
+    see_tag_counter_ = 0;
+  } else {
+    see_tag_counter_++;
   }
+  Graph("april_tags/see_tag_counter", see_tag_counter_);
 
   Graph("april_tags/april_pos_x", tag_pos.pos[0]);
   Graph("april_tags/april_pos_y", tag_pos.pos[1]);
@@ -369,7 +375,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/accel_vel", accel_vel);
 
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
-      last_accel_spike_};
+      last_accel_spike_, see_tag_counter_};
 }
 
 frc846::math::VectorND<units::feet_per_second, 2>

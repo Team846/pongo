@@ -13,7 +13,7 @@ protected:
   std::pair<units::degree_t, bool> GetSensorPos() override;
 
 private:
-  static constexpr wrist_pos_conv_t encoder_reduction = 1_tr / 45_tr;
+  static constexpr wrist_pos_conv_t encoder_reduction = 1_tr / 81_tr;
   static constexpr wrist_pos_conv_t encoder_to_subsystem_reduction =
       16_tr / 40_tr;
 };

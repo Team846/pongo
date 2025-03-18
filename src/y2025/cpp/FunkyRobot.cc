@@ -110,7 +110,7 @@ void FunkyRobot::OnPeriodic() {
     container_.coral_ss_.telescope.BrakeSubsystem();
     container_.climber_.BrakeSubsystem();
     container_.algal_ss_.algal_wrist.BrakeSubsystem();
-    container_.coral_ss_.coral_wrist.BrakeSubsystem();
+    // container_.coral_ss_.coral_wrist.BrakeSubsystem();
   }
   if (!coast_switch_.Get() && !IsEnabled()) {
     container_.algal_ss_.elevator.CoastSubsystem();

@@ -43,6 +43,7 @@ CoralSuperstructure::CoralSuperstructure()
 
   RegisterPreference("autostow", true);
   RegisterPreference("stow_no_piece_loop_thresh", 20);
+  RegisterPreference("see_reef_loop_thresh", 20);
 
   last_state = kCoral_StowNoPiece;
 }
@@ -168,8 +169,13 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
     }
   }
 
+  if (coral_end_effector.GetReadings().see_reef)
+    see_reef_count_ = GetPreferenceValue_int("see_reef_loop_thresh");
+  else if (see_reef_count_ > 0)
+    see_reef_count_ -= 1;
+
   if (target.score ||
-      (coral_end_effector.GetReadings().see_reef &&
+      (see_reef_count_ > 0 &&
           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
               target.state == kCoral_ScoreL4) &&
           hasReached(target.state))) {

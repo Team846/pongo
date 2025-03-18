@@ -43,10 +43,8 @@ void WristSubsystem::Setup() {
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
   // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
-  wrist_esc_helper_.SetPosition(0_deg);
-
   const auto [sensor_pos, is_valid] = GetSensorPos();
-  if (is_valid) { wrist_esc_helper_.SetPosition(sensor_pos); }
+  wrist_esc_helper_.SetPosition(sensor_pos);
 
   ExtendedSetup();
 }
@@ -74,9 +72,11 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/cg_pos", cg_pos);
 
   Graph("readings/position", readings.position);
-  // Graph("readings/error", GetTarget().position - readings.position);
-  // Graph("readings/velocity", readings.velocity);
+  Graph("readings/error", GetTarget().position - readings.position);
+  Graph("readings/velocity", readings.velocity);
   Graph("readings/absolute_position", readings.absolute_position);
+
+  Graph("readings/current_draw", wrist_esc_.GetCurrent());
 
   const auto [sensor_pos, is_valid] = GetSensorPos();
   if (is_valid &&

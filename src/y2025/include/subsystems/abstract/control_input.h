@@ -41,6 +41,9 @@ struct ControlInputReadings {
   // Resets
   bool zero_bearing;
 
+  // Overrides
+  bool override_autostow;
+
   // Adjustments
   bool inc_telescope;
   bool dec_telescope;

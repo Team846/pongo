@@ -18,7 +18,7 @@ TelescopeSubsystem::TelescopeSubsystem()
               .circuit_resistance =
                   robot_constants::coral_ss_::wire_resistance_base,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
-          52.5_in / 23.85_tr,
+          262.5_in / 214.85_tr,
           robot_constants::telescope::telescope_hall_effect) {
   REGISTER_PIDF_CONFIG(0.025, 0.0, -0.001, 0.007);
   REGISTER_SOFTLIMIT_CONFIG(true, 90.5_in, 28.5_in, 78_in, 38.5_in, 0.3);

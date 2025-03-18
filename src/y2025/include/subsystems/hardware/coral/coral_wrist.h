@@ -14,5 +14,5 @@ protected:
 
 private:
   static constexpr wrist_pos_conv_t subsystem_reduction =
-      18_tr / 84_tr * 1_tr / 9_tr;
+      18_tr / 84_tr * 1_tr / 21_tr;
 };

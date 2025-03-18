@@ -88,7 +88,11 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
-  if (coral_ss_->GetReadings().autostow_valid || dr_readings.b_button)
+  ci_readings_.override_autostow = op_readings.right_bumper;
+
+  if ((coral_ss_->GetReadings().autostow_valid &&
+          !ci_readings_.override_autostow) ||
+      dr_readings.b_button)
     ci_readings_.coral_state = CoralStates::kCoral_StowNoPiece;
   else if (dr_readings.y_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL4;
@@ -107,9 +111,9 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   else if (op_readings.pov == frc846::robot::XboxPOV::kLeft)
     ci_readings_.algal_state = AlgalStates::kAlgae_L2Pick;
-  else if (op_readings.right_trigger)
+  else if (op_readings.a_button)
     ci_readings_.algal_state = AlgalStates::kAlgae_GroundIntake;
-  else if (op_readings.right_bumper)
+  else if (op_readings.y_button)
     ci_readings_.algal_state = AlgalStates::kAlgae_OnTopIntake;
   else
     ci_readings_.algal_state = previous_readings_.algal_state;

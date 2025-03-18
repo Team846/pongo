@@ -11,7 +11,7 @@ CoralWristSubsystem::CoralWristSubsystem()
           frc846::control::config::MotorConstructionParameters{
               .can_id = ports::coral_ss_::wrist_::kWristMotor_CANID,
               .inverted = false,
-              .brake_mode = true,
+              .brake_mode = false,
               .motor_current_limit = 60_A,
               .smart_current_limit = 50_A,
               .voltage_compensation = 12_V,
@@ -32,15 +32,30 @@ WristTarget CoralWristSubsystem::ZeroTarget() const {
   return WristTarget{0_deg};
 }
 
-void CoralWristSubsystem::ExtendedSetup() {}
+void CoralWristSubsystem::ExtendedSetup() {
+  units::degree_t raw_enc_pos =
+      CoralWristSubsystem::GetReadings().absolute_position;
+  if (raw_enc_pos > 340_deg) raw_enc_pos -= 360_deg;
+
+  units::degree_t abs_pos =
+      raw_enc_pos +
+      GetPreferenceValue_unit_type<units::degree_t>("encoder_offset");
+
+  wrist_esc_helper_.SetPosition(abs_pos);
+}
 
 std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
   units::degree_t raw_enc_pos =
       CoralWristSubsystem::GetReadings().absolute_position;
   if (raw_enc_pos > 340_deg) raw_enc_pos -= 360_deg;
-  return {raw_enc_pos +
-              GetPreferenceValue_unit_type<units::degree_t>("encoder_offset"),
-      units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
-          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-              "use_sensor_threshold")};
+
+  units::degree_t abs_pos =
+      raw_enc_pos +
+      GetPreferenceValue_unit_type<units::degree_t>("encoder_offset");
+
+  return {abs_pos,
+      (units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
+              GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+                  "use_sensor_threshold") &&
+          GetReadings().position < 50_deg)};
 }

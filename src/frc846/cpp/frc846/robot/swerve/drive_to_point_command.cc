@@ -103,7 +103,8 @@ void DriveToPointCommand::Execute() {
   }
 
   // Motion Profiling in Corrective way
-  double CORRECTIONAL_GAIN = 0.4;  // TODO: prefify
+  double CORRECTIONAL_GAIN =
+      drivetrain_->GetPreferenceValue_double("drive_correctional_gain");
   units::feet_per_second_squared_t corr_max_dcl =
       max_deceleration_ * CORRECTIONAL_GAIN;
   units::feet_per_second_squared_t corr_max_accl =

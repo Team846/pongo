@@ -70,6 +70,7 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   linear_esc_.SetLoad(1_Nm);
 
   Graph("readings/position", readings.position);
+  Graph("readings/current_draw", linear_esc_.GetCurrent());
 
   // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
 
@@ -91,8 +92,10 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
 
   if (units::math::abs(GetReadings().position - target.position) >
       GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband")) {
+    Graph("within_deadband", false);
     linear_esc_helper_.WritePosition(target.position);
   } else {
+    Graph("within_deadband", true);
     linear_esc_helper_.WriteDC(0.0);
   }
 }

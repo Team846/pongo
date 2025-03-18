@@ -276,6 +276,11 @@ private:
   rev::spark::SparkClosedLoopController* pid_controller_;
 
   frc846::control::hardware::ControllerErrorCodes last_error_;
+
+  units::ampere_t accumulated_current = 0_A;
+  int excessive_current_past_loops = 0;
+
+  int can_id_;
 };
 
 /*
