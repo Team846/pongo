@@ -49,34 +49,36 @@ public:
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
-    /* Superstructures not necessary - updated with extensions
-     RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}}); */
+    // Superstructures not necessary - updated with extensions
+    RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
+    RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
-    if (coral_ss_init) {
-      coral_ss_.Init();
-      all_subsystems_.push_back(&coral_ss_);
-    }
+    // if (coral_ss_init) {
+    //   coral_ss_.Init();
+    //   all_subsystems_.push_back(&coral_ss_);
+    // }
 
-    if (algal_ss_init) {
-      algal_ss_.Init();
-      all_subsystems_.push_back(&algal_ss_);
-    }
+    // if (algal_ss_init) {
+    //   algal_ss_.Init();
+    //   all_subsystems_.push_back(&algal_ss_);
+    // }
 
     RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 
   void GroupAUpdateHardwareExtension() override {
     // if (control_input_.GetReadings().first_enable_exception) return;
-    coral_ss_.UpdateHardware();
+    // coral_ss_.UpdateHardware();
   }
 
   void GroupBUpdateHardwareExtension() override {
     // if (control_input_.GetReadings().first_enable_exception) return;
-    algal_ss_.UpdateHardware();
+    // algal_ss_.UpdateHardware();
   }
 
-  void GroupAUpdateReadingsExtension() override { coral_ss_.UpdateReadings(); }
+  void
+  GroupAUpdateReadingsExtension() override { /*coral_ss_.UpdateReadings();*/ }
 
-  void GroupBUpdateReadingsExtension() override { algal_ss_.UpdateReadings(); }
+  void
+  GroupBUpdateReadingsExtension() override { /*algal_ss_.UpdateReadings();*/ }
 };

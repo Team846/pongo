@@ -40,8 +40,8 @@ std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos() {
   if (raw_enc_pos > 120_deg) raw_enc_pos -= 360_deg;
   return {-raw_enc_pos * encoder_to_subsystem_reduction +
               GetPreferenceValue_unit_type<units::degree_t>("encoder_offset"),
-
       units::math::abs(AlgalWristSubsystem::GetReadings().velocity) <
-          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-              "use_sensor_threshold")};
+              GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+                  "use_sensor_threshold") &&
+          GetReadings().position < 30_deg};
 }

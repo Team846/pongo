@@ -56,6 +56,6 @@ std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
   return {abs_pos,
       (units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
               GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-                  "use_sensor_threshold") /*&&
-          GetReadings().position < 50_deg*/)};
+                  "use_sensor_threshold") &&
+          GetReadings().position < 50_deg)};
 }
