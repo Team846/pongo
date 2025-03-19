@@ -145,8 +145,8 @@
   },
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kP",
-    "type": "int",
-    "value": -1,
+    "type": "double",
+    "value": -1.0,
     "properties": {
       "persistent": true
     }
@@ -208,7 +208,7 @@
     }
   },
   {
-    "name": "/Preferences/SwerveDrivetrain/bearing_latency (ms)",
+    "name": "/Preferences/SwerveDrivetrain/april_bearing_latency (ms)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -226,7 +226,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/max_speed (fps)",
     "type": "double",
-    "value": 14.99,
+    "value": 15.0,
     "properties": {
       "persistent": true
     }

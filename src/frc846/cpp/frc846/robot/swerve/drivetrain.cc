@@ -18,7 +18,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
 
-  RegisterPreference("steer_gains/_kP", 4.0);
+  RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
@@ -30,7 +30,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("lock_gains/_kP_f", -0.6);
   RegisterPreference("lock_gains/_kI", 0.0);
-  RegisterPreference("lock_gains/_kD", 0.01);
+  RegisterPreference("lock_gains/_kD", 0.005);
   RegisterPreference("lock_gains/deadband", .5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 7_fps);
@@ -38,14 +38,14 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("drive_to_subtract", 2_in);
 
-  RegisterPreference("bearing_latency", 0_ms);
+  RegisterPreference("april_bearing_latency", 0_ms);
   RegisterPreference("drive_latency", 0_ms);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
-  RegisterPreference("odom_fudge_factor", 1.0);
+  RegisterPreference("odom_fudge_factor", 0.9689);
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
@@ -58,8 +58,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("april_tags/april_variance_coeff", 0.08);
   RegisterPreference("april_tags/triangular_variance_coeff", 0.001);
-  RegisterPreference("april_tags/fudge_latency1", 140_ms);
-  RegisterPreference("april_tags/fudge_latency2", 350_ms);
+  RegisterPreference("april_tags/fudge_latency1", 30.0_ms);
+  RegisterPreference("april_tags/fudge_latency2", 30.0_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
@@ -71,7 +71,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("lock_drive_early", 12_in);
   RegisterPreference("lock_drive_fvel", 1_fps);
-  RegisterPreference("drive_correctional_gain", 0.1);
+  RegisterPreference("drive_correctional_gain", 0.34);
 
   RegisterPreference("override_at_auto", true);
 
@@ -288,7 +288,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
               GetPreferenceValue_unit_type<units::millisecond_t>(
                   "april_tags/fudge_latency1")},
           GetPreferenceValue_unit_type<units::millisecond_t>(
-              "bearing_latency")});
+              "april_bearing_latency")});
 
   if (tag_pos.variance >= 0) {
     pose_estimator.AddVisionMeasurement(
