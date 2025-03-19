@@ -12,19 +12,19 @@ CoralWristSubsystem::CoralWristSubsystem()
               .can_id = ports::coral_ss_::wrist_::kWristMotor_CANID,
               .inverted = false,
               .brake_mode = false,
-              .motor_current_limit = 60_A,
-              .smart_current_limit = 50_A,
+              .motor_current_limit = 80_A,
+              .smart_current_limit = 60_A,
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::coral_ss_::wire_resistance,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
           subsystem_reduction) {
-  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG(true, 260_deg, 5_deg, 245_deg, 15_deg, 0.3);
+  REGISTER_PIDF_CONFIG(0.0053, 0.0, -0.0005, 0.037);
+  REGISTER_SOFTLIMIT_CONFIG(true, 260_deg, 5_deg, 230_deg, 15_deg, 0.15);
 
-  RegisterPreference("cg_offset", -50.0_deg);
+  RegisterPreference("cg_offset", -90.0_deg);
   RegisterPreference("flip_position_load_sign", false);
 
-  RegisterPreference("use_sensor_threshold", 2_deg_per_s);
+  RegisterPreference("use_sensor_threshold", 250_deg_per_s);
   RegisterPreference("encoder_offset", 0_deg);
 }
 

@@ -19,7 +19,7 @@ CoralEESubsystem::CoralEESubsystem()
       },
       esc_{frc846::control::base::SPARK_MAX_NEO550,
           GetCurrentConfig(motor_configs_)} {
-  RegisterPreference("idle_speed", 0.05);
+  RegisterPreference("idle_speed", -0.05);
 }
 
 frc846::control::config::MotorConstructionParameters
