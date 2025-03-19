@@ -67,12 +67,12 @@ public:
   }
 
   void GroupAUpdateHardwareExtension() override {
-    if (control_input_.GetReadings().first_enable_exception) return;
+    // if (control_input_.GetReadings().first_enable_exception) return;
     coral_ss_.UpdateHardware();
   }
 
   void GroupBUpdateHardwareExtension() override {
-    if (control_input_.GetReadings().first_enable_exception) return;
+    // if (control_input_.GetReadings().first_enable_exception) return;
     algal_ss_.UpdateHardware();
   }
 

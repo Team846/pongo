@@ -143,7 +143,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   configs.camera_x_offsets = {-5_in, 7_in};
-  configs.camera_y_offsets = {4.75_in, -12_in};
+  configs.camera_y_offsets = {4_in, -12_in};
 
   configs.cams = 2;
   configs.april_locations = {{1, {28.429_in, 31.594_in}},

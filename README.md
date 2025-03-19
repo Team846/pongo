@@ -173,6 +173,8 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
+src/y2025/cpp/subsystems/abstract/control_input.cc:160:21: warning: Variable 'extend_climb' is assigned a value that is never used. [unreadVariable]
+src/y2025/cpp/subsystems/abstract/control_input.cc:161:22: warning: Variable 'retract_climb' is assigned a value that is never used. [unreadVariable]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:65:0: warning: The function 'modulo' is never used. [unusedFunction]

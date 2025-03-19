@@ -157,14 +157,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   if (ci_readings_.score_algae || ci_readings_.score_coral)
     first_enable_exception = false;
 
-  if (op_readings.left_trigger && !previous_operator_.left_trigger &&
-      climb_state_ == 0)
-    climb_state_ = 1;
-  if (op_readings.left_trigger && !previous_operator_.left_trigger &&
-      climb_state_ == 1)
-    climb_state_ = 0;
-  if (op_readings.right_trigger && climb_state_ == 1) climb_state_ = 2;
-  Graph("climb_state", climb_state_);
+  ci_readings_.extend_climb = op_readings.right_trigger;
+  ci_readings_.retract_climb = op_readings.left_trigger;
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;

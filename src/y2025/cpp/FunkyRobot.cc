@@ -14,7 +14,6 @@
 #include "calculators/AntiTippingCalculator.h"
 #include "commands/general/algal_position_command.h"
 #include "commands/general/coral_position_command.h"
-#include "commands/general/dinosaur_climber.h"
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"

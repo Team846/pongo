@@ -35,8 +35,9 @@ struct ControlInputReadings {
   bool score_coral;
   bool score_algae;
 
-  // Climb: 1: Preclimb, 2: Climb, 3: Reset
-  int climb_state;
+  // Climb
+  bool extend_climb;
+  bool retract_climb;
 
   // Resets
   bool zero_bearing;

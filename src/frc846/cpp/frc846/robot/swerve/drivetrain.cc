@@ -139,9 +139,9 @@ void DrivetrainSubsystem::ZeroBearing() {
       navX_.ZeroYaw();
       Log("Zeroed bearing");
 
-      for (SwerveModuleSubsystem* module : modules_) {
-        module->ZeroWithCANcoder();
-      }
+      // for (SwerveModuleSubsystem* module : modules_) {
+      //   module->ZeroWithCANcoder();
+      // }
       return;
     }
 
@@ -152,9 +152,9 @@ void DrivetrainSubsystem::ZeroBearing() {
   Error("Unable to zero after {} attempts, forcing zero", kMaxAttempts);
 
   navX_.ZeroYaw();
-  for (SwerveModuleSubsystem* module : modules_) {
-    module->ZeroWithCANcoder();
-  }
+  // for (SwerveModuleSubsystem* module : modules_) {
+  //   module->ZeroWithCANcoder();
+  // }
 
   pose_estimator.SetPoint(
       {GetReadings().april_point[0], GetReadings().april_point[1]});
@@ -252,15 +252,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odometry_
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };

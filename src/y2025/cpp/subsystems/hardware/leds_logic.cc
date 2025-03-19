@@ -80,7 +80,8 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
              (container->control_input_.GetReadings().targeting_algae &&
                  container->GPD_.GetReadings().gamepieces.size() != 0U)) {
     target.state = kLEDsSequencing;
-  } else if (container->control_input_.GetReadings().climb_state != 0) {
+  } else if (container->control_input_.GetReadings().extend_climb ||
+             container->control_input_.GetReadings().retract_climb) {
     target.state = kLEDsClimbing;
   } else if (container->algal_ss_.algal_end_effector.GetReadings().has_piece_ ||
              container->coral_ss_.coral_end_effector.GetReadings().has_piece_ ||
