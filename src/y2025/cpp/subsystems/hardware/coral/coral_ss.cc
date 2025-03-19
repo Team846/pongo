@@ -22,7 +22,7 @@ CoralSuperstructure::CoralSuperstructure()
   REGISTER_SETPOINT("stow_with_piece", 40_in, 160_deg, -0.15);
   REGISTER_SETPOINT("score_l2", 27.75_in, 190_deg, -0.15);
   REGISTER_SETPOINT("score_l3", 48.5_in, 190_deg, -0.15);
-  REGISTER_SETPOINT("score_l4", 89_in, 220_deg, -0.15);  // 74.5, 39, 23.5
+  REGISTER_SETPOINT("score_l4", 89_in, 220_deg, -0.15);
 
   REGISTER_SETPOINT("dinosaur_A", 33_in, 140_deg, -0.3);
   REGISTER_SETPOINT("dinosaur_B", 50_in, 200_deg, 0.3);
