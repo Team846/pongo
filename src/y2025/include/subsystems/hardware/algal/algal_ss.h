@@ -18,6 +18,8 @@ enum AlgalStates {
   kAlgae_Net,
   kAlgae_L2Pick,
   kAlgae_L3Pick,
+  kAlgae_DINOSAUR_A,
+  kAlgae_DINOSAUR_B,
 };
 
 struct AlgalSSReadings {};
@@ -25,7 +27,6 @@ struct AlgalSSReadings {};
 struct AlgalSSTarget {
   AlgalStates state;
   bool score;
-  std::optional<AlgalStates> separate_wrist_state = std::nullopt;
 };
 
 class AlgalSuperstructure
@@ -47,8 +48,21 @@ public:
 
   bool isHomed() { return elevator.isHomed(); }
 
+  bool hasReached(AlgalStates state);
+  bool hasReachedWrist(AlgalStates state);
+  bool hasReachedElevator(AlgalStates state);
+
+  void adjustElevator(bool upwards);
+  void adjustWrist(bool upwards);
+  void clearAdjustments();
+
+  AlgalStates last_state;
+
 protected:
   AlgalSSReadings ReadFromHardware() override;
 
   void WriteToHardware(AlgalSSTarget target) override;
+
+  units::inch_t elevator_adjustment_ = 0_in;
+  units::degree_t wrist_adjustment_ = 0_deg;
 };

@@ -18,10 +18,13 @@ namespace frc846::robot::calculators {
 
 struct ATCalculatorInput {
   frc846::robot::swerve::odometry::SwervePose pose;
+  frc846::robot::swerve::odometry::SwervePose old_pose;
   units::degrees_per_second_t angular_velocity;
 
   double aprilVarianceCoeff;
-  units::second_t fudge_latency;
+  double triangularVarianceCoeff;
+  std::vector<units::second_t> fudge_latency;
+  units::second_t bearing_latency;
 };
 
 struct ATCalculatorOutput {

@@ -12,6 +12,9 @@
 
 #include "autos/auton_seqs.h"
 #include "calculators/AntiTippingCalculator.h"
+#include "commands/general/algal_position_command.h"
+#include "commands/general/coral_position_command.h"
+#include "commands/general/dinosaur_climber.h"
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
@@ -22,7 +25,12 @@
 #include "rsighandler.h"
 #include "subsystems/hardware/leds_logic.h"
 
-FunkyRobot::FunkyRobot() : GenericRobot{&container_} {}
+FunkyRobot::FunkyRobot() : GenericRobot{&container_} {
+  RegisterPreference("num_coasting_loops", 1000);
+  RegisterPreference("homing_flash_loops", 50);
+  RegisterPreference("elevator_home_height", 14_in);
+  RegisterPreference("telescope_home_height", 33_in);
+}
 
 void FunkyRobot::OnInitialize() {
   Field::Setup();
@@ -34,7 +42,7 @@ void FunkyRobot::OnInitialize() {
   //   AddAuto(x.name + "_blue", new GenericAuto{container_, x, true});
   // }
 
-  ADD_AUTO_VARIANTS(ThreePieceAuto, "3PC");
+  ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
 
@@ -45,6 +53,24 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData(
       "zero_bearing", new frc846::wpilib::NTAction(
                           [this] { container_.drivetrain_.ZeroBearing(); }));
+
+  frc::SmartDashboard::PutData(
+      "brake_for_time", new frc846::wpilib::NTAction([this] {
+        container_.algal_ss_.elevator.CoastSubsystem();
+        container_.coral_ss_.telescope.CoastSubsystem();
+        container_.climber_.CoastSubsystem();
+        container_.algal_ss_.algal_wrist.CoastSubsystem();
+        container_.coral_ss_.coral_wrist.CoastSubsystem();
+        coast_count_ = GetPreferenceValue_int("num_coasting_loops");
+      }));
+
+  frc::SmartDashboard::PutData(
+      "home_telescope_elevator", new frc846::wpilib::NTAction([this] {
+        container_.coral_ss_.telescope.HomeSubsystem(
+            robot_constants::elevator::min_height_off_base);
+        container_.algal_ss_.elevator.HomeSubsystem(
+            robot_constants::telescope::min_height);
+      }));
 
   frc::SmartDashboard::PutData("zero_odometry",
       new frc846::wpilib::NTAction(
@@ -64,14 +90,51 @@ void FunkyRobot::InitTeleop() {
 }
 
 void FunkyRobot::OnPeriodic() {
-  if (!home_switch_.Get()) {
-    container_.algal_ss_.elevator.HomeSubsystem(
-        robot_constants::elevator::elevator_hall_effect);
-    container_.coral_ss_.telescope.HomeSubsystem(
-        robot_constants::telescope::telescope_hall_effect);
+  if (!gyro_switch_.Get() && !IsEnabled()) {
+    container_.drivetrain_.SetBearing(0_deg);
+    homing_count_gyro = GetPreferenceValue_int("homing_flash_loops");
   }
 
-  LEDsLogic::UpdateLEDs(&container_);
+  if (!home_switch_.Get() && !IsEnabled()) {
+    container_.coral_ss_.telescope.HomeSubsystem(
+        robot_constants::elevator::min_height_off_base);
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::telescope::min_height);
+
+    homing_count_ = GetPreferenceValue_int("homing_flash_loops");
+  }
+
+  if (coast_count_ > 0) coast_count_--;
+  if (coast_count_ == 1 || coast_count_ == 7) {
+    container_.algal_ss_.elevator.BrakeSubsystem();
+    container_.coral_ss_.telescope.BrakeSubsystem();
+    container_.climber_.BrakeSubsystem();
+    container_.algal_ss_.algal_wrist.BrakeSubsystem();
+    container_.coral_ss_.coral_wrist.BrakeSubsystem();
+  }
+  if (!coast_switch_.Get() && !IsEnabled()) {
+    container_.algal_ss_.elevator.CoastSubsystem();
+    container_.coral_ss_.telescope.CoastSubsystem();
+    container_.climber_.CoastSubsystem();
+    container_.algal_ss_.algal_wrist.CoastSubsystem();
+    container_.coral_ss_.coral_wrist.CoastSubsystem();
+    coast_count_ = GetPreferenceValue_int("num_coasting_loops");
+  }
+
+  if (homing_count_ > 0) homing_count_--;
+  if (homing_count_gyro > 0) homing_count_gyro--;
+
+  bool isDisabled = frc::DriverStation::IsDisabled();
+
+  if (homing_count_ > 0 && isDisabled)
+    LEDsLogic::SetLEDsState(&container_, kLEDsHoming);
+  else if (homing_count_gyro > 0 && isDisabled)
+    LEDsLogic::SetLEDsState(&container_, kLEDsHomingGyro);
+  else if (coast_count_ > 0 && isDisabled)
+    LEDsLogic::CoastingLEDs(&container_,
+        (1.0 * coast_count_) / GetPreferenceValue_int("num_coasting_loops"));
+  else
+    LEDsLogic::UpdateLEDs(&container_);
 
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
@@ -84,7 +147,24 @@ void FunkyRobot::OnPeriodic() {
   Graph("robot_cg_z", cg[2]);
 }
 
-void FunkyRobot::InitTest() {}
+void FunkyRobot::InitTest() {
+  container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
+  container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
+
+  frc2::Trigger start_dinosaur_a([] { return true; });
+  start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{
+      AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
+      frc2::WaitCommand{0.5_s},
+      AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
+
+  frc2::Trigger start_dinosaur_c([] { return true; });
+  start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
+      CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
+      frc2::WaitCommand{0.5_s},
+      CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
+      frc2::WaitCommand{0.5_s}}.Repeatedly());
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {

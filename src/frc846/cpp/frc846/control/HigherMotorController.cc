@@ -15,6 +15,10 @@ void HigherMotorController::Setup() {
       mmtype_, constr_params_);
 }
 
+void HigherMotorController::SetNeutralMode(bool brake) {
+  frc846::control::MotorMonkey::SetNeutralMode(slot_id_, brake);
+}
+
 bool HigherMotorController::VerifyConnected() {
   return frc846::control::MotorMonkey::VerifyConnected();
 }
@@ -30,14 +34,14 @@ void HigherMotorController::SetLoad(units::newton_meter_t load) {
 }
 
 void HigherMotorController::WriteDC(double duty_cycle) {
-  if (soft_limits_.has_value()) {
-    duty_cycle = soft_limits_.value().LimitDC(duty_cycle, GetPosition());
-  }
   duty_cycle =
       frc846::control::calculators::CurrentTorqueCalculator::limit_current_draw(
           duty_cycle, constr_params_.smart_current_limit, GetVelocity(), 12.0_V,
           constr_params_.circuit_resistance,
           frc846::control::base::MotorSpecificationPresets::get(mmtype_));
+  if (soft_limits_.has_value()) {
+    duty_cycle = soft_limits_.value().LimitDC(duty_cycle, GetPosition());
+  }
   MotorMonkey::WriteDC(slot_id_, duty_cycle);
 }
 
@@ -117,6 +121,10 @@ bool HigherMotorController::GetForwardLimitSwitchState() {
 
 bool HigherMotorController::GetReverseLimitSwitchState() {
   return frc846::control::MotorMonkey::GetReverseLimitSwitchState(slot_id_);
+}
+
+units::turn_t HigherMotorController::GetAbsoluteEncoderPosition() {
+  return frc846::control::MotorMonkey::GetAbsoluteEncoderPosition(slot_id_);
 }
 
 void HigherMotorController::SetPosition(units::radian_t position) {

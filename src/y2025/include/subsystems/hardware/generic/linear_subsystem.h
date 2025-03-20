@@ -45,6 +45,9 @@ public:
 
   bool isHomed() { return is_homed_; }
 
+  void BrakeSubsystem();
+  void CoastSubsystem();
+
 protected:
   virtual void ExtendedSetup() = 0;
 

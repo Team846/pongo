@@ -10,12 +10,11 @@ LinearSubsystem::LinearSubsystem(std::string name,
           LinearSubsystemTarget>(name),
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       hall_effect_loc_(hall_effect_loc_) {
-  REGISTER_PIDF_CONFIG(0.0, 0.0, 0.0, 0.0);
-  REGISTER_SOFTLIMIT_CONFIG(true, 45_in, 2_in, 40_in, 10_in, 0.3);
-
   linear_esc_helper_.SetConversion(conversion);
 
   linear_esc_helper_.bind(&linear_esc_);
+
+  RegisterPreference("pidf_deadband", 0.275_in);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -42,11 +41,13 @@ void LinearSubsystem::Setup() {
           frc846::control::config::StatusFrame::kVelocityFrame,
           frc846::control::config::StatusFrame::kFaultFrame});
 
-  linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
-  linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
+  linear_esc_helper_.SetPosition(28.5_in);
 
-  linear_esc_.ConfigForwardLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
+  linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
+  // linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
+
+  // linear_esc_.ConfigForwardLimitSwitch(
+  //     false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 
   ExtendedSetup();
 }
@@ -70,21 +71,36 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
   Graph("readings/position", readings.position);
 
-  bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
+  // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
 
-  Graph("readings/homing_sensor", forward_limit);
+  // Graph("readings/homing_sensor", forward_limit);
 
-  if (forward_limit && !is_homed_) {
-    is_homed_ = true;
-    linear_esc_helper_.SetPosition(hall_effect_loc_);
-  }
+  // if (forward_limit && !is_homed_) {
+  //   is_homed_ = true;
+  //   linear_esc_helper_.SetPosition(hall_effect_loc_);
+  // }
 
   return readings;
 }
 
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
-  Graph("target/position", target.position);
+  // Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
 
-  linear_esc_helper_.WritePosition(target.position);
+  linear_esc_.SetLoad(1_Nm);
+
+  if (units::math::abs(GetReadings().position - target.position) >
+      GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband")) {
+    linear_esc_helper_.WritePosition(target.position);
+  } else {
+    linear_esc_helper_.WriteDC(0.0);
+  }
+}
+
+void LinearSubsystem::BrakeSubsystem() {
+  if (is_initialized()) linear_esc_.SetNeutralMode(true);
+}
+
+void LinearSubsystem::CoastSubsystem() {
+  if (is_initialized()) linear_esc_.SetNeutralMode(false);
 }

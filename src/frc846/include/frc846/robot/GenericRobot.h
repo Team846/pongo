@@ -37,6 +37,8 @@ public:
 
   void AddAuto(std::string name, frc2::Command* command);
 
+  static std::string GetSelectedAuto() { return auto_chooser_.GetSelected(); }
+
 private:
   hal::Handle<HAL_NotifierHandle> notifier_;
   units::microsecond_t next_loop_time_;
@@ -47,8 +49,10 @@ private:
   GenericRobotContainer* generic_robot_container_;
 
   frc2::Command* auto_command_ = nullptr;
-  frc::SendableChooser<std::string> auto_chooser_;
+  static frc::SendableChooser<std::string> auto_chooser_;
   std::unordered_map<std::string, frc2::Command*> autos_;
+
+  int x_ = 0;
 };
 
 }  // namespace frc846::robot

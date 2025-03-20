@@ -11,7 +11,6 @@
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
-  ControlInputSubsystem control_input_{};
   LEDsSubsystem leds_{};
 
   DrivetrainConstructor drivetrain_constructor_{};
@@ -22,6 +21,8 @@ public:
 
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
+
+  ControlInputSubsystem control_input_{&coral_ss_};
 
   ClimberSubsystem climber_{};
 
@@ -36,13 +37,13 @@ public:
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = false;  //(GetPreferenceValue_bool("init_gpd"));
+    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
-    bool coral_ss_init = false;  //(GetPreferenceValue_bool("init_coral_ss"));
-    bool algal_ss_init = false;  //(GetPreferenceValue_bool("init_algal_ss"));
-    bool climber_init = false;   //(GetPreferenceValue_bool("init_climber"));
+    bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
+    bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
+    // bool climber_init = (GetPreferenceValue_bool("init_climber"));
 
-    RegisterSubsystemGroupA({{&control_input_, true}});
+    RegisterSubsystemGroupAB({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
@@ -51,6 +52,6 @@ public:
     RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
-    RegisterSubsystemGroupB({{&climber_, climber_init}});
+    // RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 };

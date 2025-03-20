@@ -18,19 +18,33 @@ CoralSuperstructure::CoralSuperstructure()
       telescope(),
       coral_wrist(),
       coral_end_effector() {
-  REGISTER_SETPOINT("stow_no_piece", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("stow_with_piece", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l2", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l3", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("score_l4", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("stow_no_piece", 29_in, 20_deg, -0.7);
+  REGISTER_SETPOINT("stow_with_piece", 35_in, 120_deg, -0.15);
+  REGISTER_SETPOINT("score_l2", 29_in, 220_deg, -0.15);
+  REGISTER_SETPOINT("score_l3", 48_in, 213.9_deg, -0.15);
+  REGISTER_SETPOINT("score_l4", 90_in, 263_deg, -0.15);  // 74.5, 39, 23.5
+
+  REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
 
   RegisterPreference("score_dc", -0.5);
 
-  RegisterPreference("init_telescope", false);
-  RegisterPreference("init_wrist", false);
+  RegisterPreference("init_telescope", true);
+  RegisterPreference("init_wrist", true);
   RegisterPreference("init_ee", true);
 
   RegisterPreference("disable_distance_sensor", false);
+
+  RegisterPreference("telescope_tolerance", 3_in);
+  RegisterPreference("wrist_tolerance", 9_deg);
+
+  RegisterPreference("telescope_adjustment", 0.04_in);
+  RegisterPreference("wrist_adjustment", 0.2_deg);
+
+  RegisterPreference("autostow", true);
+  RegisterPreference("stow_no_piece_loop_thresh", 20);
+
+  last_state = kCoral_StowNoPiece;
 }
 
 void CoralSuperstructure::Setup() {
@@ -61,8 +75,35 @@ CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
   case kCoral_ScoreL2: return GET_SETPOINT("score_l2");
   case kCoral_ScoreL3: return GET_SETPOINT("score_l3");
   case kCoral_ScoreL4: return GET_SETPOINT("score_l4");
+  case kCoral_DINOSAUR_A: return GET_SETPOINT("dinosaur_A");
+  case kCoral_DINOSAUR_B: return GET_SETPOINT("dinosaur_B");
   default: return GET_SETPOINT("stow_no_piece");
   }
+}
+
+bool CoralSuperstructure::hasReached(CoralStates state) {
+  bool has_reached = hasReachedTelescope(state) && hasReachedWrist(state);
+  Graph("has_reached", has_reached);
+  return has_reached;
+}
+
+bool CoralSuperstructure::hasReachedTelescope(CoralStates state) {
+  if (!telescope.is_initialized()) return true;
+
+  CoralSetpoint setpoint = getSetpoint(state);
+
+  return (units::math::abs(telescope.GetReadings().position - setpoint.height) <
+          GetPreferenceValue_unit_type<units::inch_t>("telescope_tolerance"));
+}
+
+bool CoralSuperstructure::hasReachedWrist(CoralStates state) {
+  if (!coral_wrist.is_initialized()) return true;
+
+  CoralSetpoint setpoint = getSetpoint(state);
+
+  return (
+      units::math::abs(coral_wrist.GetReadings().position - setpoint.angle) <
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_tolerance"));
 }
 
 CoralSSReadings CoralSuperstructure::ReadFromHardware() {
@@ -70,31 +111,93 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
   coral_wrist.UpdateReadings();
   coral_end_effector.UpdateReadings();
 
-  return {};
+  if (coral_end_effector.GetReadings().has_piece_) {
+    no_piece_count_ = 0;
+
+  } else {
+    no_piece_count_++;
+  }
+  Graph("no_piece_count", no_piece_count_);
+
+  bool autostow_valid =
+      GetPreferenceValue_bool("autostow") &&
+      (no_piece_count_ > GetPreferenceValue_int("stow_no_piece_loop_thresh"));
+  Graph("autostow_valid", autostow_valid);
+
+  bool chute_piece = !chute_sensor_.Get();
+  Graph("chute_piece", chute_piece);
+
+  bool piece_entered =
+      chute_piece || coral_end_effector.GetReadings().has_piece_;
+  Graph("piece_entered", piece_entered);
+
+  return {autostow_valid, piece_entered};
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
   CoralSetpoint setpoint = getSetpoint(target.state);
 
-  telescope.SetTarget({setpoint.height});
+  if (target.state != last_state) {
+    clearAdjustments();
+    if (hasReached(target.state)) last_state = target.state;
+  }
 
-  if (target.separate_wrist_state.has_value())
-    coral_wrist.SetTarget(
-        {getSetpoint(target.separate_wrist_state.value()).angle});
-  else
-    coral_wrist.SetTarget({setpoint.angle});
+  if (last_state == CoralStates::kCoral_StowNoPiece ||
+      last_state == CoralStates::kCoral_StowWithPiece) {
+    telescope.SetTarget({setpoint.height + telescope_adjustment_});
+
+    if (hasReachedTelescope(target.state)) {
+      coral_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+    }
+  } else if ((last_state == kCoral_ScoreL2 || last_state == kCoral_ScoreL3 ||
+                 last_state == kCoral_ScoreL4) &&
+             (target.state == kCoral_ScoreL2 ||
+                 target.state == kCoral_ScoreL3 ||
+                 target.state == kCoral_ScoreL4) &&
+             (last_state != target.state)) {
+    coral_wrist.SetTarget({getSetpoint(kCoral_StowWithPiece).angle});
+
+    if (hasReachedWrist(kCoral_StowWithPiece)) {
+      last_state = kCoral_StowWithPiece;
+    }
+  } else {
+    coral_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+
+    if (hasReachedWrist(target.state)) {
+      telescope.SetTarget({setpoint.height + telescope_adjustment_});
+    }
+  }
 
   if (target.score ||
-      (!GetPreferenceValue_bool("disable_distance_sensor") &&
-          coral_end_effector.GetReadings().has_piece_ &&
-          coral_end_effector.GetReadings().see_reef &&
+      (coral_end_effector.GetReadings().see_reef &&
           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
-              target.state == kCoral_ScoreL4)))
+              target.state == kCoral_ScoreL4) &&
+          hasReached(target.state))) {
+    Graph("auto_score", true);
     coral_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
-  else
+  } else {
+    Graph("auto_score", false);
     coral_end_effector.SetTarget({setpoint.ee_dc});
+  }
 
   telescope.UpdateHardware();
   coral_wrist.UpdateHardware();
   coral_end_effector.UpdateHardware();
+}
+
+void CoralSuperstructure::adjustTelescope(bool upwards) {
+  telescope_adjustment_ +=
+      (upwards ? 1 : -1) *
+      GetPreferenceValue_unit_type<units::inch_t>("telescope_adjustment");
+}
+
+void CoralSuperstructure::adjustWrist(bool upwards) {
+  wrist_adjustment_ +=
+      (upwards ? 1 : -1) *
+      GetPreferenceValue_unit_type<units::degree_t>("wrist_adjustment");
+}
+
+void CoralSuperstructure::clearAdjustments() {
+  telescope_adjustment_ = 0_in;
+  wrist_adjustment_ = 0_deg;
 }

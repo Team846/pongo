@@ -6,7 +6,7 @@
 #include "subsystems/robot_constants.h"
 
 CoralEESubsystem::CoralEESubsystem()
-    : GenericSubsystem("Coral_end_effector"),
+    : GenericSubsystem("coral_end_effector"),
       motor_configs_{
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
@@ -14,11 +14,13 @@ CoralEESubsystem::CoralEESubsystem()
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
-          .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
-          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0},
+          .circuit_resistance = robot_constants::coral_ss_::wire_resistance,
+          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.5},
       },
       esc_{frc846::control::base::SPARK_MAX_NEO550,
-          GetCurrentConfig(motor_configs_)} {}
+          GetCurrentConfig(motor_configs_)} {
+  RegisterPreference("idle_speed", 0.05);
+}
 
 frc846::control::config::MotorConstructionParameters
 CoralEESubsystem::GetCurrentConfig(
@@ -41,9 +43,9 @@ void CoralEESubsystem::Setup() {
   esc_.EnableStatusFrames({frc846::control::config::kFaultFrame});
 
   esc_.ConfigForwardLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
   esc_.ConfigReverseLimitSwitch(
-      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOn);
+      false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 }
 
 bool CoralEESubsystem::VerifyHardware() {
@@ -63,5 +65,8 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
 
 void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
   Graph("target/duty_cycle", target.duty_cycle_);
-  esc_.WriteDC(target.duty_cycle_);
+  if (GetReadings().has_piece_ && target.duty_cycle_ < 0.0)
+    esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
+  else
+    esc_.WriteDC(target.duty_cycle_);
 }

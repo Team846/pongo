@@ -23,47 +23,57 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("steer_gains/_kD", 0.0);
   RegisterPreference("steer_gains/_kF", 0.0);
 
-  RegisterPreference("bearing_gains/_kP", 0.5);
+  RegisterPreference("bearing_gains/_kP", 9);
   RegisterPreference("bearing_gains/_kI", 0.0);
-  RegisterPreference("bearing_gains/_kD", 0.0);
+  RegisterPreference("bearing_gains/_kD", -0.6);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP", 0.5);
+  RegisterPreference("lock_gains/_kP", -2);
   RegisterPreference("lock_gains/_kI", 0.0);
-  RegisterPreference("lock_gains/_kD", 0.0);
-  RegisterPreference("lock_gains/deadband", 2_in);
+  RegisterPreference("lock_gains/_kD", 0.01);
+  RegisterPreference("lock_gains/deadband", .5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 7_fps);
+  RegisterPreference("auto_max_speed", 15_fps);
 
   RegisterPreference("drive_to_subtract", 2_in);
+
+  RegisterPreference("bearing_latency", 0_ms);
+  RegisterPreference("drive_latency", 0_ms);
 
   RegisterPreference("max_speed", 15_fps);
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
-  RegisterPreference("odom_fudge_factor", 0.875);
+  RegisterPreference("odom_fudge_factor", 1.0);
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
   RegisterPreference("bearing_latency", 0.01_s);
 
-  RegisterPreference("pose_estimator/pose_variance", 0.01);
+  RegisterPreference("pose_estimator/pose_variance", 0.1);
   RegisterPreference("pose_estimator/velocity_variance", 1.0);
   RegisterPreference("pose_estimator/accel_variance", 1.0);
+  RegisterPreference("pose_estimator/override", false);
 
-  RegisterPreference("april_tags/april_variance_coeff", 0.33);
-  RegisterPreference("april_tags/fudge_latency", 20_ms);
+  RegisterPreference("april_tags/april_variance_coeff", 0.08);
+  RegisterPreference("april_tags/triangular_variance_coeff", 0.001);
+  RegisterPreference("april_tags/fudge_latency1", 140_ms);
+  RegisterPreference("april_tags/fudge_latency2", 350_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
   RegisterPreference("accel_spike_thresh", 45_fps_sq);
   RegisterPreference("max_past_accel_spike", 25);
   RegisterPreference("accel_vel_stopped_thresh", 0.7_fps);
-  RegisterPreference("vel_stopped_thresh", 1.0_fps);
+  RegisterPreference("vel_stopped_thresh", 0.7_fps);
   RegisterPreference("stopped_num_loops", 25);
 
-  RegisterPreference("reef_drive_early", 12_in);
-  RegisterPreference("reef_drive_fvel", 1_fps);
+  RegisterPreference("lock_drive_early", 12_in);
+  RegisterPreference("lock_drive_fvel", 1_fps);
+  RegisterPreference("drive_correctional_gain", 0.1);
+
+  RegisterPreference("override_at_auto", true);
 
   odometry_.setConstants({});
   ol_calculator_.setConstants({
@@ -123,7 +133,6 @@ void DrivetrainSubsystem::ZeroBearing() {
     else
       bearing_offset_ = 0_deg;
   }
-
   for (int attempts = 1; attempts <= kMaxAttempts; ++attempts) {
     Log("Gyro zero attempt {}/{}", attempts, kMaxAttempts);
     if (navX_.IsConnected() && !navX_.IsCalibrating()) {
@@ -153,10 +162,14 @@ void DrivetrainSubsystem::ZeroBearing() {
 
 void DrivetrainSubsystem::SetBearing(units::degree_t bearing) {
   bearing_offset_ = bearing - (GetReadings().pose.bearing - bearing_offset_);
+  // Log("setting bearing to {}", bearing);
 }
 
 void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
   odometry_.SetPosition(position);
+  // Log("setting position x to {} and position y to {}", position[0],
+  //     position[1]);
+  pose_estimator.SetPoint({position[0], position[1]});
 }
 
 void DrivetrainSubsystem::SetCANCoderOffsets() {
@@ -213,15 +226,6 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
-  frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
-      navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
-      navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
-  accl.rotate(bearing_offset_);
-
-  Graph("navX/acclX", accl[0]);
-  Graph("navX/acclY", accl[1]);
-  pose_estimator.AddAccelerationMeasurement(accl);
-
   Graph("readings/bearing", bearing);
   Graph("readings/yaw_rate", yaw_rate);
 
@@ -263,8 +267,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   frc846::math::Vector2D delta_pos =
       new_pose.position - GetReadings().pose.position;
-  pose_estimator.AddOdometryMeasurement(
-      {delta_pos[0], delta_pos[1]}, GetPreferenceValue_double("odom_variance"));
+
+  if (delta_pos.magnitude() < 10_in) {
+    pose_estimator.AddOdometryMeasurement({delta_pos[0], delta_pos[1]},
+        GetPreferenceValue_double("odom_variance"));
+  }
 
   frc846::robot::swerve::odometry::SwervePose estimated_pose{
       .position = {pose_estimator.position()[0], pose_estimator.position()[1]},
@@ -273,10 +280,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   };  // Initialize estimated pose
 
   frc846::robot::calculators::ATCalculatorOutput tag_pos =
-      tag_pos_calculator.calculate({estimated_pose, yaw_rate,
+      tag_pos_calculator.calculate({new_pose, GetReadings().pose, yaw_rate,
           GetPreferenceValue_double("april_tags/april_variance_coeff"),
+          GetPreferenceValue_double("april_tags/triangular_variance_coeff"),
+          {GetPreferenceValue_unit_type<units::millisecond_t>(
+               "april_tags/fudge_latency1"),
+              GetPreferenceValue_unit_type<units::millisecond_t>(
+                  "april_tags/fudge_latency1")},
           GetPreferenceValue_unit_type<units::millisecond_t>(
-              "april_tags/fudge_latency")});
+              "bearing_latency")});
 
   if (tag_pos.variance >= 0) {
     pose_estimator.AddVisionMeasurement(
@@ -298,12 +310,17 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
 
-  if (frc::DriverStation::IsAutonomous() ||
-      frc::DriverStation::IsAutonomousEnabled()) {
+  if ((frc::DriverStation::IsAutonomous() ||
+          frc::DriverStation::IsAutonomousEnabled()) &&
+      GetPreferenceValue_bool("override_at_auto")) {
     estimated_pose = new_pose;
     Graph("overriding_kalman_pose_auton", true);
   } else {
     Graph("overriding_kalman_pose_auton", false);
+  }
+
+  if (GetPreferenceValue_bool("pose_estimator/override")) {
+    estimated_pose = new_pose;
   }
 
   Graph("estimated_pose/position_x", estimated_pose.position[0]);
@@ -317,15 +334,18 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
 
-  units::meters_per_second_squared_t accel_x{navX_.GetWorldLinearAccelX()};
-  units::meters_per_second_squared_t accel_y{navX_.GetWorldLinearAccelY()};
-  units::meters_per_second_squared_t accel_z{navX_.GetWorldLinearAccelZ()};
-  Graph("readings/accel_x", accel_x);
-  Graph("readings/accel_y", accel_y);
-  Graph("readings/accel_z", accel_z);
+  frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
+      navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
+      navX_.GetWorldLinearAccelY() * frc846::math::constants::physics::g};
 
-  units::meters_per_second_squared_t accel_mag = units::math::sqrt(
-      accel_x * accel_x + accel_y * accel_y + accel_z * accel_z);
+  Graph("readings/accel_x", accl[0]);
+  Graph("readings/accel_y", accl[1]);
+
+  accl.rotate(bearing_offset_);
+  pose_estimator.AddAccelerationMeasurement(accl);
+
+  units::meters_per_second_squared_t accel_mag =
+      units::math::sqrt(accl[0] * accl[0] + accl[1] * accl[1]);
   Graph("readings/accel_mag", accel_mag);
 
   last_accel_spike_ += 1;
