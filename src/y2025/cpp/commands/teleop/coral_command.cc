@@ -31,6 +31,9 @@ void CoralCommand::Periodic() {
     container_.coral_ss_.adjustWrist(false);
 
   container_.coral_ss_.SetTarget(coral_target);
+
+  container_.coral_ss_.telescope.OverrideSoftLimits(
+      ci_readings.override_soft_limits);
 }
 
 void CoralCommand::OnEnd(bool interrupted) {}

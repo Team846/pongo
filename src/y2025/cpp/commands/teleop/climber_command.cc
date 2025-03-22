@@ -17,6 +17,8 @@ void ClimberCommand::Periodic() {
   else if (ci_readings.retract_climb)
     container_.climber_.SetTarget(
         {container_.climber_.GetPreferenceValue_double("retract_dc")});
+  else
+    container_.climber_.SetTargetZero();
 }
 
 void ClimberCommand::OnEnd(bool interrupted) {}

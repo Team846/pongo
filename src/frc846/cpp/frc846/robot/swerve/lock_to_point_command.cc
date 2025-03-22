@@ -37,10 +37,10 @@ void LockToPointCommand::Execute() {
       target_ = target;
       first_loop_ = false;
     }
-    Graph("update_target_null", false);
+    // Graph("update_target_null", false);
   } else {
     Graph("overriding_target", false);
-    Graph("update_target_null", true);
+    // Graph("update_target_null", true);
   }
 
   frc846 ::math::Vector2D r_vec = target_.point - pos;

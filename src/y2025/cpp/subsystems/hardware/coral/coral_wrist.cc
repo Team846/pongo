@@ -26,6 +26,8 @@ CoralWristSubsystem::CoralWristSubsystem()
 
   RegisterPreference("use_sensor_threshold", 250_deg_per_s);
   RegisterPreference("encoder_offset", 0_deg);
+
+  RegisterPreference("deployed_encoder_tolerance", 5_deg);
 }
 
 WristTarget CoralWristSubsystem::ZeroTarget() const {
@@ -53,9 +55,18 @@ std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
       raw_enc_pos +
       GetPreferenceValue_unit_type<units::degree_t>("encoder_offset");
 
-  return {abs_pos,
-      (units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
-              GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-                  "use_sensor_threshold") &&
-          GetReadings().position < 50_deg)};
+  bool is_valid_norm =
+      units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
+          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+              "use_sensor_threshold") &&
+      GetReadings().position < 50_deg;
+  bool is_valid_deployed =
+      units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
+          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+              "use_sensor_threshold") &&
+      (GetReadings().position - abs_pos) >
+          GetPreferenceValue_unit_type<units::degree_t>(
+              "deployed_encoder_tolerance");
+
+  return {abs_pos, is_valid_norm || is_valid_deployed};
 }

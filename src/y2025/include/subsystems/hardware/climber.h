@@ -36,6 +36,8 @@ public:
   void BrakeSubsystem();
   void CoastSubsystem();
 
+  void ZeroClimber();
+
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 

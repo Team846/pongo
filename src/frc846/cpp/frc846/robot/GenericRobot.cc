@@ -5,7 +5,6 @@
 #include <frc/DataLogManager.h>
 #include <frc/RobotController.h>
 #include <frc/livewindow/LiveWindow.h>
-#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/FunctionalCommand.h>
 #include <frc2/command/ParallelRaceGroup.h>
@@ -32,6 +31,10 @@ GenericRobot::GenericRobot(GenericRobotContainer* container)
   FRC_CheckErrorStatus(status, "{}", "InitializeNotifier");
 
   HAL_SetNotifierName(notifier_, "Robot", &status);
+
+  RegisterPreference("update_tick_1", 100);
+  RegisterPreference("update_tick_2", 201);
+  RegisterPreference("update_reset_tick", 200);
 }
 
 GenericRobot::~GenericRobot() {
@@ -53,7 +56,7 @@ void GenericRobot::StartCompetition() {
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog(), false);
 
-  // frc846::base::FunkyLogSystem::Start(20000);
+  frc846::base::FunkyLogSystem::Start(20000);
 
   // Setup MotorMonkey
   frc846::control::MotorMonkey::Setup();
@@ -182,13 +185,15 @@ void GenericRobot::StartCompetition() {
     frc846::control::MotorMonkey::Tick(mode == Mode::kDisabled);
 
     // Update dashboards
-    if (x_ == 4) {
+    update_tick_counter_ += 1;
+    if (update_tick_counter_ == GetPreferenceValue_int("update_tick_1")) {
       frc::SmartDashboard::UpdateValues();
-    } else if (x_ == 9) {
-      frc::Shuffleboard::Update();
-      x_ = 0;
+    } else if (update_tick_counter_ ==
+               GetPreferenceValue_int("update_tick_2")) {
+    } else if (update_tick_counter_ >=
+               GetPreferenceValue_int("update_reset_tick")) {
+      update_tick_counter_ = 0;
     }
-    x_ += 1;
 
     // Update graphs
     // Graph("time_remaining", frc::DriverStation::GetMatchTime().to<int>());
@@ -202,8 +207,9 @@ void GenericRobot::StartCompetition() {
     Graph("can_bus_usage",
         (double)(100 *
                  frc::RobotController::GetCANStatus().percentBusUtilization));
-    Graph(
-        "can_bus_off_count", frc::RobotController::GetCANStatus().busOffCount);
+    // Graph(
+    //     "can_bus_off_count",
+    //     frc::RobotController::GetCANStatus().busOffCount);
     // Graph("can_tx_error_count",
     //     frc::RobotController::GetCANStatus().transmitErrorCount);
     // Graph("can_rx_error_count",

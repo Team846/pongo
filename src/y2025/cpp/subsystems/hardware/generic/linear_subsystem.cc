@@ -14,7 +14,7 @@ LinearSubsystem::LinearSubsystem(std::string name,
 
   linear_esc_helper_.bind(&linear_esc_);
 
-  RegisterPreference("pidf_deadband", 0.275_in);
+  RegisterPreference("pidf_deadband", 0.35_in);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -82,6 +82,13 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   // }
 
   return readings;
+}
+
+void LinearSubsystem::OverrideSoftLimits(bool overrideLimits) {
+  frc846::control::SoftLimitsConfig limits = GET_SOFTLIMITS(units::inch_t);
+
+  limits.using_limits = !overrideLimits;
+  linear_esc_helper_.SetSoftLimits(limits);
 }
 
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {

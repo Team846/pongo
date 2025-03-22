@@ -58,6 +58,11 @@ struct ControlInputReadings {
   bool targeting_algae;
 
   bool first_enable_exception;
+
+  // "Homing..."
+  bool override_soft_limits;
+  bool home_telescope;
+  bool home_elevator;
 };
 
 struct ControlInputTarget {

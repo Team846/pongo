@@ -35,23 +35,39 @@ void Loggable::Graph(std::string key, std::string value) const {
 }
 
 void Loggable::RegisterPreference(std::string key, double fallback) {
-  frc::Preferences::InitDouble(name_ + "/" + key, fallback);
-  used_preferences_.insert(name_ + "/" + key);
+  std::string fullkey = name_ + "/" + key;
+  frc::Preferences::InitDouble(fullkey, fallback);
+  if (frc::Preferences::GetDouble(fullkey, 0.0) != fallback) {
+    Log("Preference [{}] does not match fallback", fullkey);
+  }
+  used_preferences_.insert(fullkey);
 }
 
 void Loggable::RegisterPreference(std::string key, bool fallback) {
-  frc::Preferences::InitBoolean(name_ + "/" + key, fallback);
-  used_preferences_.insert(name_ + "/" + key);
+  std::string fullkey = name_ + "/" + key;
+  frc::Preferences::InitBoolean(fullkey, fallback);
+  if (frc::Preferences::GetBoolean(fullkey, false) != fallback) {
+    Log("Preference [{}] does not match fallback", fullkey);
+  }
+  used_preferences_.insert(fullkey);
 }
 
 void Loggable::RegisterPreference(std::string key, int fallback) {
-  frc::Preferences::InitInt(name_ + "/" + key, fallback);
-  used_preferences_.insert(name_ + "/" + key);
+  std::string fullkey = name_ + "/" + key;
+  frc::Preferences::InitInt(fullkey, fallback);
+  if (frc::Preferences::GetInt(fullkey, 0) != fallback) {
+    Log("Preference [{}] does not match fallback", fullkey);
+  }
+  used_preferences_.insert(fullkey);
 }
 
 void Loggable::RegisterPreference(std::string key, std::string fallback) {
-  frc::Preferences::InitString(name_ + "/" + key, fallback);
-  used_preferences_.insert(name_ + "/" + key);
+  std::string fullkey = name_ + "/" + key;
+  frc::Preferences::InitString(fullkey, fallback);
+  if (frc::Preferences::GetString(fullkey, "") != fallback) {
+    Log("Preference [{}] does not match fallback", fullkey);
+  }
+  used_preferences_.insert(fullkey);
 }
 
 bool Loggable::CheckPreferenceKeyExists(std::string key) {

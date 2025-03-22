@@ -34,6 +34,8 @@ void ClimberSubsystem::Setup() {
       frc846::control::config::StatusFrame::kFaultFrame,
   });
 
+  esc_helper_.SetPosition(0_deg);
+
   esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
 }
 
@@ -61,4 +63,8 @@ void ClimberSubsystem::BrakeSubsystem() {
 
 void ClimberSubsystem::CoastSubsystem() {
   if (is_initialized()) esc_.SetNeutralMode(false);
+}
+
+void ClimberSubsystem::ZeroClimber() {
+  if (is_initialized()) esc_helper_.SetPosition(0_deg);
 }

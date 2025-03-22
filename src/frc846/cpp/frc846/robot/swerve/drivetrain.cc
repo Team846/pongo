@@ -28,12 +28,12 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("bearing_gains/_kD", -0.6);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP_f", -0.6);
+  RegisterPreference("lock_gains/_kP", -0.6);
   RegisterPreference("lock_gains/_kI", 0.0);
   RegisterPreference("lock_gains/_kD", 0.005);
   RegisterPreference("lock_gains/deadband", .5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
-  RegisterPreference("lock_max_speed", 7_fps);
+  RegisterPreference("lock_max_speed", 9_fps);
   RegisterPreference("auto_max_speed", 15_fps);
 
   RegisterPreference("drive_to_subtract", 2_in);
@@ -45,7 +45,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
-  RegisterPreference("odom_fudge_factor", 0.9689);
+  RegisterPreference("odom_fudge_factor", 0.912);
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
@@ -58,8 +58,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("april_tags/april_variance_coeff", 0.08);
   RegisterPreference("april_tags/triangular_variance_coeff", 0.001);
-  RegisterPreference("april_tags/fudge_latency1", 30.0_ms);
-  RegisterPreference("april_tags/fudge_latency2", 30.0_ms);
+  RegisterPreference("april_tags/fudge_latency1", 50.0_ms);
+  RegisterPreference("april_tags/fudge_latency2", 50.0_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
@@ -186,10 +186,10 @@ units::degrees_per_second_t DrivetrainSubsystem::ApplyBearingPID(
   units::degree_t error =
       frc846::math::CoterminalDifference(target_bearing, bearing);
 
-  Graph("bearing_pid/bearing", bearing);
-  Graph("bearing_pid/target", target_bearing);
+  // Graph("bearing_pid/bearing", bearing);
+  // Graph("bearing_pid/target", target_bearing);
   Graph("bearing_pid/error", error);
-  Graph("bearing_pid/yaw_rate", yaw_rate);
+  // Graph("bearing_pid/yaw_rate", yaw_rate);
 
   frc846::control::base::MotorGains gains{
       GetPreferenceValue_double("bearing_gains/_kP"),
@@ -199,7 +199,7 @@ units::degrees_per_second_t DrivetrainSubsystem::ApplyBearingPID(
   double raw_output =
       gains.calculate(error.to<double>(), 0.0, yaw_rate.to<double>(), 0.0);
 
-  Graph("bearing_pid/raw_output (c.dps)", raw_output);
+  // Graph("bearing_pid/raw_output (c.dps)", raw_output);
 
   units::degrees_per_second_t output =
       1_deg_per_s *
@@ -350,7 +350,7 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   units::meters_per_second_squared_t accel_mag =
       units::math::sqrt(accl[0] * accl[0] + accl[1] * accl[1]);
-  Graph("readings/accel_mag", accel_mag);
+  // Graph("readings/accel_mag", accel_mag);
 
   last_accel_spike_ += 1;
   if (accel_mag >=
@@ -358,21 +358,21 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
           "accel_spike_thresh")) {
     last_accel_spike_ = 0;
   }
-  Graph("readings/last_accel_spike", last_accel_spike_);
+  // Graph("readings/last_accel_spike", last_accel_spike_);
 
   units::meters_per_second_t accel_vel_x{navX_.GetVelocityX()};
   units::meters_per_second_t accel_vel_y{navX_.GetVelocityY()};
   units::meters_per_second_t accel_vel_z{navX_.GetVelocityZ()};
 
-  Graph("readings/accel_vel_x", accel_vel_x);
-  Graph("readings/accel_vel_y", accel_vel_y);
-  Graph("readings/accel_vel_z", accel_vel_z);
+  // Graph("readings/accel_vel_x", accel_vel_x);
+  // Graph("readings/accel_vel_y", accel_vel_y);
+  // Graph("readings/accel_vel_z", accel_vel_z);
 
   units::meters_per_second_t accel_vel = units::math::sqrt(
       units::math::pow<2>(accel_vel_x) + units::math::pow<2>(accel_vel_y) +
       units::math::pow<2>(accel_vel_z));
 
-  Graph("readings/accel_vel", accel_vel);
+  // Graph("readings/accel_vel", accel_vel);
 
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
       last_accel_spike_, see_tag_counter_};
@@ -416,29 +416,30 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
   if (DrivetrainOLControlTarget* ol_target =
           std::get_if<DrivetrainOLControlTarget>(&target)) {
-    Graph("target/ol/velocity_x", ol_target->velocity[0]);
-    Graph("target/ol/velocity_y", ol_target->velocity[1]);
-    Graph("target/ol/angular_velocity", ol_target->angular_velocity);
+    // Graph("target/ol/velocity_x", ol_target->velocity[0]);
+    // Graph("target/ol/velocity_y", ol_target->velocity[1]);
+    // Graph("target/ol/angular_velocity", ol_target->angular_velocity);
 
     WriteVelocitiesHelper(ol_target->velocity, ol_target->angular_velocity,
         false,
         GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"));
   } else if (DrivetrainAccelerationControlTarget* accel_target =
                  std::get_if<DrivetrainAccelerationControlTarget>(&target)) {
-    Graph(
-        "target/accel/linear_acceleration", accel_target->linear_acceleration);
-    Graph("target/accel/accel_dir", accel_target->accel_dir);
-    Graph("target/angular_velocity", accel_target->angular_velocity);
+    // Graph(
+    //     "target/accel/linear_acceleration",
+    //     accel_target->linear_acceleration);
+    // Graph("target/accel/accel_dir", accel_target->accel_dir);
+    // Graph("target/angular_velocity", accel_target->angular_velocity);
 
     auto motor_specs = frc846::control::base::MotorSpecificationPresets::get(
         configs_.module_common_config.motor_types);
 
     units::feet_per_second_t true_max_speed =
         motor_specs.free_speed * configs_.module_common_config.drive_reduction;
-    Graph("target/true_max_speed", true_max_speed);
+    // Graph("target/true_max_speed", true_max_speed);
     units::feet_per_second_t accel_buffer =
         accel_target->linear_acceleration / configs_.max_accel * true_max_speed;
-    Graph("target/accel_buffer", accel_buffer);
+    // Graph("target/accel_buffer", accel_buffer);
 
     auto vel_new_target = GetReadings().pose.velocity +
                           frc846::math::VectorND<units::feet_per_second, 2>{

@@ -160,6 +160,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.extend_climb = op_readings.right_trigger;
   ci_readings_.retract_climb = op_readings.left_trigger;
 
+  ci_readings_.override_soft_limits = op_readings.back_button;
+  ci_readings_.home_telescope =
+      op_readings.x_button && ci_readings_.override_soft_limits;
+  ci_readings_.home_elevator =
+      op_readings.b_button && ci_readings_.override_soft_limits;
+
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
 

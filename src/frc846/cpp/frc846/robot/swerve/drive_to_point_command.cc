@@ -34,7 +34,7 @@ void DriveToPointCommand::Execute() {
 
   const auto [new_target_point, is_valid] = GetTargetPoint();
 
-  Graph("override_is_valid", is_valid);
+  //   Graph("override_is_valid", is_valid);
   if (is_valid) target_ = new_target_point;
 
   DrivetrainAccelerationControlTarget dt_target{
@@ -43,7 +43,7 @@ void DriveToPointCommand::Execute() {
       .angular_velocity = 0_deg_per_s,
   };
 
-  Graph("max_deceleration", max_deceleration_);
+  //   Graph("max_deceleration", max_deceleration_);
 
   // Motion Profiling in direction of target point
 
@@ -72,7 +72,7 @@ void DriveToPointCommand::Execute() {
       drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
           "drive_to_subtract");
 
-  Graph("dir_velocity_dir", directional_velocity);
+  //   Graph("dir_velocity_dir", directional_velocity);
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> directional_accl;
 
@@ -146,7 +146,7 @@ void DriveToPointCommand::Execute() {
 
   Graph("is_decelerating", is_decelerating_);
   Graph("stopping_distance", stopping_distance_dir);
-  Graph("acceleration", (directional_accl + corr_accl).magnitude());
+  //   Graph("acceleration", (directional_accl + corr_accl).magnitude());
 
   dt_target.linear_acceleration = (directional_accl + corr_accl).magnitude();
   dt_target.accel_dir = (directional_accl + corr_accl).angle();

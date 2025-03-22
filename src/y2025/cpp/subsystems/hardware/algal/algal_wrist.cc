@@ -18,7 +18,7 @@ AlgalWristSubsystem::AlgalWristSubsystem()
               .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0}},
           encoder_reduction * encoder_to_subsystem_reduction) {
-  REGISTER_PIDF_CONFIG(0.01, 0.0, 0.0, 0.0);
+  REGISTER_PIDF_CONFIG(0.005, 0.0, -0.0006, 0.0);
   REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 80_deg, 10_deg, 0.3);
 
   RegisterPreference("cg_offset", 90_deg);

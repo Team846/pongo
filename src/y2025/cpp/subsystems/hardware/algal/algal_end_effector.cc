@@ -72,7 +72,7 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
 }
 
 void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
-  Graph("target/duty_cycle", target.duty_cycle_);
+  // Graph("target/duty_cycle", target.duty_cycle_);
 
   if (GetReadings().has_piece_ && target.duty_cycle_ > 0.0) {
     target.duty_cycle_ = GetPreferenceValue_double("idle_speed");

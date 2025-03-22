@@ -33,7 +33,7 @@ public:
 
     RegisterPreference("init_coral_ss", true);
     RegisterPreference("init_algal_ss", true);
-    RegisterPreference("init_climber", true);
+    RegisterPreference("init_climber", false);
 
     bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
@@ -49,7 +49,7 @@ public:
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
-    // Superstructures not necessary - updated with extensions
+    // NVM // Superstructures not necessary - updated with extensions
     RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
@@ -66,19 +66,21 @@ public:
     RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 
-  void GroupAUpdateHardwareExtension() override {
-    // if (control_input_.GetReadings().first_enable_exception) return;
-    // coral_ss_.UpdateHardware();
-  }
+  // void GroupAUpdateHardwareExtension() override {
+  //   // if (control_input_.GetReadings().first_enable_exception) return;
+  //   // coral_ss_.UpdateHardware();
+  // }
 
-  void GroupBUpdateHardwareExtension() override {
-    // if (control_input_.GetReadings().first_enable_exception) return;
-    // algal_ss_.UpdateHardware();
-  }
+  // void GroupBUpdateHardwareExtension() override {
+  //   // if (control_input_.GetReadings().first_enable_exception) return;
+  //   // algal_ss_.UpdateHardware();
+  // }
 
-  void
-  GroupAUpdateReadingsExtension() override { /*coral_ss_.UpdateReadings();*/ }
+  // void
+  // GroupAUpdateReadingsExtension() override { /*coral_ss_.UpdateReadings();*/
+  // }
 
-  void
-  GroupBUpdateReadingsExtension() override { /*algal_ss_.UpdateReadings();*/ }
+  // void
+  // GroupBUpdateReadingsExtension() override { /*algal_ss_.UpdateReadings();*/
+  // }
 };
