@@ -13,8 +13,8 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
 
   frc846::math::Vector2D reef_center = reefPoint.point;
 
-  frc846::math::Vector2D prepoint_dp_left{1.5_in, 70.5_in};
-  frc846::math::Vector2D prepoint_dp_right{-10_in, 70.5_in};
+  frc846::math::Vector2D prepoint_dp_left{1.5_in, 74.5_in};
+  frc846::math::Vector2D prepoint_dp_right{-10_in, 74.5_in};
 
   frc846::math::Vector2D left_reef_displacement =
       frc846::math::Vector2D{1.5_in, 53_in};
