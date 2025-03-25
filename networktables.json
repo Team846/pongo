@@ -442,7 +442,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/override_at_auto",
     "type": "boolean",
-    "value": true,
+    "value": false,
     "properties": {
       "persistent": true
     }
@@ -610,7 +610,7 @@
   {
     "name": "/Preferences/coral_wrist/rezero_thresh (deg)",
     "type": "double",
-    "value": 2.0,
+    "value": 0.25,
     "properties": {
       "persistent": true
     }
@@ -634,7 +634,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kD",
     "type": "double",
-    "value": -3.6e-05,
+    "value": -4.2e-05,
     "properties": {
       "persistent": true
     }
@@ -810,7 +810,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l2/angle (deg)",
     "type": "double",
-    "value": 180.0,
+    "value": 200.5,
     "properties": {
       "persistent": true
     }
@@ -834,7 +834,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l3/angle (deg)",
     "type": "double",
-    "value": 180.0,
+    "value": 200.5,
     "properties": {
       "persistent": true
     }
@@ -858,7 +858,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l4/angle (deg)",
     "type": "double",
-    "value": 220.0,
+    "value": 240.0,
     "properties": {
       "persistent": true
     }
@@ -1826,7 +1826,7 @@
   {
     "name": "/Preferences/coral_wrist/deployed_encoder_tolerance (deg)",
     "type": "double",
-    "value": 5.0,
+    "value": 0.35,
     "properties": {
       "persistent": true
     }

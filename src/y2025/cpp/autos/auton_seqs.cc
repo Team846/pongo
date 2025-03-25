@@ -78,7 +78,8 @@ using FPT = frc846::math::FieldPoint;
       start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
       container.drivetrain_.SetBearing(start_point.bearing);     \
       container.drivetrain_.UpdateReadings();                    \
-      container.drivetrain_.SetPosition({x, y});                 \
+      container.drivetrain_.SetPosition(                         \
+          {start_point.point[0], start_point.point[1]});         \
       Log("Auto Start");                                         \
     }                                                            \
   }
@@ -90,7 +91,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
-        MKPT(25.5_in, 62.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,   \
+        MKPT(29.5_in, 53.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,   \
         MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
@@ -144,11 +145,8 @@ using FPT = frc846::math::FieldPoint;
 
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                         \
   DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false), WAIT{0.5_s}, \
-      PARALLEL_RACE(WAIT4REEF(), WAIT(2_s)),                                  \
-      PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),                \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                                 \
-    0.25_s                                                                    \
-  }
+      PARALLEL_RACE(WAIT4REEF(), WAIT(1.25_s)),                               \
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
@@ -186,13 +184,13 @@ __AUTO__(FourAndPickAuto, "5PC") SEQUENCE {
 
 __AUTO__(OnePieceAndNetAuto, "1PCN")
 SEQUENCE {
-  START2(158.5_in + 1.5_in, START_Y, 180_deg), WAIT{2.0_s},
+  START2(158.5_in + 1.5_in, START_Y, 180_deg), WAIT{0.5_s},
       DRIVE_TO_REEF_NOAT(1PC, 0), CORAL_POS(kCoral_ScoreL4, false), WAIT4REEF(),
       PARALLEL_DEADLINE(
           SEQUENCE(SEQUENCE(CORAL_POS(kCoral_ScoreL4, true), WAIT{0.5_s}),
               CORAL_POS(kCoral_StowNoPiece, false)),
           ALGAL_POS(kAlgae_L2Pick, false)),
-      WAIT{1.0_s}, DRIVE(1PC, 100_in, START_Y - 30_in, 0_deg, 0_fps),
+      WAIT{1.0_s}, DRIVE(1PC, 100_in, START_Y - 48_in, 0_deg, 0_fps),
       DRIVE(1PCS, 100_in, START_Y + 16_in, 0_deg, 0_fps),
       ALGAL_POS(kAlgae_Net, false), WAIT{0.5_s}, ALGAL_POS(kAlgae_Net, true),
       WAIT{1.0_s}, DRIVE(1PCS, 100_in, START_Y - 40_in, 0_deg, 0_fps),
