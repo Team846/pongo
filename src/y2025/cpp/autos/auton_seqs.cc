@@ -146,7 +146,9 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                         \
   DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false), WAIT{0.5_s}, \
       PARALLEL_RACE(WAIT4REEF(), WAIT(1.25_s)),                               \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
+      CORAL_POS(kCoral_ScoreL4, true), WAIT {                                 \
+    0.25_s                                                                    \
+  }
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
