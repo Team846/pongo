@@ -22,8 +22,10 @@ AlgalEESubsystem::AlgalEESubsystem()
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  RegisterPreference("idle_speed", -0.04);
+  RegisterPreference("idle_speed", 0.04);
   RegisterPreference("piece_thresh", 2_tps);
+
+  RegisterPreference("kick_dc", -0.25);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -72,10 +74,17 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
 }
 
 void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
-  Graph("target/duty_cycle", target.duty_cycle_);
+  // Graph("target/duty_cycle", target.duty_cycle_);
 
   if (GetReadings().has_piece_ && target.duty_cycle_ > 0.0) {
     target.duty_cycle_ = GetPreferenceValue_double("idle_speed");
+  }
+
+  if (units::math::abs(esc_2_.GetVelocity()) <=
+          GetPreferenceValue_unit_type<units::turns_per_second_t>(
+              "piece_thresh") &&
+      target.duty_cycle_ < 0.0) {
+    target.duty_cycle_ = GetPreferenceValue_double("kick_dc");
   }
   esc_1_.WriteDC(target.duty_cycle_);
   esc_2_.WriteDC(target.duty_cycle_);

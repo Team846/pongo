@@ -70,6 +70,7 @@ protected:
   units::degree_t wrist_adjustment_ = 0_deg;
 
   int no_piece_count_;
+  int see_reef_count_;
 
   frc::DigitalInput chute_sensor_{4};
 

@@ -27,6 +27,9 @@ ControlInputTarget ControlInputSubsystem::ZeroTarget() const {
 bool ControlInputSubsystem::VerifyHardware() { return true; }
 
 ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
+  if (frc::DriverStation::IsDisabled()) { first_enable_exception = true; }
+  if (frc::DriverStation::IsAutonomous()) { first_enable_exception = false; }
+
   ControlInputReadings readings = UpdateWithInput();
 
   if (readings.zero_bearing != previous_readings_.zero_bearing) {
@@ -88,7 +91,14 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
-  if (coral_ss_->GetReadings().autostow_valid || dr_readings.b_button)
+  ci_readings_.override_autostow = op_readings.right_bumper;
+
+  bool previous_first_enable_exception = first_enable_exception;
+
+  first_enable_exception = false;
+  if ((coral_ss_->GetReadings().autostow_valid &&
+          !ci_readings_.override_autostow) ||
+      dr_readings.b_button)
     ci_readings_.coral_state = CoralStates::kCoral_StowNoPiece;
   else if (dr_readings.y_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL4;
@@ -96,9 +106,14 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL3;
   else if (dr_readings.a_button)
     ci_readings_.coral_state = CoralStates::kCoral_ScoreL2;
-  else
+  else {
     ci_readings_.coral_state = previous_readings_.coral_state;
+    first_enable_exception = previous_first_enable_exception;
+  }
 
+  previous_first_enable_exception = first_enable_exception;
+
+  first_enable_exception = false;
   if (op_readings.pov == frc846::robot::XboxPOV::kUp)
     ci_readings_.algal_state = AlgalStates::kAlgae_Net;
   else if (op_readings.pov == frc846::robot::XboxPOV::kRight)
@@ -107,12 +122,14 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   else if (op_readings.pov == frc846::robot::XboxPOV::kLeft)
     ci_readings_.algal_state = AlgalStates::kAlgae_L2Pick;
-  else if (op_readings.right_trigger)
+  else if (op_readings.a_button)
     ci_readings_.algal_state = AlgalStates::kAlgae_GroundIntake;
-  else if (op_readings.right_bumper)
+  else if (op_readings.y_button)
     ci_readings_.algal_state = AlgalStates::kAlgae_OnTopIntake;
-  else
+  else {
     ci_readings_.algal_state = previous_readings_.algal_state;
+    first_enable_exception = previous_first_enable_exception;
+  }
 
   double op_deadband = GetPreferenceValue_double("op_deadband");
 
@@ -137,17 +154,23 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.score_coral = op_readings.left_bumper;
   ci_readings_.score_algae = (dr_readings.pov == frc846::robot::XboxPOV::kDown);
 
-  // TODO: add back climbing state
-  // if (op_readings.left_trigger && !previous_operator_.left_trigger) {
-  //   climb_state_ += 1;
-  //   if (climb_state_ == 3) climb_state_ = 0;
-  // }
-  // ci_readings_.climb_state = climb_state_;
+  if (ci_readings_.score_algae || ci_readings_.score_coral)
+    first_enable_exception = false;
 
-  Graph("climb_state", climb_state_);
+  ci_readings_.extend_climb = op_readings.right_trigger;
+  ci_readings_.retract_climb = op_readings.left_trigger;
+
+  ci_readings_.override_soft_limits = op_readings.back_button;
+  ci_readings_.home_telescope =
+      op_readings.x_button && ci_readings_.override_soft_limits;
+  ci_readings_.home_elevator =
+      op_readings.b_button && ci_readings_.override_soft_limits;
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
+
+  ci_readings_.first_enable_exception = first_enable_exception;
+  Graph("first_enable_exception", first_enable_exception);
 
   return ci_readings_;
 }

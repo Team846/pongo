@@ -1,5 +1,7 @@
 #include "frc846/control/hardware/SparkMXFX_interm.h"
 
+#include <frc/smartdashboard/SmartDashboard.h>
+
 #include "frc846/wpilib/util.h"
 
 namespace frc846::control::hardware {
@@ -16,6 +18,11 @@ namespace frc846::control::hardware {
 #define APPLY_CONFIG_NO_RESET() \
   set_last_error(esc_->Configure(configs, NO_CONFIG_RESET, NO_PERSIST_PARAMS))
 
+#define CURRENT_DECAY_FAC 0.97
+#define ACCUM_CURRENT_THRESH 50000_A
+#define CURRENT_DC_SLASH 3.0f
+#define NUM_LOOPS_SLASH 100
+
 bool SparkMXFX_interm::VerifyConnected() {
   if (esc_ == nullptr) return false;
   esc_->GetFirmwareVersion();
@@ -23,7 +30,8 @@ bool SparkMXFX_interm::VerifyConnected() {
 }
 
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
-    units::millisecond_t max_wait_time, bool is_controller_spark_flex) {
+    units::millisecond_t max_wait_time, bool is_controller_spark_flex)
+    : can_id_{can_id} {
   esc_ = is_controller_spark_flex
              ? static_cast<rev::spark::SparkBase*>(new rev::spark::SparkFlex{
                    can_id, rev::spark::SparkFlex::MotorType::kBrushless})
@@ -38,10 +46,35 @@ SparkMXFX_interm::SparkMXFX_interm(int can_id,
 }
 
 void SparkMXFX_interm::Tick() {
+  accumulated_current += GetCurrent() * GetCurrent().to<double>();
+  accumulated_current *= CURRENT_DECAY_FAC;
+
+  if (accumulated_current > ACCUM_CURRENT_THRESH) {
+    excessive_current_past_loops = NUM_LOOPS_SLASH;
+  } else if (excessive_current_past_loops > 0)
+    excessive_current_past_loops -= 1;
+
+  std::string spark_mxfx_loggable_key =
+      std::string("spark_mxfx_accum_current_ID") + std::to_string(can_id_) +
+      std::string(" (A)");
+  std::string spark_mxfx_loggable_key_temp = std::string("spark_mxfx_temp_ID") +
+                                             std::to_string(can_id_) +
+                                             std::string(" (A)");
+
+  frc::SmartDashboard::PutNumber(
+      spark_mxfx_loggable_key, accumulated_current.to<double>());
+  frc::SmartDashboard::PutNumber(
+      spark_mxfx_loggable_key_temp, esc_->GetMotorTemperature());
+
   rev::REVLibError last_status_code = rev::REVLibError::kOk;
   if (double* dc = std::get_if<double>(&last_command_)) {
-    last_status_code = pid_controller_->SetReference(
-        *dc, rev::spark::SparkBase::ControlType::kDutyCycle);
+    double dc_u = *dc;
+    if (excessive_current_past_loops > 0)
+      last_status_code = pid_controller_->SetReference(dc_u / CURRENT_DC_SLASH,
+          rev::spark::SparkBase::ControlType::kDutyCycle);
+    else
+      last_status_code = pid_controller_->SetReference(
+          dc_u, rev::spark::SparkBase::ControlType::kDutyCycle);
   } else if (units::radians_per_second_t* vel =
                  std::get_if<units::radians_per_second_t>(&last_command_)) {
     units::revolutions_per_minute_t rev_ms_t = *vel;
@@ -128,7 +161,8 @@ void SparkMXFX_interm::EnableStatusFrames(
   }
 
   if (vector_has(frames, config::StatusFrame::kVelocityFrame) ||
-      vector_has(frames, config::StatusFrame::kCurrentFrame)) {
+      vector_has(frames, config::StatusFrame::kCurrentFrame) ||
+      true) {  // Forced to true for current monitoring
     configs.signals.PrimaryEncoderVelocityPeriodMs(velocity_ms.to<int>());
     configs.signals.PrimaryEncoderVelocityAlwaysOn(true);
   } else {

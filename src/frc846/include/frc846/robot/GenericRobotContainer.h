@@ -50,10 +50,12 @@ public:
       for (auto subsystem : group_a_subsystems_) {
         subsystem->UpdateReadings();
       }
+      GroupAUpdateReadingsExtension();
     } else {
       for (auto subsystem : group_b_subsystems_) {
         subsystem->UpdateReadings();
       }
+      GroupBUpdateReadingsExtension();
     }
     read_counter++;
   }
@@ -63,10 +65,12 @@ public:
       for (auto subsystem : group_a_subsystems_) {
         subsystem->UpdateHardware();
       }
+      GroupAUpdateHardwareExtension();
     } else {
       for (auto subsystem : group_b_subsystems_) {
         subsystem->UpdateHardware();
       }
+      GroupBUpdateHardwareExtension();
     }
     write_counter++;
   }
@@ -89,7 +93,12 @@ public:
     }
   }
 
-private:
+  virtual void GroupAUpdateReadingsExtension() {};
+  virtual void GroupBUpdateReadingsExtension() {};
+  virtual void GroupAUpdateHardwareExtension() {};
+  virtual void GroupBUpdateHardwareExtension() {};
+
+protected:
   std::vector<frc846::robot::SubsystemBase*> all_subsystems_{};
   std::vector<frc846::robot::SubsystemBase*> group_a_subsystems_{};
   std::vector<frc846::robot::SubsystemBase*> group_b_subsystems_{};

@@ -30,6 +30,9 @@ void AlgalCommand::Periodic() {
     container_.algal_ss_.adjustWrist(false);
 
   container_.algal_ss_.SetTarget(algal_target);
+
+  container_.algal_ss_.elevator.OverrideSoftLimits(
+      ci_readings.override_soft_limits);
 }
 
 void AlgalCommand::OnEnd(bool interrupted) {}

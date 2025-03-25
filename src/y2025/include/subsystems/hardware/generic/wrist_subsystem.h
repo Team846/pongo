@@ -45,6 +45,8 @@ public:
   void BrakeSubsystem();
   void CoastSubsystem();
 
+  void SetEncoderOffset();
+
 protected:
   virtual void ExtendedSetup() = 0;
 
@@ -60,4 +62,6 @@ protected:
   WristReadings ReadFromHardware() override final;
 
   void WriteToHardware(WristTarget target) override final;
+
+  units::degree_t encoder_offset_ = 0_deg;
 };

@@ -19,15 +19,15 @@ CoralSuperstructure::CoralSuperstructure()
       coral_wrist(),
       coral_end_effector() {
   REGISTER_SETPOINT("stow_no_piece", 29_in, 20_deg, -0.7);
-  REGISTER_SETPOINT("stow_with_piece", 35_in, 120_deg, -0.15);
-  REGISTER_SETPOINT("score_l2", 29_in, 220_deg, -0.15);
-  REGISTER_SETPOINT("score_l3", 48_in, 213.9_deg, -0.15);
-  REGISTER_SETPOINT("score_l4", 90_in, 263_deg, -0.15);  // 74.5, 39, 23.5
+  REGISTER_SETPOINT("stow_with_piece", 40_in, 150_deg, -0.15);
+  REGISTER_SETPOINT("score_l2", 27.75_in, 190_deg, -0.15);
+  REGISTER_SETPOINT("score_l3", 48.5_in, 190_deg, -0.15);
+  REGISTER_SETPOINT("score_l4", 87_in, 220_deg, -0.15);
 
-  REGISTER_SETPOINT("dinosaur_A", 0_in, 0_deg, 0.0);
-  REGISTER_SETPOINT("dinosaur_B", 0_in, 0_deg, 0.0);
+  REGISTER_SETPOINT("dinosaur_A", 33_in, 140_deg, -0.3);
+  REGISTER_SETPOINT("dinosaur_B", 50_in, 200_deg, 0.3);
 
-  RegisterPreference("score_dc", -0.5);
+  RegisterPreference("score_dc", 1.0);
 
   RegisterPreference("init_telescope", true);
   RegisterPreference("init_wrist", true);
@@ -35,14 +35,15 @@ CoralSuperstructure::CoralSuperstructure()
 
   RegisterPreference("disable_distance_sensor", false);
 
-  RegisterPreference("telescope_tolerance", 3_in);
-  RegisterPreference("wrist_tolerance", 9_deg);
+  RegisterPreference("telescope_tolerance", 9_in);
+  RegisterPreference("wrist_tolerance", 15_deg);
 
-  RegisterPreference("telescope_adjustment", 0.04_in);
-  RegisterPreference("wrist_adjustment", 0.2_deg);
+  RegisterPreference("telescope_adjustment", 0.1_in);
+  RegisterPreference("wrist_adjustment", 0.7_deg);
 
   RegisterPreference("autostow", true);
-  RegisterPreference("stow_no_piece_loop_thresh", 20);
+  RegisterPreference("stow_no_piece_loop_thresh", 22);
+  RegisterPreference("see_reef_loop_thresh", 3);
 
   last_state = kCoral_StowNoPiece;
 }
@@ -168,8 +169,13 @@ void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {
     }
   }
 
+  if (coral_end_effector.GetReadings().see_reef)
+    see_reef_count_ = GetPreferenceValue_int("see_reef_loop_thresh");
+  else if (see_reef_count_ > 0)
+    see_reef_count_ -= 1;
+
   if (target.score ||
-      (coral_end_effector.GetReadings().see_reef &&
+      (see_reef_count_ > 0 &&
           (target.state == kCoral_ScoreL2 || target.state == kCoral_ScoreL3 ||
               target.state == kCoral_ScoreL4) &&
           hasReached(target.state))) {

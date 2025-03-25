@@ -45,6 +45,8 @@ public:
 
   bool isHomed() { return is_homed_; }
 
+  void OverrideSoftLimits(bool overrideLimits);
+
   void BrakeSubsystem();
   void CoastSubsystem();
 

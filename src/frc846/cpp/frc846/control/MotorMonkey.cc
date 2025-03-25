@@ -108,12 +108,12 @@ void MotorMonkey::RecalculateMaxDraw() {
   }
 
   sync_buffer.Sync();
-  loggable_.Graph("sync_diff_", sync_buffer.GetSyncDiff());
+  // loggable_.Graph("sync_diff_", sync_buffer.GetSyncDiff());
 
   auto sy_trough = sync_buffer.GetTrough();
   units::ampere_t cc_current{sy_trough.first};
 
-  loggable_.Graph("cc_current", cc_current);
+  // loggable_.Graph("cc_current", cc_current);
 
   units::ampere_t current_draw =
       loggable_.GetPreferenceValue_unit_type<units::ampere_t>("battery_cc") -
@@ -146,7 +146,7 @@ void MotorMonkey::RecalculateMaxDraw() {
 
 void MotorMonkey::Tick(bool disabled) {
   battery_voltage = frc::RobotController::GetBatteryVoltage();
-  loggable_.Graph("battery_voltage", battery_voltage);
+  // loggable_.Graph("battery_voltage", battery_voltage);
   loggable_.Graph("last_disabled_voltage", last_disabled_voltage);
 
   if (disabled) {
@@ -249,7 +249,7 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   loggable_.Graph("pred_current_draw", total_current.to<double>());
   loggable_.Graph("current_scale_factor", scale_factor);
 
-  loggable_.Graph("num_control_messages", (int)control_messages.size());
+  // loggable_.Graph("num_control_messages", (int)control_messages.size());
 
   while (!control_messages.empty()) {
     const auto& msg = control_messages.front();

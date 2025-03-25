@@ -14,7 +14,7 @@ LinearSubsystem::LinearSubsystem(std::string name,
 
   linear_esc_helper_.bind(&linear_esc_);
 
-  RegisterPreference("pidf_deadband", 0.275_in);
+  RegisterPreference("pidf_deadband", 0.35_in);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -70,6 +70,7 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   linear_esc_.SetLoad(1_Nm);
 
   Graph("readings/position", readings.position);
+  Graph("readings/current_draw", linear_esc_.GetCurrent());
 
   // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
 
@@ -83,6 +84,13 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   return readings;
 }
 
+void LinearSubsystem::OverrideSoftLimits(bool overrideLimits) {
+  frc846::control::SoftLimitsConfig limits = GET_SOFTLIMITS(units::inch_t);
+
+  limits.using_limits = !overrideLimits;
+  linear_esc_helper_.SetSoftLimits(limits);
+}
+
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   // Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
@@ -91,8 +99,10 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
 
   if (units::math::abs(GetReadings().position - target.position) >
       GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband")) {
+    Graph("within_deadband", false);
     linear_esc_helper_.WritePosition(target.position);
   } else {
+    Graph("within_deadband", true);
     linear_esc_helper_.WriteDC(0.0);
   }
 }

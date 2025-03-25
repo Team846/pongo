@@ -35,11 +35,15 @@ struct ControlInputReadings {
   bool score_coral;
   bool score_algae;
 
-  // Climb: 1: Preclimb, 2: Climb, 3: Reset
-  int climb_state;
+  // Climb
+  bool extend_climb;
+  bool retract_climb;
 
   // Resets
   bool zero_bearing;
+
+  // Overrides
+  bool override_autostow;
 
   // Adjustments
   bool inc_telescope;
@@ -52,6 +56,13 @@ struct ControlInputReadings {
   bool dec_a_wrist;
 
   bool targeting_algae;
+
+  bool first_enable_exception;
+
+  // "Homing..."
+  bool override_soft_limits;
+  bool home_telescope;
+  bool home_elevator;
 };
 
 struct ControlInputTarget {
@@ -91,4 +102,6 @@ private:
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;
+
+  bool first_enable_exception = true;
 };

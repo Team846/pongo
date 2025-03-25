@@ -37,10 +37,10 @@ void LockToPointCommand::Execute() {
       target_ = target;
       first_loop_ = false;
     }
-    Graph("update_target_null", false);
+    // Graph("update_target_null", false);
   } else {
     Graph("overriding_target", false);
-    Graph("update_target_null", true);
+    // Graph("update_target_null", true);
   }
 
   frc846 ::math::Vector2D r_vec = target_.point - pos;
@@ -53,7 +53,7 @@ void LockToPointCommand::Execute() {
         {0_fps, 0_fps}, drivetrain_->ApplyBearingPID(target_.bearing)});
   } else {
     frc846::control::base::MotorGains lock_gains{
-        drivetrain_->GetPreferenceValue_double("lock_gains/_kP"),
+        drivetrain_->GetPreferenceValue_double("lock_gains/_kP_f"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kI"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kD"), 0.0};
     units::feet_per_second_t speed_target =

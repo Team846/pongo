@@ -11,18 +11,14 @@ void ClimberCommand::OnInit() {}
 void ClimberCommand::Periodic() {
   auto ci_readings = container_.control_input_.GetReadings();
 
-  if (ci_readings.climb_state == 1)
+  if (ci_readings.extend_climb)
     container_.climber_.SetTarget(
-        {container_.climber_.GetPreferenceValue_unit_type<units::degree_t>(
-            "pre_climb_setpoint")});
-  else if (ci_readings.climb_state == 2)
+        {container_.climber_.GetPreferenceValue_double("extend_dc")});
+  else if (ci_readings.retract_climb)
     container_.climber_.SetTarget(
-        {container_.climber_.GetPreferenceValue_unit_type<units::degree_t>(
-            "climb_setpoint")});
+        {container_.climber_.GetPreferenceValue_double("retract_dc")});
   else
-    container_.climber_.SetTarget(
-        {container_.climber_.GetPreferenceValue_unit_type<units::degree_t>(
-            "stow_setpoint")});
+    container_.climber_.SetTargetZero();
 }
 
 void ClimberCommand::OnEnd(bool interrupted) {}

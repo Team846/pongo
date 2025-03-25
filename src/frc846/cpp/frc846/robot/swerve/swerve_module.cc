@@ -128,7 +128,7 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   readings.steer_pos = steer_helper_.GetPosition();
 
   Graph("readings/drive_motor_vel", readings.vel);
-  Graph("readings/drive_motor_pos", readings.drive_pos);
+  // Graph("readings/drive_motor_pos", readings.drive_pos);
   Graph("readings/steer_motor_pos", readings.steer_pos);
 
   Graph("readings/cancoder_pos",
@@ -138,19 +138,19 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
-  Graph("target/ol_drive_target", target.drive);
-  Graph("target/ol_steer_target", target.steer);
+  // Graph("target/ol_drive_target", target.drive);
+  // Graph("target/ol_steer_target", target.steer);
 
   auto [steer_dir, invert_drive] =
       calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
-  Graph("target/steer_dir", steer_dir);
-  Graph("target/invert_drive", invert_drive);
+  // Graph("target/steer_dir", steer_dir);
+  // Graph("target/invert_drive", invert_drive);
 
   units::dimensionless::scalar_t cosine_comp =
       units::math::cos(target.steer - GetReadings().steer_pos);
 
-  Graph("target/cosine_comp", cosine_comp.to<double>());
+  // Graph("target/cosine_comp", cosine_comp.to<double>());
 
   double drive_duty_cycle = target.drive / max_speed_;
 

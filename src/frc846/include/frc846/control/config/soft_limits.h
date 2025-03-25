@@ -25,8 +25,9 @@ public:
 
   double LimitDC(double dc, units::radian_t position);
 
-private:
   bool using_limits_;
+
+private:
   units::radian_t forward_limit_;
   units::radian_t reverse_limit_;
   units::radian_t forward_reduce_;

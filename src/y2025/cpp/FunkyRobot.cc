@@ -5,7 +5,6 @@
 #include <frc/Filesystem.h>
 #include <frc/RobotController.h>
 #include <frc/livewindow/LiveWindow.h>
-#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/button/Trigger.h>
 #include <hal/Notifier.h>
@@ -14,7 +13,6 @@
 #include "calculators/AntiTippingCalculator.h"
 #include "commands/general/algal_position_command.h"
 #include "commands/general/coral_position_command.h"
-#include "commands/general/dinosaur_climber.h"
 #include "commands/teleop/algal_command.h"
 #include "commands/teleop/climber_command.h"
 #include "commands/teleop/coral_command.h"
@@ -28,8 +26,6 @@
 FunkyRobot::FunkyRobot() : GenericRobot{&container_} {
   RegisterPreference("num_coasting_loops", 1000);
   RegisterPreference("homing_flash_loops", 50);
-  RegisterPreference("elevator_home_height", 14_in);
-  RegisterPreference("telescope_home_height", 33_in);
 }
 
 void FunkyRobot::OnInitialize() {
@@ -65,12 +61,17 @@ void FunkyRobot::OnInitialize() {
       }));
 
   frc::SmartDashboard::PutData(
-      "home_telescope_elevator", new frc846::wpilib::NTAction([this] {
+      "home_telescope_elevator_climber", new frc846::wpilib::NTAction([this] {
         container_.coral_ss_.telescope.HomeSubsystem(
             robot_constants::elevator::min_height_off_base);
         container_.algal_ss_.elevator.HomeSubsystem(
             robot_constants::telescope::min_height);
+        container_.climber_.ZeroClimber();
       }));
+
+  frc::SmartDashboard::PutData("zero_coral_wrist",
+      new frc846::wpilib::NTAction(
+          [this] { container_.coral_ss_.coral_wrist.SetEncoderOffset(); }));
 
   frc::SmartDashboard::PutData("zero_odometry",
       new frc846::wpilib::NTAction(
@@ -100,6 +101,21 @@ void FunkyRobot::OnPeriodic() {
         robot_constants::elevator::min_height_off_base);
     container_.algal_ss_.elevator.HomeSubsystem(
         robot_constants::telescope::min_height);
+    container_.climber_.ZeroClimber();
+
+    homing_count_ = GetPreferenceValue_int("homing_flash_loops");
+  }
+
+  if (container_.control_input_.GetReadings().home_elevator) {
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::min_height_off_base);
+
+    homing_count_ = GetPreferenceValue_int("homing_flash_loops");
+  }
+
+  if (container_.control_input_.GetReadings().home_telescope) {
+    container_.coral_ss_.telescope.HomeSubsystem(
+        robot_constants::telescope::min_height);
 
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
@@ -110,7 +126,7 @@ void FunkyRobot::OnPeriodic() {
     container_.coral_ss_.telescope.BrakeSubsystem();
     container_.climber_.BrakeSubsystem();
     container_.algal_ss_.algal_wrist.BrakeSubsystem();
-    container_.coral_ss_.coral_wrist.BrakeSubsystem();
+    // container_.coral_ss_.coral_wrist.BrakeSubsystem();
   }
   if (!coast_switch_.Get() && !IsEnabled()) {
     container_.algal_ss_.elevator.CoastSubsystem();
@@ -149,7 +165,7 @@ void FunkyRobot::OnPeriodic() {
 
 void FunkyRobot::InitTest() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
+  // container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
 
   frc2::Trigger start_dinosaur_a([] { return true; });
   start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{

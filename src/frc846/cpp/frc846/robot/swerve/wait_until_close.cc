@@ -17,7 +17,7 @@ void WaitUntilClose::End(bool interrupted) {}
 
 bool WaitUntilClose::IsFinished() {
   return (drivetrain_->GetReadings().estimated_pose.position - target_.point)
-             .magnitude() < .35_in;
+             .magnitude() < 0.5_in;
 }
 
 }  // namespace frc846::robot::swerve

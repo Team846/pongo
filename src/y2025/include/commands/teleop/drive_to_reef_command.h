@@ -5,7 +5,7 @@
 class DriveToReefCommand : public frc846::robot::swerve::DriveToPointCommand {
 public:
   DriveToReefCommand(frc846::robot::swerve::DrivetrainSubsystem* drivetrain,
-      bool is_left, units::feet_per_second_t max_speed,
+      bool is_left, bool is_pre_point, units::feet_per_second_t max_speed,
       units::feet_per_second_squared_t max_acceleration,
       units::feet_per_second_squared_t max_deceleration);
 
@@ -13,4 +13,5 @@ public:
 
 private:
   bool is_left_;
+  bool is_pre_point_;
 };

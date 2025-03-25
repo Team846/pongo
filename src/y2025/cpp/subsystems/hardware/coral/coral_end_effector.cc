@@ -19,7 +19,7 @@ CoralEESubsystem::CoralEESubsystem()
       },
       esc_{frc846::control::base::SPARK_MAX_NEO550,
           GetCurrentConfig(motor_configs_)} {
-  RegisterPreference("idle_speed", 0.05);
+  RegisterPreference("idle_speed", -0.05);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -40,7 +40,8 @@ CoralEESubsystem::GetCurrentConfig(
 
 void CoralEESubsystem::Setup() {
   esc_.Setup();
-  esc_.EnableStatusFrames({frc846::control::config::kFaultFrame});
+  esc_.EnableStatusFrames({frc846::control::config::kFaultFrame,
+      frc846::control::config::kCurrentFrame});
 
   esc_.ConfigForwardLimitSwitch(
       false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
@@ -60,11 +61,12 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   readings.see_reef = esc_.GetForwardLimitSwitchState();
   Graph("readings/has_piece", readings.has_piece_);
   Graph("readings/see_reef", readings.see_reef);
+  Graph("readings/current_draw", esc_.GetCurrent());
   return readings;
 }
 
 void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
-  Graph("target/duty_cycle", target.duty_cycle_);
+  // Graph("target/duty_cycle", target.duty_cycle_);
   if (GetReadings().has_piece_ && target.duty_cycle_ < 0.0)
     esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
   else

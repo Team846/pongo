@@ -46,6 +46,7 @@ struct DrivetrainReadings {
   units::feet_per_second_squared_t acceleration;
   units::feet_per_second_t accel_vel;
   int last_accel_spike;
+  int see_tag_counter;
 };
 
 // Open-loop control, for use during teleop
@@ -121,6 +122,8 @@ private:
   bool first_loop = true;
 
   units::degree_t bearing_offset_ = 0_deg;
+
+  int see_tag_counter_ = 100001;
 };
 
 }  // namespace frc846::robot::swerve

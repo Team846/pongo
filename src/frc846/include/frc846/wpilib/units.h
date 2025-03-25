@@ -18,4 +18,11 @@ typedef units::unit_t<
     units::compound_unit<units::kilogram, units::squared<units::meter>>>
     unit_kg_m_sq;
 
+/* Defining Literals */
+constexpr unit_ohm operator""_ohms(long double);
+constexpr unit_ohms_per_meter operator""_ohms_per_meter(long double);
+constexpr unit_kg_m_sq operator""_kg_m_sq(long double);
+
 }  // namespace frc846::wpilib
+
+using namespace frc846::wpilib;
