@@ -15,6 +15,7 @@ struct CoralSetpoint {
 enum CoralStates {
   kCoral_StowNoPiece,
   kCoral_StowWithPiece,
+  kCoral_StowNet,
   kCoral_ScoreL2,
   kCoral_ScoreL3,
   kCoral_ScoreL4,

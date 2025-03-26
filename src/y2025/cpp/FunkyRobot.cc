@@ -155,7 +155,8 @@ void FunkyRobot::OnPeriodic() {
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
   AntiTippingCalculator::SetElevatorHeight(
-      container_.algal_ss_.elevator.GetReadings().position);
+      (container_.algal_ss_.elevator.GetReadings().position - 29_in) * 1.5 +
+      29_in);
 
   auto cg = AntiTippingCalculator::CalculateRobotCG();
   Graph("robot_cg_x", cg[0]);

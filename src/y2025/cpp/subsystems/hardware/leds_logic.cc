@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "frc846/math/fieldpoints.h"
+#include "reef.h"
 
 LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
   std::string selected_auto = frc846::robot::GenericRobot::GetSelectedAuto();
@@ -65,6 +66,19 @@ LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
   return kLEDsDisabled;
 }
 
+bool LEDsLogic::reachedAutoAlignTarget(RobotContainer* container) {
+  auto reefTargetPos =
+      ReefProvider::getReefScoringLocations()[ReefProvider::getClosestReefSide(
+          container->drivetrain_.GetReadings().estimated_pose.position)];
+
+  if ((reefTargetPos.point -
+          container->drivetrain_.GetReadings().estimated_pose.position)
+          .magnitude() < 1.5_in) {
+    return true;
+  }
+  return false;
+}
+
 void LEDsLogic::UpdateLEDs(RobotContainer* container) {
   LEDsTarget target{kLEDsUnready};
   if (frc::DriverStation::IsDisabled() &&
@@ -79,7 +93,10 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
              container->control_input_.GetReadings().lock_right_reef ||
              (container->control_input_.GetReadings().targeting_algae &&
                  container->GPD_.GetReadings().gamepieces.size() != 0U)) {
-    target.state = kLEDsSequencing;
+    if (reachedAutoAlignTarget(container))
+      target.state = kisLinedUp;
+    else
+      target.state = kLEDsSequencing;
   } else if (container->control_input_.GetReadings().extend_climb ||
              container->control_input_.GetReadings().retract_climb) {
     target.state = kLEDsClimbing;

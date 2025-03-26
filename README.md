@@ -176,3 +176,4 @@ To undo the going back:
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:65:0: warning: The function 'modulo' is never used. [unusedFunction]
+```

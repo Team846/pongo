@@ -56,19 +56,19 @@ std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
       raw_enc_pos +
       GetPreferenceValue_unit_type<units::degree_t>("encoder_offset");
 
-  bool is_valid_norm = true /*
+  bool is_valid_norm = true; /*
       units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
       GetPreferenceValue_unit_type<units::degrees_per_second_t>(
           "use_sensor_threshold")*/ /*&&
   GetReadings().position < 50_deg*/
-      ;
-  bool is_valid_deployed =
-      units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
-          GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-              "use_sensor_threshold") &&
-      (GetReadings().position - abs_pos) >
-          GetPreferenceValue_unit_type<units::degree_t>(
-              "deployed_encoder_tolerance");
+
+  //   bool is_valid_deployed =
+  //       units::math::abs(CoralWristSubsystem::GetReadings().velocity) <
+  //           GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+  //               "use_sensor_threshold") &&
+  //       (GetReadings().position - abs_pos) >
+  //           GetPreferenceValue_unit_type<units::degree_t>(
+  //               "deployed_encoder_tolerance");
 
   return {abs_pos, is_valid_norm /*|| is_valid_deployed*/};
 }

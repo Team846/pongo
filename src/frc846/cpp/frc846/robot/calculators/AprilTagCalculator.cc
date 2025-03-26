@@ -107,7 +107,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
                 (tl + input.fudge_latency[i]),
             (input.pose.velocity[1] + input.old_pose.velocity[1]) / 2 *
                 (tl + input.fudge_latency[i])};
-        if (distances.at(0) < 120_in) {
+        if (distances.at(0) < 80_in) {
           output.pos += (getPos(bearingAtCapture, tx.at(0), distances.at(0),
                              tags.at(0), i) +
                             velComp) *

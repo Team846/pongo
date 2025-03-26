@@ -20,7 +20,7 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                       false, true)[numberOnRight]
                       .mirror(blueSide)
                       .mirrorOnlyX(!leftSide),
-                  11_fps, 25_fps_sq, 10_fps_sq},
+                  10_fps, 15_fps_sq, 15_fps_sq},
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
@@ -40,4 +40,4 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                           false)[numberOnRight]
                           .mirror(blueSide)
                           .mirrorOnlyX(!leftSide)},
-                  frc2::WaitCommand{2_s}}}} {}
+                  frc2::WaitCommand{5_s}}}} {}

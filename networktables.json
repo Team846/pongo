@@ -354,7 +354,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/april_tags/fudge_latency1 (ms)",
     "type": "double",
-    "value": 50.0,
+    "value": 65.0,
     "properties": {
       "persistent": true
     }
@@ -434,7 +434,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_correctional_gain",
     "type": "double",
-    "value": 0.34,
+    "value": 3.0,
     "properties": {
       "persistent": true
     }
@@ -634,7 +634,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kD",
     "type": "double",
-    "value": -4.2e-05,
+    "value": -0.00043,
     "properties": {
       "persistent": true
     }
@@ -642,7 +642,7 @@
   {
     "name": "/Preferences/coral_wrist/gains/_kF",
     "type": "double",
-    "value": 0.017,
+    "value": 0.012,
     "properties": {
       "persistent": true
     }
@@ -754,7 +754,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_no_piece/height (in)",
     "type": "double",
-    "value": 29.0,
+    "value": 28.0,
     "properties": {
       "persistent": true
     }
@@ -762,7 +762,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_no_piece/angle (deg)",
     "type": "double",
-    "value": 20.0,
+    "value": 22.0,
     "properties": {
       "persistent": true
     }
@@ -858,7 +858,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l4/angle (deg)",
     "type": "double",
-    "value": 240.0,
+    "value": 246.0,
     "properties": {
       "persistent": true
     }
@@ -1106,7 +1106,7 @@
   {
     "name": "/Preferences/elevator/limits/reduce_lower (in)",
     "type": "double",
-    "value": 63.0,
+    "value": 90.0,
     "properties": {
       "persistent": true
     }
@@ -1274,7 +1274,7 @@
   {
     "name": "/Preferences/algal_end_effector/idle_speed",
     "type": "double",
-    "value": 0.04,
+    "value": 0.0,
     "properties": {
       "persistent": true
     }
@@ -1434,7 +1434,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l3_pick/height (in)",
     "type": "double",
-    "value": 50.0,
+    "value": 48.5,
     "properties": {
       "persistent": true
     }
@@ -1506,7 +1506,7 @@
   {
     "name": "/Preferences/algal_ss/score_dc",
     "type": "double",
-    "value": -0.08,
+    "value": -0.18,
     "properties": {
       "persistent": true
     }
@@ -1514,7 +1514,7 @@
   {
     "name": "/Preferences/algal_ss/init_elevator",
     "type": "boolean",
-    "value": true,
+    "value": false,
     "properties": {
       "persistent": true
     }
@@ -1834,7 +1834,31 @@
   {
     "name": "/Preferences/algal_end_effector/kick_dc",
     "type": "double",
-    "value": -0.18,
+    "value": -0.26,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/setpoints/stow_net/height (in)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/setpoints/stow_net/angle (deg)",
+    "type": "double",
+    "value": 90.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/setpoints/stow_net/ee_dc",
+    "type": "double",
+    "value": -0.15,
     "properties": {
       "persistent": true
     }

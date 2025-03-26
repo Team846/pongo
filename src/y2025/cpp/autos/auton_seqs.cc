@@ -27,8 +27,8 @@ using WAIT = frc2::WaitCommand;
 using FPT = frc846::math::FieldPoint;
 
 #define MAX_ACCEL_3PC 25_fps_sq
-#define MAX_DECEL_3PC 8_fps_sq
-#define MAX_VEL_3PC 8_fps
+#define MAX_DECEL_3PC 25_fps_sq
+#define MAX_VEL_3PC 14_fps
 
 #define MAX_ACCEL_1PC 17_fps_sq
 #define MAX_DECEL_1PC 17_fps_sq
@@ -91,7 +91,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
-        MKPT(29.5_in, 53.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,   \
+        MKPT(31_in, 53.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,     \
         MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
@@ -99,7 +99,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_TO_SOURCE_END(auto_name)                                   \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
-        MKPT(48.25_in, 25_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,     \
+        MKPT(31_in, 53.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,     \
         MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
@@ -143,12 +143,13 @@ using FPT = frc846::math::FieldPoint;
     }                                                         \
   }
 
-#define DRIVE_SCORE_REEF_3PC(reefNum)                                         \
-  DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false), WAIT{0.5_s}, \
-      PARALLEL_RACE(WAIT4REEF(), WAIT(1.25_s)),                               \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                                 \
-    0.25_s                                                                    \
-  }
+#define DRIVE_SCORE_REEF_3PC(reefNum)                              \
+  PARALLEL_DEADLINE(PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum), \
+                        CORAL_POS(kCoral_StowNoPiece, false)),     \
+      SEQUENCE(WAIT(2.25_s), CORAL_POS(kCoral_ScoreL4, false))),   \
+      PARALLEL_RACE(WAIT4REEF(), WAIT(0.5_s)),                     \
+      PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),     \
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
@@ -179,7 +180,7 @@ __AUTO__(FourAndPickAuto, "5PC") SEQUENCE {
   DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
       DRIVE_SCORE_REEF_3PC(8), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
       DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE_END(3PC), WAIT_FOR_PIECE(),
-      DRIVE_SCORE_REEF_3PC(6),
+      DRIVE_SCORE_REEF_3PC(6), ALGAL_POS(kAlgae_L3Pick, false)
 }
 }
 {}

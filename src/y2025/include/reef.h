@@ -13,7 +13,7 @@ public:
   then moves CW.
   */
   static std::vector<frc846::math::FieldPoint> getReefScoringLocations(
-      bool mirrorIfBlue = true, bool prePoint = false);
+      bool mirrorIfBlue = true, bool prePoint = false, bool l4 = true);
 
   /*
   getClosestReefSide()
