@@ -39,6 +39,7 @@ void FunkyRobot::OnInitialize() {
   // }
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
+  ADD_AUTO_VARIANTS(SimScorePoints, "SIM5");
   ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
 

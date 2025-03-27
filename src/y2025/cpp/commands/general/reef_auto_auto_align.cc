@@ -17,9 +17,9 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
               frc846::robot::swerve::DriveToPointCommand{
                   &(container.drivetrain_),
                   ReefProvider::getReefScoringLocations(
-                      false, true)[numberOnRight]
-                      .mirror(blueSide)
-                      .mirrorOnlyX(!leftSide),
+                      false, true)[ReefProvider::getReefNumAuto(
+                                       numberOnRight, leftSide)]
+                      .mirror(blueSide),
                   10_fps, 15_fps_sq, 15_fps_sq},
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
@@ -31,13 +31,13 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                   frc846::robot::swerve::WaitUntilClose{
                       &(container.drivetrain_),
                       ReefProvider::getReefScoringLocations(
-                          false)[numberOnRight]
-                          .mirror(blueSide)
-                          .mirrorOnlyX(!leftSide)},
+                          false)[ReefProvider::getReefNumAuto(
+                                     numberOnRight, leftSide)]
+                          .mirror(blueSide)},
                   frc846::robot::swerve::LockToPointCommand{
                       &(container.drivetrain_),
                       ReefProvider::getReefScoringLocations(
-                          false)[numberOnRight]
-                          .mirror(blueSide)
-                          .mirrorOnlyX(!leftSide)},
+                          false)[ReefProvider::getReefNumAuto(
+                                     numberOnRight, leftSide)]
+                          .mirror(blueSide)},
                   frc2::WaitCommand{5_s}}}} {}

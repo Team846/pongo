@@ -1,5 +1,6 @@
 #pragma once
 
+#include <frc/smartdashboard/Field2d.h>
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
 
@@ -92,7 +93,17 @@ public:
 
   units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
 
+  void ClearSimPose() { SetSimPose(0_in, 0_in, 0_deg); }
+  void SetSimPose(units::inch_t x, units::inch_t y, units::degree_t bearing);
+  void TransitionSimPose(units::inch_t x, units::inch_t y,
+      units::degree_t nbearing, units::inch_t tstep, units::degree_t astep);
+
 private:
+  frc::Field2d a_field;
+  // units::inch_t sim_pos_x = 0_in;
+  // units::inch_t sim_pos_y = 0_in;
+  // units::degree_t sim_bearing = 0_deg;
+
   DrivetrainReadings ReadFromHardware() override;
 
   frc846::math::VectorND<units::feet_per_second, 2> compensateForSteerLag(

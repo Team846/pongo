@@ -23,5 +23,12 @@ public:
   */
   static int getClosestReefSide(frc846::math::Vector2D current_pos);
 
+  /*
+  getReefNumAuto()
+
+  Returns the reef number (0-11) of the reef scoring location after mirroring
+  */
+  static int getReefNumAuto(int number_on_right, bool left_side);
+
   static frc846::math::FieldPoint reefPoint;
 };

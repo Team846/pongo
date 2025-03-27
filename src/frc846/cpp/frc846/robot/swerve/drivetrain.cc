@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "frc846/math/constants.h"
+#include "frc846/math/fieldpoints.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
@@ -17,6 +18,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
+
+  frc::SmartDashboard::PutData("AutoSimField", &a_field);
 
   RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
@@ -461,6 +464,32 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();
+}
+
+void DrivetrainSubsystem::SetSimPose(
+    units::inch_t x, units::inch_t y, units::degree_t bearing) {
+  // sim_pos_y = y;
+  // sim_pos_x = x;
+  // sim_bearing = bearing;
+  a_field.SetRobotPose(
+      frc846::math::FieldPoint::field_size_y - y, x, 180_deg - bearing);
+}
+
+void DrivetrainSubsystem::TransitionSimPose(units::inch_t x, units::inch_t y,
+    units::degree_t nbearing, units::inch_t tstep, units::degree_t astep) {
+  // auto delta = frc846::math::Vector2D{x - sim_pos_x, y - sim_pos_y};
+  // sim_pos_x =
+  //     sim_pos_x + frc846::math::Vector2D{tstep, delta.angle(true), true}[0];
+  // sim_pos_y =
+  //     sim_pos_y + frc846::math::Vector2D{tstep, delta.angle(true), true}[1];
+  // if (sim_bearing < nbearing) {
+  //   sim_bearing += astep;
+  //   if (sim_bearing > nbearing) sim_bearing = nbearing;
+  // } else {
+  //   sim_bearing -= astep;
+  //   if (sim_bearing < nbearing) sim_bearing = nbearing;
+  // }
+  // SetSimPose(sim_pos_x, sim_pos_y, sim_bearing);
 }
 
 }  // namespace frc846::robot::swerve
