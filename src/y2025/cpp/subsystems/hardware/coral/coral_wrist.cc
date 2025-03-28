@@ -47,9 +47,10 @@ void CoralWristSubsystem::ExtendedSetup() {
 }
 
 // TODO: fix?
-std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos() {
+std::pair<units::degree_t, bool> CoralWristSubsystem::GetSensorPos(
+    units::degree_t sensor_pos) {
   units::degree_t raw_enc_pos =
-      CoralWristSubsystem::GetReadings().absolute_position;
+      sensor_pos;  // TODO: fix definitely wrong by at least one loop time
   if (raw_enc_pos > 340_deg) raw_enc_pos -= 360_deg;
 
   units::degree_t abs_pos =

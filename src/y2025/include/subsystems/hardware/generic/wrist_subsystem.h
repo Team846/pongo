@@ -50,7 +50,8 @@ public:
 protected:
   virtual void ExtendedSetup() = 0;
 
-  virtual std::pair<units::degree_t, bool> GetSensorPos() {
+  virtual std::pair<units::degree_t, bool> GetSensorPos(
+      units::degree_t sensor_pos) {
     return {0_deg, false};
   }
 
