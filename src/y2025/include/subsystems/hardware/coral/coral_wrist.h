@@ -10,7 +10,8 @@ public:
 
 protected:
   void ExtendedSetup() override;
-  std::pair<units::degree_t, bool> GetSensorPos() override;
+  std::pair<units::degree_t, bool> GetSensorPos(
+      units::degree_t sensor_pos) override;
 
 private:
   static constexpr wrist_pos_conv_t subsystem_reduction =

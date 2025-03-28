@@ -10,7 +10,10 @@
 
 namespace frc846::robot::swerve::odometry {
 
-struct SwerveOdometryConstants {};
+struct SwerveOdometryConstants {
+  std::array<units::degree_t, 4> angle_offsets;
+  units::inch_t center_to_wheel;
+};
 
 struct SwerveOdometryInputs {
   units::degree_t bearing;
@@ -39,6 +42,8 @@ private:
   frc846::math::VectorND<units::inch, 4> previous_module_positions_;
 
   frc846::math::Vector2D last_position_;
+
+  units::degree_t last_bearing;
 
   frc846::math::Vector2D position_offset_{};
 };

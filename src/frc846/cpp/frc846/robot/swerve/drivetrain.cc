@@ -82,7 +82,14 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("override_at_auto", true);
 
-  odometry_.setConstants({});
+  units::degree_t FR_angle_offset = units::math::atan2(
+      configs.wheelbase_horizontal_dim, configs.wheelbase_forward_dim);
+  odometry_.setConstants(
+      {{FR_angle_offset, -FR_angle_offset, FR_angle_offset + 180_deg,
+           -FR_angle_offset + 180_deg},
+          units::math::sqrt(
+              units::math::pow<2>(configs.wheelbase_forward_dim) +
+              units::math::pow<2>(configs.wheelbase_horizontal_dim))});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
       .wheelbase_forward_dim = configs.wheelbase_forward_dim,
@@ -259,15 +266,13 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odometry_
+          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                    "bearing_latency") *
+                                    GetReadings().yaw_rate,
+              steer_positions, drive_positions,
+              GetPreferenceValue_double("odom_fudge_factor")})
+          .position,
       .bearing = bearing,
       .velocity = velocity,
   };
