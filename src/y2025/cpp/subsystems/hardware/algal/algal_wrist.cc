@@ -34,7 +34,8 @@ WristTarget AlgalWristSubsystem::ZeroTarget() const {
 
 void AlgalWristSubsystem::ExtendedSetup() {}
 
-std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos() {
+std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos(
+    units::degree_t sensor_pos) {
   units::degree_t raw_enc_pos =
       AlgalWristSubsystem::GetReadings().absolute_position;
   if (raw_enc_pos > 120_deg) raw_enc_pos -= 360_deg;
