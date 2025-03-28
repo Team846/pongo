@@ -25,7 +25,8 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
                   frc2::WaitUntilCommand{[&] {
-                    return !container.coral_ss_.coral_end_effector.GetReadings()
+                    return !frc::RobotBase::IsSimulation() &&
+                           !container.coral_ss_.coral_end_effector.GetReadings()
                                 .has_piece_;
                   }},
                   frc846::robot::swerve::WaitUntilClose{

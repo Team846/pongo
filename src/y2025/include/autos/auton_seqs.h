@@ -21,13 +21,6 @@ public:
       RobotContainer& container, bool is_blue_side, bool is_left_side);
 };
 
-class SimScorePoints : public frc846::robot::GenericCommandGroup<RobotContainer,
-                           SimScorePoints, frc2::SequentialCommandGroup> {
-public:
-  SimScorePoints(
-      RobotContainer& container, bool is_blue_side, bool is_left_side);
-};
-
 class OnePieceAndNetAuto
     : public frc846::robot::GenericCommandGroup<RobotContainer,
           OnePieceAndNetAuto, frc2::SequentialCommandGroup> {

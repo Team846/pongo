@@ -22,6 +22,8 @@ void AlgalPositionCommand::Periodic() {
 void AlgalPositionCommand::OnEnd(bool interrupted) {}
 
 bool AlgalPositionCommand::IsFinished() {
+  if (frc::RobotBase::IsSimulation()) return true;
+
   return !container_.algal_ss_.is_initialized() ||
          (container_.algal_ss_.hasReached(where_) &&
              (!container_.coral_ss_.coral_end_effector.GetReadings()

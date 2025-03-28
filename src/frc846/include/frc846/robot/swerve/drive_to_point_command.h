@@ -46,6 +46,7 @@ private:
   bool is_decelerating_ = false;
 
   int num_stalled_loops_ = 0;
+  int total_counter_ = 0;
 
   bool end_when_close_ = false;
 

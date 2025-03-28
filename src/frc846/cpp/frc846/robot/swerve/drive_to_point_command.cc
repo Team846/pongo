@@ -1,5 +1,7 @@
 #include "frc846/robot/swerve/drive_to_point_command.h"
 
+#include <frc/RobotBase.h>
+
 namespace frc846::robot::swerve {
 
 DriveToPointCommand::DriveToPointCommand(DrivetrainSubsystem* drivetrain,
@@ -22,6 +24,7 @@ void DriveToPointCommand::Initialize() {
   start_point_ = drivetrain_->GetReadings().estimated_pose.position;
   is_decelerating_ = false;
   num_stalled_loops_ = 0;
+  total_counter_ = 0;
 
   const auto [new_target_point, is_valid] = GetTargetPoint();
   if (is_valid) target_ = new_target_point;
@@ -30,6 +33,14 @@ void DriveToPointCommand::Initialize() {
 }
 
 void DriveToPointCommand::Execute() {
+  if (frc::RobotBase::IsSimulation()) {
+    drivetrain_->TransitionSimPose(target_.point[0], target_.point[1],
+        target_.bearing, 0.92 * max_speed_ / 100_Hz, 2.7_deg);
+    return;
+  }
+
+  total_counter_++;
+
   DrivetrainReadings dt_readings{drivetrain_->GetReadings()};
 
   const auto [new_target_point, is_valid] = GetTargetPoint();
@@ -169,6 +180,11 @@ void DriveToPointCommand::End(bool interrupted) {
 }
 
 bool DriveToPointCommand::IsFinished() {
+  if (frc::RobotBase::IsSimulation()) {
+    return drivetrain_->ReachedSimPose(
+        target_.point[0], target_.point[1], target_.bearing, 2_in);
+  }
+
   auto drivetrain_readings = drivetrain_->GetReadings();
   auto current_point = drivetrain_readings.estimated_pose.position;
 
@@ -191,8 +207,9 @@ bool DriveToPointCommand::IsFinished() {
                      ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
                          "vel_stopped_thresh"))
 
-         || num_stalled_loops_ >
-                drivetrain_->GetPreferenceValue_int("stopped_num_loops")
+         || (total_counter_ > 120 &&
+                num_stalled_loops_ >
+                    drivetrain_->GetPreferenceValue_int("stopped_num_loops"))
 
          || (end_when_close_ && (target_.point - current_point).magnitude() <
                                     3_in);  // TODO: prefify

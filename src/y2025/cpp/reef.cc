@@ -38,11 +38,11 @@ std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
     reefScoringLocations.push_back(frc846::math::FieldPoint{
         reef_center + left_reef_displacement.rotate(60_deg * i, true),
         60_deg * i + 180_deg, 0_fps}
-            .mirror(mirror));
+                                       .mirror(mirror));
     reefScoringLocations.push_back(frc846::math::FieldPoint{
         reef_center + right_reef_displacement.rotate(60_deg * i, true),
         60_deg * i + 180_deg, 0_fps}
-            .mirror(mirror));
+                                       .mirror(mirror));
   }
 
   return reefScoringLocations;
