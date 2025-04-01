@@ -19,6 +19,7 @@ CoralSuperstructure::CoralSuperstructure()
       coral_wrist(),
       coral_end_effector() {
   REGISTER_SETPOINT("stow_no_piece", 29_in, 20_deg, -0.7);
+  REGISTER_SETPOINT("flick", 29_in, 150_deg, -0.7);
   REGISTER_SETPOINT("stow_with_piece", 40_in, 150_deg, -0.15);
   REGISTER_SETPOINT("stow_net", 40_in, 90_deg, -0.15);
   REGISTER_SETPOINT("score_l2", 27.75_in, 190_deg, -0.15);
@@ -73,6 +74,7 @@ bool CoralSuperstructure::VerifyHardware() {
 CoralSetpoint CoralSuperstructure::getSetpoint(CoralStates state) {
   switch (state) {
   case kCoral_StowNoPiece: return GET_SETPOINT("stow_no_piece");
+  case kCoral_FLICK: return GET_SETPOINT("flick");
   case kCoral_StowWithPiece: return GET_SETPOINT("stow_with_piece");
   case kCoral_StowNet: return GET_SETPOINT("stow_net");
   case kCoral_ScoreL2: return GET_SETPOINT("score_l2");

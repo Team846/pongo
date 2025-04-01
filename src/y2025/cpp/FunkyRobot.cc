@@ -63,9 +63,9 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData(
       "home_telescope_elevator_climber", new frc846::wpilib::NTAction([this] {
         container_.coral_ss_.telescope.HomeSubsystem(
-            robot_constants::elevator::min_height_off_base);
-        container_.algal_ss_.elevator.HomeSubsystem(
             robot_constants::telescope::min_height);
+        container_.algal_ss_.elevator.HomeSubsystem(
+            robot_constants::elevator::min_height_off_base);
         container_.climber_.ZeroClimber();
       }));
 
@@ -173,14 +173,16 @@ void FunkyRobot::InitTest() {
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}.Repeatedly());
+      frc2::WaitCommand{0.5_s}}
+          .Repeatedly());
 
   frc2::Trigger start_dinosaur_c([] { return true; });
   start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
       CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
       frc2::WaitCommand{0.5_s},
       CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
-      frc2::WaitCommand{0.5_s}}.Repeatedly());
+      frc2::WaitCommand{0.5_s}}
+          .Repeatedly());
 }
 
 #ifndef RUNNING_FRC_TESTS

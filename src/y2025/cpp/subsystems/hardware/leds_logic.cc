@@ -8,56 +8,24 @@
 LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
   std::string selected_auto = frc846::robot::GenericRobot::GetSelectedAuto();
 
-  units::inch_t auto_y = (290_in);
-
-  units::inch_t auto_3pc = (158.5_in - 73.25_in);
-  units::inch_t auto_1pc = (158.5_in);
-  units::inch_t auto_leave = (158.5_in);
+  frc846::math::FieldPoint auto_start = {{36.5_in, 265.3_in}, 120_deg, 0_fps};
 
   try {
     if (selected_auto.substr(0, 3) == "5PC") {
       std::string blue_red = selected_auto.substr(4, 5);
       std::string left_right = selected_auto.substr(6);
 
-      frc846::math::FieldPoint auto_start = {{auto_3pc, auto_y}, 0_deg, 0_fps};
-
-      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
+      if (blue_red == "B") auto_start = auto_start.mirror(true);
+      if (left_right == "R") auto_start = auto_start.mirrorOnlyX(true);
 
       if ((auto_start.point -
               container->drivetrain_.GetReadings().estimated_pose.position)
               .magnitude() < 1_ft) {
-        return kisLinedUp;
-      }
-    }
-    if (selected_auto.substr(0, 4) == "1PCN") {
-      std::string blue_red = selected_auto.substr(5, 6);
-      std::string left_right = selected_auto.substr(7);
-
-      frc846::math::FieldPoint auto_start = {{auto_1pc, auto_y}, 0_deg, 0_fps};
-
-      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
-
-      if ((auto_start.point -
-              container->drivetrain_.GetReadings().estimated_pose.position)
-              .magnitude() < 1_ft) {
-        return kisLinedUp;
-      }
-    }
-    if (selected_auto.substr(0, 5) == "LEAVE") {
-      std::string blue_red = selected_auto.substr(6, 7);
-      std::string left_right = selected_auto.substr(8);
-
-      frc846::math::FieldPoint auto_start = {
-          {auto_leave, auto_y}, 0_deg, 0_fps};
-
-      if (blue_red == "B") { auto_start = auto_start.mirror(true); }
-      if (left_right == "R") { auto_start = auto_start.mirrorOnlyX(true); }
-
-      if ((auto_start.point -
-              container->drivetrain_.GetReadings().estimated_pose.position)
-              .magnitude() < 1_ft) {
+        if (units::math::abs(
+                container->drivetrain_.GetReadings().estimated_pose.bearing -
+                auto_start.bearing) < 10_deg) {
+          return kisCompletelyLinedUp;
+        }
         return kisLinedUp;
       }
     }
@@ -67,13 +35,16 @@ LEDsState LEDsLogic::checkLoc(RobotContainer* container, LEDsTarget target) {
 }
 
 bool LEDsLogic::reachedAutoAlignTarget(RobotContainer* container) {
-  auto reefTargetPos =
-      ReefProvider::getReefScoringLocations()[ReefProvider::getClosestReefSide(
-          container->drivetrain_.GetReadings().estimated_pose.position)];
+  bool l4 = !(
+      container->control_input_.GetReadings().coral_state == kCoral_ScoreL3 ||
+      container->control_input_.GetReadings().coral_state == kCoral_ScoreL2);
+  auto reefTargetPos = ReefProvider::getReefScoringLocations(
+      true, false, l4)[ReefProvider::getClosestReefSide(
+      container->drivetrain_.GetReadings().estimated_pose.position)];
 
   if ((reefTargetPos.point -
           container->drivetrain_.GetReadings().estimated_pose.position)
-          .magnitude() < 1.5_in) {
+          .magnitude() < 0.5_in) {
     return true;
   }
   return false;

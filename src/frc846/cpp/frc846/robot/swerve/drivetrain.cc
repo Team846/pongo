@@ -266,13 +266,15 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_y", velocity[1]);
 
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position = odometry_
-          .calculate({bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                    "bearing_latency") *
-                                    GetReadings().yaw_rate,
-              steer_positions, drive_positions,
-              GetPreferenceValue_double("odom_fudge_factor")})
-          .position,
+      .position =
+          odometry_
+              .calculate(
+                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
+                                 "bearing_latency") *
+                                 GetReadings().yaw_rate,
+                      steer_positions, drive_positions,
+                      GetPreferenceValue_double("odom_fudge_factor")})
+              .position,
       .bearing = bearing,
       .velocity = velocity,
   };

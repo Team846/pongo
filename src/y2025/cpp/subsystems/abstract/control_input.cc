@@ -166,6 +166,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.home_elevator =
       op_readings.b_button && ci_readings_.override_soft_limits;
 
+  ci_readings_.flick = op_readings.lsb;
+
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
 

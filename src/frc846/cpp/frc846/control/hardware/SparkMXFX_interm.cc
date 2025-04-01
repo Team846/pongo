@@ -18,8 +18,8 @@ namespace frc846::control::hardware {
 #define APPLY_CONFIG_NO_RESET() \
   set_last_error(esc_->Configure(configs, NO_CONFIG_RESET, NO_PERSIST_PARAMS))
 
-#define CURRENT_DECAY_FAC 0.97
-#define ACCUM_CURRENT_THRESH 50000_A
+#define CURRENT_DECAY_FAC 0.965
+#define ACCUM_CURRENT_THRESH 70000_A
 #define CURRENT_DC_SLASH 3.0f
 #define NUM_LOOPS_SLASH 100
 

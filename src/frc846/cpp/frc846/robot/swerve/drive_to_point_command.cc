@@ -45,6 +45,10 @@ void DriveToPointCommand::Execute() {
 
   const auto [new_target_point, is_valid] = GetTargetPoint();
 
+  auto delta_grp = target_.point - dt_readings.estimated_pose.position;
+  Graph("delta_x", delta_grp[0]);
+  Graph("delta_y", delta_grp[1]);
+
   //   Graph("override_is_valid", is_valid);
   if (is_valid) target_ = new_target_point;
 
@@ -58,7 +62,7 @@ void DriveToPointCommand::Execute() {
 
   // Motion Profiling in direction of target point
 
-  double DIRECTIONAL_GAIN = 0.9;  // TODO: prefify
+  double DIRECTIONAL_GAIN = 0.86;  // TODO: prefify
   units::feet_per_second_squared_t directional_max_dcl =
       max_deceleration_ * DIRECTIONAL_GAIN;
   units::feet_per_second_squared_t directional_max_accl =
@@ -93,8 +97,9 @@ void DriveToPointCommand::Execute() {
     if (dist_to_target_directional < 4_in)
       directional_accl =
           frc846::math::VectorND<units::feet_per_second_squared, 2>(
-              directional_max_dcl * units::math::abs(stopping_distance_dir) /
-                  units::math::abs(dist_to_target_directional),
+              directional_max_dcl /** units::math::abs(stopping_distance_dir) /
+                  units::math::abs(dist_to_target_directional)*/
+              ,
               direction_offset + 180_deg, true);
     // dt_target.linear_acceleration = max_deceleration_ *
     //                                 units::math::abs(stopping_distance) /
@@ -114,7 +119,7 @@ void DriveToPointCommand::Execute() {
   }
 
   // Motion Profiling in Corrective way
-  double CORRECTIONAL_GAIN = 0.4;
+  double CORRECTIONAL_GAIN = 0.5;
   units::feet_per_second_squared_t corr_max_dcl =
       max_deceleration_ * CORRECTIONAL_GAIN;
   units::feet_per_second_squared_t corr_max_accl =

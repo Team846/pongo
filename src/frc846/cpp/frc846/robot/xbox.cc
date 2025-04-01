@@ -13,6 +13,7 @@ XboxReadings::XboxReadings(frc::XboxController& xbox, double trigger_threshold)
       right_bumper(xbox.GetRightBumperButton()),
       back_button(xbox.GetBackButton()),
       start_button(xbox.GetStartButton()),
+      lsb(xbox.GetLeftStickButton()),
       rsb(xbox.GetRightStickButton()),
       a_button(xbox.GetAButton()),
       b_button(xbox.GetBButton()),

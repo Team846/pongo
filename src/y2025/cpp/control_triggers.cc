@@ -4,6 +4,7 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc2/command/button/Trigger.h>
 
+#include "commands/general/coral_position_command.h"
 #include "commands/teleop/complete_gpd_command.h"
 #include "commands/teleop/gpd_ss_command.h"
 #include "commands/teleop/lock_gpd_command.h"
@@ -26,12 +27,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{container, true, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().targeting_algae &&
@@ -41,6 +42,12 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return !container.control_input_.GetReadings().targeting_algae ||
            container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
   }));
+
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().flick;
+  }}.OnTrue(frc2::ParallelDeadlineGroup{frc2::WaitCommand{0.07_s},
+      CoralPositionCommand{container, kCoral_FLICK, true}}
+          .ToPtr());
 
   // frc2::Trigger{[&] {
   //   return container.control_input_.GetReadings().targeting_algae &&

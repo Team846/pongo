@@ -28,6 +28,7 @@ struct XboxReadings {
 
   bool back_button;
   bool start_button;
+  bool lsb;
   bool rsb;
 
   bool a_button;
