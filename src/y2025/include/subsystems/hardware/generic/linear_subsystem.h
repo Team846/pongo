@@ -53,6 +53,8 @@ public:
 protected:
   virtual void ExtendedSetup() = 0;
 
+  virtual void RHExtension() {};
+
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController linear_esc_;

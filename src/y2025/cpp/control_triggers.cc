@@ -45,7 +45,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().flick;
-  }}.OnTrue(frc2::ParallelDeadlineGroup{frc2::WaitCommand{0.07_s},
+  }}.OnTrue(frc2::ParallelDeadlineGroup{frc2::WaitCommand{0.13_s},
       CoralPositionCommand{container, kCoral_FLICK, true}}
           .ToPtr());
 
