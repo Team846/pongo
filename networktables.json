@@ -274,7 +274,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
     "type": "double",
-    "value": 1.045,
+    "value": 1.09,
     "properties": {
       "persistent": true
     }
@@ -762,7 +762,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_no_piece/angle (deg)",
     "type": "double",
-    "value": 22.0,
+    "value": 24.0,
     "properties": {
       "persistent": true
     }
@@ -1034,7 +1034,7 @@
   {
     "name": "/Preferences/elevator/pidf_deadband (in)",
     "type": "double",
-    "value": 0.75,
+    "value": 0.25,
     "properties": {
       "persistent": true
     }
@@ -1114,7 +1114,7 @@
   {
     "name": "/Preferences/elevator/limits/reduce_max_dc",
     "type": "double",
-    "value": 0.4,
+    "value": 0.8,
     "properties": {
       "persistent": true
     }
@@ -1274,7 +1274,7 @@
   {
     "name": "/Preferences/algal_end_effector/idle_speed",
     "type": "double",
-    "value": 0.0,
+    "value": 0.04,
     "properties": {
       "persistent": true
     }
@@ -1290,7 +1290,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/height (in)",
     "type": "double",
-    "value": 31.0,
+    "value": 30.0,
     "properties": {
       "persistent": true
     }
@@ -1298,7 +1298,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 8.0,
+    "value": 14.0,
     "properties": {
       "persistent": true
     }
@@ -1346,7 +1346,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/ground_intake/angle (deg)",
     "type": "double",
-    "value": 57.0,
+    "value": 61.0,
     "properties": {
       "persistent": true
     }
@@ -1394,7 +1394,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/net/angle (deg)",
     "type": "double",
-    "value": 20.0,
+    "value": 3.0,
     "properties": {
       "persistent": true
     }
@@ -1866,7 +1866,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/flick/height (in)",
     "type": "double",
-    "value": 29.0,
+    "value": 32.0,
     "properties": {
       "persistent": true
     }
@@ -1874,7 +1874,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/flick/angle (deg)",
     "type": "double",
-    "value": 95.0,
+    "value": 45.0,
     "properties": {
       "persistent": true
     }
@@ -1883,6 +1883,54 @@
     "name": "/Preferences/coral_ss/setpoints/flick/ee_dc",
     "type": "double",
     "value": -0.7,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/hall_effect_plus_height (in)",
+    "type": "double",
+    "value": 1.7,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/hall_effect_counter",
+    "type": "int",
+    "value": 40,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/sm_target_range (in)",
+    "type": "double",
+    "value": 34.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/sm_vel_thresh (fps)",
+    "type": "double",
+    "value": 0.02,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/sm_current_thresh (A)",
+    "type": "double",
+    "value": 30.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/sm_counter",
+    "type": "int",
+    "value": 100,
     "properties": {
       "persistent": true
     }
