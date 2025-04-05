@@ -98,14 +98,16 @@ using FPT = frc846::math::FieldPoint;
     }                                                             \
   }
 
-#define SMART_LOCK_SOURCE()                                            \
-  frc2::ParallelDeadlineGroup {                                        \
-    WAIT_FOR_PIECE(), SEQUENCE {                                       \
-      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},     \
-          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s},                           \
-          PARALLEL_DEADLINE(                                           \
-              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)), \
-    }                                                                  \
+#define SMART_LOCK_SOURCE()                                               \
+  frc2::ParallelDeadlineGroup {                                           \
+    WAIT_FOR_PIECE(), SEQUENCE {                                          \
+      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},        \
+          DRIVE_TO_SOURCE(3PC),                                           \
+          PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
+          WAIT{0.5_s},                                                    \
+          PARALLEL_DEADLINE(                                              \
+              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)),    \
+    }                                                                     \
   }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)          \
@@ -154,9 +156,7 @@ using FPT = frc846::math::FieldPoint;
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),              \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                               \
-    0.25_s                                                                  \
-  }
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
