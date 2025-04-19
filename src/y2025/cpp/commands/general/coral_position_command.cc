@@ -22,6 +22,8 @@ void CoralPositionCommand::Periodic() {
 void CoralPositionCommand::OnEnd(bool interrupted) {}
 
 bool CoralPositionCommand::IsFinished() {
+  if (frc::RobotBase::IsSimulation()) return true;
+
   return !container_.coral_ss_.is_initialized() ||
          (container_.coral_ss_.hasReached(where_) &&
              (!container_.coral_ss_.coral_end_effector.GetReadings()

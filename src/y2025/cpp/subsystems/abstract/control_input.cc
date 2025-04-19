@@ -91,12 +91,15 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
+  if (frc::DriverStation::IsDisabled()) ci_readings_.position_algal = false;
+
   ci_readings_.override_autostow = op_readings.right_bumper;
 
   bool previous_first_enable_exception = first_enable_exception;
 
   first_enable_exception = false;
-  if ((coral_ss_->GetReadings().autostow_valid &&
+  if (frc::DriverStation::IsDisabled() ||
+      (coral_ss_->GetReadings().autostow_valid &&
           !ci_readings_.override_autostow) ||
       dr_readings.b_button)
     ci_readings_.coral_state = CoralStates::kCoral_StowNoPiece;
@@ -165,6 +168,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
       op_readings.x_button && ci_readings_.override_soft_limits;
   ci_readings_.home_elevator =
       op_readings.b_button && ci_readings_.override_soft_limits;
+
+  ci_readings_.flick = op_readings.lsb;
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;

@@ -13,6 +13,8 @@ GPDSubsystem::GPDSubsystem(
   for (int i = 0; i < 20; i++) {
     g_field.GetObject(std::to_string(i));
   }
+  g_field.GetObject("auto_start_left");
+  g_field.GetObject("auto_start_right");
   frc::SmartDashboard::PutData("GPDField", &g_field);
 #endif
 
@@ -124,6 +126,30 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
     g_field.GetObject(std::to_string(i))->SetPose(100_m, 100_m, 0_deg);
   }
 #endif
+
+  frc846::math::FieldPoint auto_start = {{36.5_in, 265.3_in}, 120_deg, 0_fps};
+
+#ifndef _WIN32
+  if (frc::DriverStation::IsAutonomous() ||
+      frc::DriverStation::IsAutonomousEnabled()) {
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::kBlue)
+      auto_start = auto_start.mirror(true);
+
+    auto auto_start_right = auto_start.mirrorOnlyX(true);
+
+    g_field.GetObject("auto_start_left")
+        ->SetPose(frc846::math::FieldPoint::field_size_y - auto_start.point[1],
+            auto_start.point[0], 180_deg - auto_start.bearing);
+    g_field.GetObject("auto_start_right")
+        ->SetPose(
+            frc846::math::FieldPoint::field_size_y - auto_start_right.point[1],
+            auto_start_right.point[0], 180_deg - auto_start_right.bearing);
+  } else {
+    g_field.GetObject("auto_start_left")->SetPose(100_m, 100_m, 0_deg);
+    g_field.GetObject("auto_start_right")->SetPose(100_m, 100_m, 0_deg);
+  }
+#endif
+
   return readings;
 }
 

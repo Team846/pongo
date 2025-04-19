@@ -8,19 +8,24 @@ frc846::math::FieldPoint ReefProvider::reefPoint = {
     {158.5_in, 144_in + 32.75_in}, 0_deg, 0_fps};
 
 std::vector<frc846::math::FieldPoint> ReefProvider::getReefScoringLocations(
-    bool mirrorIfBlue, bool prePoint) {
+    bool mirrorIfBlue, bool prePoint, bool l4) {
   std::vector<frc846::math::FieldPoint> reefScoringLocations;
 
   frc846::math::Vector2D reef_center = reefPoint.point;
 
-  frc846::math::Vector2D prepoint_dp_left{1.5_in, 74.5_in};
-  frc846::math::Vector2D prepoint_dp_right{-10_in, 74.5_in};
+  bool isAutonomous = frc::DriverStation::IsAutonomous() ||
+                      frc::DriverStation::IsAutonomousEnabled();
 
-  frc846::math::Vector2D left_reef_displacement =
-      frc846::math::Vector2D{1.5_in, 53_in};
+  frc846::math::Vector2D prepoint_dp_left{
+      1.5_in, isAutonomous ? 75_in : 74.5_in};
+  frc846::math::Vector2D prepoint_dp_right{
+      -10_in, isAutonomous ? 75_in : 74.5_in};
 
-  frc846::math::Vector2D right_reef_displacement =
-      frc846::math::Vector2D{-11.5_in, 53_in};
+  frc846::math::Vector2D left_reef_displacement = frc846::math::Vector2D{
+      1.5_in, (l4 || isAutonomous) ? 53.25_in : 51.75_in};
+
+  frc846::math::Vector2D right_reef_displacement = frc846::math::Vector2D{
+      -11.5_in, (l4 || isAutonomous) ? 53.25_in : 51.75_in};
 
   if (prePoint) {
     right_reef_displacement = prepoint_dp_right;
@@ -72,4 +77,10 @@ int ReefProvider::getClosestReefSide(frc846::math::Vector2D current_pos) {
     return (5 + mirror_addition) % 6;
 
   return 0 + mirror_addition;
+}
+
+int ReefProvider::getReefNumAuto(int number_on_right, bool left_side) {
+  int leftFlip = 1 - number_on_right;
+  if (leftFlip < 0) leftFlip += 12;
+  return left_side ? number_on_right : leftFlip;
 }

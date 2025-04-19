@@ -77,6 +77,8 @@ void LEDsSubsystem::WriteToHardware(TLTGT target) {
       SetRainbow();
     } else if (tgt->state == kisLinedUp) {
       SetStrip(GREEN);
+    } else if (tgt->state == kisCompletelyLinedUp) {
+      SetStrip(GREEN);
       Flash(MED_FLASH);
     }
   } else if (auto* tgt = std::get_if<LEDsCoastingTarget>(&target)) {

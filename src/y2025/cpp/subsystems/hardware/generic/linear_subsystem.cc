@@ -72,6 +72,10 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   Graph("readings/position", readings.position);
   Graph("readings/current_draw", linear_esc_.GetCurrent());
 
+  Graph("readings/error", GetTarget().position - readings.position);
+
+  RHExtension();
+
   // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
 
   // Graph("readings/homing_sensor", forward_limit);

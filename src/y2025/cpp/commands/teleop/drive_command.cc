@@ -118,9 +118,9 @@ void DriveCommand::Periodic() {
                     .has_piece_) {
       if (container_.drivetrain_.GetReadings().estimated_pose.position[0] >
           (frc846::math::FieldPoint::field_size_x / 2))
-        target_angle = 180_deg - 54_deg;
+        target_angle = -54_deg;
       else
-        target_angle = 180_deg + 54_deg;
+        target_angle = 54_deg;
 
       if (isBlue) target_angle = 180_deg - target_angle;
     }

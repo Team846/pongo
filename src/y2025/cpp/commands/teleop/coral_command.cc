@@ -12,7 +12,16 @@ void CoralCommand::Periodic() {
   CoralSSTarget coral_target{};
   auto ci_readings = container_.control_input_.GetReadings();
 
-  if (ci_readings.coral_state != kCoral_StowNoPiece)
+  if (container_.algal_ss_.algal_end_effector.GetReadings().has_piece_ &&
+      container_.control_input_.GetReadings().coral_state ==
+          kCoral_StowNoPiece) {
+    if (container_.coral_ss_.coral_end_effector.GetReadings().has_piece_ ||
+        (container_.control_input_.GetReadings().algal_state == kAlgae_Net &&
+            container_.control_input_.GetReadings().position_algal))
+      coral_target.state = kCoral_StowNet;
+    else
+      coral_target.state = kCoral_StowNoPiece;
+  } else if (ci_readings.coral_state != kCoral_StowNoPiece)
     coral_target.state = ci_readings.coral_state;
   else if (container_.coral_ss_.coral_end_effector.GetReadings().has_piece_)
     coral_target.state = kCoral_StowWithPiece;

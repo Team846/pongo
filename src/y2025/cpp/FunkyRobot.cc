@@ -63,9 +63,9 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData(
       "home_telescope_elevator_climber", new frc846::wpilib::NTAction([this] {
         container_.coral_ss_.telescope.HomeSubsystem(
-            robot_constants::elevator::min_height_off_base);
-        container_.algal_ss_.elevator.HomeSubsystem(
             robot_constants::telescope::min_height);
+        container_.algal_ss_.elevator.HomeSubsystem(
+            robot_constants::elevator::min_height_off_base);
         container_.climber_.ZeroClimber();
       }));
 
@@ -155,7 +155,8 @@ void FunkyRobot::OnPeriodic() {
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
   AntiTippingCalculator::SetElevatorHeight(
-      container_.algal_ss_.elevator.GetReadings().position);
+      (container_.algal_ss_.elevator.GetReadings().position - 29_in) * 1.5 +
+      29_in);
 
   auto cg = AntiTippingCalculator::CalculateRobotCG();
   Graph("robot_cg_x", cg[0]);

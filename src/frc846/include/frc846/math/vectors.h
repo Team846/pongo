@@ -225,6 +225,12 @@ public:
     return {magnitude() + delta, angle(true), true};
   }
 
+  // Returns a modified vector to the resized magniutde
+  VectorND<UT, N> resize(T magnitude) {
+    assert(N == 2 && "resize is only defined for 2D vectors.");
+    return {magnitude, angle(true), true};
+  }
+
   // Const and non-const accessors for vector elements
   const T& operator[](size_t i) const { return data[i]; }
   T& operator[](size_t i) { return data[i]; }

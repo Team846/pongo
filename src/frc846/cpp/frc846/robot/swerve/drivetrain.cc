@@ -3,10 +3,15 @@
 #include <thread>
 
 #include "frc846/math/constants.h"
+#include "frc846/math/fieldpoints.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
 #include "frc846/robot/swerve/swerve_module.h"
 
 namespace frc846::robot::swerve {
+
+units::inch_t DrivetrainSubsystem::sim_pos_x = 0_in;
+units::inch_t DrivetrainSubsystem::sim_pos_y = 0_in;
+units::degree_t DrivetrainSubsystem::sim_bearing = 0_deg;
 
 DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"},
@@ -17,6 +22,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
+
+  frc::SmartDashboard::PutData("AutoSimField", &a_field);
 
   RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
@@ -75,7 +82,14 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("override_at_auto", true);
 
-  odometry_.setConstants({});
+  units::degree_t FR_angle_offset = units::math::atan2(
+      configs.wheelbase_horizontal_dim, configs.wheelbase_forward_dim);
+  odometry_.setConstants(
+      {{FR_angle_offset, -FR_angle_offset, FR_angle_offset + 180_deg,
+           -FR_angle_offset + 180_deg},
+          units::math::sqrt(
+              units::math::pow<2>(configs.wheelbase_forward_dim) +
+              units::math::pow<2>(configs.wheelbase_horizontal_dim))});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
       .wheelbase_forward_dim = configs.wheelbase_forward_dim,
@@ -374,6 +388,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   // Graph("readings/accel_vel", accel_vel);
 
+  a_field.SetRobotPose(frc846::math::FieldPoint::field_size_y - sim_pos_y,
+      sim_pos_x, 180_deg - sim_bearing);
+
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
       last_accel_spike_, see_tag_counter_};
 }
@@ -461,6 +478,37 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();
+}
+
+void DrivetrainSubsystem::SetSimPose(
+    units::inch_t x, units::inch_t y, units::degree_t bearing) {
+  DrivetrainSubsystem::sim_pos_y = y;
+  DrivetrainSubsystem::sim_pos_x = x;
+  DrivetrainSubsystem::sim_bearing = bearing;
+}
+
+void DrivetrainSubsystem::TransitionSimPose(units::inch_t x, units::inch_t y,
+    units::degree_t nbearing, units::inch_t tstep, units::degree_t astep) {
+  auto delta = frc846::math::Vector2D{x - sim_pos_x, y - sim_pos_y};
+  sim_pos_x =
+      sim_pos_x + frc846::math::Vector2D{tstep, delta.angle(true), true}[0];
+  sim_pos_y =
+      sim_pos_y + frc846::math::Vector2D{tstep, delta.angle(true), true}[1];
+  units::degree_t angle_diff =
+      frc846::math::CoterminalDifference(nbearing, sim_bearing);
+
+  if (angle_diff > 0_deg) {
+    sim_bearing += astep;
+  } else {
+    sim_bearing -= astep;
+  }
+  SetSimPose(sim_pos_x, sim_pos_y, sim_bearing);
+}
+
+bool DrivetrainSubsystem::ReachedSimPose(units::inch_t x, units::inch_t y,
+    units::degree_t bearing, units::inch_t tolerance) {
+  return (sim_pos_x - x) * (sim_pos_x - x) + (sim_pos_y - y) * (sim_pos_y - y) <
+         tolerance * tolerance;
 }
 
 }  // namespace frc846::robot::swerve

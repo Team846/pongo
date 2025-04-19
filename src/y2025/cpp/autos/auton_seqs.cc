@@ -26,16 +26,16 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
-#define MAX_ACCEL_3PC 25_fps_sq
-#define MAX_DECEL_3PC 8_fps_sq
-#define MAX_VEL_3PC 8_fps
+#define MAX_ACCEL_3PC 30_fps_sq
+#define MAX_DECEL_3PC 22_fps_sq
+#define MAX_VEL_3PC 13_fps
 
-#define MAX_ACCEL_1PC 17_fps_sq
-#define MAX_DECEL_1PC 17_fps_sq
+#define MAX_ACCEL_1PC 24_fps_sq
+#define MAX_DECEL_1PC 24_fps_sq
 #define MAX_VEL_1PC 13_fps
-#define MAX_ACCEL_1PCS 7_fps_sq
-#define MAX_DECEL_1PCS 7_fps_sq
-#define MAX_VEL_1PCS 8_fps
+#define MAX_ACCEL_1PCS 11_fps_sq
+#define MAX_DECEL_1PCS 11_fps_sq
+#define MAX_VEL_1PCS 9_fps
 
 #define MAX_ACCEL_LEAVE 10_fps_sq
 #define MAX_DECEL_LEAVE 10_fps_sq
@@ -59,49 +59,55 @@ using FPT = frc846::math::FieldPoint;
 #define MKPT(x, y, bearing, velocity) \
   FPT{{x, y}, bearing, velocity}.mirror(is_blue_side).mirrorOnlyX(!is_left_side)
 
-#define START(x, y, start_bearing)                               \
-  INSTANT {                                                      \
-    [&, blue = is_blue_side, left = is_left_side]() {            \
-      FPT start_point{{x, y}, start_bearing, 0_fps};             \
-      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
-      container.drivetrain_.SetBearing(start_point.bearing);     \
-      container.drivetrain_.UpdateReadings();                    \
-      container.drivetrain_.SetPosition(                         \
-          container.drivetrain_.GetReadings().april_point);      \
-      Log("Auto Start");                                         \
-    }                                                            \
-  }
-#define START2(x, y, start_bearing)                              \
-  INSTANT {                                                      \
-    [&, blue = is_blue_side, left = is_left_side]() {            \
-      FPT start_point{{x, y}, start_bearing, 0_fps};             \
-      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
-      container.drivetrain_.SetBearing(start_point.bearing);     \
-      container.drivetrain_.UpdateReadings();                    \
-      container.drivetrain_.SetPosition(                         \
-          {start_point.point[0], start_point.point[1]});         \
-      Log("Auto Start");                                         \
-    }                                                            \
+#define START2(x, y, start_bearing)                                           \
+  INSTANT {                                                                   \
+    [&, blue = is_blue_side, left = is_left_side]() {                         \
+      FPT start_point{{x, y}, start_bearing, 0_fps};                          \
+      start_point = start_point.mirror(blue).mirrorOnlyX(!left);              \
+      container.drivetrain_.UpdateReadings();                                 \
+      container.drivetrain_.SetPosition(                                      \
+          {start_point.point[0], start_point.point[1]});                      \
+      if (frc::RobotBase::IsSimulation()) {                                   \
+        container.drivetrain_.SetSimPose(                                     \
+            start_point.point[0], start_point.point[1], start_point.bearing); \
+      }                                                                       \
+      Log("Auto Start");                                                      \
+    }                                                                         \
   }
 #define DRIVE(auto_name, x, y, bearing, final_velocity)                   \
   frc846::robot::swerve::DriveToPointCommand {                            \
     &(container.drivetrain_), MKPT(x, y, bearing, final_velocity),        \
         MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name \
   }
+
+#define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
+#define SOURCELOC MKPT(24.703_in, 58.932_in, 53.5_deg, 0_fps)
+
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
-        MKPT(29.5_in, 53.75_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,   \
-        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
+        SOURCELOC_PRE, MAX_VEL_##auto_name, MAX_ACCEL_##auto_name,       \
+        MAX_DECEL_##auto_name, true},                                    \
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
-#define DRIVE_TO_SOURCE_END(auto_name)                                   \
-  frc2::ParallelDeadlineGroup {                                          \
-    frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
-        MKPT(48.25_in, 25_in, 53.5_deg, 0_fps), MAX_VEL_##auto_name,     \
-        MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name},                   \
-        CORAL_POS(kCoral_StowNoPiece, false)                             \
+#define LOCK_TO_SOURCE()                                          \
+  frc2::ParallelDeadlineGroup {                                   \
+    WAIT_FOR_PIECE(), frc846::robot::swerve::LockToPointCommand { \
+      &(container.drivetrain_), SOURCELOC                         \
+    }                                                             \
+  }
+
+#define SMART_LOCK_SOURCE()                                               \
+  frc2::ParallelDeadlineGroup {                                           \
+    WAIT_FOR_PIECE(), SEQUENCE {                                          \
+      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},        \
+          DRIVE_TO_SOURCE(3PC),                                           \
+          PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
+          WAIT{0.5_s},                                                    \
+          PARALLEL_DEADLINE(                                              \
+              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)),    \
+    }                                                                     \
   }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)          \
@@ -109,19 +115,18 @@ using FPT = frc846::math::FieldPoint;
     container, number_on_right, is_blue_side, is_left_side \
   }
 
-#define DRIVE_TO_REEF_NOAT(auto_name, number_on_right)                     \
-  frc846::robot::swerve::DriveToPointCommand {                             \
-    &(container.drivetrain_),                                              \
-        ReefProvider::getReefScoringLocations(false)[number_on_right]      \
-            .mirror(is_blue_side)                                          \
-            .mirrorOnlyX(!is_left_side),                                   \
-        MAX_VEL_##auto_name, MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name, \
-        true                                                               \
-  }
-
 #define WAIT4REEF()                                                         \
   frc2::WaitUntilCommand {                                                  \
     [&] {                                                                   \
+      if (frc::RobotBase::IsSimulation()) return false;                     \
+      return container.coral_ss_.coral_end_effector.GetReadings().see_reef; \
+    }                                                                       \
+  }
+
+#define WAIT4REEF_1PC()                                                     \
+  frc2::WaitUntilCommand {                                                  \
+    [&] {                                                                   \
+      if (frc::RobotBase::IsSimulation()) return true;                      \
       return container.coral_ss_.coral_end_effector.GetReadings().see_reef; \
     }                                                                       \
   }
@@ -139,15 +144,20 @@ using FPT = frc846::math::FieldPoint;
 #define WAIT_FOR_PIECE()                                      \
   frc2::WaitUntilCommand {                                    \
     [&] {                                                     \
+      if (frc::RobotBase::IsSimulation()) return true;        \
       return container.coral_ss_.GetReadings().piece_entered; \
     }                                                         \
   }
 
-#define DRIVE_SCORE_REEF_3PC(reefNum)                                         \
-  DRIVE_TO_REEF(3PC, reefNum), CORAL_POS(kCoral_ScoreL4, false), WAIT{0.5_s}, \
-      PARALLEL_RACE(WAIT4REEF(), WAIT(1.25_s)),                               \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                                 \
-    0.25_s                                                                    \
+#define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
+  PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
+      PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum),                        \
+          SEQUENCE(WAIT(1.75_s), CORAL_POS(kCoral_ScoreL4, false))),        \
+      CORAL_POS(kCoral_ScoreL4, false),                                     \
+      PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
+      PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),              \
+      CORAL_POS(kCoral_ScoreL4, true), WAIT {                               \
+    0.25_s                                                                  \
   }
 
 #define __AUTO__(codeName, stringName)                                 \
@@ -173,30 +183,30 @@ END DEFINE MACROS
 | ---------------------- |
 *************************/
 
-__AUTO__(FourAndPickAuto, "5PC") SEQUENCE {
-  // START(158.5_in - 73.25_in, START_Y, 180_deg),
+__AUTO__(FourAndPickAuto, "5PC")
+SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   // WAIT{0.25_s},
-  DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
-      DRIVE_SCORE_REEF_3PC(8), DRIVE_TO_SOURCE(3PC), WAIT_FOR_PIECE(),
-      DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE_END(3PC), WAIT_FOR_PIECE(),
-      DRIVE_SCORE_REEF_3PC(6),
+  DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
+      DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
+      DRIVE_SCORE_REEF_3PC(8), ALGAL_POS(kAlgae_L2Pick, false)
 }
 }
 {}
 
 __AUTO__(OnePieceAndNetAuto, "1PCN")
 SEQUENCE {
-  START2(158.5_in + 1.5_in, START_Y, 180_deg), WAIT{0.5_s},
-      DRIVE_TO_REEF_NOAT(1PC, 0), CORAL_POS(kCoral_ScoreL4, false), WAIT4REEF(),
+  START2(158.5_in, START_Y + 1.5_in, 180_deg), WAIT{0.5_s},
+      DRIVE(1PC, 158.5_in + 1.5_in, 231.975_in, 180_deg, 0_fps),
       PARALLEL_DEADLINE(
-          SEQUENCE(SEQUENCE(CORAL_POS(kCoral_ScoreL4, true), WAIT{0.5_s}),
-              CORAL_POS(kCoral_StowNoPiece, false)),
-          ALGAL_POS(kAlgae_L2Pick, false)),
-      WAIT{1.0_s}, DRIVE(1PC, 100_in, START_Y - 48_in, 0_deg, 0_fps),
-      DRIVE(1PCS, 100_in, START_Y + 16_in, 0_deg, 0_fps),
+          CORAL_POS(kCoral_ScoreL4, false), ALGAL_POS(kAlgae_L2Pick, false)),
+      WAIT4REEF_1PC(), CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s},
+      DRIVE(1PC, 158.5_in + 1.5_in, 229.75_in, 180_deg, 0_fps), WAIT{1.0_s},
+      CORAL_POS(kCoral_StowNoPiece, false), WAIT{1.0_s},
+      DRIVE(1PC, 135_in, START_Y - 35_in, 0_deg, 0_fps),
+      DRIVE(1PCS, 110_in, START_Y + 16_in, 0_deg, 0_fps),
       ALGAL_POS(kAlgae_Net, false), WAIT{0.5_s}, ALGAL_POS(kAlgae_Net, true),
       WAIT{1.0_s}, DRIVE(1PCS, 100_in, START_Y - 40_in, 0_deg, 0_fps),
-      ALGAL_POS(kAlgae_Stow, false),
+      ALGAL_POS(kAlgae_Stow, false), WAIT{4.0_s},
 }
 }
 {}

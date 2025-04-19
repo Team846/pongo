@@ -16,6 +16,7 @@ enum LEDsState {
   kLEDsClimbing,
   kLEDsHavePiece,
   kisLinedUp,
+  kisCompletelyLinedUp,
   kLEDsHomingGyro,
   kLEDsHoming,
 };

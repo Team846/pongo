@@ -25,9 +25,11 @@ LockToReefCommand::LockToReefCommand(
               ba[1] += adj_rate;
             }
 
-            auto target_pos =
-                ReefProvider::getReefScoringLocations()[2 * reef_target_pos +
-                                                        (lft ? 0 : 1)];
+            auto target_pos = ReefProvider::getReefScoringLocations(true, false,
+                !(cnt.control_input_.GetReadings().coral_state ==
+                        kCoral_ScoreL2 ||
+                    cnt.control_input_.GetReadings().coral_state ==
+                        kCoral_ScoreL3))[2 * reef_target_pos + (lft ? 0 : 1)];
 
             auto bearing = cnt.drivetrain_.GetReadings().pose.bearing;
             target_pos.point += ba.rotate(bearing);

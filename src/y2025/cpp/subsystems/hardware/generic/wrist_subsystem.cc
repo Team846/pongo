@@ -43,7 +43,8 @@ void WristSubsystem::Setup() {
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
   // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
-  const auto [sensor_pos, is_valid] = GetSensorPos();
+  const auto [sensor_pos, is_valid] =
+      GetSensorPos(GetReadings().absolute_position);
   wrist_esc_helper_.SetPosition(sensor_pos);
 
   ExtendedSetup();
@@ -70,7 +71,7 @@ WristReadings WristSubsystem::ReadFromHardware() {
 
   Graph("readings/current_draw", wrist_esc_.GetCurrent());
 
-  const auto [sensor_pos, is_valid] = GetSensorPos();
+  const auto [sensor_pos, is_valid] = GetSensorPos(abs_pos_deg);
   if (is_valid &&
       units::math::abs(
           sensor_pos - (readings.position /* + encoder_offset_*/)) >
@@ -117,7 +118,8 @@ void WristSubsystem::CoastSubsystem() {
 
 void WristSubsystem::SetEncoderOffset() {
   if (is_initialized()) {
-    const auto [sensor_pos, is_valid] = GetSensorPos();
+    const auto [sensor_pos, is_valid] =
+        GetSensorPos(GetReadings().absolute_position);
 
     // encoder_offset_ = sensor_pos - GetReadings().position;
     wrist_esc_helper_.SetPosition(sensor_pos);
