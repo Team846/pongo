@@ -128,6 +128,7 @@ void GenericRobot::StartCompetition() {
     // If mode changed
     if (last_mode_ != mode) {
       if (mode == Mode::kDisabled) {
+        OnDisable();
         // Clear command scheduler
         Log("Clearing command scheduler");
         frc2::CommandScheduler::GetInstance().CancelAll();
@@ -135,6 +136,7 @@ void GenericRobot::StartCompetition() {
         loop.Clear();
       } else if (mode == Mode::kAutonomous) {
         // Get and run selected auto command
+        OnEnable();
         std::string option_name = auto_chooser_.GetSelected();
         auto_command_ = autos_[option_name];
 
@@ -147,6 +149,7 @@ void GenericRobot::StartCompetition() {
         }
       } else if (mode == Mode::kTeleop) {
         // Cancel auto command and setup teleop defaults/triggers
+        OnEnable();
         if (auto_command_ != nullptr) {
           Log("Cancelling auto command");
           auto_command_->Cancel();
@@ -156,6 +159,7 @@ void GenericRobot::StartCompetition() {
         Log("Setting up teleop default/triggers");
         InitTeleop();
       } else if (mode == Mode::kTest) {
+        OnEnable();
         // Cancel auto command and setup Test defaults/triggers
         if (auto_command_ != nullptr) {
           Log("Cancelling auto command");

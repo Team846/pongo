@@ -13,6 +13,7 @@ public:
   void OnInitialize() override;
 
   void OnDisable() override;
+  void OnEnable() override;
 
   void OnPeriodic() override;
 
