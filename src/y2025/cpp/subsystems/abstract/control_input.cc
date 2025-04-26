@@ -121,7 +121,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   previous_first_enable_exception = first_enable_exception;
 
-  //algae autopicking
+  // algae autopicking
   auto drivetrain_readings = drivetrain_ss_->GetReadings();
   auto curr_pose = drivetrain_readings.estimated_pose.position;
   auto pose = drivetrain_readings.pose.position;
@@ -141,8 +141,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   units::inch_t mid_field_y = frc846::math::FieldPoint::field_size_y / 2.0;
 
-  //Net autopicking
-  // check if y is within 80 in of midfield
+  // Net autopicking
+  //  check if y is within 80 in of midfield
   if (units::math::abs(pose[1] - mid_field_y) < 80_in) {
     // check if robot is pointed within 30 deg of 0 or 180 deg
     if (units::math::abs(rotation) < 30_deg ||
@@ -154,8 +154,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   units::inch_t field_width = frc846::math::FieldPoint::field_size_x;
 
-  //processor autopicking
-  // check if near right side and pointed at 90 degree and 30 in from the right
+  // processor autopicking
+  //  check if near right side and pointed at 90 degree and 30 in from the right
   if (units::math::abs(pose[0] - (field_width - 30.0_in)) < 5.0_in &&
       units::math::abs(rotation - 90.0_deg) < 30.0_deg) {
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;

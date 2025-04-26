@@ -14,8 +14,8 @@ void AlgalCommand::Periodic() {
   AlgalSSTarget algal_target{};
   auto ci_readings = container_.control_input_.GetReadings();
 
-  //Logic moved to control_input
-  
+  // Logic moved to control_input
+
   // if (ci_readings.lock_left_reef) {
   //   ci_readings.algal_state =
   //       (ReefProvider::getClosestReefSide(
