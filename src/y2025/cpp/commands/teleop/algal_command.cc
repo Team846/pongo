@@ -14,15 +14,17 @@ void AlgalCommand::Periodic() {
   AlgalSSTarget algal_target{};
   auto ci_readings = container_.control_input_.GetReadings();
 
-  if (ci_readings.lock_left_reef) {
-    ci_readings.algal_state =
-        (ReefProvider::getClosestReefSide(
-             container_.drivetrain_.GetReadings().estimated_pose.position) %
-                2 ==
-            0)
-            ? kAlgae_L2Pick
-            : kAlgae_L3Pick;
-  }
+  //Logic moved to control_input
+  
+  // if (ci_readings.lock_left_reef) {
+  //   ci_readings.algal_state =
+  //       (ReefProvider::getClosestReefSide(
+  //            container_.drivetrain_.GetReadings().estimated_pose.position) %
+  //               2 ==
+  //           0)
+  //           ? kAlgae_L2Pick
+  //           : kAlgae_L3Pick;
+  // }
 
   if (ci_readings.position_algal)
     algal_target.state = ci_readings.algal_state;

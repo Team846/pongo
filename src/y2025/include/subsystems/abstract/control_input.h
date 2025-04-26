@@ -2,6 +2,7 @@
 
 #include "frc846/math/vectors.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/swerve/drivetrain.h"
 #include "frc846/robot/xbox.h"
 #include "subsystems/hardware/algal/algal_ss.h"
 #include "subsystems/hardware/coral/coral_ss.h"
@@ -76,7 +77,8 @@ class ControlInputSubsystem
     : public frc846::robot::GenericSubsystem<ControlInputReadings,
           ControlInputTarget> {
 public:
-  ControlInputSubsystem(CoralSuperstructure* coral_ss);
+  ControlInputSubsystem(CoralSuperstructure* coral_ss,
+      frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
 
   void Setup() override;
 
@@ -92,6 +94,8 @@ private:
   ControlInputReadings previous_readings_{};
 
   CoralSuperstructure* coral_ss_;
+
+  frc846::robot::swerve::DrivetrainSubsystem* drivetrain_ss_;
 
   frc846::robot::XboxReadings previous_driver_{};
   frc846::robot::XboxReadings previous_operator_{};

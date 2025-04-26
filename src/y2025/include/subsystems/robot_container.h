@@ -22,7 +22,7 @@ public:
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
 
-  ControlInputSubsystem control_input_{&coral_ss_};
+  ControlInputSubsystem control_input_{&coral_ss_, &drivetrain_};
 
   ClimberSubsystem climber_{};
 
