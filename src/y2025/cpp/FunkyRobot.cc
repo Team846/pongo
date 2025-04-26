@@ -76,6 +76,27 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData("zero_odometry",
       new frc846::wpilib::NTAction(
           [this] { container_.drivetrain_.SetPosition({0_in, 0_in}); }));
+
+  // Add path recording controls
+  frc::SmartDashboard::PutData(
+      "start_path_recording", new frc846::wpilib::NTAction([this] {
+        auto timestamp =
+            std::chrono::system_clock::now().time_since_epoch().count();
+        std::string filename = "path_" + std::to_string(timestamp);
+        container_.drivetrain_.StartPathRecording(filename);
+        Log("Started recording path data to {}.csv", filename);
+      }));
+
+  frc::SmartDashboard::PutData(
+      "stop_path_recording", new frc846::wpilib::NTAction([this] {
+        bool success = container_.drivetrain_.StopPathRecording();
+        if (success) {
+          Log("Successfully stopped recording path data");
+        } else {
+          Warn(
+              "Failed to stop recording path data or no recording in progress");
+        }
+      }));
 }
 
 void FunkyRobot::OnDisable() {}

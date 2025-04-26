@@ -391,6 +391,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   a_field.SetRobotPose(frc846::math::FieldPoint::field_size_y - sim_pos_y,
       sim_pos_x, 180_deg - sim_bearing);
 
+  // Record the current pose if path recording is active
+  if (path_logger_.IsRecording()) { path_logger_.RecordPose(estimated_pose); }
+
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
       last_accel_spike_, see_tag_counter_};
 }
@@ -509,6 +512,18 @@ bool DrivetrainSubsystem::ReachedSimPose(units::inch_t x, units::inch_t y,
     units::degree_t bearing, units::inch_t tolerance) {
   return (sim_pos_x - x) * (sim_pos_x - x) + (sim_pos_y - y) * (sim_pos_y - y) <
          tolerance * tolerance;
+}
+
+void DrivetrainSubsystem::StartPathRecording(const std::string& filename) {
+  path_logger_.StartRecording(filename);
+}
+
+bool DrivetrainSubsystem::StopPathRecording() {
+  return path_logger_.StopRecording();
+}
+
+bool DrivetrainSubsystem::IsPathRecording() const {
+  return path_logger_.IsRecording();
 }
 
 }  // namespace frc846::robot::swerve

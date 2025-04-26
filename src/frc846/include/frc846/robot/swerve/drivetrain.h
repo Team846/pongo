@@ -10,6 +10,7 @@
 #include "frc846/robot/swerve/odometry/pose_estimator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
+#include "frc846/robot/swerve/path_logger.h"
 #include "frc846/robot/swerve/swerve_module.h"
 #include "studica/AHRS.h"
 
@@ -101,6 +102,27 @@ public:
   static bool ReachedSimPose(units::inch_t x, units::inch_t y,
       units::degree_t bearing, units::inch_t tolerance);
 
+  /**
+   * Start recording the robot's path.
+   *
+   * @param filename The base filename to save the path to (without extension).
+   */
+  void StartPathRecording(const std::string& filename);
+
+  /**
+   * Stop recording the robot's path and save it to a file.
+   *
+   * @return True if the file was saved successfully.
+   */
+  bool StopPathRecording();
+
+  /**
+   * Check if path recording is active.
+   *
+   * @return True if recording, false otherwise.
+   */
+  bool IsPathRecording() const;
+
 private:
   frc::Field2d a_field;
   static units::inch_t sim_pos_x;
@@ -132,6 +154,9 @@ private:
       {0_fps, 0_fps},
       {units::feet_per_second_squared_t(0),
           units::feet_per_second_squared_t(0)}};
+
+  // Path logger for recording odometry data
+  PathLogger path_logger_;
 
   bool first_loop = true;
 
