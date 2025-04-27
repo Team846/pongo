@@ -29,7 +29,7 @@ void DriveToPointCommand::Initialize() {
   const auto [new_target_point, is_valid] = GetTargetPoint();
   if (is_valid) target_ = new_target_point;
 
-  direction_offset = (target_.point - start_point_).angle();
+//   direction_offset = (target_.point - start_point_).angle();
 }
 
 void DriveToPointCommand::Execute() {
@@ -52,6 +52,14 @@ void DriveToPointCommand::Execute() {
   //   Graph("override_is_valid", is_valid);
   if (is_valid) target_ = new_target_point;
 
+
+  if (dt_readings.pose.velocity.magnitude() > .2_fps){
+    direction_offset = dt_readings.pose.velocity.angle();\
+  }
+  else{
+    direction_offset = (target_.point - dt_readings.pose.position).angle();
+  }
+\
   DrivetrainAccelerationControlTarget dt_target{
       .linear_acceleration = max_acceleration_,
       .accel_dir = (target_.point - start_point_).angle(true),
