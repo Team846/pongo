@@ -17,7 +17,18 @@ DriveToReefCommand::DriveToReefCommand(RobotContainer& container, bool is_left,
 
 std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
   auto cpos = drivetrain_->GetReadings().estimated_pose.position;
-  int reef_target_pos = ReefProvider::getClosestReefSide(cpos);
+  auto cvel = drivetrain_->GetReadings().estimated_pose.velocity;
+  bool use_pred_pos = false;
+  frc846::math::Vector2D predicted_pos;
+
+  if (cvel.magnitude() > 2_fps) {
+    use_pred_pos = true;
+    units::second_t time_step = 0.3_s;
+    predicted_pos =
+        cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] * time_step};
+  }
+  int reef_target_pos =
+      ReefProvider::getClosestReefSide(use_pred_pos ? predicted_pos : cpos);
   Graph("reef_target_pos", reef_target_pos);
   auto target_pos = ReefProvider::getReefScoringLocations(true, is_pre_point_,
       !(container_.control_input_.GetReadings().coral_state == kCoral_ScoreL2 ||
