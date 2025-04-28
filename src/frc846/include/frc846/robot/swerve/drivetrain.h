@@ -33,7 +33,7 @@ struct DrivetrainConfigs {
 
   std::vector<units::inch_t> camera_x_offsets;
   std::vector<units::inch_t> camera_y_offsets;
-  int cams;
+  size_t cams;
 
   std::map<int, frc846::robot::calculators::AprilTagData> april_locations;
   units::feet_per_second_squared_t max_accel;

@@ -262,4 +262,20 @@ using Vector2D = VectorND<units::inch, 2>;
 // 3D vector, units::inch_t
 using Vector3D = VectorND<units::inch, 3>;
 
+struct Line {
+  frc846::math::Vector2D point;
+  units::degree_t angle;
+
+  frc846::math::Vector2D intersect(Line other) {
+    units::inch_t x = (point[1] - other.point[1] +
+                          units::math::tan(other.angle) * other.point[0] -
+                          units::math::tan(angle) * point[0]) /
+                      (units::math::tan(other.angle) - units::math::tan(angle));
+    units::inch_t y = units::math::tan(angle) * (x - point[0]) + point[1];
+    return {x, y};
+  }
+
+  void translate(frc846::math::Vector2D addend) { point += addend; }
+};
+
 }  // namespace frc846::math
