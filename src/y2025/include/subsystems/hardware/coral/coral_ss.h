@@ -27,6 +27,7 @@ enum CoralStates {
 struct CoralSSReadings {
   bool autostow_valid;
   bool piece_entered;
+  bool auto_flick_valid;
 };
 
 struct CoralSSTarget {
@@ -73,8 +74,9 @@ protected:
 
   int no_piece_count_;
   int see_reef_count_;
+  int no_piece_chute_count_;
 
-  frc::DigitalInput chute_sensor_{4};
+  frc::DigitalInput chute_sensor_{8};
 
 private:
 };
