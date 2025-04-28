@@ -22,7 +22,9 @@ enum AlgalStates {
   kAlgae_DINOSAUR_B,
 };
 
-struct AlgalSSReadings {};
+struct AlgalSSReadings {
+  bool has_piece;
+};
 
 struct AlgalSSTarget {
   AlgalStates state;

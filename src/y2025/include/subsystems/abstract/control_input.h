@@ -78,6 +78,7 @@ class ControlInputSubsystem
           ControlInputTarget> {
 public:
   ControlInputSubsystem(CoralSuperstructure* coral_ss,
+      AlgalSuperstructure* algal_ss,
       frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
 
   void Setup() override;
@@ -94,6 +95,8 @@ private:
   ControlInputReadings previous_readings_{};
 
   CoralSuperstructure* coral_ss_;
+
+  AlgalSuperstructure* algal_ss_;
 
   frc846::robot::swerve::DrivetrainSubsystem* drivetrain_ss_;
 
