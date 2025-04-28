@@ -62,23 +62,15 @@ void LockToPointCommand::Execute() {
         drivetrain_->GetPreferenceValue_double("lock_gains/_kP_f"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kI"),
         drivetrain_->GetPreferenceValue_double("lock_gains/_kD"), 0.0};
-    units::feet_per_second_t speed_target =
-        1_fps * lock_gains.calculate(r_vec.magnitude().to<double>(), 0.0,
-                    drivetrain_->GetReadings()
-                        .estimated_pose.velocity.magnitude()
-                        .to<double>(),
-                    0.0);
-    speed_target = units::math::min(
-        units::math::max(speed_target,
-            -drivetrain_
-                 ->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                     "lock_max_speed")),
+
+    frc846::math::VectorND<units::feet_per_second, 2> speed_vector = {1_fps*lock_gains.calculate(r_vec[0].to<double>(), 0.0, drivetrain_->GetReadings().estimated_pose.velocity[0].to<double>(), 0.0), 
+                                                                      1_fps*lock_gains.calculate(r_vec[1].to<double>(), 0.0, drivetrain_->GetReadings().estimated_pose.velocity[1].to<double>(), 0.0)};
+    units::feet_per_second_t speed = units::math::min(speed_vector.magnitude(),
         drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "lock_max_speed"));
 
     drivetrain_->SetTarget(frc846::robot::swerve::DrivetrainOLControlTarget{
-        frc846::math::VectorND<units::feet_per_second, 2>{
-            speed_target, r_vec.angle(true) + 180_deg, true},
+        speed_vector.unit()*-speed.to<double>(),
         drivetrain_->ApplyBearingPID(target_.bearing)});
   }
 }
