@@ -43,7 +43,7 @@ struct ATCalculatorConstants {
   std::vector<units::inch_t> camera_x_offsets;
   std::vector<units::inch_t> camera_y_offsets;
 
-  int cams;
+  size_t cams;
 
   std::vector<std::shared_ptr<nt::NetworkTable>> april_tables;
 };
