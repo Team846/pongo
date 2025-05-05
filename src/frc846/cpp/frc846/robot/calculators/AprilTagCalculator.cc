@@ -1,7 +1,8 @@
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 
-#include <iostream>
 #include <units/math.h>
+
+#include <iostream>
 
 #include "frc846/math/collection.h"
 #include "frc846/robot/GenericRobot.h"
@@ -133,8 +134,8 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     //     }
     //   }
     // }
-    if (!(tags.size()==distances.size() && tags.size()==tx.size())){
-        continue;
+    if (!(tags.size() == distances.size() && tags.size() == tx.size())) {
+      continue;
     }
     for (int j = 0; j < tags.size(); j++) {
       if (constants_.tag_locations.contains(tags.at(j)) &&
@@ -164,30 +165,32 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
 
         sight_line.translate(center_to_cam.rotate(bearingAtCapture) * -1);
         sight_lines[i].push_back(sight_line);
-        if (distances.at(j)<30_in){
-            output.pos=(getPos(bearingAtCapture, tx.at(j), distances.at(j),
-                           tags.at(j), i) +
-                          velComp);
-            output.variance = std::max(
-                (input.aprilVarianceCoeff * std::pow(distances.at(j).to<double>(), 3) *
-                    std::pow(
-                        1 + input.pose.velocity.magnitude().to<double>() / 12,
-                        2) *
-                    std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
-                0.0000000001);
+        if (distances.at(j) < 30_in) {
+          output.pos = (getPos(bearingAtCapture, tx.at(j), distances.at(j),
+                            tags.at(j), i) +
+                        velComp);
+          output.variance = std::max(
+              (input.aprilVarianceCoeff *
+                  std::pow(distances.at(j).to<double>(), 3) *
+                  std::pow(
+                      1 + input.pose.velocity.magnitude().to<double>() / 12,
+                      2) *
+                  std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
+              0.0000000001);
 
-    correction = output.pos - input.pose.position;
-    return output;
+          correction = output.pos - input.pose.position;
+          return output;
         }
         output.pos += (getPos(bearingAtCapture, tx.at(j), distances.at(j),
                            tags.at(j), i) +
                           velComp) *
                       (48) / distances.at(j).to<double>();
-                      
+
         variance +=
             1 /
             std::max(
-                (input.aprilVarianceCoeff * std::pow(distances.at(j).to<double>(), 3) *
+                (input.aprilVarianceCoeff *
+                    std::pow(distances.at(j).to<double>(), 3) *
                     std::pow(
                         1 + input.pose.velocity.magnitude().to<double>() / 12,
                         2) *
@@ -207,7 +210,6 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     return output;
   }
 
-
   // Double Cam Triangulation
   frc846::math::Line first_line = {{-1_in, -1_in}, 0_deg};
   for (int i = 0; i < constants_.cams; i++) {
@@ -215,14 +217,12 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
       if (first_line.point[0] != -1_in) {
         // Double Cam Triangulation!
         output.pos = first_line.intersect(sight_lines[i].at(0));
-        output.variance =
-            std::max(
-                (input.triangularVarianceCoeff *
-                    std::pow(
-                        1 + input.pose.velocity.magnitude().to<double>() / 12,
-                        2) *
-                    std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
-                0.0000000001);  // TODO: make better
+        output.variance = std::max(
+            (input.triangularVarianceCoeff *
+                std::pow(
+                    1 + input.pose.velocity.magnitude().to<double>() / 12, 2) *
+                std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
+            0.0000000001);  // TODO: make better
 
         correction = output.pos - input.pose.position;
         return output;
@@ -232,20 +232,17 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     }
   }
 
-
   // Single Cam?
   for (int i = 0; i < constants_.cams; i++) {
     if (sight_lines[i].size() > 1) {
       // Double Tag, Single Cam Triangulation!
       output.pos = sight_lines[i].at(1).intersect(sight_lines[i].at(0));
-      output.variance =
-          std::max(
-              (input.triangularVarianceCoeff *
-                  std::pow(
-                      1 + input.pose.velocity.magnitude().to<double>() / 12,
-                      2) *
-                  std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
-              0.0000000001);  // TODO: make better
+      output.variance = std::max(
+          (input.triangularVarianceCoeff *
+              std::pow(
+                  1 + input.pose.velocity.magnitude().to<double>() / 12, 2) *
+              std::pow(1 + input.angular_velocity.to<double>() / 300, 2)),
+          0.0000000001);  // TODO: make better
 
       correction = output.pos - input.pose.position;
       return output;
