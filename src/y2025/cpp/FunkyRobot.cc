@@ -76,9 +76,55 @@ void FunkyRobot::OnInitialize() {
   frc::SmartDashboard::PutData("zero_odometry",
       new frc846::wpilib::NTAction(
           [this] { container_.drivetrain_.SetPosition({0_in, 0_in}); }));
+
+  // Add path recording controls
+  frc::SmartDashboard::PutData(
+      "start_path_recording", new frc846::wpilib::NTAction([this] {
+        auto timestamp =
+            std::chrono::system_clock::now().time_since_epoch().count();
+        std::string filename = "path_" + std::to_string(timestamp);
+        container_.drivetrain_.StartPathRecording(filename);
+        Log("Started recording path data to {}.csv", filename);
+      }));
+
+  frc::SmartDashboard::PutData(
+      "stop_path_recording", new frc846::wpilib::NTAction([this] {
+        bool success = container_.drivetrain_.StopPathRecording();
+        if (success) {
+          Log("Successfully stopped recording path data");
+        } else {
+          Warn(
+              "Failed to stop recording path data or no recording in progress");
+        }
+      }));
 }
 
-void FunkyRobot::OnDisable() {}
+void FunkyRobot::OnEnable() {
+  // start path recording
+
+  auto now = std::chrono::system_clock::now();
+  auto time_t_now = std::chrono::system_clock::to_time_t(now);
+
+  // Format time as month-day-year-hour-minute-second
+  std::tm* tm_now = std::localtime(&time_t_now);
+
+  char time_buffer[64];
+  std::strftime(time_buffer, sizeof(time_buffer), "%m-%d-%Y_%H-%M-%S", tm_now);
+  std::string filename = "pathlogs_" + std::string(time_buffer);
+
+  container_.drivetrain_.StartPathRecording(filename);
+  Log("Started recording auto path data to {}.csv", filename);
+}
+
+void FunkyRobot::OnDisable() {
+  // stop path recording
+  bool success = container_.drivetrain_.StopPathRecording();
+  if (success) {
+    Log("Successfully stopped recording path data");
+  } else {
+    Warn("Failed to stop recording path data or no recording in progress");
+  }
+}
 
 void FunkyRobot::InitTeleop() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
