@@ -106,7 +106,11 @@ private:
   frc::XboxController driver_{0};
   frc::XboxController operator_{1};
 
+  int no_algae_counter=0;
+
   int climb_state_ = 0;
+
+  bool op_changed_target_ = false;
 
   ControlInputReadings ReadFromHardware() override;
 
