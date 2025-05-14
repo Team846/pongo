@@ -25,14 +25,17 @@ void AlgalCommand::Periodic() {
         cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] * time_step};
   }
 
-  if (ci_readings.lock_left_reef) {
-    ci_readings.algal_state =
-        (ReefProvider::getClosestReefSide(use_pred_pos ? predicted_pos : cpos) %
-                2 ==
-            0)
-            ? kAlgae_L2Pick
-            : kAlgae_L3Pick;
-  }
+  // Logic moved to control_input
+
+  // if (ci_readings.lock_left_reef) {
+  //   ci_readings.algal_state =
+  //       (ReefProvider::getClosestReefSide(
+  //            container_.drivetrain_.GetReadings().estimated_pose.position) %
+  //               2 ==
+  //           0)
+  //           ? kAlgae_L2Pick
+  //           : kAlgae_L3Pick;
+  // }
 
   if (ci_readings.position_algal)
     algal_target.state = ci_readings.algal_state;

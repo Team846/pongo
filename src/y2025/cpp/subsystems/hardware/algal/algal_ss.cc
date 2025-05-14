@@ -114,7 +114,7 @@ AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
   algal_wrist.UpdateReadings();
   algal_end_effector.UpdateReadings();
 
-  return {};
+  return {algal_end_effector.GetReadings().has_piece_};
 }
 
 void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {

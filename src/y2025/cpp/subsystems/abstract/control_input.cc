@@ -1,9 +1,16 @@
 #include "subsystems/abstract/control_input.h"
 
-ControlInputSubsystem::ControlInputSubsystem(CoralSuperstructure* coral_ss)
+#include "field.h"
+#include "reef.h"
+
+ControlInputSubsystem::ControlInputSubsystem(CoralSuperstructure* coral_ss,
+    AlgalSuperstructure* algal_ss,
+    frc846::robot::swerve::DrivetrainSubsystem* drivetrain_ss)
     : frc846::robot::GenericSubsystem<ControlInputReadings,
           ControlInputTarget>{"control_input"},
-      coral_ss_{coral_ss} {}
+      coral_ss_{coral_ss},
+      algal_ss_{algal_ss},
+      drivetrain_ss_{drivetrain_ss} {}
 
 void ControlInputSubsystem::Setup() {
   RegisterPreference("trigger_threshold", 0.3);
@@ -86,9 +93,10 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.auto_align = dr_readings.rsb;
 
-  if (dr_readings.right_trigger && !previous_driver_.right_trigger)
+  if (dr_readings.right_trigger && !previous_driver_.right_trigger) {
     ci_readings_.position_algal = !previous_readings_.position_algal;
-  else
+    if (!ci_readings_.position_algal){ op_changed_target_ = false;}
+  } else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
   if (frc::DriverStation::IsDisabled()) ci_readings_.position_algal = false;
@@ -116,22 +124,95 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   previous_first_enable_exception = first_enable_exception;
 
+  // algae autopicking
+
+  AlgalStates previous_state = previous_readings_.algal_state;
+
+
+  bool operator_clicked=false;
   first_enable_exception = false;
-  if (op_readings.pov == frc846::robot::XboxPOV::kUp)
+  if (op_readings.pov == frc846::robot::XboxPOV::kUp){
     ci_readings_.algal_state = AlgalStates::kAlgae_Net;
-  else if (op_readings.pov == frc846::robot::XboxPOV::kRight)
+    operator_clicked=true;
+
+    }
+  else if (op_readings.pov == frc846::robot::XboxPOV::kRight){
     ci_readings_.algal_state = AlgalStates::kAlgae_L3Pick;
-  else if (op_readings.pov == frc846::robot::XboxPOV::kDown)
+
+    operator_clicked=true;
+  }
+  else if (op_readings.pov == frc846::robot::XboxPOV::kDown){
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
-  else if (op_readings.pov == frc846::robot::XboxPOV::kLeft)
+
+    operator_clicked=true;
+  }
+  else if (op_readings.pov == frc846::robot::XboxPOV::kLeft){
     ci_readings_.algal_state = AlgalStates::kAlgae_L2Pick;
-  else if (op_readings.a_button)
+
+    operator_clicked=true;
+  }
+  else if (op_readings.a_button){
     ci_readings_.algal_state = AlgalStates::kAlgae_GroundIntake;
-  else if (op_readings.y_button)
+
+    operator_clicked=true;
+  }
+  else if (op_readings.y_button){
     ci_readings_.algal_state = AlgalStates::kAlgae_OnTopIntake;
+
+    operator_clicked=true;
+  }
   else {
     ci_readings_.algal_state = previous_readings_.algal_state;
     first_enable_exception = previous_first_enable_exception;
+  }
+
+  if (ci_readings_.algal_state != previous_state && operator_clicked) { op_changed_target_ = true; }
+
+  auto drivetrain_readings = drivetrain_ss_->GetReadings();
+  auto curr_pose = drivetrain_readings.estimated_pose.position;
+  auto rotation = drivetrain_readings.estimated_pose.bearing;
+
+  // autopicking for l2/l3
+  if (ci_readings_.lock_left_reef) {
+    ci_readings_.algal_state =
+        (ReefProvider::getClosestReefSide(curr_pose) % 2 == 0)
+            ? AlgalStates::kAlgae_L2Pick
+            : AlgalStates::kAlgae_L3Pick;
+  }
+
+  units::inch_t mid_field_y = frc846::math::FieldPoint::field_size_y / 2.0;
+
+  if (algal_ss_->GetReadings().has_piece){
+    no_algae_counter=0;
+  }
+  else{
+    if(no_algae_counter<1000) no_algae_counter++;
+  }
+
+  // Net autopicking
+  //  check if y is within 80 in of midfield
+  if (units::math::abs(curr_pose[1] - mid_field_y) < 80_in &&
+      !op_changed_target_ && no_algae_counter<800) {
+    // check if robot is pointed within 30 deg of 0 or 180 deg
+    if (units::math::abs(rotation) < 30_deg ||
+        units::math::abs(rotation - 180_deg) < 30_deg) {  
+      ci_readings_.algal_state = AlgalStates::kAlgae_Net;
+    }
+  }
+
+  units::inch_t field_width = frc846::math::FieldPoint::field_size_x;
+
+  // processor autopicking
+  //  check if near right side and pointed at 90 degree and 30 in from the right
+  if (units::math::abs(field_width-curr_pose[0]) < 30.0_in &&
+      units::math::abs(rotation - 90.0_deg) < 30.0_deg && !op_changed_target_ &&no_algae_counter<800) {
+    ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+  }
+  // check if near left side and pointed at -90 degree and 30 in from the left
+  else if (curr_pose[0] < 30.0_in &&
+           units::math::abs(rotation + 90.0_deg) < 30.0_deg &&
+           !op_changed_target_ && no_algae_counter<800) {
+    ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   }
 
   double op_deadband = GetPreferenceValue_double("op_deadband");
