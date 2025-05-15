@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -74.091796875,
+    "value": -73.740234375,
     "properties": {
       "persistent": true
     }
@@ -82,7 +82,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -105.64453125,
+    "value": -106.171875,
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.013671875,
+    "value": -79.541015625,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -78.22265625,
+    "value": -79.541015625,
     "properties": {
       "persistent": true
     }
@@ -186,7 +186,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kD",
     "type": "double",
-    "value": 0.012,
+    "value": 0.036,
     "properties": {
       "persistent": true
     }
@@ -194,7 +194,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/deadband (in)",
     "type": "double",
-    "value": 0.0,
+    "value": 0.5,
     "properties": {
       "persistent": true
     }
@@ -274,7 +274,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
     "type": "double",
-    "value": 1.09,
+    "value": 1.077,
     "properties": {
       "persistent": true
     }
@@ -338,7 +338,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/april_tags/april_variance_coeff",
     "type": "double",
-    "value": 0.08,
+    "value": 0.000139,
     "properties": {
       "persistent": true
     }
@@ -346,7 +346,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/april_tags/triangular_variance_coeff",
     "type": "double",
-    "value": 0.001,
+    "value": 0.0005,
     "properties": {
       "persistent": true
     }
@@ -354,7 +354,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/april_tags/fudge_latency1 (ms)",
     "type": "double",
-    "value": 130.0,
+    "value": 170.0,
     "properties": {
       "persistent": true
     }
@@ -1250,7 +1250,7 @@
   {
     "name": "/Preferences/algal_wrist/encoder_offset (deg)",
     "type": "double",
-    "value": -15.0,
+    "value": -6.2,
     "properties": {
       "persistent": true
     }
@@ -1258,7 +1258,7 @@
   {
     "name": "/Preferences/algal_end_effector/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 40.0,
+    "value": 25.0,
     "properties": {
       "persistent": true
     }
@@ -1266,7 +1266,7 @@
   {
     "name": "/Preferences/algal_end_effector/motor_configs/smart_current_limit (A)",
     "type": "double",
-    "value": 30.0,
+    "value": 20.0,
     "properties": {
       "persistent": true
     }
@@ -1274,7 +1274,7 @@
   {
     "name": "/Preferences/algal_end_effector/idle_speed",
     "type": "double",
-    "value": 0.04,
+    "value": 0.025,
     "properties": {
       "persistent": true
     }
@@ -1298,7 +1298,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 14.0,
+    "value": 7.0,
     "properties": {
       "persistent": true
     }
@@ -1306,7 +1306,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/ee_dc",
     "type": "double",
-    "value": 0.1,
+    "value": 0.2,
     "properties": {
       "persistent": true
     }
@@ -1578,7 +1578,7 @@
   {
     "name": "/Preferences/climber/limits/upper_limit (deg)",
     "type": "double",
-    "value": 5000.0,
+    "value": 420.0,
     "properties": {
       "persistent": true
     }
@@ -1586,7 +1586,7 @@
   {
     "name": "/Preferences/climber/limits/lower_limit (deg)",
     "type": "double",
-    "value": -5000.0,
+    "value": -247.0,
     "properties": {
       "persistent": true
     }
@@ -1818,7 +1818,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/lock_gains/_kP_f",
     "type": "double",
-    "value": -0.7,
+    "value": -0.65,
     "properties": {
       "persistent": true
     }
@@ -1834,7 +1834,7 @@
   {
     "name": "/Preferences/algal_end_effector/kick_dc",
     "type": "double",
-    "value": -0.26,
+    "value": -0.2,
     "properties": {
       "persistent": true
     }
@@ -1866,7 +1866,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/flick/height (in)",
     "type": "double",
-    "value": 32.0,
+    "value": 29.0,
     "properties": {
       "persistent": true
     }
@@ -1874,7 +1874,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/flick/angle (deg)",
     "type": "double",
-    "value": 45.0,
+    "value": 107.0,
     "properties": {
       "persistent": true
     }
@@ -1931,6 +1931,38 @@
     "name": "/Preferences/elevator/sm_counter",
     "type": "int",
     "value": 100,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PathLogger/sampling_rate_ms",
+    "type": "int",
+    "value": 50,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/autoflick",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/no_piece_chute_loop_thresh",
+    "type": "int",
+    "value": 30,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/no_piece_chute_wait_loop_thresh",
+    "type": "int",
+    "value": -30,
     "properties": {
       "persistent": true
     }

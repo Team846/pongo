@@ -95,7 +95,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   if (dr_readings.right_trigger && !previous_driver_.right_trigger) {
     ci_readings_.position_algal = !previous_readings_.position_algal;
-    if (!ci_readings_.position_algal){ op_changed_target_ = false;}
+    if (!ci_readings_.position_algal) { op_changed_target_ = false; }
   } else
     ci_readings_.position_algal = previous_readings_.position_algal;
 
@@ -128,45 +128,40 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   AlgalStates previous_state = previous_readings_.algal_state;
 
-
-  bool operator_clicked=false;
+  bool operator_clicked = false;
   first_enable_exception = false;
-  if (op_readings.pov == frc846::robot::XboxPOV::kUp){
+  if (op_readings.pov == frc846::robot::XboxPOV::kUp) {
     ci_readings_.algal_state = AlgalStates::kAlgae_Net;
-    operator_clicked=true;
+    operator_clicked = true;
 
-    }
-  else if (op_readings.pov == frc846::robot::XboxPOV::kRight){
+  } else if (op_readings.pov == frc846::robot::XboxPOV::kRight) {
     ci_readings_.algal_state = AlgalStates::kAlgae_L3Pick;
 
-    operator_clicked=true;
-  }
-  else if (op_readings.pov == frc846::robot::XboxPOV::kDown){
+    operator_clicked = true;
+  } else if (op_readings.pov == frc846::robot::XboxPOV::kDown) {
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
 
-    operator_clicked=true;
-  }
-  else if (op_readings.pov == frc846::robot::XboxPOV::kLeft){
+    operator_clicked = true;
+  } else if (op_readings.pov == frc846::robot::XboxPOV::kLeft) {
     ci_readings_.algal_state = AlgalStates::kAlgae_L2Pick;
 
-    operator_clicked=true;
-  }
-  else if (op_readings.a_button){
+    operator_clicked = true;
+  } else if (op_readings.a_button) {
     ci_readings_.algal_state = AlgalStates::kAlgae_GroundIntake;
 
-    operator_clicked=true;
-  }
-  else if (op_readings.y_button){
+    operator_clicked = true;
+  } else if (op_readings.y_button) {
     ci_readings_.algal_state = AlgalStates::kAlgae_OnTopIntake;
 
-    operator_clicked=true;
-  }
-  else {
+    operator_clicked = true;
+  } else {
     ci_readings_.algal_state = previous_readings_.algal_state;
     first_enable_exception = previous_first_enable_exception;
   }
 
-  if (ci_readings_.algal_state != previous_state && operator_clicked) { op_changed_target_ = true; }
+  if (ci_readings_.algal_state != previous_state && operator_clicked) {
+    op_changed_target_ = true;
+  }
 
   auto drivetrain_readings = drivetrain_ss_->GetReadings();
   auto curr_pose = drivetrain_readings.estimated_pose.position;
@@ -182,20 +177,20 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   units::inch_t mid_field_y = frc846::math::FieldPoint::field_size_y / 2.0;
 
-  if (algal_ss_->GetReadings().has_piece){
-    no_algae_counter=0;
-  }
-  else{
-    if(no_algae_counter<1000) no_algae_counter++;
+  if (algal_ss_->GetReadings().has_piece) {
+    no_algae_counter = 0;
+  } else {
+    if (no_algae_counter < 1000) no_algae_counter++;
   }
 
   // Net autopicking
   //  check if y is within 80 in of midfield
   if (units::math::abs(curr_pose[1] - mid_field_y) < 80_in &&
-      !op_changed_target_ && no_algae_counter<800) {
+      !op_changed_target_ && algal_ss_->GetReadings().has_piece) {
     // check if robot is pointed within 30 deg of 0 or 180 deg
     if (units::math::abs(rotation) < 30_deg ||
-        units::math::abs(rotation - 180_deg) < 30_deg) {  
+        units::math::abs(rotation - 180_deg) < 30_deg) {
+          // Log("net auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Net;
     }
   }
@@ -204,14 +199,17 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   // processor autopicking
   //  check if near right side and pointed at 90 degree and 30 in from the right
-  if (units::math::abs(field_width-curr_pose[0]) < 30.0_in &&
-      units::math::abs(rotation - 90.0_deg) < 30.0_deg && !op_changed_target_ &&no_algae_counter<800) {
+  if (units::math::abs(field_width - curr_pose[0]) < 30.0_in &&
+      units::math::abs(rotation - 90.0_deg) < 30.0_deg && !op_changed_target_ &&
+      algal_ss_->GetReadings().has_piece){
+        // Log("processor auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   }
   // check if near left side and pointed at -90 degree and 30 in from the left
   else if (curr_pose[0] < 30.0_in &&
            units::math::abs(rotation + 90.0_deg) < 30.0_deg &&
-           !op_changed_target_ && no_algae_counter<800) {
+           !op_changed_target_ && algal_ss_->GetReadings().has_piece) {
+    // Log("proc auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   }
 
