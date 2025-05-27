@@ -9,6 +9,7 @@
 #include "commands/teleop/gpd_ss_command.h"
 #include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
+#include "commands/teleop/net_auto_align.h"
 #include "commands/teleop/reef_auto_align.h"
 #include "frc846/robot/swerve/aim_command.h"
 #include "frc846/robot/swerve/drive_to_point_command.h"
@@ -32,6 +33,11 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
+                   .ToPtr());
+
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().lock_net;
+  }}.WhileTrue(NetAutoAlignCommand{container, container.control_input_.base_adj}
                    .ToPtr());
 
   frc2::Trigger{[&] {

@@ -140,7 +140,9 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
       chute_piece || coral_end_effector.GetReadings().has_piece_;
   Graph("piece_entered", piece_entered);
 
-  if (chute_piece && !coral_end_effector.GetReadings().has_piece_ || (hasReached(CoralStates::kCoral_StowNoPiece) && coral_end_effector.GetReadings().see_reef)) {
+  if (chute_piece && !coral_end_effector.GetReadings().has_piece_ ||
+      (hasReached(CoralStates::kCoral_StowNoPiece) &&
+          coral_end_effector.GetReadings().see_reef)) {
     no_piece_chute_count_++;
   } else {
     no_piece_chute_count_ = 0;

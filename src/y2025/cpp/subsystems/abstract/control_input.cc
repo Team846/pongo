@@ -54,6 +54,11 @@ ControlInputReadings ControlInputSubsystem::ReadFromHardware() {
         readings.lock_right_reef ? 1 : 0);
     base_adj = {0_in, 0_in};
   }
+  if (readings.lock_net != previous_readings_.lock_net) {
+    Log("ControlInput [Lock Net] state changed to {}",
+        readings.lock_net ? 1 : 0);
+    base_adj = {0_in, 0_in};
+  }
 
   previous_readings_ = readings;
 
@@ -190,8 +195,13 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     // check if robot is pointed within 30 deg of 0 or 180 deg
     if (units::math::abs(rotation) < 30_deg ||
         units::math::abs(rotation - 180_deg) < 30_deg) {
-          // Log("net auto");
+      // Log("net auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Net;
+      // Net auto aligning
+      if (dr_readings.right_bumper) {
+        ci_readings_.lock_net = true;
+        ci_readings_.lock_right_reef = false;
+      }
     }
   }
 
@@ -201,8 +211,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   //  check if near right side and pointed at 90 degree and 30 in from the right
   if (units::math::abs(field_width - curr_pose[0]) < 30.0_in &&
       units::math::abs(rotation - 90.0_deg) < 30.0_deg && !op_changed_target_ &&
-      algal_ss_->GetReadings().has_piece){
-        // Log("processor auto");
+      algal_ss_->GetReadings().has_piece) {
+    // Log("processor auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
   }
   // check if near left side and pointed at -90 degree and 30 in from the left

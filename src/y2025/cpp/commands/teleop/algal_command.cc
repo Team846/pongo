@@ -15,15 +15,19 @@ void AlgalCommand::Periodic() {
   auto ci_readings = container_.control_input_.GetReadings();
   auto cpos = container_.drivetrain_.GetReadings().estimated_pose.position;
   auto cvel = container_.drivetrain_.GetReadings().estimated_pose.velocity;
-  bool use_pred_pos = false;
-  frc846::math::Vector2D predicted_pos;
 
-  if (cvel.magnitude() > 2_fps) {
-    use_pred_pos = true;
-    units::second_t time_step = 0.3_s;
-    predicted_pos =
-        cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] * time_step};
-  }
+  // Not added to control input yet
+
+  // bool use_pred_pos = false;
+  // frc846::math::Vector2D predicted_pos;
+
+  // if (cvel.magnitude() > 2_fps) {
+  //   use_pred_pos = true;
+  //   units::second_t time_step = 0.3_s;
+  //   predicted_pos =
+  //       cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] *
+  //       time_step};
+  // }
 
   // Logic moved to control_input
 

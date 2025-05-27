@@ -25,6 +25,7 @@ struct ControlInputReadings {
   // Alignment
   bool lock_left_reef;
   bool lock_right_reef;
+  bool lock_net;
   bool auto_align;
 
   // Superstructure
@@ -106,7 +107,7 @@ private:
   frc::XboxController driver_{0};
   frc::XboxController operator_{1};
 
-  int no_algae_counter=0;
+  int no_algae_counter = 0;
 
   int climb_state_ = 0;
 
