@@ -1,7 +1,5 @@
 #include "commands/teleop/net_auto_align.h"
 
-#include <frc2/command/ParallelRaceGroup.h>
-
 #include "commands/general/algal_position_command.h"
 #include "commands/teleop/drive_to_net_command.h"
 #include "commands/teleop/lock_to_net_command.h"
@@ -16,10 +14,11 @@ NetAutoAlignCommand::NetAutoAlignCommand(RobotContainer& container,
           frc2::SequentialCommandGroup{
               DriveToNetCommand{container, false, max_speed, max_acceleration,
                   max_deceleration},
-              frc2::ParallelRaceGroup{
+              frc2::ParallelCommandGroup{
                   LockToNetCommand{container, base_adj},
-                  AlgalPositionCommand{container, kAlgae_Net, true},
+                  AlgalPositionCommand{container, kAlgae_Net, false},
               },
+              AlgalPositionCommand{container, kAlgae_Net, true},
               DriveToNetCommand{container, true, max_speed, max_acceleration,
                   max_deceleration},
               AlgalPositionCommand{container, kAlgae_Stow, false}}} {}

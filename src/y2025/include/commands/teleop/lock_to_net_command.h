@@ -9,4 +9,9 @@
 class LockToNetCommand : public frc846::robot::swerve::LockToPointCommand {
 public:
   LockToNetCommand(RobotContainer& container, frc846::math::Vector2D& base_adj);
+
+  bool IsFinished() override;
+
+private:
+  RobotContainer& container_;
 };

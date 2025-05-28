@@ -1,7 +1,7 @@
 #include "commands/teleop/lock_to_net_command.h"
 
-LockToNetCommand::LockToNetCommand(RobotContainer& container,
-    frc846::math::Vector2D& base_adj)
+LockToNetCommand::LockToNetCommand(
+    RobotContainer& container, frc846::math::Vector2D& base_adj)
     : frc846::robot::swerve::LockToPointCommand{&(container.drivetrain_), {},
           [&, &cnt = container, &ba = base_adj](
               frc846::math::FieldPoint ctarget, frc846::math::FieldPoint start,
@@ -34,6 +34,11 @@ LockToNetCommand::LockToNetCommand(RobotContainer& container,
             if (bearing > 150_deg) { target_pos = target_pos.mirror(true); }
 
             return std::pair<frc846::math::FieldPoint, bool>{target_pos, true};
-          }} {
+          }},
+      container_(container) {
   base_adj = {0_in, 0_in};
+}
+
+bool LockToNetCommand::IsFinished() {
+  return container_.control_input_.GetReadings().score_algae;
 }
