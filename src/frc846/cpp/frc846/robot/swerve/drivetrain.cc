@@ -43,6 +43,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_max_speed", 9_fps);
   RegisterPreference("auto_max_speed", 15_fps);
 
+  RegisterPreference("lock_net_adj_rate", 1.0_in);
+
   RegisterPreference("drive_to_subtract", 2_in);
 
   RegisterPreference("april_bearing_latency", 0_ms);

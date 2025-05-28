@@ -8,6 +8,5 @@
 
 class LockToNetCommand : public frc846::robot::swerve::LockToPointCommand {
 public:
-  LockToNetCommand(RobotContainer& container, frc846::math::Vector2D& base_adj,
-      bool is_retracting);
+  LockToNetCommand(RobotContainer& container, frc846::math::Vector2D& base_adj);
 };
