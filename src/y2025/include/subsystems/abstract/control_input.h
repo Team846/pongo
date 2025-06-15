@@ -113,6 +113,10 @@ private:
 
   bool op_changed_target_ = false;
 
+  bool previous_has_coral_ = false;
+
+  bool previous_has_algal_ = false;
+
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;

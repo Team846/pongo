@@ -129,6 +129,16 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   previous_first_enable_exception = first_enable_exception;
 
+  // coral/algal piece rumble
+  bool rumble_driver = false;
+  bool rumble_operator = false;
+  if ((coral_ss_->GetReadings().piece_entered && !previous_has_coral_) ||
+      (algal_ss_->GetReadings().has_piece && !previous_has_algal_)) {
+    rumble_driver = true;
+  }
+  previous_has_coral_ = coral_ss_->GetReadings().piece_entered;
+  previous_has_algal_ = algal_ss_->GetReadings().has_piece;
+
   // algae autopicking
 
   AlgalStates previous_state = previous_readings_.algal_state;
@@ -171,6 +181,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   auto drivetrain_readings = drivetrain_ss_->GetReadings();
   auto curr_pose = drivetrain_readings.estimated_pose.position;
   auto rotation = drivetrain_readings.estimated_pose.bearing;
+  bool auto_pick_used = false;
 
   // autopicking for l2/l3
   if (ci_readings_.lock_left_reef) {
@@ -197,6 +208,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
         units::math::abs(rotation - 180_deg) < 30_deg) {
       // Log("net auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Net;
+      auto_pick_used = true;
       // Net auto aligning
       if (dr_readings.right_bumper) {
         ci_readings_.lock_net = true;
@@ -214,6 +226,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
       algal_ss_->GetReadings().has_piece) {
     // Log("processor auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+    auto_pick_used = true;
   }
   // check if near left side and pointed at -90 degree and 30 in from the left
   else if (curr_pose[0] < 30.0_in &&
@@ -221,7 +234,10 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
            !op_changed_target_ && algal_ss_->GetReadings().has_piece) {
     // Log("proc auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+    auto_pick_used = true;
   }
+
+  if (auto_pick_used) { rumble_operator = true; }
 
   double op_deadband = GetPreferenceValue_double("op_deadband");
 
@@ -262,6 +278,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
+
+  SetTarget({rumble_driver, rumble_operator});
 
   ci_readings_.first_enable_exception = first_enable_exception;
   Graph("first_enable_exception", first_enable_exception);
