@@ -9,7 +9,10 @@ class NetAutoAlignCommand
 public:
   NetAutoAlignCommand(RobotContainer& container,
       units::feet_per_second_t max_speed,
+      units::feet_per_second_t max_retract_speed,
       units::feet_per_second_squared_t max_acceleration,
+      units::feet_per_second_squared_t max_retract_acceleration,
       units::feet_per_second_squared_t max_deceleration,
+      units::feet_per_second_squared_t max_retract_deceleration,
       frc846::math::Vector2D& base_adj);
 };
