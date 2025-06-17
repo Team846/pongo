@@ -59,6 +59,8 @@ struct ControlInputReadings {
 
   bool first_enable_exception;
 
+  bool camera_stream;
+
   // "Homing..."
   bool override_soft_limits;
   bool home_telescope;

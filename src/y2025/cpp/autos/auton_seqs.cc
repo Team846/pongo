@@ -81,7 +81,7 @@ using FPT = frc846::math::FieldPoint;
   }
 
 #define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
-#define SOURCELOC MKPT(24.703_in, 58.932_in, 53.5_deg, 0_fps)
+#define SOURCELOC MKPT(23.03_in, 56.532_in, 53.5_deg, 0_fps)
 
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
