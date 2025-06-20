@@ -1,6 +1,7 @@
 #pragma once
 
 #include "frc846/math/vectors.h"
+#include "frc846/robot/GenericController.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/swerve/drivetrain.h"
 #include "frc846/robot/xbox.h"
@@ -103,9 +104,11 @@ private:
 
   frc846::robot::XboxReadings previous_driver_{};
   frc846::robot::XboxReadings previous_operator_{};
+  frc846::robot::GenericControllerReadings previous_operator_keyboard_{};
 
   frc::XboxController driver_{0};
   frc::XboxController operator_{1};
+  frc::GenericHID operator_keyboard_{2};
 
   int no_algae_counter = 0;
 

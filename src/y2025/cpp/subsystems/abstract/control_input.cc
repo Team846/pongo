@@ -77,6 +77,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   auto trigger_threshold = GetPreferenceValue_double("trigger_threshold");
   frc846::robot::XboxReadings dr_readings{driver_, trigger_threshold};
   frc846::robot::XboxReadings op_readings{operator_, trigger_threshold};
+  frc846::robot::GenericControllerReadings op_keyboard_readings{
+      operator_keyboard_};
 
   ci_readings_.zero_bearing = dr_readings.back_button;
   ci_readings_.translate_x = dr_readings.left_stick_x;
@@ -268,7 +270,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.extend_climb = op_readings.right_trigger;
   ci_readings_.retract_climb = op_readings.left_trigger;
 
-  ci_readings_.override_soft_limits = op_readings.back_button;
+  ci_readings_.override_soft_limits = op_keyboard_readings.one_button;
   ci_readings_.home_telescope =
       op_readings.x_button && ci_readings_.override_soft_limits;
   ci_readings_.home_elevator =
@@ -278,6 +280,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
+  previous_operator_keyboard_ = op_keyboard_readings;
 
   SetTarget({rumble_driver, rumble_operator});
 
