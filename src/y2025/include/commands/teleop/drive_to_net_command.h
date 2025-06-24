@@ -5,7 +5,7 @@
 
 class DriveToNetCommand : public frc846::robot::swerve::DriveToPointCommand {
 public:
-  DriveToNetCommand(RobotContainer& container, bool is_retracting,
+  DriveToNetCommand(RobotContainer& container, bool is_scoring,
       units::feet_per_second_t max_speed,
       units::feet_per_second_squared_t max_acceleration,
       units::feet_per_second_squared_t max_deceleration);
@@ -14,5 +14,5 @@ public:
 
 private:
   RobotContainer& container_;
-  bool is_retracting_;
+  bool is_scoring_;
 };
