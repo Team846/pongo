@@ -44,6 +44,10 @@ AlgalEESubsystem::GetCurrentConfig(
   return modifiedConfig;
 }
 
+void AlgalEESubsystem::SetPieceOverride(bool override_piece) {
+  piece_override_ = override_piece;
+}
+
 void AlgalEESubsystem::Setup() {
   esc_1_.Setup();
   esc_1_.EnableStatusFrames({});
@@ -69,6 +73,8 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
       units::math::abs(esc_2_.GetVelocity()) <=
           GetPreferenceValue_unit_type<units::turns_per_second_t>(
               "piece_thresh");
+  if (piece_override_) readings.has_piece_ = false;
+
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }

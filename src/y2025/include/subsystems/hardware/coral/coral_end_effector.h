@@ -32,6 +32,9 @@ public:
   frc846::control::config::MotorConstructionParameters GetCurrentConfig(
       frc846::control::config::MotorConstructionParameters original_config);
 
+  void SetPieceOverride(bool override_piece);
+  void SetReefOverride(bool override_reef);
+
   void Setup() override;
 
   bool VerifyHardware() override;
@@ -40,6 +43,9 @@ protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController esc_;
+
+  bool piece_override_ = false;
+  bool reef_override_ = false;
 
   CoralEEReadings ReadFromHardware() override;
 
