@@ -51,20 +51,16 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   configs.wheelbase_forward_dim = robot_constants::base::wheelbase_y;
   configs.wheelbase_horizontal_dim = robot_constants::base::wheelbase_x;
 
-  units::pound_t wheel_approx_weight = 2_lb;
-  units::inch_t wheel_weight_radius = 1_in;
-
   units::pound_t robot_weight = robot_constants::total_weight;
 
-  // (Mass wheel) * (wheel_r)^2 * (steer reduction)^2
+  // Tuned in simulation, do not change
   frc846::wpilib::unit_kg_m_sq relative_steer_inertia{
-      wheel_approx_weight * (wheel_weight_radius * wheel_weight_radius) *
-      (steer_reduction * steer_reduction).to<double>()};
+      2.204977 * 1_lb * 1_in * 1_in};
 
-  // (Mass robot) * [(wheel_d)/2]^2 * (drive reduction)^2
+  // (Mass robot / 4.0) * [(wheel_d)/2]^2 / (drive reduction)^2
   frc846::wpilib::unit_kg_m_sq relative_drive_inertia{
-      robot_weight * (wheel_diameter * wheel_diameter) *
-      (drive_reduction * drive_reduction).to<double>()};
+      robot_weight / 4.0 * (wheel_diameter * wheel_diameter / 4.0) /
+      (drive_gear_ratio * drive_gear_ratio)};
 
   /* END SETTABLES */
 
@@ -79,20 +75,20 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   frc846::wpilib::unit_ohm wire_resistance_FR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_FR, frc846::control::calculators::fourteen_gauge,
+          wire_length_FR, frc846::control::calculators::twelve_gauge,
           num_connectors_FR)};
   frc846::wpilib::unit_ohm wire_resistance_FL{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_FL, frc846::control::calculators::fourteen_gauge,
+          wire_length_FL, frc846::control::calculators::twelve_gauge,
           num_connectors_FL)};
 
   frc846::wpilib::unit_ohm wire_resistance_BL{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_BL, frc846::control::calculators::fourteen_gauge,
+          wire_length_BL, frc846::control::calculators::twelve_gauge,
           num_connectors_BL)};
   frc846::wpilib::unit_ohm wire_resistance_BR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_BR, frc846::control::calculators::fourteen_gauge,
+          wire_length_BR, frc846::control::calculators::twelve_gauge,
           num_connectors_BR)};
 
   frc846::robot::swerve::SwerveModuleUniqueConfig FR_config{"FR",
@@ -120,6 +116,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "drive_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_drive_inertia,
+      .friction = 0.03,
       .bus = "",
   };
   frc846::control::config::MotorConstructionParameters steer_params{
@@ -134,6 +131,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "steer_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_steer_inertia,
+      .friction = 0.22,
       .bus = "",
   };
 

@@ -24,6 +24,7 @@ struct SwerveOdometryInputs {
 
 struct SwerveOdometryOutput {
   frc846::math::Vector2D position;
+  units::degree_t odom_bearing;
 };
 
 class SwerveOdometryCalculator
@@ -37,13 +38,16 @@ public:
   void SetPosition(frc846::math::Vector2D position) {
     position_offset_ = position - last_position_;
   }
+  void SetOdomBearing(units::degree_t bearing) { odom_bearing_ = bearing; }
+
+  units::degree_t GetOdomBearing() { return odom_bearing_; }
 
 private:
   frc846::math::VectorND<units::inch, 4> previous_module_positions_;
 
   frc846::math::Vector2D last_position_;
 
-  units::degree_t last_bearing;
+  units::degree_t odom_bearing_;
 
   frc846::math::Vector2D position_offset_{};
 };

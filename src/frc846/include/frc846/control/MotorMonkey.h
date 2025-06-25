@@ -50,6 +50,8 @@ public:
   Writes all messages in the message queue to the motor controllers. Also,
   dynamically manages current draw and drops redundant messages.
   Returns predicted total current draw.
+
+  If disabled is true, all written messages will be zeroed.
   */
   static units::ampere_t WriteMessages(units::ampere_t max_draw);
 

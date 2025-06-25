@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include "frc/RobotBase.h"
 #include "frc846/math/constants.h"
 #include "frc846/math/fieldpoints.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
@@ -240,6 +241,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
+  bearing += GetPreferenceValue_unit_type<units::second_t>("bearing_latency") *
+             yaw_rate;
+
+  if (frc::RobotBase::IsSimulation()) { bearing = odometry_.GetOdomBearing(); }
+
   Graph("readings/bearing", bearing);
   Graph("readings/yaw_rate", yaw_rate);
 
@@ -265,16 +271,12 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_x", velocity[0]);
   Graph("readings/velocity_y", velocity[1]);
 
+  frc846::robot::swerve::odometry::SwerveOdometryOutput odom_output =
+      odometry_.calculate({bearing, steer_positions, drive_positions,
+          GetPreferenceValue_double("odom_fudge_factor")});
+
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odom_output.position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -328,6 +330,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
 
+  if (frc::RobotBase::IsSimulation()) {
+    estimated_pose.position = odom_output.position;
+    estimated_pose.velocity = velocity;
+  }
+
   if ((frc::DriverStation::IsAutonomous() ||
           frc::DriverStation::IsAutonomousEnabled()) &&
       GetPreferenceValue_bool("override_at_auto")) {
@@ -347,10 +354,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("estimated_pose/velocity_y", estimated_pose.velocity[1]);
   Graph("estimated_pose/variance", pose_estimator.getVariance());
 
-  // Note: consider bearing simulation
-
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
+  Graph("readings/odom_bearing", odom_output.odom_bearing);
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
       navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
