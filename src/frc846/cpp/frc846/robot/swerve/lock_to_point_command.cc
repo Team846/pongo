@@ -43,12 +43,6 @@ void LockToPointCommand::Execute() {
     // Graph("update_target_null", true);
   }
 
-  if (frc::RobotBase::IsSimulation()) {
-    drivetrain_->TransitionSimPose(
-        target_.point[0], target_.point[1], target_.bearing, 1.0_in, 1.0_deg);
-    return;
-  }
-
   frc846 ::math::Vector2D r_vec = target_.point - pos;
   Graph("lock_to_point/x_err", r_vec[0]);
   Graph("lock_to_point/y_err", r_vec[1]);

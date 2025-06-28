@@ -33,12 +33,6 @@ void DriveToPointCommand::Initialize() {
 }
 
 void DriveToPointCommand::Execute() {
-  if (frc::RobotBase::IsSimulation()) {
-    drivetrain_->TransitionSimPose(target_.point[0], target_.point[1],
-        target_.bearing, 0.92 * max_speed_ / 100_Hz, 2.7_deg);
-    return;
-  }
-
   total_counter_++;
 
   DrivetrainReadings dt_readings{drivetrain_->GetReadings()};
@@ -67,6 +61,8 @@ void DriveToPointCommand::Execute() {
       max_deceleration_ * DIRECTIONAL_GAIN;
   units::feet_per_second_squared_t directional_max_accl =
       max_acceleration_ * DIRECTIONAL_GAIN;
+
+  direction_offset = dt_readings.estimated_pose.velocity.angle();
 
   units::feet_per_second_t directional_velocity =
       units::math::cos(
@@ -115,7 +111,9 @@ void DriveToPointCommand::Execute() {
           frc846::math::VectorND<units::feet_per_second_squared, 2>(
               directional_max_accl, direction_offset, true);
     } else
-      directional_accl = {0_fps_sq, 0_fps_sq};
+      directional_accl =
+          frc846::math::VectorND<units::feet_per_second_squared, 2>(
+              1_fps_sq, direction_offset, true);
   }
 
   // Motion Profiling in Corrective way
@@ -185,20 +183,12 @@ void DriveToPointCommand::End(bool interrupted) {
 }
 
 bool DriveToPointCommand::IsFinished() {
-  if (frc::RobotBase::IsSimulation()) {
-    return drivetrain_->ReachedSimPose(
-        target_.point[0], target_.point[1], target_.bearing, 2_in);
-  }
-
   auto drivetrain_readings = drivetrain_->GetReadings();
   auto current_point = drivetrain_readings.estimated_pose.position;
 
-  if (drivetrain_readings.accel_vel <
-          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-              "accel_vel_stopped_thresh") ||
-      drivetrain_readings.pose.velocity.magnitude() <
-          drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-              "vel_stopped_thresh")) {
+  if (drivetrain_readings.pose.velocity.magnitude() <
+      drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
+          "vel_stopped_thresh")) {
     num_stalled_loops_ += 1;
   } else {
     num_stalled_loops_ = 0;

@@ -93,14 +93,6 @@ public:
 
   units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
 
-  static void ClearSimPose() { SetSimPose(0_in, 0_in, 0_deg); }
-  static void SetSimPose(
-      units::inch_t x, units::inch_t y, units::degree_t bearing);
-  static void TransitionSimPose(units::inch_t x, units::inch_t y,
-      units::degree_t nbearing, units::inch_t tstep, units::degree_t astep);
-  static bool ReachedSimPose(units::inch_t x, units::inch_t y,
-      units::degree_t bearing, units::inch_t tolerance);
-
 private:
   frc::Field2d a_field;
   static units::inch_t sim_pos_x;

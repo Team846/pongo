@@ -106,7 +106,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/steer_gains/_kP",
     "type": "double",
-    "value": 0.3,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }
@@ -122,7 +122,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/steer_gains/_kD",
     "type": "double",
-    "value": -0.004,
+    "value": -0.012,
     "properties": {
       "persistent": true
     }
@@ -434,7 +434,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_correctional_gain",
     "type": "double",
-    "value": 11.846,
+    "value": 0.175,
     "properties": {
       "persistent": true
     }

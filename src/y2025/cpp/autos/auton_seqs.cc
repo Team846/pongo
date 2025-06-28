@@ -59,20 +59,16 @@ using FPT = frc846::math::FieldPoint;
 #define MKPT(x, y, bearing, velocity) \
   FPT{{x, y}, bearing, velocity}.mirror(is_blue_side).mirrorOnlyX(!is_left_side)
 
-#define START2(x, y, start_bearing)                                           \
-  INSTANT {                                                                   \
-    [&, blue = is_blue_side, left = is_left_side]() {                         \
-      FPT start_point{{x, y}, start_bearing, 0_fps};                          \
-      start_point = start_point.mirror(blue).mirrorOnlyX(!left);              \
-      container.drivetrain_.UpdateReadings();                                 \
-      container.drivetrain_.SetPosition(                                      \
-          {start_point.point[0], start_point.point[1]});                      \
-      if (frc::RobotBase::IsSimulation()) {                                   \
-        container.drivetrain_.SetSimPose(                                     \
-            start_point.point[0], start_point.point[1], start_point.bearing); \
-      }                                                                       \
-      Log("Auto Start");                                                      \
-    }                                                                         \
+#define START2(x, y, start_bearing)                              \
+  INSTANT {                                                      \
+    [&, blue = is_blue_side, left = is_left_side]() {            \
+      FPT start_point{{x, y}, start_bearing, 0_fps};             \
+      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.UpdateReadings();                    \
+      container.drivetrain_.SetPosition(                         \
+          {start_point.point[0], start_point.point[1]});         \
+      Log("Auto Start");                                         \
+    }                                                            \
   }
 #define DRIVE(auto_name, x, y, bearing, final_velocity)                   \
   frc846::robot::swerve::DriveToPointCommand {                            \
@@ -166,8 +162,6 @@ using FPT = frc846::math::FieldPoint;
       : frc846::robot::GenericCommandGroup<RobotContainer, codeName,   \
             SEQUENCE> {                                                \
     container, AUTO_NAME(stringName),
-
-// TODO: Use AprilTags for start point?
 
 /***********************
 AUTONOMOUS HELPER MACROS

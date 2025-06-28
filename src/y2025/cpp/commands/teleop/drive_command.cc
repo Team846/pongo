@@ -115,7 +115,7 @@ void DriveCommand::Periodic() {
       target_angle = isBlue ? -90_deg : 90_deg;
     } else if (ci_readings_.coral_state == kCoral_StowNoPiece &&
                !container_.coral_ss_.coral_end_effector.GetReadings()
-                   .has_piece_) {
+                    .has_piece_) {
       if (container_.drivetrain_.GetReadings().estimated_pose.position[0] >
           (frc846::math::FieldPoint::field_size_x / 2))
         target_angle = -54_deg;
@@ -128,10 +128,6 @@ void DriveCommand::Periodic() {
       target.angular_velocity =
           container_.drivetrain_.ApplyBearingPID(target_angle);
   }
-
-  // TODO: the following is very fake. remove.
-  // target.velocity[0] = 3.0_fps;
-  // target.velocity[1] = 5.0_fps;
 
   container_.drivetrain_.SetTarget({target});
 }

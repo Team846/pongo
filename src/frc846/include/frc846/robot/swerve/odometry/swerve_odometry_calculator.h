@@ -11,8 +11,8 @@
 namespace frc846::robot::swerve::odometry {
 
 struct SwerveOdometryConstants {
-  std::array<units::degree_t, 4> angle_offsets;
-  units::inch_t center_to_wheel;
+  units::inch_t forward_wheelbase_dim;
+  units::inch_t horizontal_wheelbase_dim;
 };
 
 struct SwerveOdometryInputs {

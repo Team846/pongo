@@ -44,7 +44,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
-      (frc846::math::constants::geometry::pi * wheel_diameter) /
+      (frc846::math::constants::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
   frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
 
@@ -55,7 +55,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   // Tuned in simulation, do not change
   frc846::wpilib::unit_kg_m_sq relative_steer_inertia{
-      2.204977 * 1_lb * 1_in * 1_in};
+      0.285 * 1_lb * 1_in * 1_in};
 
   // (Mass robot / 4.0) * [(wheel_d)/2]^2 / (drive reduction)^2
   frc846::wpilib::unit_kg_m_sq relative_drive_inertia{
@@ -72,6 +72,12 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           .stall_torque /
       effective_torque_radius};
   configs.max_accel = (4.0 * max_force_per_wheel) / robot_weight;
+
+  // Steer load factor
+  units::inch_t wheel_contact_radius = 0.4_in;
+  units::unit_t<units::compound_unit<units::meter, units::kilogram>>
+      steer_load_factor =
+          wheel_contact_radius * steer_reduction * (robot_weight / 4.0);
 
   frc846::wpilib::unit_ohm wire_resistance_FR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
@@ -137,7 +143,8 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
-          steer_params, mmtype, steer_reduction, drive_reduction, ""};
+          steer_params, mmtype, steer_reduction, drive_reduction,
+          steer_load_factor, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   configs.camera_x_offsets = {-6.25_in, 7_in};
@@ -152,8 +159,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       {12, {23.17_in, 655.45_in}}, {13, {289.3_in, 660_in}},
       {16, {-0.15_in, 451.895_in}}, {17, {131.795_in, 533.3_in}},
       {18, {161.75_in, 546.875_in}}, {19, {188.455_in, 527.67_in}},
-      {20, {185.205_in, 494.96_in}},
-      {21, {155.25_in, 481.385_in}},  // TODO: Disable processor tag
+      {20, {185.205_in, 494.96_in}}, {21, {155.25_in, 481.385_in}},
       {22, {128.545_in, 500.58_in}}};
 
   return configs;

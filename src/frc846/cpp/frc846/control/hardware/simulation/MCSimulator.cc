@@ -20,6 +20,8 @@ MCSimulator::MCSimulator(frc846::control::base::MotorSpecs specs,
       std::chrono::system_clock::now().time_since_epoch());
 }
 
+// TODO: cleanup iostream
+
 void MCSimulator::Tick() {
   double duty_cycle = 0.0;
   if (auto* dc = std::get_if<double>(&control_message)) {
@@ -54,28 +56,9 @@ void MCSimulator::Tick() {
   // std::cout << "Predicted Current: " << pred_current_.to<double>() << " A"
   //           << std::endl;
   if (std::fabs(duty_cycle) < 0.03 && pred_current_ < 0_A && !brake_mode_)
-    pred_current_ = 0_A;  // TODO: check brake mode
+    pred_current_ = 0_A;
 
-  units::newton_meter_t torque_output =
-      frc846::control::calculators::CurrentTorqueCalculator::current_to_torque(
-          pred_current_, specs);
-  units::newton_meter_t friction_torque =
-      specs.stall_torque * copysign(friction_, velocity_.to<double>());
-
-  torque_output -= load_;
-  if (units::math::abs(velocity_) > 0.01_rad_per_s) {
-    torque_output -= friction_torque;
-    // std::cout << "Torque Output: " << torque_output.to<double>()
-    //           << " Nm, Friction Torque: " << friction_torque.to<double>()
-    //           << " Nm, Load: " << load_.to<double>() << " Nm" << std::endl;
-  } else {
-    if (units::math::abs(friction_torque) > units::math::abs(torque_output)) {
-      torque_output = 0_Nm;
-    } else {
-      friction_torque = units::math::copysign(friction_torque, torque_output);
-      torque_output -= friction_torque;
-    }
-  }
+  units::newton_meter_t friction_mag = specs.stall_torque * friction_;
 
   std::chrono::microseconds current_time =
       std::chrono::duration_cast<std::chrono::microseconds>(
@@ -89,7 +72,8 @@ void MCSimulator::Tick() {
 
   units::radians_per_second_t new_velocity =
       frc846::control::calculators::VelocityPositionEstimator::predict_velocity(
-          velocity_, torque_output, loop_time, rotational_inertia_);
+          velocity_, duty_cycle, loop_time, current_limit_, load_, friction_mag,
+          rotational_inertia_, specs, brake_mode_);
   // new_velocity =
   //     units::radians_per_second_t{std::clamp(new_velocity.to<double>(),
   //         (-specs.free_speed).to<double>(), specs.free_speed.to<double>())};

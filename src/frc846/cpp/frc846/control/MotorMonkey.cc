@@ -152,10 +152,12 @@ void MotorMonkey::Tick(bool disabled) {
   if (disabled) {
     last_disabled_voltage = battery_voltage;
     if (!frc::RobotBase::IsSimulation()) {
-      WriteMessages(400_A);  // TODO: fix
+      WriteMessages(400_A);
       return;
     }
   }
+
+  // TODO: cleanup iostream
 
   units::ampere_t total_pred_draw = WriteMessages(max_draw_);
 

@@ -18,7 +18,8 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
           getMotorParams(unique_config, common_config).first},
       steer_{common_config.motor_types,
           getMotorParams(unique_config, common_config).second},
-      cancoder_{unique_config.cancoder_id, common_config.bus} {
+      cancoder_{unique_config.cancoder_id, common_config.bus},
+      steer_load_factor_{common_config.steer_load_factor} {
   drive_helper_.SetConversion(common_config.drive_reduction);
   steer_helper_.SetConversion(common_config.steer_reduction);
 
@@ -67,8 +68,9 @@ void SwerveModuleSubsystem::Setup() {
 
   steer_.Setup();
   steer_.EnableStatusFrames(
-      {frc846::control::config::StatusFrame::kPositionFrame}, 20_ms, 20_ms,
-      5_ms, 20_ms);
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame},
+      20_ms, 20_ms, 5_ms, 20_ms);
 
   ZeroWithCANcoder();
 }
@@ -133,6 +135,15 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   readings.vel = drive_helper_.GetVelocity();
   readings.drive_pos = drive_helper_.GetPosition();
   readings.steer_pos = steer_helper_.GetPosition();
+
+  units::newton_meter_t pred_steer_load =
+      steer_load_factor_ * readings.vel *
+      (steer_helper_.GetVelocity().convert<units::radians_per_second>() /
+          1_rad);
+
+  steer_.SetLoad(pred_steer_load);
+
+  Graph("readings/pred_steer_load", pred_steer_load);
 
   Graph("readings/drive_motor_vel", readings.vel);
   // Graph("readings/drive_motor_pos", readings.drive_pos);
