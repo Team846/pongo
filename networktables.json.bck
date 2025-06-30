@@ -434,7 +434,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_correctional_gain",
     "type": "double",
-    "value": 0.25,
+    "value": 0.175,
     "properties": {
       "persistent": true
     }
@@ -1650,7 +1650,7 @@
   {
     "name": "/Preferences/robot_container/init_gpd",
     "type": "boolean",
-    "value": true,
+    "value": false,
     "properties": {
       "persistent": true
     }

@@ -62,8 +62,6 @@ void DriveToPointCommand::Execute() {
   units::feet_per_second_squared_t directional_max_accl =
       max_acceleration_ * DIRECTIONAL_GAIN;
 
-  direction_offset = dt_readings.estimated_pose.velocity.angle();
-
   units::feet_per_second_t directional_velocity =
       units::math::cos(
           dt_readings.estimated_pose.velocity.angle() - direction_offset) *

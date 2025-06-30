@@ -4,6 +4,8 @@
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
 
+#include "frc846/math/Differentiator.h"
+#include "frc846/math/Smoother.h"
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
@@ -88,6 +90,7 @@ public:
 
   void SetBearing(units::degree_t bearing);
   void SetPosition(frc846::math::Vector2D position);
+  void SetOdomBearing(units::degree_t odom_bearing);
 
   void SetCANCoderOffsets();
 
@@ -130,6 +133,11 @@ private:
   units::degree_t bearing_offset_ = 0_deg;
 
   int see_tag_counter_ = 100001;
+
+  frc846::math::Differentiator accel_x_diff{};
+  frc846::math::Differentiator accel_y_diff{};
+  frc846::math::Smoother accel_x_smooth{0.125};
+  frc846::math::Smoother accel_y_smooth{0.125};
 };
 
 }  // namespace frc846::robot::swerve

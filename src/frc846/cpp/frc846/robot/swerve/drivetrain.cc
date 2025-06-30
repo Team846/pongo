@@ -182,6 +182,11 @@ void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
   pose_estimator.SetPoint({position[0], position[1]});
 }
 
+void DrivetrainSubsystem::SetOdomBearing(units::degree_t odom_bearing) {
+  odometry_.SetOdomBearing(odom_bearing);
+  // Log("setting odom bearing to {}", odom_bearing);
+}
+
 void DrivetrainSubsystem::SetCANCoderOffsets() {
   for (SwerveModuleSubsystem* module : modules_) {
     module->SetCANCoderOffset();
@@ -265,6 +270,21 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   Graph("readings/velocity_x", velocity[0]);
   Graph("readings/velocity_y", velocity[1]);
+
+  Graph("readings/velocity_mag", velocity.magnitude());
+
+  units::feet_per_second_squared_t odom_accel_x =
+      1_fps_sq * accel_x_diff.Calculate(velocity[0].to<double>());
+  units::feet_per_second_squared_t odom_accel_y =
+      1_fps_sq * accel_y_diff.Calculate(velocity[1].to<double>());
+  odom_accel_x = 1_fps_sq * accel_x_smooth.Calculate(odom_accel_x.to<double>());
+  odom_accel_y = 1_fps_sq * accel_y_smooth.Calculate(odom_accel_y.to<double>());
+
+  Graph("readings/odom_accel_x", odom_accel_x);
+  Graph("readings/odom_accel_y", odom_accel_y);
+  Graph("readings/odom_accel_mag",
+      units::math::sqrt(
+          odom_accel_x * odom_accel_x + odom_accel_y * odom_accel_y));
 
   frc846::robot::swerve::odometry::SwerveOdometryOutput odom_output =
       odometry_.calculate({bearing, steer_positions, drive_positions,

@@ -13,6 +13,9 @@ struct MotorGains {
   double kD;
   double kFF;
 
+  // TODO: Remove kI
+  // TODO: Add kS
+
   /*
   calculate()
 
@@ -26,6 +29,7 @@ struct MotorGains {
   */
   double calculate(double error, double integral, double derivative,
       double feedforward_multiplier) const {
+    // TODO: Perform derivative term calculations; don't take it as a parameter.
     return kP * error + kI * integral + kD * derivative +
            kFF * feedforward_multiplier;
   }

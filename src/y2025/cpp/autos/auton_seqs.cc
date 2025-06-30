@@ -79,6 +79,19 @@ using FPT = frc846::math::FieldPoint;
 #define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
 #define SOURCELOC MKPT(24.703_in, 58.932_in, 53.5_deg, 0_fps)
 
+#define FPC_EXPECTED_START_UF FPT{{50.5_in, 271.3_in}, 140_deg, 0_fps}
+
+#define FPC_SIM_START()                                                      \
+  INSTANT {                                                                  \
+    [&, blue = is_blue_side, left = is_left_side] {                          \
+      if (!frc::RobotBase::IsSimulation()) return;                           \
+      FPT exp_start = FPC_EXPECTED_START_UF.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.SetPosition(exp_start.point);                    \
+      container.drivetrain_.SetOdomBearing(exp_start.bearing);               \
+      Log("FPC Simulated Auto Start");                                       \
+    }                                                                        \
+  }
+
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
@@ -152,9 +165,7 @@ using FPT = frc846::math::FieldPoint;
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),              \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT {                               \
-    0.25_s                                                                  \
-  }
+      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \
@@ -180,9 +191,10 @@ END DEFINE MACROS
 __AUTO__(FourAndPickAuto, "5PC")
 SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   // WAIT{0.25_s},
-  DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(8), ALGAL_POS(kAlgae_L2Pick, false)
+  FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC),
+      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC),
+      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(8),
+      ALGAL_POS(kAlgae_L2Pick, false)
 }
 }
 {}
