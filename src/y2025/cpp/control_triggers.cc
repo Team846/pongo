@@ -57,6 +57,27 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
       CoralPositionCommand{container, kCoral_FLICK,
           true}}.ToPtr());
 
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().auto_pick_used;
+  }}.OnTrue(frc2::InstantCommand([&] {
+    container.control_input_.SetTarget({false, true});
+  })
+                .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
+                .AndThen(frc2::InstantCommand([&] {
+                  container.control_input_.SetTarget({false, false});
+                }).ToPtr()));
+
+  frc2::Trigger{[&] {
+    return container.coral_ss_.GetReadings().piece_entered ||
+           container.algal_ss_.GetReadings().has_piece;
+  }}.OnTrue(frc2::InstantCommand([&] {
+    container.control_input_.SetTarget({true, false});
+  })
+                .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
+                .AndThen(frc2::InstantCommand([&] {
+                  container.control_input_.SetTarget({false, false});
+                }).ToPtr()));
+
   // frc2::Trigger{[&] {
   //   return container.control_input_.GetReadings().targeting_algae &&
   //          container.GPD_.GetReadings().gamepieces.size() != 0U &&
