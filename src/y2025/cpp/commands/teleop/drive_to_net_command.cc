@@ -17,8 +17,8 @@ std::pair<frc846::math::FieldPoint, bool> DriveToNetCommand::GetTargetPoint() {
       drivetrain_->GetReadings().estimated_pose.position;
   units::degree_t bearing = drivetrain_->GetReadings().estimated_pose.bearing;
 
-  units::inch_t net_offest = 55_in;
-  if (is_scoring_) { net_offest = 45_in; }
+  units::inch_t net_offest = 60_in;
+  if (is_scoring_) { net_offest = 35_in; }
   frc846::math::Vector2D net_pos = frc846::math::Vector2D{
       pos[0], frc846::math::FieldPoint::field_size_y / 2 - net_offest};
   frc846::math::FieldPoint target_pos =

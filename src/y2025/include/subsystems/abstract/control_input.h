@@ -120,6 +120,8 @@ private:
 
   bool previous_has_algal_ = false;
 
+  bool override_lock_right = false;
+
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;

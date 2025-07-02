@@ -2,6 +2,7 @@
 
 #include <frc2/command/ParallelRaceGroup.h>
 #include <frc2/command/WaitCommand.h>
+#include <frc2/command/WaitUntilCommand.h>
 
 #include "commands/general/algal_position_command.h"
 #include "commands/teleop/drive_to_net_command.h"
@@ -20,7 +21,15 @@ NetAutoAlignCommand::NetAutoAlignCommand(RobotContainer& container,
               AlgalPositionCommand{container, kAlgae_Net, false},
               DriveToNetCommand{container, true, max_net_speed,
                   max_net_acceleration, max_net_deceleration},
-              AlgalPositionCommand{container, kAlgae_Net, true},
+              frc2::ParallelCommandGroup{
+                  AlgalPositionCommand{container, kAlgae_Net, true},
+                  frc2::WaitUntilCommand{[&] {
+                    return !container_.algal_ss_.algal_end_effector
+                                .GetReadings()
+                                .has_piece_;
+                  }},
+              },
+              frc2::WaitCommand{0.5_s},
               DriveToNetCommand{container, false, max_net_speed,
                   max_net_acceleration, max_net_deceleration},
               AlgalPositionCommand{container, kAlgae_Stow, false}}} {}

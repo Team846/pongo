@@ -94,7 +94,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.rotation = dr_readings.right_stick_x;
 
   ci_readings_.lock_left_reef = dr_readings.left_bumper;
-  ci_readings_.lock_right_reef = dr_readings.right_bumper;
+  ci_readings_.lock_right_reef =
+      dr_readings.right_bumper && !override_lock_right;
 
   ci_readings_.targeting_algae = dr_readings.left_trigger;
 
@@ -211,11 +212,14 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
       // Log("net auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Net;
       auto_pick_used = true;
+      override_lock_right = true;
       // Net auto aligning
       if (dr_readings.right_bumper) {
         ci_readings_.lock_net = true;
         ci_readings_.lock_right_reef = false;
       }
+    } else {
+      override_lock_right = false;
     }
   }
 
