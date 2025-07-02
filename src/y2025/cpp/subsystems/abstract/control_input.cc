@@ -131,17 +131,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   }
 
   previous_first_enable_exception = first_enable_exception;
-
-  // coral/algal piece rumble
-  bool rumble_driver = false;
-  bool rumble_operator = false;
-  if ((coral_ss_->GetReadings().piece_entered && !previous_has_coral_) ||
-      (algal_ss_->GetReadings().has_piece && !previous_has_algal_)) {
-    rumble_driver = true;
-  }
-  previous_has_coral_ = coral_ss_->GetReadings().piece_entered;
-  previous_has_algal_ = algal_ss_->GetReadings().has_piece;
-
   // algae autopicking
 
   AlgalStates previous_state = previous_readings_.algal_state;
@@ -181,10 +170,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     op_changed_target_ = true;
   }
 
+  // TODO: incorporate sim
   auto drivetrain_readings = drivetrain_ss_->GetReadings();
   auto curr_pose = drivetrain_readings.estimated_pose.position;
   auto rotation = drivetrain_readings.estimated_pose.bearing;
-  bool auto_pick_used = false;
+  // TODO: Add back functionality after merging
+  bool auto_picked = false;
 
   // autopicking for l2/l3
   if (ci_readings_.lock_left_reef) {
@@ -211,7 +202,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
         units::math::abs(rotation - 180_deg) < 30_deg) {
       // Log("net auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Net;
-      auto_pick_used = true;
       override_lock_right = true;
       // Net auto aligning
       if (dr_readings.right_bumper) {
@@ -232,7 +222,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
       algal_ss_->GetReadings().has_piece) {
     // Log("processor auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
-    auto_pick_used = true;
   }
   // check if near left side and pointed at -90 degree and 30 in from the left
   else if (curr_pose[0] < 30.0_in &&
@@ -240,16 +229,21 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
            !op_changed_target_ && algal_ss_->GetReadings().has_piece) {
     // Log("proc auto");
     ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
-    auto_pick_used = true;
   }
 
-  if (auto_pick_used) { rumble_operator = true; }
+  // TODO: Add back functionality after merging
+  if (auto_picked && (ci_readings_.algal_state != previous_state)) {
+    ci_readings_.auto_pick_used = true;
+  }
 
   double op_deadband = GetPreferenceValue_double("op_deadband");
 
+  bool home_telescope_pressed = op_keyboard_readings.one_button;
+  bool home_elevator_pressed = op_keyboard_readings.two_button;
+
   if (op_readings.left_stick_y > op_deadband)
     ci_readings_.inc_telescope = true;
-  else if (op_readings.left_stick_y < -op_deadband)
+  else if (op_readings.left_stick_y < -op_deadband || home_telescope_pressed)
     ci_readings_.dec_telescope = true;
   if (op_readings.left_stick_x > op_deadband)
     ci_readings_.inc_c_wrist = true;
@@ -258,12 +252,15 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   if (op_readings.right_stick_y > op_deadband)
     ci_readings_.inc_elevator = true;
-  else if (op_readings.right_stick_y < -op_deadband)
+  else if (op_readings.right_stick_y < -op_deadband || home_elevator_pressed)
     ci_readings_.dec_elevator = true;
   if (op_readings.right_stick_x > op_deadband)
     ci_readings_.inc_a_wrist = true;
   else if (op_readings.right_stick_x < -op_deadband)
     ci_readings_.dec_a_wrist = true;
+
+  previous_pressed_telescope_home_ = home_telescope_pressed;
+  previous_pressed_elevator_home_ = home_elevator_pressed;
 
   ci_readings_.score_coral = op_readings.left_bumper;
   ci_readings_.score_algae = (dr_readings.pov == frc846::robot::XboxPOV::kDown);
@@ -274,19 +271,49 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.extend_climb = op_readings.right_trigger;
   ci_readings_.retract_climb = op_readings.left_trigger;
 
-  ci_readings_.override_soft_limits = op_keyboard_readings.one_button;
-  ci_readings_.home_telescope =
-      op_readings.x_button && ci_readings_.override_soft_limits;
-  ci_readings_.home_elevator =
-      op_readings.b_button && ci_readings_.override_soft_limits;
+  if (!home_telescope_pressed && previous_pressed_telescope_home_)
+    ci_readings_.home_telescope = true;
+  else
+    ci_readings_.home_telescope = false;
+
+  if (!home_elevator_pressed && previous_pressed_elevator_home_)
+    ci_readings_.home_elevator = true;
+  else
+    ci_readings_.home_elevator = false;
+
+  ci_readings_.override_soft_limits =
+      home_telescope_pressed || home_elevator_pressed ||
+      ci_readings_.home_elevator || ci_readings_.home_telescope;
+
+  ci_readings_.override_force = op_keyboard_readings.four_button;
+
+  ci_readings_.override_algae_piece = op_keyboard_readings.six_button;
+  ci_readings_.override_coral_piece = op_keyboard_readings.seven_button;
+  ci_readings_.override_reef = op_keyboard_readings.eight_button;
+
+  if (ci_readings_.override_algae_piece !=
+      previous_operator_keyboard_.six_button) {
+    algal_ss_->algal_end_effector.SetPieceOverride(
+        ci_readings_.override_algae_piece);
+  }
+
+  if (ci_readings_.override_coral_piece !=
+      previous_operator_keyboard_.seven_button) {
+    coral_ss_->coral_end_effector.SetPieceOverride(
+        ci_readings_.override_coral_piece);
+  }
+
+  if (ci_readings_.override_reef != previous_operator_keyboard_.eight_button) {
+    coral_ss_->coral_end_effector.SetReefOverride(ci_readings_.override_reef);
+  }
+
+  ci_readings_.camera_stream = op_readings.back_button;
 
   ci_readings_.flick = op_readings.lsb;
 
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
   previous_operator_keyboard_ = op_keyboard_readings;
-
-  SetTarget({rumble_driver, rumble_operator});
 
   ci_readings_.first_enable_exception = first_enable_exception;
   Graph("first_enable_exception", first_enable_exception);

@@ -28,6 +28,7 @@ struct ControlInputReadings {
   bool lock_right_reef;
   bool lock_net;
   bool auto_align;
+  bool auto_pick_used;
 
   // Superstructure
   bool position_algal;
@@ -47,6 +48,10 @@ struct ControlInputReadings {
 
   // Overrides
   bool override_autostow;
+  bool override_force;
+  bool override_algae_piece;
+  bool override_coral_piece;
+  bool override_reef;
 
   // Adjustments
   bool inc_telescope;
@@ -66,6 +71,8 @@ struct ControlInputReadings {
   bool override_soft_limits;
   bool home_telescope;
   bool home_elevator;
+
+  bool camera_stream;
 
   bool flick;
 };
@@ -117,8 +124,10 @@ private:
   bool op_changed_target_ = false;
 
   bool previous_has_coral_ = false;
-
   bool previous_has_algal_ = false;
+
+  bool previous_pressed_telescope_home_ = false;
+  bool previous_pressed_elevator_home_ = false;
 
   bool override_lock_right = false;
 

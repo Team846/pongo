@@ -101,8 +101,25 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
 
   linear_esc_.SetLoad(1_Nm);
 
-  if (units::math::abs(GetReadings().position - target.position) >
-      GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband")) {
+  if (GetReadings().position > GetPreferenceValue_unit_type<units::inch_t>(
+                                   "telescopel4_modifier_height")) {
+    linear_esc_.SetLoad(GetPreferenceValue_unit_type<units::newton_meter_t>(
+        "telescopel4_load"));
+  }
+
+  units::inch_t deadband =
+      GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband");
+
+  bool exit_deadband = units::math::abs(GetReadings().position -
+                                        target.position) > (deadband * 1.2);
+
+  if (exit_deadband && units::math::abs(GetReadings().position -
+                                        target.position) <= (deadband * 0.6)) {
+    exit_deadband = false;
+  }
+
+  if (units::math::abs(GetReadings().position - target.position) > deadband ||
+      (exit_deadband && GetPreferenceValue_bool("telescope_hysteresis"))) {
     Graph("within_deadband", false);
     linear_esc_helper_.WritePosition(target.position);
   } else {
