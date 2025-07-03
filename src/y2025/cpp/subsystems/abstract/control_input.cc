@@ -271,6 +271,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   ci_readings_.extend_climb = op_readings.right_trigger;
   ci_readings_.retract_climb = op_readings.left_trigger;
 
+  ci_readings_.camera_stream = op_readings.back_button;
+
   if (!home_telescope_pressed && previous_pressed_telescope_home_)
     ci_readings_.home_telescope = true;
   else

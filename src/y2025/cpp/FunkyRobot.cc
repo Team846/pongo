@@ -26,6 +26,11 @@
 FunkyRobot::FunkyRobot() : GenericRobot{&container_} {
   RegisterPreference("num_coasting_loops", 1000);
   RegisterPreference("homing_flash_loops", 50);
+
+  // std::thread visionThread{[&]() {
+  //   VisionThread(&container_);
+  // }};
+  // visionThread.detach();
 }
 
 void FunkyRobot::OnInitialize() {

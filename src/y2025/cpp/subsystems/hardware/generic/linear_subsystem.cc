@@ -110,16 +110,16 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   units::inch_t deadband =
       GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband");
 
-  bool exit_deadband = units::math::abs(GetReadings().position -
-                                        target.position) > (deadband * 1.2);
 
-  if (exit_deadband && units::math::abs(GetReadings().position -
-                                        target.position) <= (deadband * 0.6)) {
+  if (units::math::abs(GetReadings().position -
+                                        target.position) <= (deadband * 0.4)) 
     exit_deadband = false;
-  }
+  
 
-  if (units::math::abs(GetReadings().position - target.position) > deadband ||
-      (exit_deadband && GetPreferenceValue_bool("telescope_hysteresis"))) {
+  if (units::math::abs(GetReadings().position -
+                                        target.position) > (deadband * 1.4)) exit_deadband = true;
+
+  if (exit_deadband) {
     Graph("within_deadband", false);
     linear_esc_helper_.WritePosition(target.position);
   } else {
