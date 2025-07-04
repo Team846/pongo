@@ -110,14 +110,13 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   units::inch_t deadband =
       GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband");
 
+  if (units::math::abs(GetReadings().position - target.position) >
+      (deadband * 1.2))
+    exit_deadband = true;
 
-  if (units::math::abs(GetReadings().position -
-                                        target.position) <= (deadband * 0.4)) 
+  if (units::math::abs(GetReadings().position - target.position) <=
+      (deadband * 0.6))
     exit_deadband = false;
-  
-
-  if (units::math::abs(GetReadings().position -
-                                        target.position) > (deadband * 1.4)) exit_deadband = true;
 
   if (exit_deadband) {
     Graph("within_deadband", false);

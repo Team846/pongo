@@ -66,6 +66,5 @@ protected:
 
   bool is_homed_ = false;
   units::inch_t hall_effect_loc_;
-
   bool exit_deadband = true;
 };

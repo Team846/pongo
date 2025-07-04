@@ -30,7 +30,10 @@ void CoralCommand::Periodic() {
       coral_target.state = kCoral_StowWithPiece;
   else
     coral_target.state = kCoral_StowNoPiece;
-  coral_target.score = ci_readings.score_coral;
+
+  if (container_.drivetrain_.GetReadings().estimated_pose.velocity.magnitude() <
+      2.0_fps)
+    coral_target.score = ci_readings.score_coral;
 
   if (ci_readings.inc_telescope)
     container_.coral_ss_.adjustTelescope(true);
