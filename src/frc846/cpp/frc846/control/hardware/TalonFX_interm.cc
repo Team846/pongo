@@ -70,7 +70,7 @@ void TalonFX_interm::SetVoltageCompensation(
 void TalonFX_interm::SetGains(frc846::control::base::MotorGains gains) {
   gains_ = gains;
   ctre::phoenix6::configs::Slot0Configs configs{};
-  configs.WithKP(gains_.kP).WithKI(gains_.kI).WithKD(gains_.kD).WithKS(
+  configs.WithKP(gains_.kP).WithKI(gains_.kI).WithKD(gains_.kD).WithKV(
       gains_.kFF);
   last_error_ = getErrorCode(talon_.GetConfigurator().Apply(configs));
 }

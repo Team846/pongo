@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include "frc/RobotBase.h"
 #include "frc846/math/constants.h"
 #include "frc846/math/fieldpoints.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
@@ -84,14 +85,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
 
   RegisterPreference("override_at_auto", true);
 
-  units::degree_t FR_angle_offset = units::math::atan2(
-      configs.wheelbase_horizontal_dim, configs.wheelbase_forward_dim);
   odometry_.setConstants(
-      {{FR_angle_offset, -FR_angle_offset, FR_angle_offset + 180_deg,
-           -FR_angle_offset + 180_deg},
-          units::math::sqrt(
-              units::math::pow<2>(configs.wheelbase_forward_dim) +
-              units::math::pow<2>(configs.wheelbase_horizontal_dim))});
+      {.forward_wheelbase_dim = configs.wheelbase_forward_dim,
+          .horizontal_wheelbase_dim = configs.wheelbase_horizontal_dim});
   ol_calculator_.setConstants({
       .wheelbase_horizontal_dim = configs.wheelbase_horizontal_dim,
       .wheelbase_forward_dim = configs.wheelbase_forward_dim,
@@ -188,6 +184,11 @@ void DrivetrainSubsystem::SetPosition(frc846::math::Vector2D position) {
   pose_estimator.SetPoint({position[0], position[1]});
 }
 
+void DrivetrainSubsystem::SetOdomBearing(units::degree_t odom_bearing) {
+  odometry_.SetOdomBearing(odom_bearing);
+  // Log("setting odom bearing to {}", odom_bearing);
+}
+
 void DrivetrainSubsystem::SetCANCoderOffsets() {
   for (SwerveModuleSubsystem* module : modules_) {
     module->SetCANCoderOffset();
@@ -242,6 +243,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   units::degrees_per_second_t yaw_rate = navX_.GetRate() * 1_deg_per_s;
 
+  bearing += GetPreferenceValue_unit_type<units::second_t>("bearing_latency") *
+             yaw_rate;
+
+  if (frc::RobotBase::IsSimulation()) { bearing = odometry_.GetOdomBearing(); }
+
   Graph("readings/bearing", bearing);
   Graph("readings/yaw_rate", yaw_rate);
 
@@ -267,16 +273,27 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("readings/velocity_x", velocity[0]);
   Graph("readings/velocity_y", velocity[1]);
 
+  Graph("readings/velocity_mag", velocity.magnitude());
+
+  units::feet_per_second_squared_t odom_accel_x =
+      1_fps_sq * accel_x_diff.Calculate(velocity[0].to<double>());
+  units::feet_per_second_squared_t odom_accel_y =
+      1_fps_sq * accel_y_diff.Calculate(velocity[1].to<double>());
+  odom_accel_x = 1_fps_sq * accel_x_smooth.Calculate(odom_accel_x.to<double>());
+  odom_accel_y = 1_fps_sq * accel_y_smooth.Calculate(odom_accel_y.to<double>());
+
+  Graph("readings/odom_accel_x", odom_accel_x);
+  Graph("readings/odom_accel_y", odom_accel_y);
+  Graph("readings/odom_accel_mag",
+      units::math::sqrt(
+          odom_accel_x * odom_accel_x + odom_accel_y * odom_accel_y));
+
+  frc846::robot::swerve::odometry::SwerveOdometryOutput odom_output =
+      odometry_.calculate({bearing, steer_positions, drive_positions,
+          GetPreferenceValue_double("odom_fudge_factor")});
+
   frc846::robot::swerve::odometry::SwervePose new_pose{
-      .position =
-          odometry_
-              .calculate(
-                  {bearing + GetPreferenceValue_unit_type<units::second_t>(
-                                 "bearing_latency") *
-                                 GetReadings().yaw_rate,
-                      steer_positions, drive_positions,
-                      GetPreferenceValue_double("odom_fudge_factor")})
-              .position,
+      .position = odom_output.position,
       .bearing = bearing,
       .velocity = velocity,
   };
@@ -330,6 +347,11 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
       .velocity = pose_estimator.velocity(),
   };  // Update estimated pose again with vision data
 
+  if (frc::RobotBase::IsSimulation()) {
+    estimated_pose.position = odom_output.position;
+    estimated_pose.velocity = velocity;
+  }
+
   if ((frc::DriverStation::IsAutonomous() ||
           frc::DriverStation::IsAutonomousEnabled()) &&
       GetPreferenceValue_bool("override_at_auto")) {
@@ -349,10 +371,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
   Graph("estimated_pose/velocity_y", estimated_pose.velocity[1]);
   Graph("estimated_pose/variance", pose_estimator.getVariance());
 
-  // Note: consider bearing simulation
-
   Graph("readings/position_x", new_pose.position[0]);
   Graph("readings/position_y", new_pose.position[1]);
+  Graph("readings/odom_bearing", odom_output.odom_bearing);
 
   frc846::math::VectorND<units::feet_per_second_squared, 2> accl{
       navX_.GetWorldLinearAccelX() * frc846::math::constants::physics::g,
@@ -390,8 +411,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   // Graph("readings/accel_vel", accel_vel);
 
-  a_field.SetRobotPose(frc846::math::FieldPoint::field_size_y - sim_pos_y,
-      sim_pos_x, 180_deg - sim_bearing);
+  a_field.SetRobotPose(
+      frc846::math::FieldPoint::field_size_y - estimated_pose.position[1],
+      estimated_pose.position[0], 180_deg - estimated_pose.bearing);
 
   // Record the current pose if path recording is active
   if (path_logger_.IsRecording()) { path_logger_.RecordPose(estimated_pose); }
@@ -483,37 +505,6 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();
-}
-
-void DrivetrainSubsystem::SetSimPose(
-    units::inch_t x, units::inch_t y, units::degree_t bearing) {
-  DrivetrainSubsystem::sim_pos_y = y;
-  DrivetrainSubsystem::sim_pos_x = x;
-  DrivetrainSubsystem::sim_bearing = bearing;
-}
-
-void DrivetrainSubsystem::TransitionSimPose(units::inch_t x, units::inch_t y,
-    units::degree_t nbearing, units::inch_t tstep, units::degree_t astep) {
-  auto delta = frc846::math::Vector2D{x - sim_pos_x, y - sim_pos_y};
-  sim_pos_x =
-      sim_pos_x + frc846::math::Vector2D{tstep, delta.angle(true), true}[0];
-  sim_pos_y =
-      sim_pos_y + frc846::math::Vector2D{tstep, delta.angle(true), true}[1];
-  units::degree_t angle_diff =
-      frc846::math::CoterminalDifference(nbearing, sim_bearing);
-
-  if (angle_diff > 0_deg) {
-    sim_bearing += astep;
-  } else {
-    sim_bearing -= astep;
-  }
-  SetSimPose(sim_pos_x, sim_pos_y, sim_bearing);
-}
-
-bool DrivetrainSubsystem::ReachedSimPose(units::inch_t x, units::inch_t y,
-    units::degree_t bearing, units::inch_t tolerance) {
-  return (sim_pos_x - x) * (sim_pos_x - x) + (sim_pos_y - y) * (sim_pos_y - y) <
-         tolerance * tolerance;
 }
 
 void DrivetrainSubsystem::StartPathRecording(const std::string& filename) {

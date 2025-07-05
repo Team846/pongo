@@ -25,7 +25,7 @@ class MCSimulator : public frc846::control::hardware::IntermediateController {
 public:
   MCSimulator(frc846::control::base::MotorSpecs specs,
       frc846::wpilib::unit_ohm circuit_resistance,
-      frc846::wpilib::unit_kg_m_sq rotational_inertia);
+      frc846::wpilib::unit_kg_m_sq rotational_inertia, double friction);
 
   /*
   Tick()
@@ -41,8 +41,10 @@ public:
   }
 
   void SetInverted(bool inverted) override;
-  void SetNeutralMode(bool brake_mode) override { (void)brake_mode; };
-  void SetCurrentLimit(units::ampere_t current_limit) { (void)current_limit; };
+  void SetNeutralMode(bool brake_mode) override { brake_mode_ = brake_mode; };
+  void SetCurrentLimit(units::ampere_t current_limit) {
+    current_limit_ = units::math::min(current_limit, specs.stall_current);
+  };
 
   void SetSoftLimits(
       units::radian_t forward_limit, units::radian_t reverse_limit) override {
@@ -118,8 +120,13 @@ private:
   frc846::control::base::MotorSpecs specs;
   frc846::control::base::MotorGains gains;
 
+  bool brake_mode_ = false;
+
+  units::ampere_t current_limit_{80};
+
   frc846::wpilib::unit_ohm circuit_resistance_{0};
   frc846::wpilib::unit_kg_m_sq rotational_inertia_{0};
+  double friction_;
 
   bool velocity_packet_enabled = true;
   bool position_packet_enabled = true;

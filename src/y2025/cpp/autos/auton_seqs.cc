@@ -59,20 +59,16 @@ using FPT = frc846::math::FieldPoint;
 #define MKPT(x, y, bearing, velocity) \
   FPT{{x, y}, bearing, velocity}.mirror(is_blue_side).mirrorOnlyX(!is_left_side)
 
-#define START2(x, y, start_bearing)                                           \
-  INSTANT {                                                                   \
-    [&, blue = is_blue_side, left = is_left_side]() {                         \
-      FPT start_point{{x, y}, start_bearing, 0_fps};                          \
-      start_point = start_point.mirror(blue).mirrorOnlyX(!left);              \
-      container.drivetrain_.UpdateReadings();                                 \
-      container.drivetrain_.SetPosition(                                      \
-          {start_point.point[0], start_point.point[1]});                      \
-      if (frc::RobotBase::IsSimulation()) {                                   \
-        container.drivetrain_.SetSimPose(                                     \
-            start_point.point[0], start_point.point[1], start_point.bearing); \
-      }                                                                       \
-      Log("Auto Start");                                                      \
-    }                                                                         \
+#define START2(x, y, start_bearing)                              \
+  INSTANT {                                                      \
+    [&, blue = is_blue_side, left = is_left_side]() {            \
+      FPT start_point{{x, y}, start_bearing, 0_fps};             \
+      start_point = start_point.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.UpdateReadings();                    \
+      container.drivetrain_.SetPosition(                         \
+          {start_point.point[0], start_point.point[1]});         \
+      Log("Auto Start");                                         \
+    }                                                            \
   }
 #define DRIVE(auto_name, x, y, bearing, final_velocity)                   \
   frc846::robot::swerve::DriveToPointCommand {                            \
@@ -82,6 +78,20 @@ using FPT = frc846::math::FieldPoint;
 
 #define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
 #define SOURCELOC MKPT(23.03_in, 56.532_in, 53.5_deg, 0_fps)
+
+#define FPC_EXPECTED_START_UF \
+  FPT { {50.5_in, 271.3_in}, 140_deg, 0_fps }
+
+#define FPC_SIM_START()                                                      \
+  INSTANT {                                                                  \
+    [&, blue = is_blue_side, left = is_left_side] {                          \
+      if (!frc::RobotBase::IsSimulation()) return;                           \
+      FPT exp_start = FPC_EXPECTED_START_UF.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.SetPosition(exp_start.point);                    \
+      container.drivetrain_.SetOdomBearing(exp_start.bearing);               \
+      Log("FPC Simulated Auto Start");                                       \
+    }                                                                        \
+  }
 
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
@@ -167,8 +177,6 @@ using FPT = frc846::math::FieldPoint;
             SEQUENCE> {                                                \
     container, AUTO_NAME(stringName),
 
-// TODO: Use AprilTags for start point?
-
 /***********************
 AUTONOMOUS HELPER MACROS
 
@@ -186,9 +194,10 @@ END DEFINE MACROS
 __AUTO__(FourAndPickAuto, "5PC")
 SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   // WAIT{0.25_s},
-  DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(8), ALGAL_POS(kAlgae_L2Pick, false)
+  FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC),
+      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC),
+      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(8),
+      ALGAL_POS(kAlgae_L2Pick, false)
 }
 }
 {}

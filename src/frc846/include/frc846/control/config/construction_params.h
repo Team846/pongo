@@ -21,6 +21,7 @@ Contains all parameters necessary to construct a motor controller.
 @param voltage_compensation: The voltage compensation of the motor controller.
 @param circuit_resistance: The circuit resistance leading upto motor controller.
 @param rotational_inertia: The rotational inertia of the system.
+@param friction: The system friction, as a percentage of the motor stall torque.
 @param bus: Use only if the motor controller is on the CTRE bus (CANivore).
 @param max_wait_time: The maximum time before a control message times out.
 
@@ -43,6 +44,8 @@ struct MotorConstructionParameters {
   frc846::wpilib::unit_ohm circuit_resistance;
 
   frc846::wpilib::unit_kg_m_sq rotational_inertia;
+
+  double friction = 0.04;
 
   std::string_view bus = "";
 

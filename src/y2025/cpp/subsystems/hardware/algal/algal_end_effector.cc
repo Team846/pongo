@@ -92,6 +92,9 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
       target.duty_cycle_ < 0.0) {
     target.duty_cycle_ = GetPreferenceValue_double("kick_dc");
   }
+
+  if (piece_override_) { target.duty_cycle_ = 0.0; }
+
   esc_1_.WriteDC(target.duty_cycle_);
   esc_2_.WriteDC(target.duty_cycle_);
 }

@@ -25,7 +25,6 @@ struct MotorSpecs {
   units::ampere_t stall_current;
   units::ampere_t free_current;
   units::newton_meter_t stall_torque;
-  double friction_loss = 0.01;
 };
 
 /*

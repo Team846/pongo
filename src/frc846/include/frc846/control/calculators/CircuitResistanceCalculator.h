@@ -16,10 +16,10 @@ Contains known resistances for various components, such as:
     - Wires of various thicknesses
 */
 struct KnownResistances {
-  static constexpr frc846::wpilib::unit_ohm kBatteryResistance{0.001};
-  static constexpr frc846::wpilib::unit_ohm kPDPResistance{0.007};
+  static constexpr frc846::wpilib::unit_ohm kBatteryResistance{0.02};
+  static constexpr frc846::wpilib::unit_ohm kPDPResistance{0.001};
 
-  static constexpr frc846::wpilib::unit_ohm kConnectorResistance{0.002};
+  static constexpr frc846::wpilib::unit_ohm kConnectorResistance{0.0006};
 
   static constexpr frc846::wpilib::unit_ohms_per_meter kTwelveGaugeResistance{
       0.00521};

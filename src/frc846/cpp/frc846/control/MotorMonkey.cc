@@ -151,9 +151,13 @@ void MotorMonkey::Tick(bool disabled) {
 
   if (disabled) {
     last_disabled_voltage = battery_voltage;
-    WriteMessages(400_A);  // TODO: fix
-    return;
+    if (!frc::RobotBase::IsSimulation()) {
+      WriteMessages(400_A);
+      return;
+    }
   }
+
+  // TODO: cleanup iostream
 
   units::ampere_t total_pred_draw = WriteMessages(max_draw_);
 
@@ -170,13 +174,23 @@ void MotorMonkey::Tick(bool disabled) {
 
   for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
     if (controller_registry[i] != nullptr) {
-      controller_registry[i]->Tick();
       if (slot_id_to_sim_[i]) {
         simulation::MCSimulator* sim =
             dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
         sim->SetBatteryVoltage(battery_voltage);
         sim->SetLoad(load_registry[i]);
+        if (disabled) {
+          sim->WriteDC(0.0);
+          // std::cout << "MotorMonkey: Disabled, setting DC to 0.0" <<
+          // std::endl;
+        }
+
+        // std::cout << "MotorMonkey: Tick for slot ID " << i
+        //           << ", sim: " << (sim != nullptr) << std::endl;
         sim->Tick();
+        // std::cout << "--" << std::endl;
+      } else {
+        controller_registry[i]->Tick();
       }
     }
   }
@@ -195,7 +209,7 @@ units::ampere_t MotorMonkey::WriteMessages(units::ampere_t max_draw) {
   double scale_factor = 1.0;
 
   while (!temp_messages.empty()) {
-    const MotorMessage& msg = temp_messages.front();
+    MotorMessage& msg = temp_messages.front();
 
     frc846::control::base::MotorMonkeyType motor_type =
         slot_id_to_type_[msg.slot_id];
@@ -334,7 +348,8 @@ size_t MotorMonkey::ConstructController(
     this_controller = controller_registry[slot_id] =
         new frc846::control::simulation::MCSimulator{
             frc846::control::base::MotorSpecificationPresets::get(type),
-            params.circuit_resistance, params.rotational_inertia};
+            params.circuit_resistance, params.rotational_inertia,
+            params.friction};
   } else if (frc846::control::base::MotorMonkeyTypeHelper::is_talon_fx(type)) {
     this_controller = controller_registry[slot_id] =
         new frc846::control::hardware::TalonFX_interm{

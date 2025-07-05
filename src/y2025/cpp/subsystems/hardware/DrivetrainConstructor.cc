@@ -44,27 +44,23 @@ DrivetrainConstructor::getDrivetrainConfigs() {
 
   double drive_gear_ratio = 6.75;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
-      (frc846::math::constants::geometry::pi * wheel_diameter) /
+      (frc846::math::constants::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
   frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
 
   configs.wheelbase_forward_dim = robot_constants::base::wheelbase_y;
   configs.wheelbase_horizontal_dim = robot_constants::base::wheelbase_x;
 
-  units::pound_t wheel_approx_weight = 2_lb;
-  units::inch_t wheel_weight_radius = 1_in;
-
   units::pound_t robot_weight = robot_constants::total_weight;
 
-  // (Mass wheel) * (wheel_r)^2 * (steer reduction)^2
+  // Tuned in simulation, do not change
   frc846::wpilib::unit_kg_m_sq relative_steer_inertia{
-      wheel_approx_weight * (wheel_weight_radius * wheel_weight_radius) *
-      (steer_reduction * steer_reduction).to<double>()};
+      0.285 * 1_lb * 1_in * 1_in};
 
-  // (Mass robot) * [(wheel_d)/2]^2 * (drive reduction)^2
+  // (Mass robot / 4.0) * [(wheel_d)/2]^2 / (drive reduction)^2
   frc846::wpilib::unit_kg_m_sq relative_drive_inertia{
-      robot_weight * (wheel_diameter * wheel_diameter) *
-      (drive_reduction * drive_reduction).to<double>()};
+      robot_weight / 4.0 * (wheel_diameter * wheel_diameter / 4.0) /
+      (drive_gear_ratio * drive_gear_ratio)};
 
   /* END SETTABLES */
 
@@ -77,22 +73,28 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       effective_torque_radius};
   configs.max_accel = (4.0 * max_force_per_wheel) / robot_weight;
 
+  // Steer load factor
+  units::inch_t wheel_contact_radius = 0.4_in;
+  units::unit_t<units::compound_unit<units::meter, units::kilogram>>
+      steer_load_factor =
+          wheel_contact_radius * steer_reduction * (robot_weight / 4.0);
+
   frc846::wpilib::unit_ohm wire_resistance_FR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_FR, frc846::control::calculators::fourteen_gauge,
+          wire_length_FR, frc846::control::calculators::twelve_gauge,
           num_connectors_FR)};
   frc846::wpilib::unit_ohm wire_resistance_FL{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_FL, frc846::control::calculators::fourteen_gauge,
+          wire_length_FL, frc846::control::calculators::twelve_gauge,
           num_connectors_FL)};
 
   frc846::wpilib::unit_ohm wire_resistance_BL{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_BL, frc846::control::calculators::fourteen_gauge,
+          wire_length_BL, frc846::control::calculators::twelve_gauge,
           num_connectors_BL)};
   frc846::wpilib::unit_ohm wire_resistance_BR{
       frc846::control::calculators::CircuitResistanceCalculator::calculate(
-          wire_length_BR, frc846::control::calculators::fourteen_gauge,
+          wire_length_BR, frc846::control::calculators::twelve_gauge,
           num_connectors_BR)};
 
   frc846::robot::swerve::SwerveModuleUniqueConfig FR_config{"FR",
@@ -120,6 +122,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "drive_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_drive_inertia,
+      .friction = 0.03,
       .bus = "",
   };
   frc846::control::config::MotorConstructionParameters steer_params{
@@ -134,12 +137,14 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "steer_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_steer_inertia,
+      .friction = 0.22,
       .bus = "",
   };
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
-          steer_params, mmtype, steer_reduction, drive_reduction, ""};
+          steer_params, mmtype, steer_reduction, drive_reduction,
+          steer_load_factor, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   configs.camera_x_offsets = {-6.25_in, -4.5_in};
@@ -154,8 +159,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
       {12, {23.17_in, 655.45_in}}, {13, {289.3_in, 660_in}},
       {16, {-0.15_in, 451.895_in}}, {17, {131.795_in, 533.3_in}},
       {18, {161.75_in, 546.875_in}}, {19, {188.455_in, 527.67_in}},
-      {20, {185.205_in, 494.96_in}},
-      {21, {155.25_in, 481.385_in}},  // TODO: Disable processor tag
+      {20, {185.205_in, 494.96_in}}, {21, {155.25_in, 481.385_in}},
       {22, {128.545_in, 500.58_in}}};
 
   return configs;

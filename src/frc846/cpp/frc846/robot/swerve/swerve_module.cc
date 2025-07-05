@@ -4,6 +4,7 @@
 
 #include <thread>
 
+#include "frc/RobotBase.h"
 #include "frc846/math/collection.h"
 
 namespace frc846::robot::swerve {
@@ -17,7 +18,8 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
           getMotorParams(unique_config, common_config).first},
       steer_{common_config.motor_types,
           getMotorParams(unique_config, common_config).second},
-      cancoder_{unique_config.cancoder_id, common_config.bus} {
+      cancoder_{unique_config.cancoder_id, common_config.bus},
+      steer_load_factor_{common_config.steer_load_factor} {
   drive_helper_.SetConversion(common_config.drive_reduction);
   steer_helper_.SetConversion(common_config.steer_reduction);
 
@@ -66,8 +68,10 @@ void SwerveModuleSubsystem::Setup() {
 
   steer_.Setup();
   steer_.EnableStatusFrames(
-      {frc846::control::config::StatusFrame::kPositionFrame}, 20_ms, 20_ms,
-      5_ms, 20_ms);
+      {frc846::control::config::StatusFrame::kPositionFrame,
+          frc846::control::config::StatusFrame::kVelocityFrame},
+      20_ms, 20_ms, 5_ms, 20_ms);
+
   ZeroWithCANcoder();
 }
 
@@ -90,6 +94,11 @@ void SwerveModuleSubsystem::SetCANCoderOffset(units::degree_t offset) {
 }
 
 void SwerveModuleSubsystem::ZeroWithCANcoder() {
+  if (frc::RobotBase::IsSimulation()) {
+    steer_helper_.SetPosition(0_deg);
+    return;
+  }
+
   constexpr int kMaxAttempts = 5;
   constexpr int kSleepTimeMs = 500;
 
@@ -127,6 +136,15 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
   readings.drive_pos = drive_helper_.GetPosition();
   readings.steer_pos = steer_helper_.GetPosition();
 
+  units::newton_meter_t pred_steer_load =
+      steer_load_factor_ * readings.vel *
+      (steer_helper_.GetVelocity().convert<units::radians_per_second>() /
+          1_rad);
+
+  steer_.SetLoad(pred_steer_load);
+
+  Graph("readings/pred_steer_load", pred_steer_load);
+
   Graph("readings/drive_motor_vel", readings.vel);
   // Graph("readings/drive_motor_pos", readings.drive_pos);
   Graph("readings/steer_motor_pos", readings.steer_pos);
@@ -138,13 +156,13 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
-  // Graph("target/ol_drive_target", target.drive);
-  // Graph("target/ol_steer_target", target.steer);
+  // Graph("target/drive_target", target.drive);
+  // Graph("target/steer_target", target.steer);
 
   auto [steer_dir, invert_drive] =
       calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
-  // Graph("target/steer_dir", steer_dir);
+  Graph("target/steer_dir", steer_dir);
   // Graph("target/invert_drive", invert_drive);
 
   units::dimensionless::scalar_t cosine_comp =
@@ -152,9 +170,11 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 
   // Graph("target/cosine_comp", cosine_comp.to<double>());
 
-  double drive_duty_cycle = target.drive / max_speed_;
+  double drive_duty_cycle = cosine_comp * target.drive / max_speed_;
 
-  drive_helper_.WriteDC(cosine_comp * drive_duty_cycle);
+  Graph("target/drive_dc", drive_duty_cycle);
+
+  drive_helper_.WriteDC(drive_duty_cycle);
 
   if (std::abs(drive_duty_cycle) > 0.002 || last_rezero < 50) {
     steer_helper_.WritePositionOnController(steer_dir);

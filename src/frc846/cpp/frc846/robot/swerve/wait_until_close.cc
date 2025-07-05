@@ -16,10 +16,6 @@ void WaitUntilClose::Execute() {}
 void WaitUntilClose::End(bool interrupted) {}
 
 bool WaitUntilClose::IsFinished() {
-  if (frc::RobotBase::IsSimulation()) {
-    return drivetrain_->ReachedSimPose(
-        target_.point[0], target_.point[1], target_.bearing, 2_in);
-  }
   return (drivetrain_->GetReadings().estimated_pose.position - target_.point)
              .magnitude() < 0.5_in;
 }

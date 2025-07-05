@@ -15,8 +15,8 @@ GPDSubsystem::GPDSubsystem(
   }
   g_field.GetObject("auto_start_left");
   g_field.GetObject("auto_start_right");
-  frc::SmartDashboard::PutData("GPDField", &g_field);
 #endif
+  frc::SmartDashboard::PutData("GPDField", &g_field);
 
   RegisterPreference("intake_to_cam_y", 0_in);
   RegisterPreference("intake_to_cam_x", -13_in);

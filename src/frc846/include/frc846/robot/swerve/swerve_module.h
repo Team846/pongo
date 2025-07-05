@@ -50,6 +50,9 @@ struct SwerveModuleCommonConfig {
   steer_conv_unit steer_reduction;
   drive_conv_unit drive_reduction;
 
+  units::unit_t<units::compound_unit<units::meter, units::kilogram>>
+      steer_load_factor;
+
   std::string_view bus = "";
 };
 
@@ -129,6 +132,9 @@ private:
   ctre::phoenix6::hardware::CANcoder cancoder_;
 
   units::feet_per_second_t max_speed_;
+
+  units::unit_t<units::compound_unit<units::meter, units::kilogram>>
+      steer_load_factor_;
 };
 
 }  // namespace frc846::robot::swerve
