@@ -73,7 +73,7 @@ void MCSimulator::Tick() {
   units::radians_per_second_t new_velocity =
       frc846::control::calculators::VelocityPositionEstimator::predict_velocity(
           velocity_, duty_cycle, loop_time, current_limit_, load_, friction_mag,
-          rotational_inertia_, specs, brake_mode_);
+          rotational_inertia_, specs, circuit_resistance_, brake_mode_);
   // new_velocity =
   //     units::radians_per_second_t{std::clamp(new_velocity.to<double>(),
   //         (-specs.free_speed).to<double>(), specs.free_speed.to<double>())};

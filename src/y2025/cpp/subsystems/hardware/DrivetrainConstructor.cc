@@ -122,7 +122,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "drive_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_drive_inertia,
-      .friction = 0.03,
+      .friction = 0.02,
       .bus = "",
   };
   frc846::control::config::MotorConstructionParameters steer_params{
@@ -137,14 +137,19 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           "steer_motor_voltage_compensation"),
       .circuit_resistance = 999_Ohm,  // overriden by unique config
       .rotational_inertia = relative_steer_inertia,
-      .friction = 0.22,
+      .friction = 0.11,
       .bus = "",
   };
+
+  frc846::wpilib::unit_ohm avg_resistance =
+      (wire_resistance_FR + wire_resistance_FL + wire_resistance_BL +
+          wire_resistance_BR) /
+      4.0;
 
   configs.module_common_config =
       frc846::robot::swerve::SwerveModuleCommonConfig{drive_params,
           steer_params, mmtype, steer_reduction, drive_reduction,
-          steer_load_factor, ""};
+          avg_resistance, steer_load_factor, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
   configs.camera_x_offsets = {-6.25_in, -4.5_in};

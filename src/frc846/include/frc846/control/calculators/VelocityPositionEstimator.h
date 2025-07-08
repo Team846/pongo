@@ -41,7 +41,8 @@ public:
       units::radians_per_second_t current_velocity, double target_dc,
       units::second_t dt, units::ampere_t I_lim, units::newton_meter_t load,
       units::newton_meter_t friction_mag, unit_kg_m_sq rot_inertia,
-      frc846::control::base::MotorSpecs specs, bool brake_mode = true);
+      frc846::control::base::MotorSpecs specs,
+      frc846::wpilib::unit_ohm circuit_res, bool brake_mode = true);
 
   /*
   predict_position()

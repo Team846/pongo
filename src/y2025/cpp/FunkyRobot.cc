@@ -46,6 +46,7 @@ void FunkyRobot::OnInitialize() {
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
+  AddDefaultAuto("SIMTEST", new SimTestAuto{container_, false, true});
 
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",

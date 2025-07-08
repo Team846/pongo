@@ -14,8 +14,10 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
     SwerveModuleCommonConfig common_config)
     : frc846::robot::GenericSubsystem<SwerveModuleReadings, SwerveModuleTarget>(
           parent, unique_config.loc),
-      drive_{common_config.motor_types,
-          getMotorParams(unique_config, common_config).first},
+      avg_resistance_{common_config.avg_resistance},
+      motor_types_{common_config.motor_types},
+      drive_params_{getMotorParams(unique_config, common_config).first},
+      drive_{common_config.motor_types, drive_params_},
       steer_{common_config.motor_types,
           getMotorParams(unique_config, common_config).second},
       cancoder_{unique_config.cancoder_id, common_config.bus},
@@ -167,6 +169,24 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 
   units::dimensionless::scalar_t cosine_comp =
       units::math::cos(target.steer - GetReadings().steer_pos);
+
+  frc846::wpilib::unit_ohm winding_res =
+      12_V / frc846::control::base::MotorSpecificationPresets::get(motor_types_)
+                 .stall_current;
+
+  double res_corr_factor =
+      ((drive_params_.circuit_resistance + winding_res) / winding_res)
+          .to<double>();
+  double avg_corr_factor =
+      ((avg_resistance_ + winding_res) / winding_res).to<double>();
+  res_corr_factor /= avg_corr_factor;
+
+  if (units::math::abs(target.drive) > units::math::abs(GetReadings().vel)) {
+    target.drive = (target.drive - GetReadings().vel) * res_corr_factor +
+                   GetReadings().vel;  // Resistance compensation
+  }
+  Graph("res_corr_factor", res_corr_factor);
+  Graph("avg_corr_factor", avg_corr_factor);
 
   // Graph("target/cosine_comp", cosine_comp.to<double>());
 

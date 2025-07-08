@@ -49,10 +49,10 @@ public:
     RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
-    // TODO: undo
-    //  NVM // Superstructures not necessary - updated with extensions
-    //  RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-    //  RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+    //TODO: undo
+     //NVM // Superstructures not necessary - updated with extensions
+     RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
+     RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
     // if (coral_ss_init) {
     //   coral_ss_.Init();
@@ -64,8 +64,8 @@ public:
     //   all_subsystems_.push_back(&algal_ss_);
     // }
 
-    // TODO: undo
-    // RegisterSubsystemGroupB({{&climber_, climber_init}});
+    //TODO: undo
+    RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 
   // void GroupAUpdateHardwareExtension() override {

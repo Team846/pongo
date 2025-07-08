@@ -10,10 +10,6 @@
 
 namespace frc846::robot::swerve {
 
-units::inch_t DrivetrainSubsystem::sim_pos_x = 0_in;
-units::inch_t DrivetrainSubsystem::sim_pos_y = 0_in;
-units::degree_t DrivetrainSubsystem::sim_bearing = 0_deg;
-
 DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     : GenericSubsystem{"SwerveDrivetrain"},
       configs_{configs},
@@ -23,8 +19,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
     modules_[i] = new SwerveModuleSubsystem{*this,
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
-
-  frc::SmartDashboard::PutData("AutoSimField", &a_field);
 
   RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
@@ -79,9 +73,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("vel_stopped_thresh", 0.7_fps);
   RegisterPreference("stopped_num_loops", 25);
 
-  RegisterPreference("lock_drive_early", 12_in);
-  RegisterPreference("lock_drive_fvel", 1_fps);
-  RegisterPreference("drive_correctional_gain", 0.34);
+  RegisterPreference("drive_to_point/kC", 10.0);
+  RegisterPreference("drive_to_point/kA", 0.5);
+  RegisterPreference("drive_to_point/kE", 0.8);
+  RegisterPreference("drive_to_point/threshold", 3_in);
 
   RegisterPreference("override_at_auto", true);
 
@@ -411,10 +406,6 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   // Graph("readings/accel_vel", accel_vel);
 
-  a_field.SetRobotPose(
-      frc846::math::FieldPoint::field_size_y - estimated_pose.position[1],
-      estimated_pose.position[0], 180_deg - estimated_pose.bearing);
-
   // Record the current pose if path recording is active
   if (path_logger_.IsRecording()) { path_logger_.RecordPose(estimated_pose); }
 
@@ -432,6 +423,39 @@ DrivetrainSubsystem::compensateForSteerLag(
   Graph("target/steer_lag_compensation", steer_lag_compensation);
 
   return uncompensated.rotate(steer_lag_compensation, true);
+}
+
+frc846::math::VectorND<units::feet_per_second, 2>
+DrivetrainSubsystem::accelClampHelper(
+    frc846::math::VectorND<units::feet_per_second, 2> velocity,
+    units::feet_per_second_squared_t accel_clamp) {
+  if (accel_clamp < 5_fps_sq) return velocity;
+
+  auto motor_specs = frc846::control::base::MotorSpecificationPresets::get(
+      configs_.module_common_config.motor_types);
+
+  frc846::wpilib::unit_ohm winding_res = 12_V / motor_specs.stall_current;
+
+  double max_accel_corr_factor =
+      (winding_res /
+          (configs_.module_common_config.avg_resistance + winding_res))
+          .to<double>();
+
+  units::feet_per_second_t accel_buffer =
+      accel_clamp / (max_accel_corr_factor * configs_.max_accel) *
+      (motor_specs.free_speed * configs_.module_common_config.drive_reduction);
+
+  // TODO: batt voltage compensation
+
+  auto delta =
+      velocity.magnitude() - GetReadings().estimated_pose.velocity.magnitude();
+  if (units::math::abs(delta) > accel_buffer) {
+    velocity = GetReadings().estimated_pose.velocity +
+               frc846::math::VectorND<units::feet_per_second, 2>{
+                   units::math::copysign(accel_buffer, delta),
+                   velocity.angle(true), true};
+  }
+  return velocity;
 }
 
 void DrivetrainSubsystem::WriteVelocitiesHelper(
@@ -458,50 +482,21 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
         GetPreferenceValue_double("steer_gains/_kF")});
   }
 
-  if (DrivetrainOLControlTarget* ol_target =
-          std::get_if<DrivetrainOLControlTarget>(&target)) {
-    // Graph("target/ol/velocity_x", ol_target->velocity[0]);
-    // Graph("target/ol/velocity_y", ol_target->velocity[1]);
-    // Graph("target/ol/angular_velocity", ol_target->angular_velocity);
+  // Graph("target/ol/velocity_x", target.velocity[0]);
+  // Graph("target/ol/velocity_y", target.velocity[1]);
+  // Graph("target/ol/angular_velocity", target.angular_velocity);
 
-    WriteVelocitiesHelper(ol_target->velocity, ol_target->angular_velocity,
-        false,
-        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"));
-  } else if (DrivetrainAccelerationControlTarget* accel_target =
-                 std::get_if<DrivetrainAccelerationControlTarget>(&target)) {
-    // Graph(
-    //     "target/accel/linear_acceleration",
-    //     accel_target->linear_acceleration);
-    // Graph("target/accel/accel_dir", accel_target->accel_dir);
-    // Graph("target/angular_velocity", accel_target->angular_velocity);
+  units::degrees_per_second_t cut_angular_vel = units::math::min(
+      units::math::max(target.angular_velocity,
+          -GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+              "max_omega_cut")),
+      GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+          "max_omega_cut"));
 
-    auto motor_specs = frc846::control::base::MotorSpecificationPresets::get(
-        configs_.module_common_config.motor_types);
-
-    units::feet_per_second_t true_max_speed =
-        motor_specs.free_speed * configs_.module_common_config.drive_reduction;
-    // Graph("target/true_max_speed", true_max_speed);
-    units::feet_per_second_t accel_buffer =
-        accel_target->linear_acceleration / configs_.max_accel * true_max_speed;
-    // Graph("target/accel_buffer", accel_buffer);
-
-    auto vel_new_target = GetReadings().pose.velocity +
-                          frc846::math::VectorND<units::feet_per_second, 2>{
-                              accel_buffer, accel_target->accel_dir, true};
-
-    units::degrees_per_second_t angular_vel = units::math::min(
-        units::math::max(accel_target->angular_velocity,
-            -GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-                "max_omega_cut")),
-        GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-            "max_omega_cut"));
-
-    units::feet_per_second_t speed_limit =
-        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed");
-    if (accel_target->speed_limit >= 1_fps)
-      speed_limit = accel_target->speed_limit;
-    WriteVelocitiesHelper(vel_new_target, angular_vel, true, speed_limit);
-  }
+  WriteVelocitiesHelper(accelClampHelper(target.velocity, target.accel_clamp),
+      target.cut_excess_steering ? cut_angular_vel : target.angular_velocity,
+      target.cut_excess_steering,
+      GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"));
 
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();

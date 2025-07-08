@@ -1650,7 +1650,7 @@
   {
     "name": "/Preferences/robot_container/init_gpd",
     "type": "boolean",
-    "value": false,
+    "value": true,
     "properties": {
       "persistent": true
     }

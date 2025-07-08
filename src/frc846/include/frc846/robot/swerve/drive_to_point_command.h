@@ -17,7 +17,7 @@ public:
       frc846::math::FieldPoint target, units::feet_per_second_t max_speed,
       units::feet_per_second_squared_t max_acceleration,
       units::feet_per_second_squared_t max_deceleration,
-      bool end_when_close = false);
+      bool end_when_close = true);
 
   void Initialize() override;
 
@@ -43,14 +43,7 @@ private:
 
   frc846::math::FieldPoint target_;
 
-  bool is_decelerating_ = false;
-
-  int num_stalled_loops_ = 0;
-  int total_counter_ = 0;
-
   bool end_when_close_ = false;
-
-  units::degree_t direction_offset;
 };
 
 }  // namespace frc846::robot::swerve

@@ -50,6 +50,8 @@ struct SwerveModuleCommonConfig {
   steer_conv_unit steer_reduction;
   drive_conv_unit drive_reduction;
 
+  frc846::wpilib::unit_ohm avg_resistance;
+
   units::unit_t<units::compound_unit<units::meter, units::kilogram>>
       steer_load_factor;
 
@@ -122,6 +124,11 @@ private:
   */
   std::pair<units::degree_t, bool> calculateSteerPosition(
       units::degree_t target_norm, units::degree_t current);
+
+  frc846::wpilib::unit_ohm avg_resistance_;
+  frc846::control::base::MotorMonkeyType motor_types_;
+
+  frc846::control::config::MotorConstructionParameters drive_params_;
 
   frc846::control::HigherMotorController drive_;
   frc846::control::HigherMotorController steer_;
