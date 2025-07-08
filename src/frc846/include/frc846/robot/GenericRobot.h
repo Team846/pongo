@@ -36,6 +36,7 @@ public:
   void VerifyHardware();
 
   void AddAuto(std::string name, frc2::Command* command);
+  void AddDefaultAuto(std::string name, frc2::Command* command);
 
   static std::string GetSelectedAuto() { return auto_chooser_.GetSelected(); }
 

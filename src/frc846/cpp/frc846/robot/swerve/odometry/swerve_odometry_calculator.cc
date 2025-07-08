@@ -22,7 +22,6 @@ SwerveOdometryOutput SwerveOdometryCalculator::calculate(
   for (int i = 0; i < 4; i++) {
     wheel_vecs[i] =
         frc846::math::Vector2D{module_diffs[i], inputs.steer_pos[i], true};
-
     // TODO: the true wheel vec depends on the "hidden time" problem
   }
 
@@ -54,7 +53,7 @@ SwerveOdometryOutput SwerveOdometryCalculator::calculate(
 
   constexpr units::radian_t EPSILON_dtheta = 1e-6_rad;
 
-  if (units::math::abs(dtheta) > EPSILON_dtheta) {  // TODO: fix
+  if (units::math::abs(dtheta) > EPSILON_dtheta) {
     // Arced approximation for displacement
     double dtheta_val = dtheta.to<double>();
 

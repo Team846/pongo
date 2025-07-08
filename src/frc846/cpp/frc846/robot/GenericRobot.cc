@@ -243,4 +243,11 @@ void GenericRobot::AddAuto(std::string name, frc2::Command* command) {
   frc::SmartDashboard::UpdateValues();
 }
 
+void GenericRobot::AddDefaultAuto(std::string name, frc2::Command* command) {
+  auto_chooser_.SetDefaultOption(name, name);
+  autos_[name] = command;
+  frc::SmartDashboard::PutData(&auto_chooser_);
+  frc::SmartDashboard::UpdateValues();
+}
+
 }  // namespace frc846::robot

@@ -56,18 +56,11 @@ struct DrivetrainReadings {
 struct DrivetrainOLControlTarget {
   frc846::math::VectorND<units::feet_per_second, 2> velocity;
   units::degrees_per_second_t angular_velocity;
+  units::feet_per_second_squared_t accel_clamp = -1_fps_sq;
+  bool cut_excess_steering = false;
 };
 
-// Allows for acceleration-based control of the drivetrain
-struct DrivetrainAccelerationControlTarget {
-  units::feet_per_second_squared_t linear_acceleration;
-  units::degree_t accel_dir;
-  units::degrees_per_second_t angular_velocity;
-  units::feet_per_second_t speed_limit = -1_fps;
-};
-
-using DrivetrainTarget = std::variant<DrivetrainOLControlTarget,
-    DrivetrainAccelerationControlTarget>;
+using DrivetrainTarget = DrivetrainOLControlTarget;
 
 /*
 DrivetrainSubsystem
@@ -97,15 +90,14 @@ public:
   units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
 
 private:
-  frc::Field2d a_field;
-  static units::inch_t sim_pos_x;
-  static units::inch_t sim_pos_y;
-  static units::degree_t sim_bearing;
-
   DrivetrainReadings ReadFromHardware() override;
 
   frc846::math::VectorND<units::feet_per_second, 2> compensateForSteerLag(
       frc846::math::VectorND<units::feet_per_second, 2> uncompensated);
+
+  frc846::math::VectorND<units::feet_per_second, 2> accelClampHelper(
+      frc846::math::VectorND<units::feet_per_second, 2> velocity,
+      units::feet_per_second_squared_t accel_clamp);
 
   void WriteVelocitiesHelper(
       frc846::math::VectorND<units::feet_per_second, 2> velocity,

@@ -16,11 +16,8 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
           frc2::SequentialCommandGroup{
               frc846::robot::swerve::DriveToPointCommand{
                   &(container.drivetrain_),
-                  ReefProvider::getReefScoringLocations(
-                      false, true)[ReefProvider::getReefNumAuto(
-                                       numberOnRight, leftSide)]
-                      .mirror(blueSide),
-                  10_fps, 22_fps_sq, 15_fps_sq},
+                  getModifiedPrePose(numberOnRight, blueSide, leftSide), 13_fps,
+                  22_fps_sq, 18_fps_sq},
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
@@ -29,16 +26,20 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                            !container.coral_ss_.coral_end_effector.GetReadings()
                                 .has_piece_;
                   }},
-                  frc846::robot::swerve::WaitUntilClose{
+                  frc846::robot::swerve::DriveToPointCommand{
                       &(container.drivetrain_),
                       ReefProvider::getReefScoringLocations(
                           false)[ReefProvider::getReefNumAuto(
                                      numberOnRight, leftSide)]
-                          .mirror(blueSide)},
-                  frc846::robot::swerve::LockToPointCommand{
-                      &(container.drivetrain_),
-                      ReefProvider::getReefScoringLocations(
-                          false)[ReefProvider::getReefNumAuto(
-                                     numberOnRight, leftSide)]
-                          .mirror(blueSide)},
-                  frc2::WaitCommand{2_s}}}} {}
+                          .mirror(blueSide),
+                      10_fps, 22_fps_sq, 18_fps_sq, false},
+                  frc2::WaitCommand{1_s}}}} {}
+
+frc846::math::FieldPoint ReefAutoAutoAlignCommand::getModifiedPrePose(
+    int numberOnRight, bool blueSide, bool leftSide) {
+  frc846::math::FieldPoint pose = ReefProvider::getReefScoringLocations(
+      false, true)[ReefProvider::getReefNumAuto(numberOnRight, leftSide)]
+                                      .mirror(blueSide);
+  pose.velocity = 4_fps;  // TODO: prefify this
+  return pose;
+}

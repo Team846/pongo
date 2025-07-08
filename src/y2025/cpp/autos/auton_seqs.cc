@@ -26,9 +26,9 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
-#define MAX_ACCEL_3PC 30_fps_sq
-#define MAX_DECEL_3PC 22_fps_sq
-#define MAX_VEL_3PC 13_fps
+#define MAX_ACCEL_3PC 35_fps_sq
+#define MAX_DECEL_3PC 42_fps_sq
+#define MAX_VEL_3PC 15_fps
 
 #define MAX_ACCEL_1PC 24_fps_sq
 #define MAX_DECEL_1PC 24_fps_sq
@@ -40,6 +40,10 @@ using FPT = frc846::math::FieldPoint;
 #define MAX_ACCEL_LEAVE 10_fps_sq
 #define MAX_DECEL_LEAVE 10_fps_sq
 #define MAX_VEL_LEAVE 5_fps
+
+#define MAX_ACCEL_SIMTEST 30_fps_sq
+#define MAX_DECEL_SIMTEST 30_fps_sq
+#define MAX_VEL_SIMTEST 15_fps
 
 #define START_Y (298.5_in - 16.5_in)
 
@@ -80,6 +84,7 @@ using FPT = frc846::math::FieldPoint;
 #define SOURCELOC MKPT(24.703_in, 58.932_in, 53.5_deg, 0_fps)
 
 #define FPC_EXPECTED_START_UF FPT{{50.5_in, 271.3_in}, 140_deg, 0_fps}
+#define SIM_EXP_START_UF FPT{{20_in, 20_in}, 0_deg, 0_fps}
 
 #define FPC_SIM_START()                                                      \
   INSTANT {                                                                  \
@@ -92,6 +97,17 @@ using FPT = frc846::math::FieldPoint;
     }                                                                        \
   }
 
+#define SIM_TEST_START()                                                \
+  INSTANT {                                                             \
+    [&, blue = is_blue_side, left = is_left_side] {                     \
+      if (!frc::RobotBase::IsSimulation()) return;                      \
+      FPT exp_start = SIM_EXP_START_UF.mirror(blue).mirrorOnlyX(!left); \
+      container.drivetrain_.SetPosition(exp_start.point);               \
+      container.drivetrain_.SetOdomBearing(exp_start.bearing);          \
+      Log("Simulated Auto Start");                                      \
+    }                                                                   \
+  }
+
 #define DRIVE_TO_SOURCE(auto_name)                                       \
   frc2::ParallelDeadlineGroup {                                          \
     frc846::robot::swerve::DriveToPointCommand{&(container.drivetrain_), \
@@ -100,11 +116,12 @@ using FPT = frc846::math::FieldPoint;
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
-#define LOCK_TO_SOURCE()                                          \
-  frc2::ParallelDeadlineGroup {                                   \
-    WAIT_FOR_PIECE(), frc846::robot::swerve::LockToPointCommand { \
-      &(container.drivetrain_), SOURCELOC                         \
-    }                                                             \
+#define LOCK_TO_SOURCE()                                                   \
+  frc2::ParallelDeadlineGroup {                                            \
+    WAIT_FOR_PIECE(), frc846::robot::swerve::DriveToPointCommand {         \
+      &(container.drivetrain_), SOURCELOC_PRE, MAX_VEL_3PC, MAX_ACCEL_3PC, \
+          MAX_DECEL_3PC, false                                             \
+    }                                                                      \
   }
 
 #define SMART_LOCK_SOURCE()                                               \
@@ -192,9 +209,10 @@ __AUTO__(FourAndPickAuto, "5PC")
 SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   // WAIT{0.25_s},
   FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC),
-      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(9), DRIVE_TO_SOURCE(3PC),
-      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(8),
-      ALGAL_POS(kAlgae_L2Pick, false)
+      SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(is_left_side ? 9 : 8),
+      DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
+      DRIVE_SCORE_REEF_3PC(is_left_side ? 8 : 9),
+      ALGAL_POS(kAlgae_L2Pick, false), WAIT{0.5_s}, DRIVE_TO_SOURCE(3PC),
 }
 }
 {}
@@ -221,6 +239,45 @@ __AUTO__(LeaveAuto, "LEAVE")
 SEQUENCE {
   START2(158.5_in, START_Y, 180_deg), WAIT{0.25_s},
       DRIVE(LEAVE, 158.5_in, START_Y - 3_ft, 180_deg, 0_fps),
+}
+}
+{}
+
+__AUTO__(SimTestAuto, "SIMTEST")
+SEQUENCE {
+  SIM_TEST_START(), DRIVE(SIMTEST, 42_in, 51.66_in, 0_deg, 4_fps),
+      DRIVE(SIMTEST, 49_in, 63.43_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 57_in, 70.01_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 65_in, 73.54_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 75_in, 75_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 85_in, 76.45_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 94_in, 80.60_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 101_in, 86.56_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 107_in, 95.82_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 110_in, 110_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 108_in, 121.66_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 101_in, 133.43_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 89_in, 142.07_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 75_in, 145_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 61_in, 142.07_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 49_in, 133.43_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 42_in, 121.66_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 40_in, 110_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 43_in, 95.82_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 49_in, 86.56_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 56_in, 80.60_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 65_in, 76.45_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 75_in, 75_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 85_in, 73.54_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 93_in, 70.01_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 101_in, 63.43_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 108_in, 51.66_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 110_in, 40_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 108_in, 28.34_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 101_in, 16.57_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 93_in, 9.99_in, 0_deg, 6_fps),
+      DRIVE(SIMTEST, 85_in, 6.46_in, 0_deg, 4_fps),
+      DRIVE(SIMTEST, 75_in, 5_in, 0_deg, 0_fps),
 }
 }
 {}

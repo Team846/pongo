@@ -34,3 +34,9 @@ class LeaveAuto : public frc846::robot::GenericCommandGroup<RobotContainer,
 public:
   LeaveAuto(RobotContainer& container, bool is_blue_side, bool is_left_side);
 };
+
+class SimTestAuto : public frc846::robot::GenericCommandGroup<RobotContainer,
+                        SimTestAuto, frc2::SequentialCommandGroup> {
+public:
+  SimTestAuto(RobotContainer& container, bool is_blue_side, bool is_left_side);
+};

@@ -13,7 +13,8 @@ units::radians_per_second_t VelocityPositionEstimator::predict_velocity(
     units::radians_per_second_t current_velocity, double target_dc,
     units::second_t dt, units::ampere_t I_lim, units::newton_meter_t load,
     units::newton_meter_t friction_mag, unit_kg_m_sq rot_inertia,
-    frc846::control::base::MotorSpecs specs, bool brake_mode) {
+    frc846::control::base::MotorSpecs specs,
+    frc846::wpilib::unit_ohm circuit_res, bool brake_mode) {
   double DC_delta_limit = (I_lim / specs.stall_current).to<double>();
   double current_vel_percentage =
       (current_velocity / specs.free_speed).to<double>();
@@ -36,8 +37,12 @@ units::radians_per_second_t VelocityPositionEstimator::predict_velocity(
     return current_velocity;
   }
 
+  frc846::wpilib::unit_ohm winding_res = 12_V / specs.stall_current;
+  units::newton_meter_t effective_torque =
+      specs.stall_torque * winding_res / (winding_res + circuit_res);
+
   units::newton_meter_t pred_torque_output =
-      (target_dc - current_velocity / specs.free_speed) * specs.stall_torque;
+      (target_dc - current_velocity / specs.free_speed) * effective_torque;
   if (current_velocity > 0.5_rad_per_s) {
     load += friction_mag;
   } else if (current_velocity < -0.5_rad_per_s) {
@@ -51,9 +56,9 @@ units::radians_per_second_t VelocityPositionEstimator::predict_velocity(
   }
 
   units::radians_per_second_t w_conv =
-      specs.free_speed * (target_dc - load / specs.stall_torque);
+      specs.free_speed * (target_dc - load / effective_torque);
   auto conv_rate =
-      specs.stall_torque /
+      effective_torque /
       (rot_inertia * specs.free_speed.convert<units::radians_per_second>());
 
   return w_conv + (current_velocity - w_conv) *
