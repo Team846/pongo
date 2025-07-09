@@ -16,8 +16,8 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
           frc2::SequentialCommandGroup{
               frc846::robot::swerve::DriveToPointCommand{
                   &(container.drivetrain_),
-                  getModifiedPrePose(numberOnRight, blueSide, leftSide), 13_fps,
-                  22_fps_sq, 18_fps_sq},
+                  getModifiedPrePose(numberOnRight, blueSide, leftSide), 11_fps,
+                  14_fps_sq, 7_fps_sq},
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
@@ -32,7 +32,7 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                           false)[ReefProvider::getReefNumAuto(
                                      numberOnRight, leftSide)]
                           .mirror(blueSide),
-                      10_fps, 22_fps_sq, 18_fps_sq, false},
+                      6_fps, 10_fps_sq, 7_fps_sq, false},
                   frc2::WaitCommand{1_s}}}} {}
 
 frc846::math::FieldPoint ReefAutoAutoAlignCommand::getModifiedPrePose(

@@ -76,7 +76,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("drive_to_point/kC", 10.0);
   RegisterPreference("drive_to_point/kA", 0.5);
   RegisterPreference("drive_to_point/kE", 0.8);
-  RegisterPreference("drive_to_point/threshold", 3_in);
+  RegisterPreference("drive_to_point/threshold", 6_in);
 
   RegisterPreference("override_at_auto", true);
 

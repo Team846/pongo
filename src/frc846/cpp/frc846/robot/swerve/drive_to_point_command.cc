@@ -81,6 +81,8 @@ void DriveToPointCommand::Execute() {
   dt_target.cut_excess_steering = true;
   dt_target.accel_clamp = max_acceleration_;
 
+  if (delta_vec.magnitude() < 0.75_in) { dt_target.velocity = {0_fps, 0_fps}; }
+
   drivetrain_->SetTarget(dt_target);
 }
 
@@ -118,7 +120,7 @@ bool DriveToPointCommand::IsFinished() {
                  (target_.point - start_point_).magnitude() ||
              (target_.point - current_point).magnitude() <
                  drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-                     "drive_to_point_command/threshold"));
+                     "drive_to_point/threshold"));
 }
 
 }  // namespace frc846::robot::swerve

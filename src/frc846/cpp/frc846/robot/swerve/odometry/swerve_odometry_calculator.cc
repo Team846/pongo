@@ -25,9 +25,11 @@ SwerveOdometryOutput SwerveOdometryCalculator::calculate(
     // TODO: the true wheel vec depends on the "hidden time" problem
   }
 
-  units::inch_t sum_dx, sum_dy;
-  units::unit_t<units::compound_unit<units::inch, units::inch>> sum_dtheta_x,
-      sum_dtheta_y, sum_rr;
+  units::inch_t sum_dx = 0_in;
+  units::inch_t sum_dy = 0_in;
+  units::unit_t<units::compound_unit<units::inch, units::inch>> sum_dtheta_x{0};
+  units::unit_t<units::compound_unit<units::inch, units::inch>> sum_dtheta_y{0};
+  units::unit_t<units::compound_unit<units::inch, units::inch>> sum_rr{0};
 
   for (int i = 0; i < 4; i++) {
     units::inch_t md_x = wheel_vecs[i][0];

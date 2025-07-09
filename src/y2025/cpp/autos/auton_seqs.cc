@@ -26,8 +26,8 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
-#define MAX_ACCEL_3PC 35_fps_sq
-#define MAX_DECEL_3PC 42_fps_sq
+#define MAX_ACCEL_3PC 25_fps_sq
+#define MAX_DECEL_3PC 20_fps_sq
 #define MAX_VEL_3PC 15_fps
 
 #define MAX_ACCEL_1PC 24_fps_sq

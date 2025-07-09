@@ -12,7 +12,7 @@ python main.py
 
 python main.py --nt-file backup.json --src-dir src/y2025
 
-mode for funny things
+mode for ambiguous prefs
 python main.py --interactive
 """
 
@@ -389,92 +389,3 @@ def main():
 
 if __name__ == '__main__':
     exit(main())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
