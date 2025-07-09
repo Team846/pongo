@@ -31,6 +31,7 @@ void CoralCommand::Periodic() {
   else
     coral_target.state = kCoral_StowNoPiece;
 
+  // Don't score if robot is moving too fast
   if (container_.drivetrain_.GetReadings().estimated_pose.velocity.magnitude() <
       2.0_fps)
     coral_target.score = ci_readings.score_coral;

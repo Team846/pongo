@@ -63,6 +63,10 @@ struct ControlInputReadings {
   bool inc_a_wrist;
   bool dec_a_wrist;
 
+  // Homing Adjustments
+  bool auto_home_telescope;
+  bool auto_home_elevator;
+
   bool targeting_algae;
 
   bool first_enable_exception;

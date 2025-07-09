@@ -131,12 +131,12 @@ using FPT = frc846::math::FieldPoint;
     WAIT_FOR_PIECE(), SEQUENCE {                                          \
       frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},        \
           DRIVE_TO_SOURCE(3PC),                                           \
-          PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
           WAIT{0.5_s},                                                    \
           PARALLEL_DEADLINE(                                              \
               LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)),    \
     }                                                                     \
   }
+//PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true))
 
 #define DRIVE_TO_REEF(auto_name, number_on_right)          \
   ReefAutoAutoAlignCommand {                               \
