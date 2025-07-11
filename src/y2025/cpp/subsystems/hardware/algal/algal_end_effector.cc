@@ -22,10 +22,10 @@ AlgalEESubsystem::AlgalEESubsystem()
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  RegisterPreference("idle_speed", 0.04);
+  RegisterPreference("idle_speed", 0.025);
   RegisterPreference("piece_thresh", 2_tps);
 
-  RegisterPreference("kick_dc", -0.25);
+  RegisterPreference("kick_dc", -0.2);
 }
 
 frc846::control::config::MotorConstructionParameters

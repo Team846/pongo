@@ -28,7 +28,7 @@ ElevatorSubsystem::ElevatorSubsystem()
   RegisterPreference("sm_target_range", 34_in);
   RegisterPreference("sm_vel_thresh", 0.02_fps);
   RegisterPreference("sm_current_thresh", 30_A);
-  RegisterPreference("sm_counter", 10);
+  RegisterPreference("sm_counter", 100);
 }
 
 LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {

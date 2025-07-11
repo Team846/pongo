@@ -25,7 +25,7 @@ AlgalWristSubsystem::AlgalWristSubsystem()
   RegisterPreference("flip_position_load_sign", true);
 
   RegisterPreference("use_sensor_threshold", 5_deg_per_s);
-  RegisterPreference("encoder_offset", 0_deg);
+  RegisterPreference("encoder_offset", -6.2_deg);
 }
 
 WristTarget AlgalWristSubsystem::ZeroTarget() const {

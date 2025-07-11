@@ -40,7 +40,7 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("telescope_tolerance", 9_in);
   RegisterPreference("wrist_tolerance", 15_deg);
 
-  RegisterPreference("telescope_adjustment", 0.1_in);
+  RegisterPreference("telescope_adjustment", 0.14_in);
   RegisterPreference("wrist_adjustment", 0.7_deg);
 
   RegisterPreference("autostow", true);

@@ -23,14 +23,14 @@ AlgalSuperstructure::AlgalSuperstructure()
   REGISTER_SETPOINT("ground_intake", 29_in, 58_deg, 0.9);
   REGISTER_SETPOINT("on_top_intake", 35_in, 58_deg, 0.9);
   REGISTER_SETPOINT("net", 72_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("net_inter", 40_in, 40_deg, 0.1);
+  REGISTER_SETPOINT("net_inter", 35_in, 40_deg, 0.1);
   REGISTER_SETPOINT("l2_pick", 41.5_in, 30_deg, 0.7);
   REGISTER_SETPOINT("l3_pick", 50_in, 30_deg, 0.7);
 
   REGISTER_SETPOINT("dinosaur_A", 34_in, 0_deg, -0.3);
   REGISTER_SETPOINT("dinosaur_B", 45_in, 35_deg, 0.3);
 
-  RegisterPreference("score_dc", -0.15);
+  RegisterPreference("score_dc", -0.18);
 
   RegisterPreference("init_elevator", true);
   RegisterPreference("init_wrist", true);

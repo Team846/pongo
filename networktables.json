@@ -2050,7 +2050,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/net_inter/height (in)",
     "type": "double",
-    "value": 30.0,
+    "value": 35.0,
     "properties": {
       "persistent": true
     }
