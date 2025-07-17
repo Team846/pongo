@@ -1998,5 +1998,165 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/lock_net_adj_rate (in)",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescopel4_modifier_height (in)",
+    "type": "double",
+    "value": 70.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescopel4_load (Nm)",
+    "type": "double",
+    "value": 2.1,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_hysteresis",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_homing_dc",
+    "type": "double",
+    "value": -0.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_homing_thresh (fps)",
+    "type": "double",
+    "value": 0.005,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_loops",
+    "type": "int",
+    "value": 25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator_homing_dc",
+    "type": "double",
+    "value": -0.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator_homing_thresh (fps)",
+    "type": "double",
+    "value": 0.005,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/elevator_loops",
+    "type": "int",
+    "value": 25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/homing_dc",
+    "type": "double",
+    "value": 7.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/homing_thresh (fps)",
+    "type": "double",
+    "value": 0.005,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/homing_loops",
+    "type": "int",
+    "value": 25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/home_zero_height (in)",
+    "type": "double",
+    "value": 28.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_autohome_height (in)",
+    "type": "double",
+    "value": 27.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/homing_dc",
+    "type": "double",
+    "value": -0.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/homing_thresh (fps)",
+    "type": "double",
+    "value": 0.005,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/homing_loops",
+    "type": "int",
+    "value": 25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/home_zero_height (in)",
+    "type": "double",
+    "value": 28.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/elevator/telescope_autohome_height (in)",
+    "type": "double",
+    "value": 27.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

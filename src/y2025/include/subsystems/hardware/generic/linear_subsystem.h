@@ -22,6 +22,8 @@ struct LinearSubsystemTarget {
   units::inch_t position;
 };
 
+enum class HomingState { kNotHoming, kHoming, kHomingComplete };
+
 using linear_pos_conv_t = units::unit_t<
     units::compound_unit<units::inch, units::inverse<units::turn>>>;
 
@@ -50,8 +52,15 @@ public:
   void BrakeSubsystem();
   void CoastSubsystem();
 
+  void StartHoming(units::inch_t target);
+  bool IsHoming() const {
+    return homing_state_ != HomingState::kHomingComplete;
+  }
+
 protected:
   virtual void ExtendedSetup() = 0;
+
+  virtual void UpdateHoming();
 
   virtual void RHExtension() {};
 
@@ -67,4 +76,8 @@ protected:
   bool is_homed_ = false;
   units::inch_t hall_effect_loc_;
   bool exit_deadband = true;
+
+  HomingState homing_state_;
+  int home_loop_counter_;
+  units::inch_t homing_target_;
 };

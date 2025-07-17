@@ -17,10 +17,25 @@
       "/SmartDashboard/home_telescope_elevator_climber": "Command",
       "/SmartDashboard/prune_prefs": "Command",
       "/SmartDashboard/set_cancoder_offsets": "Command",
+      "/SmartDashboard/start_path_recording": "Command",
+      "/SmartDashboard/stop_path_recording": "Command",
       "/SmartDashboard/verify_hardware": "Command",
       "/SmartDashboard/zero_bearing": "Command",
       "/SmartDashboard/zero_coral_wrist": "Command",
       "/SmartDashboard/zero_odometry": "Command"
+    },
+    "windows": {
+      "/SmartDashboard/GPDField": {
+        "bottom": 1638,
+        "height": 8.051901817321777,
+        "left": 534,
+        "right": 3466,
+        "top": 291,
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -87,6 +102,26 @@
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Elastic@1": {
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
+    },
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "Subscribers": {
+        "open": true
+      }
+    },
     "visible": true
   },
   "Plot": {
@@ -104,7 +139,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 1315,
+          "height": -46,
           "series": [
             {
               "color": [
@@ -136,6 +171,22 @@
           ]
         }
       ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 332
+        }
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }
