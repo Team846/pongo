@@ -2082,7 +2082,7 @@
   {
     "name": "/Preferences/telescope/homing_dc",
     "type": "double",
-    "value": 7.0,
+    "value": -0.15,
     "properties": {
       "persistent": true
     }
