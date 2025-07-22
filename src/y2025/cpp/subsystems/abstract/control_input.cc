@@ -195,9 +195,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   if (!operator_clicked) {
     // Net autopicking
-    auto_picked = true;
-    //  check if y is within 80 in of midfield
-    if (units::math::abs(curr_pose[1] - mid_field_y) < 80_in &&
+    //  check if y is within 90 in of midfield
+    if (units::math::abs(curr_pose[1] - mid_field_y) < 90_in &&
         algal_ss_->GetReadings().has_piece) {
       // check if robot is pointed within 30 deg of 0 or 180 deg
       if (units::math::abs(rotation) < 30_deg ||
@@ -205,13 +204,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
         // Log("net auto");
         ci_readings_.algal_state = AlgalStates::kAlgae_Net;
         override_lock_right = true;
+        auto_picked = true;
         // Net auto aligning
         if (dr_readings.right_bumper) {
-          Graph("ci_readings/lock_net", true);
           ci_readings_.lock_net = true;
           ci_readings_.lock_right_reef = false;
         } else {
-          Graph("ci_readings/lock_net", false);
           ci_readings_.lock_net = false;
         }
       }
@@ -229,6 +227,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
         algal_ss_->GetReadings().has_piece) {
       // Log("processor auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+      auto_picked = true;
     }
     // check if near left side and pointed at -90 degree and 30 in from the left
     else if (curr_pose[0] < 30.0_in &&
@@ -236,13 +235,11 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
              algal_ss_->GetReadings().has_piece) {
       // Log("proc auto");
       ci_readings_.algal_state = AlgalStates::kAlgae_Processor;
+      auto_picked = true;
     }
   }
 
-  // TODO: Add back functionality after merging
-  if (auto_picked && (ci_readings_.algal_state != previous_state)) {
-    ci_readings_.auto_pick_used = true;
-  }
+  if (auto_picked) { ci_readings_.auto_pick_used = true; }
 
   double op_deadband = GetPreferenceValue_double("op_deadband");
 
