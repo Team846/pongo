@@ -30,11 +30,25 @@ std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
   int reef_target_pos =
       ReefProvider::getClosestReefSide(use_pred_pos ? predicted_pos : cpos);
   Graph("reef_target_pos", reef_target_pos);
-  auto target_pos = ReefProvider::getReefScoringLocations(true, is_pre_point_,
-      !(container_.control_input_.GetReadings().coral_state == kCoral_ScoreL2 ||
-          container_.control_input_.GetReadings().coral_state ==
-              kCoral_ScoreL3))[2 * reef_target_pos + (is_left_ ? 0 : 1)];
 
+  bool is_l4 = !(
+      container_.control_input_.GetReadings().coral_state == kCoral_ScoreL2 ||
+      container_.control_input_.GetReadings().coral_state == kCoral_ScoreL3);
+
+  int reef_index = 2 * reef_target_pos + (is_left_ ? 0 : 1);
+
+  auto target_pos = ReefProvider::getReefScoringLocations(
+      true, is_pre_point_, is_l4)[reef_index];
+
+  if (is_pre_point_) {
+    auto trgt_reef_point =
+        ReefProvider::getReefScoringLocations(true, false, is_l4)[reef_index];
+
+    if ((target_pos.point - cpos).magnitude() >
+        (trgt_reef_point.point - cpos).magnitude()) {
+      target_pos.velocity = 0.0_fps;
+    }
+  }
   //   units::inch_t reef_drive_subtract =
   //       (drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
   //           "lock_drive_early"));

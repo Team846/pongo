@@ -197,7 +197,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     // Net autopicking
     //  check if y is within 90 in of midfield
     if (units::math::abs(curr_pose[1] - mid_field_y) < 90_in &&
-        algal_ss_->GetReadings().has_piece) {
+        (algal_ss_->GetReadings().has_piece || !coral_ss_->GetReadings().piece_entered)) {
       // check if robot is pointed within 30 deg of 0 or 180 deg
       if (units::math::abs(rotation) < 30_deg ||
           units::math::abs(rotation - 180_deg) < 30_deg) {

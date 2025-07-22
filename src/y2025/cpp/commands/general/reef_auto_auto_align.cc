@@ -9,15 +9,16 @@
 #include "frc846/robot/swerve/wait_until_close.h"
 #include "reef.h"
 
-ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
-    RobotContainer& container, int numberOnRight, bool blueSide, bool leftSide)
+ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(RobotContainer& container,
+    int numberOnRight, bool blueSide, bool leftSide, bool isRetry)
     : GenericCommandGroup<RobotContainer, ReefAutoAutoAlignCommand,
           frc2::SequentialCommandGroup>{container, "reef_auto_align",
           frc2::SequentialCommandGroup{
               frc846::robot::swerve::DriveToPointCommand{
                   &(container.drivetrain_),
-                  getModifiedPrePose(numberOnRight, blueSide, leftSide), 10_fps,
-                  11_fps_sq, 5_fps_sq},
+                  getModifiedPrePose(
+                      numberOnRight, blueSide, leftSide, isRetry),
+                  13_fps, 25_fps_sq, 10_fps_sq},
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
@@ -32,14 +33,17 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(
                           false)[ReefProvider::getReefNumAuto(
                                      numberOnRight, leftSide)]
                           .mirror(blueSide),
-                      6_fps, 8_fps_sq, 5_fps_sq, false},
+                      isRetry ? 6_fps : 13_fps, isRetry ? 10_fps_sq : 25_fps_sq,
+                      isRetry ? 5_fps_sq : 10_fps_sq, false},
                   frc2::WaitCommand{1_s}}}} {}
 
 frc846::math::FieldPoint ReefAutoAutoAlignCommand::getModifiedPrePose(
-    int numberOnRight, bool blueSide, bool leftSide) {
+    int numberOnRight, bool blueSide, bool leftSide, bool isRetry) {
   frc846::math::FieldPoint pose = ReefProvider::getReefScoringLocations(
       false, true)[ReefProvider::getReefNumAuto(numberOnRight, leftSide)]
                                       .mirror(blueSide);
   pose.velocity = 4_fps;  // TODO: prefify this
+  if (isRetry) { pose.velocity = 0_fps; }
+
   return pose;
 }

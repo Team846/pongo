@@ -126,21 +126,20 @@ using FPT = frc846::math::FieldPoint;
     }                                                                      \
   }
 
-#define SMART_LOCK_SOURCE()                                               \
-  frc2::ParallelDeadlineGroup {                                           \
-    WAIT_FOR_PIECE(), SEQUENCE {                                          \
-      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},        \
-          DRIVE_TO_SOURCE(3PC),                                           \
-          WAIT{0.5_s},                                                    \
-          PARALLEL_DEADLINE(                                              \
-              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)),    \
-    }                                                                     \
+#define SMART_LOCK_SOURCE()                                            \
+  frc2::ParallelDeadlineGroup {                                        \
+    WAIT_FOR_PIECE(), SEQUENCE {                                       \
+      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},     \
+          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s},                           \
+          PARALLEL_DEADLINE(                                           \
+              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)), \
+    }                                                                  \
   }
-//PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true))
+// PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true))
 
-#define DRIVE_TO_REEF(auto_name, number_on_right)          \
-  ReefAutoAutoAlignCommand {                               \
-    container, number_on_right, is_blue_side, is_left_side \
+#define DRIVE_TO_REEF(auto_name, number_on_right, isRetry)          \
+  ReefAutoAutoAlignCommand {                                        \
+    container, number_on_right, is_blue_side, is_left_side, isRetry \
   }
 
 #define WAIT4REEF()                                                         \
@@ -179,11 +178,11 @@ using FPT = frc846::math::FieldPoint;
 
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
   PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
-      PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum),                        \
+      PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum, false),                 \
           SEQUENCE(WAIT(1.75_s), CORAL_POS(kCoral_ScoreL4, false))),        \
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
-      PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum)),              \
+      PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum, true)),        \
       CORAL_POS(kCoral_ScoreL4, true), WAIT {                               \
     0.25_s                                                                  \
   }
