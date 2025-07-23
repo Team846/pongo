@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -73.740234375,
+    "value": -73.30078125,
     "properties": {
       "persistent": true
     }
@@ -82,7 +82,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -106.171875,
+    "value": -128.67,
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.541015625,
+    "value": -80.33203125,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.541015625,
+    "value": -79.013671875,
     "properties": {
       "persistent": true
     }
@@ -1298,7 +1298,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 7.0,
+    "value": 14.0,
     "properties": {
       "persistent": true
     }
@@ -1578,7 +1578,7 @@
   {
     "name": "/Preferences/climber/limits/upper_limit (deg)",
     "type": "double",
-    "value": 420.0,
+    "value": 460.0,
     "properties": {
       "persistent": true
     }
@@ -1586,7 +1586,7 @@
   {
     "name": "/Preferences/climber/limits/lower_limit (deg)",
     "type": "double",
-    "value": -260.0,
+    "value": -255.0,
     "properties": {
       "persistent": true
     }
@@ -2018,7 +2018,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/kC",
     "type": "double",
-    "value": 5.0,
+    "value": 3.5,
     "properties": {
       "persistent": true
     }
@@ -2034,7 +2034,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/kE",
     "type": "double",
-    "value": 5.0,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }
@@ -2042,7 +2042,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/threshold (in)",
     "type": "double",
-    "value": 6.0,
+    "value": 3.0,
     "properties": {
       "persistent": true
     }
@@ -2067,6 +2067,22 @@
     "name": "/Preferences/algal_ss/setpoints/net_inter/ee_dc",
     "type": "double",
     "value": 0.1,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/source_max_speed (fps)",
+    "type": "double",
+    "value": 7.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/use_source_assist",
+    "type": "boolean",
+    "value": true,
     "properties": {
       "persistent": true
     }

@@ -133,8 +133,6 @@ private:
   bool previous_pressed_telescope_home_ = false;
   bool previous_pressed_elevator_home_ = false;
 
-  bool override_lock_right = false;
-
   ControlInputReadings ReadFromHardware() override;
 
   void WriteToHardware(ControlInputTarget target) override;

@@ -17,13 +17,16 @@ std::pair<frc846::math::FieldPoint, bool> DriveToNetCommand::GetTargetPoint() {
       drivetrain_->GetReadings().estimated_pose.position;
   units::degree_t bearing = drivetrain_->GetReadings().estimated_pose.bearing;
 
-  units::inch_t net_offest = 60_in;
+  units::inch_t net_offest = 80_in;
   if (is_scoring_) { net_offest = 35_in; }
   frc846::math::Vector2D net_pos = frc846::math::Vector2D{
       pos[0], frc846::math::FieldPoint::field_size_y / 2 - net_offest};
   frc846::math::FieldPoint target_pos =
       frc846::math::FieldPoint{net_pos, 0_deg, 0_fps};
-  if (bearing > 150_deg) { target_pos = target_pos.mirrorOnlyY(true); }
+  if (units::math::abs(frc846::math::CoterminalDifference(bearing, 0_deg)) >
+      150_deg) {
+    target_pos = target_pos.mirrorOnlyY(true);
+  }
 
   return {target_pos, true};
 }

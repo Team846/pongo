@@ -130,7 +130,10 @@ void DriveCommand::Periodic() {
 
     // driver assist
     if (target_angle == 54_deg || target_angle == -54_deg ||
-        target_angle == -234_deg || target_angle == 234_deg) {
+        target_angle == -234_deg ||
+        target_angle == 234_deg &&
+            container_.drivetrain_.GetPreferenceValue_bool(
+                "use_source_assist")) {
       auto current_pos =
           container_.drivetrain_.GetReadings().estimated_pose.position;
 

@@ -37,6 +37,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 9_fps);
   RegisterPreference("source_max_speed", 3_fps);
+  RegisterPreference("use_source_assist", true);
   RegisterPreference("auto_max_speed", 15_fps);
 
   RegisterPreference("lock_net_adj_rate", 1.0_in);
