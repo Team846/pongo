@@ -10,7 +10,7 @@ CoralEESubsystem::CoralEESubsystem()
       motor_configs_{
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,

@@ -128,9 +128,11 @@ void DriveCommand::Periodic() {
       target.angular_velocity =
           container_.drivetrain_.ApplyBearingPID(target_angle);
 
+    // Graph("target_angle", target_angle);
+
     // driver assist
     if (target_angle == 54_deg || target_angle == -54_deg ||
-        target_angle == -234_deg ||
+        target_angle == 126_deg ||
         target_angle == 234_deg &&
             container_.drivetrain_.GetPreferenceValue_bool(
                 "use_source_assist")) {
@@ -145,13 +147,16 @@ void DriveCommand::Periodic() {
       if (target_angle == -54_deg) {
         line_start = line_start.mirrorOnlyX(true);
         line_end = line_end.mirrorOnlyX(true);
-      } else if (target_angle == 234_deg) {
+      } else if (target_angle == 126_deg) {
         line_start = line_start.mirrorOnlyY(true);
         line_end = line_end.mirrorOnlyY(true);
-      } else if (target_angle == -234_deg) {
+      } else if (target_angle == 234_deg) {
         line_start = line_start.mirror(true);
         line_end = line_end.mirror(true);
       }
+
+      // Graph("source_lock/line_start_x", line_start.point[0]);
+      // Graph("source_lock/line_start_y", line_start.point[1]);
 
       auto line_vec = line_end.point - line_start.point;
       double t = std::clamp((((current_pos - line_start.point).dot(line_vec)) /
@@ -188,8 +193,8 @@ void DriveCommand::Periodic() {
       }
 
       target.velocity = target.velocity + correction_velocity;
-      Graph("source_lock/error_x", error_vec[0]);
-      Graph("source_lock/error_y", error_vec[1]);
+      // Graph("source_lock/error_x", error_vec[0]);
+      // Graph("source_lock/error_y", error_vec[1]);
     }
   }
 
