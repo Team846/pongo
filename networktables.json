@@ -1298,7 +1298,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 14.0,
+    "value": 9.0,
     "properties": {
       "persistent": true
     }
@@ -1410,7 +1410,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l2_pick/height (in)",
     "type": "double",
-    "value": 40.0,
+    "value": 39.0,
     "properties": {
       "persistent": true
     }
@@ -1434,7 +1434,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l3_pick/height (in)",
     "type": "double",
-    "value": 48.5,
+    "value": 47.5,
     "properties": {
       "persistent": true
     }
