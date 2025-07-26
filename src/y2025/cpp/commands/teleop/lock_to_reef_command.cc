@@ -37,7 +37,7 @@ LockToReefCommand::LockToReefCommand(
               piece_counter_ = 0;
             }
 
-            if (piece_counter_ >= 30 && lft) { ba[0] = -4_in; }
+            if (piece_counter_ >= 30 && lft) { ba[0] = -6_in; }
 
             auto bearing = cnt.drivetrain_.GetReadings().pose.bearing;
             target_pos.point += ba.rotate(bearing);

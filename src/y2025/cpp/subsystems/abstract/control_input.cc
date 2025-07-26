@@ -194,6 +194,12 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.lock_net = dr_readings.lsb;
 
+  if (dr_readings.lsb && !previous_driver_.lsb) {
+    ci_readings_.algal_state = AlgalStates::kAlgae_Stow;
+    ci_readings_.position_algal = false;
+    op_changed_target_ = false;
+  }
+
   if (!operator_clicked) {
     // Net autopicking
     //  check if y is within 90 in of midfield
