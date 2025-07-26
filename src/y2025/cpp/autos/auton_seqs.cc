@@ -118,12 +118,11 @@ using FPT = frc846::math::FieldPoint;
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
-#define LOCK_TO_SOURCE()                                                   \
-  frc2::ParallelDeadlineGroup {                                            \
-    WAIT_FOR_PIECE(), frc846::robot::swerve::DriveToPointCommand {         \
-      &(container.drivetrain_), SOURCELOC_PRE, MAX_VEL_3PC, MAX_ACCEL_3PC, \
-          MAX_DECEL_3PC, false                                             \
-    }                                                                      \
+#define LOCK_TO_SOURCE()                                          \
+  frc2::ParallelDeadlineGroup {                                   \
+    WAIT_FOR_PIECE(), frc846::robot::swerve::LockToPointCommand { \
+      &(container.drivetrain_), SOURCELOC                         \
+    }                                                             \
   }
 
 #define SMART_LOCK_SOURCE()                                               \

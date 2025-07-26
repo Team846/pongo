@@ -140,9 +140,9 @@ void DriveCommand::Periodic() {
           container_.drivetrain_.GetReadings().estimated_pose.position;
 
       frc846::math::FieldPoint line_start{
-          frc846::math::Vector2D{28_in, 60_in}, 0_deg, 0_fps};
+          frc846::math::Vector2D{21_in, 53_in}, 0_deg, 0_fps};
       frc846::math::FieldPoint line_end{
-          frc846::math::Vector2D{53.5_in, 27_in}, 0_deg, 0_fps};
+          frc846::math::Vector2D{46.5_in, 20_in}, 0_deg, 0_fps};
       bool should_flip = false;
 
       if (target_angle == -54_deg) {
