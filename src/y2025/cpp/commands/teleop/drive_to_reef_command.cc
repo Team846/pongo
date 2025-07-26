@@ -23,7 +23,7 @@ std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
 
   if (cvel.magnitude() > 2_fps) {
     use_pred_pos = true;
-    units::second_t time_step = 0.3_s;
+    units::second_t time_step = 0.0_s;
     predicted_pos =
         cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] * time_step};
   }

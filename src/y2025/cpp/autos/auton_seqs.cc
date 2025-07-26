@@ -81,7 +81,7 @@ using FPT = frc846::math::FieldPoint;
   }
 
 #define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
-#define SOURCELOC MKPT(23.03_in, 56.532_in, 53.5_deg, 0_fps)
+#define SOURCELOC MKPT(17.03_in, 50.532_in, 53.5_deg, 0_fps)
 
 #define FPC_EXPECTED_START_UF \
   FPT { {50.5_in, 271.3_in}, 140_deg, 0_fps }
