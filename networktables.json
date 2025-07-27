@@ -1506,7 +1506,7 @@
   {
     "name": "/Preferences/algal_ss/score_dc",
     "type": "double",
-    "value": -0.18,
+    "value": -0.14,
     "properties": {
       "persistent": true
     }
