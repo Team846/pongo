@@ -81,7 +81,8 @@ using FPT = frc846::math::FieldPoint;
   }
 
 #define SOURCELOC_PRE MKPT(34.203_in, 69.432_in, 53.5_deg, 0_fps)
-#define SOURCELOC MKPT(17.03_in, 50.532_in, 53.5_deg, 0_fps)
+#define SOURCELOC MKPT(18_in, 49.5_in, 53.5_deg, 0_fps)
+#define SOURCELOC_INWARDS MKPT(-7.08_in, 32.69_in, 53.5_deg, 0_fps)
 
 #define FPC_EXPECTED_START_UF \
   FPT { {50.5_in, 271.3_in}, 140_deg, 0_fps }
@@ -118,6 +119,14 @@ using FPT = frc846::math::FieldPoint;
         CORAL_POS(kCoral_StowNoPiece, false)                             \
   }
 
+#define GO_IN_SOURCE(auto_name)                                    \
+  frc2::ParallelDeadlineGroup {                                    \
+    WAIT_FOR_PIECE(), frc846::robot::swerve::DriveToPointCommand { \
+      &(container.drivetrain_), SOURCELOC_INWARDS, 1_fps,          \
+          MAX_ACCEL_##auto_name, MAX_DECEL_##auto_name             \
+    }                                                              \
+  }
+
 #define LOCK_TO_SOURCE()                                          \
   frc2::ParallelDeadlineGroup {                                   \
     WAIT_FOR_PIECE(), frc846::robot::swerve::LockToPointCommand { \
@@ -128,11 +137,12 @@ using FPT = frc846::math::FieldPoint;
 #define SMART_LOCK_SOURCE()                                               \
   frc2::ParallelDeadlineGroup {                                           \
     WAIT_FOR_PIECE(), SEQUENCE {                                          \
-      frc2::ParallelDeadlineGroup{WAIT{2.25_s}, LOCK_TO_SOURCE()},        \
+      frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},        \
+          frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)},    \
           DRIVE_TO_SOURCE(3PC), WAIT{0.5_s},                              \
           PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
           PARALLEL_DEADLINE(                                              \
-              LOCK_TO_SOURCE(), CORAL_POS(kCoral_StowNoPiece, false)),    \
+              GO_IN_SOURCE(3PC), CORAL_POS(kCoral_StowNoPiece, false)),   \
     }                                                                     \
   }
 

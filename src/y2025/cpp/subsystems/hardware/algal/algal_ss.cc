@@ -123,7 +123,7 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
   if (target.score)
-    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
+    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc"), true});
   else
     algal_end_effector.SetTarget({setpoint.ee_dc});
 
