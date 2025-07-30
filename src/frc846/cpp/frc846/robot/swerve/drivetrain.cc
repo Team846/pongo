@@ -36,11 +36,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("lock_gains/deadband", 0.5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 9_fps);
-  RegisterPreference("source_max_speed", 3_fps);
-  RegisterPreference("use_source_assist", true);
   RegisterPreference("auto_max_speed", 15_fps);
-
-  RegisterPreference("lock_net_adj_rate", 1.0_in);
 
   RegisterPreference("drive_to_subtract", 2_in);
 
@@ -81,6 +77,14 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("drive_to_point/threshold", 6_in);
 
   RegisterPreference("override_at_auto", true);
+
+  RegisterPreference("source_max_speed", 3_fps);
+  RegisterPreference("source_coast_threshold", 10_in);
+  RegisterPreference("source_coast_speed", 2_fps);
+  RegisterPreference("use_source_assist", true);
+
+  RegisterPreference("net_auto_align/prepoint", 65_in);
+  RegisterPreference("net_auto_align/scorepoint", 35_in);
 
   odometry_.setConstants(
       {.forward_wheelbase_dim = configs.wheelbase_forward_dim,

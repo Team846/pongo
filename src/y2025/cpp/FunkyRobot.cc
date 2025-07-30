@@ -150,9 +150,9 @@ void FunkyRobot::OnPeriodic() {
 
   if (!home_switch_.Get() && !IsEnabled()) {
     container_.coral_ss_.telescope.HomeSubsystem(
-        robot_constants::elevator::min_height_off_base);
-    container_.algal_ss_.elevator.HomeSubsystem(
         robot_constants::telescope::min_height);
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::min_height_off_base);
     container_.climber_.ZeroClimber();
 
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");

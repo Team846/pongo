@@ -2094,5 +2094,37 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/net_auto_align/prepoint (in)",
+    "type": "double",
+    "value": 65.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/net_auto_align/scorepoint (in)",
+    "type": "double",
+    "value": 35.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/source_coast_threshold (in)",
+    "type": "double",
+    "value": 10.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/source_coast_speed (fps)",
+    "type": "double",
+    "value": 2.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]
