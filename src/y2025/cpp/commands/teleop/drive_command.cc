@@ -127,6 +127,84 @@ void DriveCommand::Periodic() {
     if (target_angle <= 720_deg)
       target.angular_velocity =
           container_.drivetrain_.ApplyBearingPID(target_angle);
+
+    // Graph("target_angle", target_angle);
+
+    // driver assist
+    if (target_angle == 54_deg || target_angle == -54_deg ||
+        target_angle == 126_deg ||
+        target_angle == 234_deg &&
+            container_.drivetrain_.GetPreferenceValue_bool(
+                "use_source_assist")) {
+      auto current_pos =
+          container_.drivetrain_.GetReadings().estimated_pose.position;
+
+      frc846::math::FieldPoint line_start{
+          frc846::math::Vector2D{21_in, 53_in}, 0_deg, 0_fps};
+      frc846::math::FieldPoint line_end{
+          frc846::math::Vector2D{46.5_in, 20_in}, 0_deg, 0_fps};
+      bool should_flip = false;
+
+      if (target_angle == -54_deg) {
+        line_start = line_start.mirrorOnlyX(true);
+        line_end = line_end.mirrorOnlyX(true);
+        should_flip = true;
+      } else if (target_angle == 126_deg) {
+        line_start = line_start.mirrorOnlyY(true);
+        line_end = line_end.mirrorOnlyY(true);
+        should_flip = true;
+      } else if (target_angle == 234_deg) {
+        line_start = line_start.mirror(true);
+        line_end = line_end.mirror(true);
+      }
+
+      auto line_vec = line_end.point - line_start.point;
+      auto to_robot = current_pos - line_start.point;
+      double t =
+          (((to_robot).dot(line_vec)) / (line_vec.dot(line_vec))).to<double>();
+
+      auto line_norm = frc846::math::Vector2D{-line_vec[1], line_vec[0]}.unit();
+      double cross_dist = to_robot.dot(line_norm).to<double>();
+
+      bool should_assist =
+          should_flip ? (cross_dist <= 0.0) : (cross_dist >= 0.0);
+
+      if (should_assist) {
+        t = std::clamp(t, 0.0, 1.0);
+        auto error_vec = line_start.point + line_vec * t - current_pos;
+        frc846::control::base::MotorGains gains{
+            -container_.drivetrain_.GetPreferenceValue_double(
+                "lock_gains/_kP") /
+                3.0,
+            0.0,
+            -container_.drivetrain_.GetPreferenceValue_double(
+                "lock_gains/_kD") /
+                3.0,
+            0.0};
+        auto current_vel =
+            container_.drivetrain_.GetReadings().estimated_pose.velocity;
+
+        frc846::math::VectorND<units::feet_per_second, 2> correction_velocity{
+            gains.calculate(error_vec[0].to<double>(), 0.0,
+                current_vel[0].to<double>(), 0.0) *
+                1_fps,
+            gains.calculate(error_vec[1].to<double>(), 0.0,
+                current_vel[1].to<double>(), 0.0) *
+                1_fps};
+
+        auto src_max_speed =
+            container_.drivetrain_
+                .GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                    "source_max_speed");
+        auto magnitude = correction_velocity.magnitude();
+        if (magnitude > src_max_speed) {
+          correction_velocity =
+              correction_velocity * (src_max_speed / magnitude);
+        }
+
+        target.velocity = target.velocity + correction_velocity;
+      }
+    }
   }
 
   container_.drivetrain_.SetTarget({target});

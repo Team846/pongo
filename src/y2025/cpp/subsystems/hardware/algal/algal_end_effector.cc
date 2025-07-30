@@ -10,7 +10,7 @@ AlgalEESubsystem::AlgalEESubsystem()
       motor_configs_{
           .can_id = ports::algal_ss_::end_effector_::kEE1_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
@@ -22,10 +22,11 @@ AlgalEESubsystem::AlgalEESubsystem()
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  RegisterPreference("idle_speed", 0.04);
+  RegisterPreference("idle_speed", 0.025);
   RegisterPreference("piece_thresh", 2_tps);
 
-  RegisterPreference("kick_dc", -0.25);
+  RegisterPreference("kick_dc", -0.2);
+  RegisterPreference("backspin_constant", -0.24);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -42,6 +43,10 @@ AlgalEESubsystem::GetCurrentConfig(
       GetPreferenceValue_unit_type<units::ampere_t>(
           "motor_configs/smart_current_limit");
   return modifiedConfig;
+}
+
+void AlgalEESubsystem::SetPieceOverride(bool override_piece) {
+  piece_override_ = override_piece;
 }
 
 void AlgalEESubsystem::Setup() {
@@ -69,6 +74,8 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
       units::math::abs(esc_2_.GetVelocity()) <=
           GetPreferenceValue_unit_type<units::turns_per_second_t>(
               "piece_thresh");
+  if (piece_override_) readings.has_piece_ = false;
+
   Graph("readings/has_piece", readings.has_piece_);
   return readings;
 }
@@ -86,6 +93,16 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
       target.duty_cycle_ < 0.0) {
     target.duty_cycle_ = GetPreferenceValue_double("kick_dc");
   }
-  esc_1_.WriteDC(target.duty_cycle_);
-  esc_2_.WriteDC(target.duty_cycle_);
+
+  if (piece_override_) { target.duty_cycle_ = 0.0; }
+
+  if (target.use_back_spin) {
+    esc_1_.WriteDC(
+        target.duty_cycle_ + GetPreferenceValue_double("backspin_constant"));
+    esc_2_.WriteDC(
+        target.duty_cycle_ - GetPreferenceValue_double("backspin_constant"));
+  } else {
+    esc_1_.WriteDC(target.duty_cycle_);
+    esc_2_.WriteDC(target.duty_cycle_);
+  }
 }

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "frc846/math/vectors.h"
+#include "frc846/robot/GenericController.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/robot/swerve/drivetrain.h"
 #include "frc846/robot/xbox.h"
 #include "subsystems/hardware/algal/algal_ss.h"
 #include "subsystems/hardware/coral/coral_ss.h"
@@ -24,7 +26,9 @@ struct ControlInputReadings {
   // Alignment
   bool lock_left_reef;
   bool lock_right_reef;
+  bool lock_net;
   bool auto_align;
+  bool auto_pick_used;
 
   // Superstructure
   bool position_algal;
@@ -44,6 +48,10 @@ struct ControlInputReadings {
 
   // Overrides
   bool override_autostow;
+  bool override_force;
+  bool override_algae_piece;
+  bool override_coral_piece;
+  bool override_reef;
 
   // Adjustments
   bool inc_telescope;
@@ -55,6 +63,10 @@ struct ControlInputReadings {
   bool inc_a_wrist;
   bool dec_a_wrist;
 
+  // Homing Adjustments
+  bool auto_home_telescope;
+  bool auto_home_elevator;
+
   bool targeting_algae;
 
   bool first_enable_exception;
@@ -63,6 +75,8 @@ struct ControlInputReadings {
   bool override_soft_limits;
   bool home_telescope;
   bool home_elevator;
+
+  bool camera_stream;
 
   bool flick;
 };
@@ -76,7 +90,9 @@ class ControlInputSubsystem
     : public frc846::robot::GenericSubsystem<ControlInputReadings,
           ControlInputTarget> {
 public:
-  ControlInputSubsystem(CoralSuperstructure* coral_ss);
+  ControlInputSubsystem(CoralSuperstructure* coral_ss,
+      AlgalSuperstructure* algal_ss,
+      frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
 
   void Setup() override;
 
@@ -93,13 +109,29 @@ private:
 
   CoralSuperstructure* coral_ss_;
 
+  AlgalSuperstructure* algal_ss_;
+
+  frc846::robot::swerve::DrivetrainSubsystem* drivetrain_ss_;
+
   frc846::robot::XboxReadings previous_driver_{};
   frc846::robot::XboxReadings previous_operator_{};
+  frc846::robot::GenericControllerReadings previous_operator_keyboard_{};
 
   frc::XboxController driver_{0};
   frc::XboxController operator_{1};
+  frc::GenericHID operator_keyboard_{2};
+
+  int no_algae_counter = 0;
 
   int climb_state_ = 0;
+
+  bool op_changed_target_ = false;
+
+  bool previous_has_coral_ = false;
+  bool previous_has_algal_ = false;
+
+  bool previous_pressed_telescope_home_ = false;
+  bool previous_pressed_elevator_home_ = false;
 
   ControlInputReadings ReadFromHardware() override;
 

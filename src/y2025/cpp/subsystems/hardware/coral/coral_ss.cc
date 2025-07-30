@@ -40,12 +40,16 @@ CoralSuperstructure::CoralSuperstructure()
   RegisterPreference("telescope_tolerance", 9_in);
   RegisterPreference("wrist_tolerance", 15_deg);
 
-  RegisterPreference("telescope_adjustment", 0.1_in);
+  RegisterPreference("telescope_adjustment", 0.14_in);
   RegisterPreference("wrist_adjustment", 0.7_deg);
 
   RegisterPreference("autostow", true);
   RegisterPreference("stow_no_piece_loop_thresh", 22);
   RegisterPreference("see_reef_loop_thresh", 3);
+
+  RegisterPreference("autoflick", true);
+  RegisterPreference("no_piece_chute_loop_thresh", 30);
+  RegisterPreference("no_piece_chute_wait_loop_thresh", -30);
 
   last_state = kCoral_StowNoPiece;
 }
@@ -136,7 +140,26 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
       chute_piece || coral_end_effector.GetReadings().has_piece_;
   Graph("piece_entered", piece_entered);
 
-  return {autostow_valid, piece_entered};
+  if (chute_piece && !coral_end_effector.GetReadings().has_piece_ ||
+      (hasReached(CoralStates::kCoral_StowNoPiece) &&
+          coral_end_effector.GetReadings().see_reef)) {
+    no_piece_chute_count_++;
+  } else {
+    no_piece_chute_count_ = 0;
+  }
+  Graph("no_piece_chute_count", no_piece_chute_count_);
+
+  bool auto_flick_valid =
+      GetPreferenceValue_bool("autoflick") &&
+      (no_piece_chute_count_ >
+          GetPreferenceValue_int("no_piece_chute_loop_thresh"));
+
+  if (auto_flick_valid) {
+    no_piece_chute_count_ =
+        GetPreferenceValue_int("no_piece_chute_wait_loop_thresh");
+  }
+
+  return {autostow_valid, piece_entered, auto_flick_valid};
 }
 
 void CoralSuperstructure::WriteToHardware(CoralSSTarget target) {

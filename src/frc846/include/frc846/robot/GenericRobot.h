@@ -25,6 +25,7 @@ public:
   void EndCompetition() override final;
 
   virtual void OnInitialize() = 0;
+  virtual void OnEnable() = 0;
 
   virtual void OnDisable() = 0;
 

@@ -12,6 +12,7 @@
 #include "frc846/robot/swerve/odometry/pose_estimator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
+#include "frc846/robot/swerve/path_logger.h"
 #include "frc846/robot/swerve/swerve_module.h"
 #include "studica/AHRS.h"
 
@@ -35,7 +36,7 @@ struct DrivetrainConfigs {
 
   std::vector<units::inch_t> camera_x_offsets;
   std::vector<units::inch_t> camera_y_offsets;
-  int cams;
+  size_t cams;
 
   std::map<int, frc846::robot::calculators::AprilTagData> april_locations;
   units::feet_per_second_squared_t max_accel;
@@ -89,6 +90,27 @@ public:
 
   units::degrees_per_second_t ApplyBearingPID(units::degree_t target_bearing);
 
+  /**
+   * Start recording the robot's path.
+   *
+   * @param filename The base filename to save the path to (without extension).
+   */
+  void StartPathRecording(const std::string& filename);
+
+  /**
+   * Stop recording the robot's path and save it to a file.
+   *
+   * @return True if the file was saved successfully.
+   */
+  bool StopPathRecording();
+
+  /**
+   * Check if path recording is active.
+   *
+   * @return True if recording, false otherwise.
+   */
+  bool IsPathRecording() const;
+
 private:
   DrivetrainReadings ReadFromHardware() override;
 
@@ -119,6 +141,9 @@ private:
       {0_fps, 0_fps},
       {units::feet_per_second_squared_t(0),
           units::feet_per_second_squared_t(0)}};
+
+  // Path logger for recording odometry data
+  PathLogger path_logger_;
 
   bool first_loop = true;
 

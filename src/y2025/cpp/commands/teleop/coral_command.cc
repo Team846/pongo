@@ -24,10 +24,17 @@ void CoralCommand::Periodic() {
   } else if (ci_readings.coral_state != kCoral_StowNoPiece)
     coral_target.state = ci_readings.coral_state;
   else if (container_.coral_ss_.coral_end_effector.GetReadings().has_piece_)
-    coral_target.state = kCoral_StowWithPiece;
+    if (ci_readings.override_autostow)
+      coral_target.state = kCoral_StowNoPiece;
+    else
+      coral_target.state = kCoral_StowWithPiece;
   else
     coral_target.state = kCoral_StowNoPiece;
-  coral_target.score = ci_readings.score_coral;
+
+  // Don't score if robot is moving too fast
+  if (container_.drivetrain_.GetReadings().estimated_pose.velocity.magnitude() <
+      2.0_fps)
+    coral_target.score = ci_readings.score_coral;
 
   if (ci_readings.inc_telescope)
     container_.coral_ss_.adjustTelescope(true);

@@ -28,7 +28,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   TODO: Set these values during season
   */
 
-  configs.navX_connection_mode = studica::AHRS::NavXComType::kMXP_SPI;
+  configs.navX_connection_mode = studica::AHRS::NavXComType::kUSB1;
 
   units::inch_t wheel_diameter = 4_in;
 
@@ -152,8 +152,8 @@ DrivetrainConstructor::getDrivetrainConfigs() {
           avg_resistance, steer_load_factor, ""};
   configs.module_unique_configs = {FR_config, FL_config, BL_config, BR_config};
 
-  configs.camera_x_offsets = {-6.25_in, 7_in};
-  configs.camera_y_offsets = {4_in, -12_in};
+  configs.camera_x_offsets = {-6.25_in, -4.5_in};
+  configs.camera_y_offsets = {4_in, -12.5_in};
 
   configs.cams = 2;
   configs.april_locations = {{1, {28.429_in, 31.594_in}},

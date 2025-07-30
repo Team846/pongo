@@ -10,7 +10,7 @@ CoralEESubsystem::CoralEESubsystem()
       motor_configs_{
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
@@ -38,6 +38,14 @@ CoralEESubsystem::GetCurrentConfig(
   return modifiedConfig;
 }
 
+void CoralEESubsystem::SetPieceOverride(bool override_piece) {
+  piece_override_ = override_piece;
+}
+
+void CoralEESubsystem::SetReefOverride(bool override_reef) {
+  reef_override_ = override_reef;
+}
+
 void CoralEESubsystem::Setup() {
   esc_.Setup();
   esc_.EnableStatusFrames({frc846::control::config::kFaultFrame,
@@ -59,6 +67,8 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
   readings.has_piece_ = esc_.GetReverseLimitSwitchState();
   readings.see_reef = esc_.GetForwardLimitSwitchState();
+  if (piece_override_) readings.has_piece_ = !readings.has_piece_;
+  if (reef_override_) readings.see_reef = false;
   Graph("readings/has_piece", readings.has_piece_);
   Graph("readings/see_reef", readings.see_reef);
   Graph("readings/current_draw", esc_.GetCurrent());

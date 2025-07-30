@@ -9,8 +9,8 @@ class ReefAutoAutoAlignCommand
           ReefAutoAutoAlignCommand, frc2::SequentialCommandGroup> {
 public:
   ReefAutoAutoAlignCommand(RobotContainer& container, int numberOnRight,
-      bool blueSide, bool leftSide);
+      bool blueSide, bool leftSide, bool isRetry);
 
   static frc846::math::FieldPoint getModifiedPrePose(
-      int numberOnRight, bool blueSide, bool leftSide);
+      int numberOnRight, bool blueSide, bool leftSide, bool isRetry);
 };

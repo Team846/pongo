@@ -19,6 +19,7 @@ struct AlgalEEReadings {
 
 struct AlgalEETarget {
   double duty_cycle_;
+  bool use_back_spin = false;
 };
 
 class AlgalEESubsystem
@@ -31,6 +32,8 @@ public:
   frc846::control::config::MotorConstructionParameters GetCurrentConfig(
       frc846::control::config::MotorConstructionParameters original_config);
 
+  void SetPieceOverride(bool override_piece);
+
   void Setup() override;
 
   bool VerifyHardware() override;
@@ -40,6 +43,8 @@ protected:
 
   frc846::control::HigherMotorController esc_1_;
   frc846::control::HigherMotorController esc_2_;
+
+  bool piece_override_ = false;
 
   AlgalEEReadings ReadFromHardware() override;
 

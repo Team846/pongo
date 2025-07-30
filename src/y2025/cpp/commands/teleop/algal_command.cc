@@ -13,16 +13,33 @@ void AlgalCommand::OnInit() {}
 void AlgalCommand::Periodic() {
   AlgalSSTarget algal_target{};
   auto ci_readings = container_.control_input_.GetReadings();
+  auto cpos = container_.drivetrain_.GetReadings().estimated_pose.position;
+  auto cvel = container_.drivetrain_.GetReadings().estimated_pose.velocity;
 
-  if (ci_readings.lock_left_reef) {
-    ci_readings.algal_state =
-        (ReefProvider::getClosestReefSide(
-             container_.drivetrain_.GetReadings().estimated_pose.position) %
-                2 ==
-            0)
-            ? kAlgae_L2Pick
-            : kAlgae_L3Pick;
-  }
+  // Not added to control input yet
+
+  // bool use_pred_pos = false;
+  // frc846::math::Vector2D predicted_pos;
+
+  // if (cvel.magnitude() > 2_fps) {
+  //   use_pred_pos = true;
+  //   units::second_t time_step = 0.3_s;
+  //   predicted_pos =
+  //       cpos + frc846::math::Vector2D{cvel[0] * time_step, cvel[1] *
+  //       time_step};
+  // }
+
+  // Logic moved to control_input
+
+  // if (ci_readings.lock_left_reef) {
+  //   ci_readings.algal_state =
+  //       (ReefProvider::getClosestReefSide(
+  //            container_.drivetrain_.GetReadings().estimated_pose.position) %
+  //               2 ==
+  //           0)
+  //           ? kAlgae_L2Pick
+  //           : kAlgae_L3Pick;
+  // }
 
   if (ci_readings.position_algal)
     algal_target.state = ci_readings.algal_state;

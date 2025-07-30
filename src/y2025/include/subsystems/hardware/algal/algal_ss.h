@@ -16,13 +16,16 @@ enum AlgalStates {
   kAlgae_GroundIntake,
   kAlgae_OnTopIntake,
   kAlgae_Net,
+  kAlgae_NetInter,
   kAlgae_L2Pick,
   kAlgae_L3Pick,
   kAlgae_DINOSAUR_A,
   kAlgae_DINOSAUR_B,
 };
 
-struct AlgalSSReadings {};
+struct AlgalSSReadings {
+  bool has_piece;
+};
 
 struct AlgalSSTarget {
   AlgalStates state;

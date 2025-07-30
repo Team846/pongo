@@ -30,13 +30,19 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("bearing_gains/_kD", -0.6);
   RegisterPreference("bearing_gains/deadband", 3.0_deg_per_s);
 
-  RegisterPreference("lock_gains/_kP", -0.6);
+  RegisterPreference("lock_gains/_kP", -0.7);
   RegisterPreference("lock_gains/_kI", 0.0);
-  RegisterPreference("lock_gains/_kD", 0.005);
-  RegisterPreference("lock_gains/deadband", .5_in);
+  RegisterPreference("lock_gains/_kD", 0.036);
+  RegisterPreference("lock_gains/deadband", 0.5_in);
   RegisterPreference("lock_adj_rate", 0.05_in);
   RegisterPreference("lock_max_speed", 9_fps);
+  RegisterPreference("source_max_speed", 3_fps);
+  RegisterPreference("use_source_assist", true);
   RegisterPreference("auto_max_speed", 15_fps);
+
+  RegisterPreference("lock_net_adj_rate", 1.0_in);
+
+  RegisterPreference("drive_to_subtract", 2_in);
 
   RegisterPreference("april_bearing_latency", 0_ms);
   RegisterPreference("drive_latency", 0_ms);
@@ -45,7 +51,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("max_omega", units::degrees_per_second_t{180});
   RegisterPreference("max_omega_cut", units::degrees_per_second_t{40});
 
-  RegisterPreference("odom_fudge_factor", 0.912);
+  RegisterPreference("odom_fudge_factor", 1.077);
   RegisterPreference("odom_variance", 0.2);
 
   RegisterPreference("steer_lag", 0.05_s);
@@ -57,9 +63,9 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("pose_estimator/override", false);
 
   RegisterPreference("april_tags/april_variance_coeff", 0.08);
-  RegisterPreference("april_tags/triangular_variance_coeff", 0.001);
-  RegisterPreference("april_tags/fudge_latency1", 50.0_ms);
-  RegisterPreference("april_tags/fudge_latency2", 50.0_ms);
+  RegisterPreference("april_tags/triangular_variance_coeff", 0.000139);
+  RegisterPreference("april_tags/fudge_latency1", 155.0_ms);
+  RegisterPreference("april_tags/fudge_latency2", 70.0_ms);
 
   RegisterPreference("rc_control_speed", 2.5_fps);
 
@@ -69,10 +75,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("vel_stopped_thresh", 0.7_fps);
   RegisterPreference("stopped_num_loops", 25);
 
-  RegisterPreference("drive_to_point/kC", 10.0);
-  RegisterPreference("drive_to_point/kA", 0.5);
-  RegisterPreference("drive_to_point/kE", 0.8);
-  RegisterPreference("drive_to_point/threshold", 3_in);
+  RegisterPreference("drive_to_point/kC", 5.0);
+  RegisterPreference("drive_to_point/kA", 0.05);
+  RegisterPreference("drive_to_point/kE", 5.0);
+  RegisterPreference("drive_to_point/threshold", 6_in);
 
   RegisterPreference("override_at_auto", true);
 
@@ -402,6 +408,9 @@ DrivetrainReadings DrivetrainSubsystem::ReadFromHardware() {
 
   // Graph("readings/accel_vel", accel_vel);
 
+  // Record the current pose if path recording is active
+  if (path_logger_.IsRecording()) { path_logger_.RecordPose(estimated_pose); }
+
   return {new_pose, tag_pos.pos, estimated_pose, yaw_rate, accel_mag, accel_vel,
       last_accel_spike_, see_tag_counter_};
 }
@@ -493,6 +502,18 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
 
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();
+}
+
+void DrivetrainSubsystem::StartPathRecording(const std::string& filename) {
+  path_logger_.StartRecording(filename);
+}
+
+bool DrivetrainSubsystem::StopPathRecording() {
+  return path_logger_.StopRecording();
+}
+
+bool DrivetrainSubsystem::IsPathRecording() const {
+  return path_logger_.IsRecording();
 }
 
 }  // namespace frc846::robot::swerve

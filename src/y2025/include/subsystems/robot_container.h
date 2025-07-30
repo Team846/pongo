@@ -22,7 +22,7 @@ public:
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
 
-  ControlInputSubsystem control_input_{&coral_ss_};
+  ControlInputSubsystem control_input_{&coral_ss_, &algal_ss_, &drivetrain_};
 
   ClimberSubsystem climber_{};
 
@@ -50,9 +50,9 @@ public:
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
     // TODO: undo
-    //  NVM // Superstructures not necessary - updated with extensions
-    //  RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-    //  RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+    // NVM // Superstructures not necessary - updated with extensions
+    RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
+    RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
 
     // if (coral_ss_init) {
     //   coral_ss_.Init();
@@ -65,7 +65,7 @@ public:
     // }
 
     // TODO: undo
-    // RegisterSubsystemGroupB({{&climber_, climber_init}});
+    RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 
   // void GroupAUpdateHardwareExtension() override {
