@@ -9,12 +9,18 @@ LinearSubsystem::LinearSubsystem(std::string name,
     : frc846::robot::GenericSubsystem<LinearSubsystemReadings,
           LinearSubsystemTarget>(name),
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
-      hall_effect_loc_(hall_effect_loc_) {
+      hall_effect_loc_(hall_effect_loc_),
+      homing_state_(HomingState::kNotHoming),
+      home_loop_counter_(0),
+      homing_target_(0_in) {
   linear_esc_helper_.SetConversion(conversion);
-
   linear_esc_helper_.bind(&linear_esc_);
-
   RegisterPreference("pidf_deadband", 0.35_in);
+  RegisterPreference("homing_dc", -0.05);
+  RegisterPreference("homing_thresh", 0.05_fps);
+  RegisterPreference("homing_loops", 25);
+  // RegisterPreference("home_zero_height", 28.0_in);
+  // RegisterPreference("telescope_autohome_height", 27.0_in);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -74,6 +80,11 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
 
   Graph("readings/error", GetTarget().position - readings.position);
 
+  Graph("readings/homing_dc", GetPreferenceValue_double("homing_dc"));
+  Graph("readings/homing_thresh",
+      GetPreferenceValue_unit_type<units::feet_per_second_t>("homing_thresh"));
+  Graph("readings/loops", GetPreferenceValue_int("homing_loops"));
+
   RHExtension();
 
   // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
@@ -96,7 +107,7 @@ void LinearSubsystem::OverrideSoftLimits(bool overrideLimits) {
 }
 
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
-  // Graph("target/position", target.position);
+  Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
 
   linear_esc_.SetLoad(1_Nm);
@@ -117,13 +128,16 @@ void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   if (units::math::abs(GetReadings().position - target.position) <=
       (deadband * 0.6))
     exit_deadband = false;
-
-  if (exit_deadband) {
-    Graph("within_deadband", false);
-    linear_esc_helper_.WritePosition(target.position);
+  if (is_homed_) {
+    if (exit_deadband) {
+      Graph("within_deadband", false);
+      linear_esc_helper_.WritePosition(target.position);
+    } else {
+      Graph("within_deadband", true);
+      linear_esc_helper_.WriteDC(0.0);
+    }
   } else {
-    Graph("within_deadband", true);
-    linear_esc_helper_.WriteDC(0.0);
+    UpdateHoming();
   }
 }
 
@@ -133,4 +147,32 @@ void LinearSubsystem::BrakeSubsystem() {
 
 void LinearSubsystem::CoastSubsystem() {
   if (is_initialized()) linear_esc_.SetNeutralMode(false);
+}
+
+void LinearSubsystem::StartHoming(units::inch_t target) {
+  homing_target_ = target;
+  homing_state_ = HomingState::kHoming;
+  home_loop_counter_ = 0;
+  is_homed_ = false;
+}
+
+void LinearSubsystem::UpdateHoming() {
+  if (homing_state_ == HomingState::kHoming) {
+    linear_esc_helper_.WriteDC(GetPreferenceValue_double("homing_dc"));
+    if (units::math::abs(linear_esc_helper_.GetVelocity()) <
+        GetPreferenceValue_unit_type<units::feet_per_second_t>(
+            "homing_thresh")) {
+      home_loop_counter_++;
+    } else {
+      home_loop_counter_ = 0;
+    }
+
+    if (home_loop_counter_ >= GetPreferenceValue_int("homing_loops")) {
+      linear_esc_helper_.SetPosition(homing_target_);
+      SetTarget({homing_target_});
+      homing_state_ = HomingState::kHomingComplete;
+      home_loop_counter_ = 0;
+      is_homed_ = true;
+    }
+  }
 }

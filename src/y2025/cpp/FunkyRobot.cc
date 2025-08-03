@@ -159,13 +159,13 @@ void FunkyRobot::OnPeriodic() {
   }
 
   if (container_.control_input_.GetReadings().home_elevator) {
-    container_.algal_ss_.elevator.HomeSubsystem(
+    container_.algal_ss_.elevator.StartHoming(
         robot_constants::elevator::min_height_off_base);
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
 
   if (container_.control_input_.GetReadings().home_telescope) {
-    container_.coral_ss_.telescope.HomeSubsystem(
+    container_.coral_ss_.telescope.StartHoming(
         robot_constants::telescope::min_height);
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
