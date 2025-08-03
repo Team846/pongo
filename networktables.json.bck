@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -73.740234375,
+    "value": -73.30078125,
     "properties": {
       "persistent": true
     }
@@ -82,7 +82,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -106.171875,
+    "value": -128.67,
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.541015625,
+    "value": -80.33203125,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.541015625,
+    "value": -79.013671875,
     "properties": {
       "persistent": true
     }
@@ -122,7 +122,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/steer_gains/_kD",
     "type": "double",
-    "value": -0.012,
+    "value": 0.0,
     "properties": {
       "persistent": true
     }
@@ -354,7 +354,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/april_tags/fudge_latency1 (ms)",
     "type": "double",
-    "value": 170.0,
+    "value": 155.0,
     "properties": {
       "persistent": true
     }
@@ -434,7 +434,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_correctional_gain",
     "type": "double",
-    "value": 0.175,
+    "value": 0.2,
     "properties": {
       "persistent": true
     }
@@ -514,7 +514,7 @@
   {
     "name": "/Preferences/telescope/gains/_kP",
     "type": "double",
-    "value": 0.035,
+    "value": 0.026,
     "properties": {
       "persistent": true
     }
@@ -530,7 +530,7 @@
   {
     "name": "/Preferences/telescope/gains/_kD",
     "type": "double",
-    "value": -0.0005,
+    "value": -0.0015,
     "properties": {
       "persistent": true
     }
@@ -538,7 +538,7 @@
   {
     "name": "/Preferences/telescope/gains/_kF",
     "type": "double",
-    "value": 0.0,
+    "value": 0.0295,
     "properties": {
       "persistent": true
     }
@@ -570,7 +570,7 @@
   {
     "name": "/Preferences/telescope/limits/reduce_upper (in)",
     "type": "double",
-    "value": 87.0,
+    "value": 89.0,
     "properties": {
       "persistent": true
     }
@@ -858,7 +858,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/score_l4/angle (deg)",
     "type": "double",
-    "value": 248.0,
+    "value": 243.0,
     "properties": {
       "persistent": true
     }
@@ -1082,7 +1082,7 @@
   {
     "name": "/Preferences/elevator/limits/upper_limit (in)",
     "type": "double",
-    "value": 73.0,
+    "value": 74.0,
     "properties": {
       "persistent": true
     }
@@ -1250,7 +1250,7 @@
   {
     "name": "/Preferences/algal_wrist/encoder_offset (deg)",
     "type": "double",
-    "value": -6.2,
+    "value": 3.8,
     "properties": {
       "persistent": true
     }
@@ -1298,7 +1298,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 7.0,
+    "value": 9.0,
     "properties": {
       "persistent": true
     }
@@ -1346,7 +1346,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/ground_intake/angle (deg)",
     "type": "double",
-    "value": 61.0,
+    "value": 66.0,
     "properties": {
       "persistent": true
     }
@@ -1410,7 +1410,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l2_pick/height (in)",
     "type": "double",
-    "value": 40.0,
+    "value": 39.0,
     "properties": {
       "persistent": true
     }
@@ -1434,7 +1434,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l3_pick/height (in)",
     "type": "double",
-    "value": 48.5,
+    "value": 47.5,
     "properties": {
       "persistent": true
     }
@@ -1506,7 +1506,7 @@
   {
     "name": "/Preferences/algal_ss/score_dc",
     "type": "double",
-    "value": -0.18,
+    "value": -0.1,
     "properties": {
       "persistent": true
     }
@@ -1578,7 +1578,7 @@
   {
     "name": "/Preferences/climber/limits/upper_limit (deg)",
     "type": "double",
-    "value": 420.0,
+    "value": 460.0,
     "properties": {
       "persistent": true
     }
@@ -1586,7 +1586,7 @@
   {
     "name": "/Preferences/climber/limits/lower_limit (deg)",
     "type": "double",
-    "value": -247.0,
+    "value": -255.0,
     "properties": {
       "persistent": true
     }
@@ -1874,7 +1874,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/flick/angle (deg)",
     "type": "double",
-    "value": 107.0,
+    "value": 115.0,
     "properties": {
       "persistent": true
     }
@@ -1968,9 +1968,57 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/lock_net_adj_rate (in)",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/gains/kF_Upper",
+    "type": "double",
+    "value": 0.295,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescopel4_modifer_height (in)",
+    "type": "double",
+    "value": 70.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescopel4_load (Nm)",
+    "type": "double",
+    "value": 2.1,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescope_hysteresis",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/telescopel4_modifier_height (in)",
+    "type": "double",
+    "value": 70.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/kC",
     "type": "double",
-    "value": 10.0,
+    "value": 3.5,
     "properties": {
       "persistent": true
     }
@@ -1978,7 +2026,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/kA",
     "type": "double",
-    "value": 0.5,
+    "value": 0.05,
     "properties": {
       "persistent": true
     }
@@ -1986,7 +2034,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/drive_to_point/kE",
     "type": "double",
-    "value": 0.8,
+    "value": 2.0,
     "properties": {
       "persistent": true
     }
@@ -2008,6 +2056,14 @@
     }
   },
   {
+    "name": "/Preferences/algal_ss/setpoints/net_inter/height (in)",
+    "type": "double",
+    "value": 35.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/telescope/telescopel4_modifier_height (in)",
     "type": "double",
     "value": 70.0,
@@ -2016,9 +2072,25 @@
     }
   },
   {
+    "name": "/Preferences/algal_ss/setpoints/net_inter/angle (deg)",
+    "type": "double",
+    "value": 40.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/telescope/telescopel4_load (Nm)",
     "type": "double",
     "value": 2.1,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/net_inter/ee_dc",
+    "type": "double",
+    "value": 0.1,
     "properties": {
       "persistent": true
     }
@@ -2072,6 +2144,14 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/source_max_speed (fps)",
+    "type": "double",
+    "value": 7.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/elevator/elevator_loops",
     "type": "int",
     "value": 25,
@@ -2082,7 +2162,7 @@
   {
     "name": "/Preferences/telescope/homing_dc",
     "type": "double",
-    "value": 1.5,
+    "value": -0.15,
     "properties": {
       "persistent": true
     }
@@ -2112,6 +2192,14 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/use_source_assist",
+    "type": "boolean",
+    "value": true,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/telescope/telescope_autohome_height (in)",
     "type": "double",
     "value": 27.0,
@@ -2120,9 +2208,25 @@
     }
   },
   {
+    "name": "/Preferences/algal_end_effector/backspin_constant",
+    "type": "double",
+    "value": -0.24,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/elevator/homing_dc",
     "type": "double",
     "value": -0.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/net_auto_align/prepoint (in)",
+    "type": "double",
+    "value": 65.0,
     "properties": {
       "persistent": true
     }
@@ -2144,6 +2248,14 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/net_auto_align/scorepoint (in)",
+    "type": "double",
+    "value": 35.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/elevator/home_zero_height (in)",
     "type": "double",
     "value": 28.0,
@@ -2152,9 +2264,25 @@
     }
   },
   {
+    "name": "/Preferences/SwerveDrivetrain/source_coast_threshold (in)",
+    "type": "double",
+    "value": 10.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
     "name": "/Preferences/elevator/telescope_autohome_height (in)",
     "type": "double",
     "value": 27.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SwerveDrivetrain/source_coast_speed (fps)",
+    "type": "double",
+    "value": 2.0,
     "properties": {
       "persistent": true
     }

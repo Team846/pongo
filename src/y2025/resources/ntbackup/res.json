@@ -1,0 +1,8 @@
+{
+  "src/y2025/cpp/subsystems/hardware/generic/linear_subsystem.cc:motor_configs/current_limit": "__SKIP__",
+  "src/y2025/cpp/subsystems/hardware/generic/linear_subsystem.cc:motor_configs/smart_current_limit": "__SKIP__",
+  "src/y2025/cpp/subsystems/hardware/generic/linear_subsystem.cc:pidf_deadband": "__SKIP__",
+  "src/y2025/cpp/subsystems/hardware/generic/wrist_subsystem.cc:motor_configs/current_limit": "__SKIP__",
+  "src/y2025/cpp/subsystems/hardware/generic/wrist_subsystem.cc:motor_configs/smart_current_limit": "__SKIP__",
+  "src/y2025/cpp/subsystems/hardware/generic/wrist_subsystem.cc:rezero_thresh": "__SKIP__"
+}

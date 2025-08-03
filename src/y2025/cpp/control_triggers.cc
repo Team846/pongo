@@ -38,7 +38,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_net;
   }}.WhileTrue(NetAutoAlignCommand{
-      container, 13_fps, 3_fps, 25_fps_sq, 8_fps_sq, 10_fps_sq, 6_fps_sq}
+      container, 13_fps, 10_fps, 25_fps_sq, 8_fps_sq, 25_fps_sq, 8_fps_sq}
                    .ToPtr());
 
   frc2::Trigger{[&] {

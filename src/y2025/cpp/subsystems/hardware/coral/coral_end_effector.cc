@@ -10,7 +10,7 @@ CoralEESubsystem::CoralEESubsystem()
       motor_configs_{
           .can_id = ports::coral_ss_::end_effector_::kEE_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
@@ -67,7 +67,7 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
   CoralEEReadings readings;
   readings.has_piece_ = esc_.GetReverseLimitSwitchState();
   readings.see_reef = esc_.GetForwardLimitSwitchState();
-  if (piece_override_) readings.has_piece_ = false;
+  if (piece_override_) readings.has_piece_ = !readings.has_piece_;
   if (reef_override_) readings.see_reef = false;
   Graph("readings/has_piece", readings.has_piece_);
   Graph("readings/see_reef", readings.see_reef);
@@ -79,8 +79,6 @@ void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
   // Graph("target/duty_cycle", target.duty_cycle_);
   if (GetReadings().has_piece_ && target.duty_cycle_ < 0.0)
     esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
-  else if (piece_override_)
-    esc_.WriteDC(0.0);
   else
     esc_.WriteDC(target.duty_cycle_);
 }

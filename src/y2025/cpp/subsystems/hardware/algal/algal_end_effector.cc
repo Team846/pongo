@@ -10,7 +10,7 @@ AlgalEESubsystem::AlgalEESubsystem()
       motor_configs_{
           .can_id = ports::algal_ss_::end_effector_::kEE1_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
@@ -22,10 +22,11 @@ AlgalEESubsystem::AlgalEESubsystem()
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  RegisterPreference("idle_speed", 0.04);
+  RegisterPreference("idle_speed", 0.025);
   RegisterPreference("piece_thresh", 2_tps);
 
-  RegisterPreference("kick_dc", -0.25);
+  RegisterPreference("kick_dc", -0.2);
+  RegisterPreference("backspin_constant", -0.24);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -95,6 +96,13 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   if (piece_override_) { target.duty_cycle_ = 0.0; }
 
-  esc_1_.WriteDC(target.duty_cycle_);
-  esc_2_.WriteDC(target.duty_cycle_);
+  if (target.use_back_spin) {
+    esc_1_.WriteDC(
+        target.duty_cycle_ + GetPreferenceValue_double("backspin_constant"));
+    esc_2_.WriteDC(
+        target.duty_cycle_ - GetPreferenceValue_double("backspin_constant"));
+  } else {
+    esc_1_.WriteDC(target.duty_cycle_);
+    esc_2_.WriteDC(target.duty_cycle_);
+  }
 }

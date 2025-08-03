@@ -17,7 +17,7 @@ ElevatorSubsystem::ElevatorSubsystem()
               .voltage_compensation = 12_V,
               .circuit_resistance =
                   robot_constants::algae_ss_::wire_resistance_base,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.0000001}},
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.0005}},
           37_in / 64.579_tr, robot_constants::elevator::elevator_hall_effect) {
   REGISTER_PIDF_CONFIG(0.01, 0.0, 0.0, 0.0);
   REGISTER_SOFTLIMIT_CONFIG(true, 73_in, 29.12_in, 65_in, 40_in, 0.3);
@@ -28,7 +28,7 @@ ElevatorSubsystem::ElevatorSubsystem()
   RegisterPreference("sm_target_range", 34_in);
   RegisterPreference("sm_vel_thresh", 0.02_fps);
   RegisterPreference("sm_current_thresh", 30_A);
-  RegisterPreference("sm_counter", 10);
+  RegisterPreference("sm_counter", 100);
 }
 
 LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {

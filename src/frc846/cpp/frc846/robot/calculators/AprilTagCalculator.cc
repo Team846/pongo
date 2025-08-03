@@ -139,7 +139,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     }
     for (int j = 0; j < tags.size(); j++) {
       if (constants_.tag_locations.contains(tags.at(j)) &&
-          distances.at(j) < 120_in) {
+          distances.at(j) < 130_in) {
         frc846::math::Vector2D cam_to_tag{
             distances.at(j), tx.at(j) + bearingAtCapture, true};
         frc846::math::Vector2D tag_pos{

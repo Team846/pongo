@@ -46,7 +46,7 @@ void FunkyRobot::OnInitialize() {
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
-  AddDefaultAuto("SIMTEST", new SimTestAuto{container_, false, true});
+  AddDefaultAuto("LEAVE", new LeaveAuto{container_, false, true});
 
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",
@@ -150,9 +150,9 @@ void FunkyRobot::OnPeriodic() {
 
   if (!home_switch_.Get() && !IsEnabled()) {
     container_.coral_ss_.telescope.HomeSubsystem(
-        robot_constants::elevator::min_height_off_base);
-    container_.algal_ss_.elevator.HomeSubsystem(
         robot_constants::telescope::min_height);
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::min_height_off_base);
     container_.climber_.ZeroClimber();
 
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");

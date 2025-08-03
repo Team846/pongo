@@ -62,8 +62,8 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
     target.state = kLEDsAutonomous;
   } else if (container->control_input_.GetReadings().lock_left_reef ||
              container->control_input_.GetReadings().lock_right_reef ||
-             (container->control_input_.GetReadings().targeting_algae &&
-                 container->GPD_.GetReadings().gamepieces.size() != 0U)) {
+             container->control_input_.GetReadings().lock_net ||
+             container->control_input_.GetReadings().auto_align) {
     if (reachedAutoAlignTarget(container))
       target.state = kisLinedUp;
     else

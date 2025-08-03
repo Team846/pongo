@@ -31,6 +31,14 @@ LockToReefCommand::LockToReefCommand(
                     cnt.control_input_.GetReadings().coral_state ==
                         kCoral_ScoreL3))[2 * reef_target_pos + (lft ? 0 : 1)];
 
+            if (!cnt.coral_ss_.coral_end_effector.GetReadings().has_piece_) {
+              piece_counter_++;
+            } else {
+              piece_counter_ = 0;
+            }
+
+            if (piece_counter_ >= 30 && lft) { ba[0] = -6_in; }
+
             auto bearing = cnt.drivetrain_.GetReadings().pose.bearing;
             target_pos.point += ba.rotate(bearing);
 

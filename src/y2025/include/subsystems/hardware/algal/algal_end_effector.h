@@ -19,6 +19,7 @@ struct AlgalEEReadings {
 
 struct AlgalEETarget {
   double duty_cycle_;
+  bool use_back_spin = false;
 };
 
 class AlgalEESubsystem

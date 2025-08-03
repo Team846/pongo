@@ -20,8 +20,8 @@ ClimberSubsystem::ClimberSubsystem()
   esc_helper_.SetConversion(1_tr / 225_tr);
   REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 90_deg, 0_deg, 0.3);
 
-  RegisterPreference("extend_dc", 0.9);
-  RegisterPreference("retract_dc", -0.5);
+  RegisterPreference("extend_dc", 1.0);
+  RegisterPreference("retract_dc", -1.0);
 }
 
 ClimberTarget ClimberSubsystem::ZeroTarget() const { return {0.0}; }

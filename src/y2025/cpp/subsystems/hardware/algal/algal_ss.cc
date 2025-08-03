@@ -23,13 +23,14 @@ AlgalSuperstructure::AlgalSuperstructure()
   REGISTER_SETPOINT("ground_intake", 29_in, 58_deg, 0.9);
   REGISTER_SETPOINT("on_top_intake", 35_in, 58_deg, 0.9);
   REGISTER_SETPOINT("net", 72_in, 0_deg, 0.2);
+  REGISTER_SETPOINT("net_inter", 35_in, 40_deg, 0.1);
   REGISTER_SETPOINT("l2_pick", 41.5_in, 30_deg, 0.7);
   REGISTER_SETPOINT("l3_pick", 50_in, 30_deg, 0.7);
 
   REGISTER_SETPOINT("dinosaur_A", 34_in, 0_deg, -0.3);
   REGISTER_SETPOINT("dinosaur_B", 45_in, 35_deg, 0.3);
 
-  RegisterPreference("score_dc", -0.15);
+  RegisterPreference("score_dc", -0.18);
 
   RegisterPreference("init_elevator", true);
   RegisterPreference("init_wrist", true);
@@ -71,6 +72,7 @@ AlgalSetpoint AlgalSuperstructure::getSetpoint(AlgalStates state) {
   case kAlgae_GroundIntake: return GET_SETPOINT("ground_intake");
   case kAlgae_OnTopIntake: return GET_SETPOINT("on_top_intake");
   case kAlgae_Net: return GET_SETPOINT("net");
+  case kAlgae_NetInter: return GET_SETPOINT("net_inter");
   case kAlgae_L2Pick: return GET_SETPOINT("l2_pick");
   case kAlgae_L3Pick: return GET_SETPOINT("l3_pick");
   default: return GET_SETPOINT("stow");
@@ -121,7 +123,7 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
   if (target.score)
-    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc")});
+    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc"), true});
   else
     algal_end_effector.SetTarget({setpoint.ee_dc});
 
@@ -142,9 +144,20 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
                       target.state == AlgalStates::kAlgae_OnTopIntake;
 
   if (last_state == AlgalStates::kAlgae_Stow) {
-    elevator.SetTarget({setpoint.height + elevator_adjustment_});
-    if (hasReachedElevator(target.state))
-      algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+    if (target.state == AlgalStates::kAlgae_Net || GetReadings().has_piece) {
+      algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_NetInter).angle});
+      if (hasReachedWrist(AlgalStates::kAlgae_NetInter))
+        elevator.SetTarget({setpoint.height + elevator_adjustment_});
+      if (elevator.GetReadings().position >
+          getSetpoint(AlgalStates::kAlgae_NetInter).height)
+        algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).angle});
+      if (hasReachedElevator(target.state))
+        algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+    } else {
+      elevator.SetTarget({setpoint.height + elevator_adjustment_});
+      if (hasReachedElevator(target.state))
+        algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
+    }
   } else if (lastIsHigh && (target.state == AlgalStates::kAlgae_Stow)) {
     algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
     if (hasReachedWrist(target.state))

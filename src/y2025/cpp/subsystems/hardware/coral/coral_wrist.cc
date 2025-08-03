@@ -18,7 +18,7 @@ CoralWristSubsystem::CoralWristSubsystem()
               .circuit_resistance = robot_constants::coral_ss_::wire_resistance,
               .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
           subsystem_reduction) {
-  REGISTER_PIDF_CONFIG(0.0053, 0.0, -0.0005, 0.037);
+  REGISTER_PIDF_CONFIG(0.0036, 0.0, -0.0005, 0.01);
   REGISTER_SOFTLIMIT_CONFIG(true, 260_deg, 5_deg, 230_deg, 15_deg, 0.15);
 
   RegisterPreference("cg_offset", -90.0_deg);
@@ -27,7 +27,7 @@ CoralWristSubsystem::CoralWristSubsystem()
   RegisterPreference("use_sensor_threshold", 250_deg_per_s);
   RegisterPreference("encoder_offset", 0_deg);
 
-  RegisterPreference("deployed_encoder_tolerance", 5_deg);
+  RegisterPreference("deployed_encoder_tolerance", 0.35_deg);
 }
 
 WristTarget CoralWristSubsystem::ZeroTarget() const {
