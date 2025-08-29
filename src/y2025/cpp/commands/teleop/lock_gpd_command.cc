@@ -32,10 +32,8 @@ LockGPDCommand::LockGPDCommand(RobotContainer& container)
                 (gpd_pos - cnt.drivetrain_.GetReadings().pose.position);
             if (tt_vec.magnitude() > 6_in)
               return std::pair<frc846::math::FieldPoint, bool>{
-                  frc846::math::FieldPoint{gpd_pos,
-                      (gpd_pos - cnt.drivetrain_.GetReadings().pose.position)
-                          .angle(true),
-                      0_fps},
+                  frc846::math::FieldPoint{
+                      gpd_pos, (gpd_pos - start.point).angle(true), 0_fps},
                   true};
             else
               return std::pair<frc846::math::FieldPoint, bool>{{}, false};

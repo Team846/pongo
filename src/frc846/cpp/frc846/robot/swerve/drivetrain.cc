@@ -95,7 +95,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   });
 
   std::vector<std::shared_ptr<nt::NetworkTable>> april_tables = {};
-  for (int i = 0; i < configs.cams; i++) {
+  for (size_t i = 0; i < configs.cams; i++) {
     april_tables.push_back(nt::NetworkTableInstance::GetDefault().GetTable(
         "AprilTagsCam" + std::to_string(i + 1)));
   }

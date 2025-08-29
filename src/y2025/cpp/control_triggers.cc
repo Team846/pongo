@@ -28,44 +28,44 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
     return container.control_input_.GetReadings().lock_left_reef;
   }}.WhileTrue(ReefAutoAlignCommand{container, true, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+          .ToPtr());
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_right_reef;
   }}.WhileTrue(ReefAutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
-                   .ToPtr());
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().lock_net;
   }}.WhileTrue(NetAutoAlignCommand{
       container, 13_fps, 10_fps, 25_fps_sq, 8_fps_sq, 25_fps_sq, 8_fps_sq}
-                   .ToPtr());
+          .ToPtr());
 
-  frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().targeting_algae &&
+  // frc2::Trigger{[&] {
+  //   return container.control_input_.GetReadings().targeting_algae &&
 
-           !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  }}.OnTrue(GPDSSCommand{container}.Until([&] {
-    return !container.control_input_.GetReadings().targeting_algae ||
-           container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  }));
+  //          !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  // }}.OnTrue(GPDSSCommand{container}.Until([&] {
+  //   return !container.control_input_.GetReadings().targeting_algae ||
+  //          container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  // }));
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().flick ||
            container.coral_ss_.GetReadings().auto_flick_valid;
   }}.OnTrue(frc2::ParallelDeadlineGroup{frc2::WaitCommand{0.13_s},
-      CoralPositionCommand{container, kCoral_FLICK,
-          true}}.ToPtr());
+      CoralPositionCommand{container, kCoral_FLICK, true}}
+          .ToPtr());
 
   frc2::Trigger{[&] {
     return container.control_input_.GetReadings().auto_pick_used;
   }}.OnTrue(frc2::InstantCommand([&] {
     container.control_input_.SetTarget({false, true});
   })
-                .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
-                .AndThen(frc2::InstantCommand([&] {
-                  container.control_input_.SetTarget({false, false});
-                }).ToPtr()));
+          .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
+          .AndThen(frc2::InstantCommand([&] {
+            container.control_input_.SetTarget({false, false});
+          }).ToPtr()));
 
   frc2::Trigger{[&] {
     return container.coral_ss_.GetReadings().piece_entered ||
@@ -73,17 +73,17 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }}.OnTrue(frc2::InstantCommand([&] {
     container.control_input_.SetTarget({true, false});
   })
-                .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
-                .AndThen(frc2::InstantCommand([&] {
-                  container.control_input_.SetTarget({false, false});
-                }).ToPtr()));
+          .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
+          .AndThen(frc2::InstantCommand([&] {
+            container.control_input_.SetTarget({false, false});
+          }).ToPtr()));
 
-  // frc2::Trigger{[&] {
-  //   return container.control_input_.GetReadings().targeting_algae &&
-  //          container.GPD_.GetReadings().gamepieces.size() != 0U &&
-  //          !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  // }}.OnTrue(LockGPDCommand{container}.Until([&] {
-  //   return !container.control_input_.GetReadings().targeting_algae ||
-  //          container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  // }));
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().targeting_algae &&
+           container.GPD_.GetReadings().gamepieces.size() != 0U &&
+           !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  }}.OnTrue(LockGPDCommand{container}.Until([&] {
+    return !container.control_input_.GetReadings().targeting_algae ||
+           container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
+  }));
 }

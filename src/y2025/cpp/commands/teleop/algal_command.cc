@@ -48,6 +48,8 @@ void AlgalCommand::Periodic() {
 
   algal_target.score = ci_readings.score_algae;
 
+  if (ci_readings.targeting_algae) algal_target.state = kAlgae_GroundIntake;
+
   if (ci_readings.inc_elevator)
     container_.algal_ss_.adjustElevator(true);
   else if (ci_readings.dec_elevator)

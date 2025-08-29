@@ -130,9 +130,8 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   }
 
   previous_first_enable_exception = first_enable_exception;
-  // algae autopicking
 
-  AlgalStates previous_state = previous_readings_.algal_state;
+  // algae autopicking
 
   bool operator_clicked = false;
   first_enable_exception = false;

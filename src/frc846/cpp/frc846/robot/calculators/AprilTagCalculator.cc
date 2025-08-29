@@ -16,10 +16,13 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
   double totalTagWeight = 0;
   double variance = 0;
 
-  std::vector<frc846::math::Line> sight_lines[constants_.cams];
+  std::vector<std::vector<frc846::math::Line>> sight_lines;
+  for (size_t i = 0; i < constants_.cams; i++) {
+    sight_lines.push_back({});
+  }
   int tagsSeen = 0;
 
-  for (int i = 0; i < constants_.cams; i++) {
+  for (size_t i = 0; i < constants_.cams; i++) {
     units::second_t delay =
         frc846::wpilib::CurrentFPGATime() -
         units::microsecond_t(
@@ -137,9 +140,9 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
     if (!(tags.size() == distances.size() && tags.size() == tx.size())) {
       continue;
     }
-    for (int j = 0; j < tags.size(); j++) {
+    for (size_t j = 0; j < tags.size(); j++) {
       if (constants_.tag_locations.contains(tags.at(j)) &&
-          distances.at(j) < 130_in) {
+          distances.at(j) < 120_in) {
         frc846::math::Vector2D cam_to_tag{
             distances.at(j), tx.at(j) + bearingAtCapture, true};
         frc846::math::Vector2D tag_pos{
@@ -212,7 +215,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
 
   // Double Cam Triangulation
   frc846::math::Line first_line = {{-1_in, -1_in}, 0_deg};
-  for (int i = 0; i < constants_.cams; i++) {
+  for (size_t i = 0; i < constants_.cams; i++) {
     if (sight_lines[i].size() > 0) {
       if (first_line.point[0] != -1_in) {
         // Double Cam Triangulation!
@@ -233,7 +236,7 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
   }
 
   // Single Cam?
-  for (int i = 0; i < constants_.cams; i++) {
+  for (size_t i = 0; i < constants_.cams; i++) {
     if (sight_lines[i].size() > 1) {
       // Double Tag, Single Cam Triangulation!
       output.pos = sight_lines[i].at(1).intersect(sight_lines[i].at(0));

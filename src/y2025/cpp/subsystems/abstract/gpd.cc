@@ -92,6 +92,7 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
   readings.gamepieces.clear();
 
   for (size_t i = 0; i < distances.size() && i < theta_x.size(); ++i) {
+    // latency = 0.0_ms;
     readings.gamepieces.push_back(
         frc846::math::Vector2D{units::inch_t(distances[i]),
             drivetrain_readings.estimated_pose.bearing -

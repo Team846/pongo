@@ -68,6 +68,9 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
       target.state = kisLinedUp;
     else
       target.state = kLEDsSequencing;
+  } else if (container->control_input_.GetReadings().targeting_algae &&
+             container->GPD_.GetReadings().gamepieces.size() > 0) {
+    target.state = kLEDsSequencing;
   } else if (container->control_input_.GetReadings().extend_climb ||
              container->control_input_.GetReadings().retract_climb) {
     target.state = kLEDsClimbing;
