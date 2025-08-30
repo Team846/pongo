@@ -1,12 +1,12 @@
 #pragma once
 
-#include "subsystems/hardware/generic/linear_subsystem.h"
+#include "subsystems/hardware/generic/iclin.h"
 
-class TelescopeSubsystem : public LinearSubsystem {
+class TelescopeSubsystem : public IclinSubsystem {
 public:
   TelescopeSubsystem();
 
-  LinearSubsystemTarget ZeroTarget() const override;
+  IclinTarget ZeroTarget() const override;
 
 protected:
   void ExtendedSetup() override;

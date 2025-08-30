@@ -3,6 +3,44 @@ plugins {
     id "google-test-test-suite"
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id 'com.diffplug.spotless' version '6.20.0'
+    id "de.undercouch.download" version "5.6.0"
+}
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+def pdcsuGroup = "tr"
+def pdcsuReleaseNumber = "02"
+def pdcsuVersion = pdcsuGroup + "_" + pdcsuReleaseNumber
+
+def pdcsuFolder = file("src/pdcsu_${pdcsuGroup}${pdcsuReleaseNumber}")
+def srcRoot = file("src/")
+
+gradle.taskGraph.whenReady { 
+    if (srcRoot.exists()) {
+        srcRoot.listFiles()?.findAll { f ->
+            f.isDirectory() && f.name.startsWith("pdcsu") && f.name != ("pdcsu_" + pdcsuGroup + pdcsuReleaseNumber)
+        }?.each { stray ->
+            println "Removing old PDCSU version: ${stray.name}"
+            stray.deleteDir()
+        }
+    }
+
+    if (pdcsuFolder.exists()) {
+        println "Skipping PDCSU collection"
+    } else {
+        println "Downloading pdcsu_${pdcsuVersion}..."
+        def zipFile = layout.buildDirectory.file("tmp/pdcsu_${pdcsuVersion}.zip").get().asFile
+        mkdir zipFile.parentFile
+
+        new URL("https://github.com/VyaasBaskar/PDCSU/releases/download/${pdcsuVersion}/pdcsu_${pdcsuGroup}${pdcsuReleaseNumber}.zip")
+            .withInputStream { i -> zipFile.withOutputStream { it << i } }
+
+        copy {
+            from zipTree(zipFile)
+            into "src/"
+        }
+        println "pdcsu_${pdcsuVersion} extracted into src/."
+    }
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -67,8 +105,9 @@ model {
                     include '**/*.cpp', '**/*.cc'
                 }
                 exportedHeaders {
-                    srcDir 'src/frc846/include'
                     srcDir 'src/y2025/include'
+                    srcDir "src/pdcsu_${pdcsuGroup}${pdcsuReleaseNumber}"
+                    srcDir 'src/frc846/include'
                 }
             }
 

@@ -158,17 +158,17 @@ void FunkyRobot::OnPeriodic() {
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
 
-  if (container_.control_input_.GetReadings().home_elevator) {
-    container_.algal_ss_.elevator.StartHoming(
-        robot_constants::elevator::min_height_off_base);
-    homing_count_ = GetPreferenceValue_int("homing_flash_loops");
-  }
+  // if (container_.control_input_.GetReadings().home_elevator) {
+  //   container_.algal_ss_.elevator.StartHoming(
+  //       robot_constants::elevator::min_height_off_base);
+  //   homing_count_ = GetPreferenceValue_int("homing_flash_loops");
+  // }
 
-  if (container_.control_input_.GetReadings().home_telescope) {
-    container_.coral_ss_.telescope.StartHoming(
-        robot_constants::telescope::min_height);
-    homing_count_ = GetPreferenceValue_int("homing_flash_loops");
-  }
+  // if (container_.control_input_.GetReadings().home_telescope) {
+  //   container_.coral_ss_.telescope.StartHoming(
+  //       robot_constants::telescope::min_height);
+  //   homing_count_ = GetPreferenceValue_int("homing_flash_loops");
+  // }
 
   if (coast_count_ > 0) coast_count_--;
   if (coast_count_ == 1 || coast_count_ == 7) {
