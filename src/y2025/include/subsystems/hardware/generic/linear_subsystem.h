@@ -64,6 +64,8 @@ protected:
 
   virtual void RHExtension() {};
 
+  virtual void UpdateLoad();
+
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController linear_esc_;

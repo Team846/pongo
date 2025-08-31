@@ -202,6 +202,8 @@ void FunkyRobot::OnPeriodic() {
   else
     LEDsLogic::UpdateLEDs(&container_);
 
+  if (isDisabled) { container_.control_input_.ZeroTarget(); }
+
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);
   AntiTippingCalculator::SetElevatorHeight(

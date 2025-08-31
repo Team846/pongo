@@ -69,11 +69,13 @@ bool LinearSubsystem::VerifyHardware() {
   return ok;
 }
 
+void LinearSubsystem::UpdateLoad() { linear_esc_.SetLoad(1_Nm); }
+
 LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   LinearSubsystemReadings readings;
   readings.position = linear_esc_helper_.GetPosition();
 
-  linear_esc_.SetLoad(1_Nm);
+  UpdateLoad();
 
   Graph("readings/position", readings.position);
   Graph("readings/current_draw", linear_esc_.GetCurrent());
@@ -109,14 +111,6 @@ void LinearSubsystem::OverrideSoftLimits(bool overrideLimits) {
 void LinearSubsystem::WriteToHardware(LinearSubsystemTarget target) {
   Graph("target/position", target.position);
   linear_esc_.SetGains(GET_PIDF_GAINS());
-
-  linear_esc_.SetLoad(1_Nm);
-
-  if (GetReadings().position > GetPreferenceValue_unit_type<units::inch_t>(
-                                   "telescopel4_modifier_height")) {
-    linear_esc_.SetLoad(GetPreferenceValue_unit_type<units::newton_meter_t>(
-        "telescopel4_load"));
-  }
 
   units::inch_t deadband =
       GetPreferenceValue_unit_type<units::inch_t>("pidf_deadband");

@@ -27,7 +27,7 @@ std::pair<frc846::math::FieldPoint, bool> DriveToNetCommand::GetTargetPoint() {
       pos[0], frc846::math::FieldPoint::field_size_y / 2 - net_offest};
   frc846::math::FieldPoint target_pos =
       frc846::math::FieldPoint{net_pos, 0_deg, 0_fps};
-  if (pos[1] > frc846::math::FieldPoint::field_size_x) {
+  if (pos[1] > frc846::math::FieldPoint::field_size_y / 2) {
     target_pos = target_pos.mirrorOnlyY(true);
   }
 

@@ -7,7 +7,7 @@
 struct AlgalSetpoint {
   units::inch_t height;
   units::degree_t angle;
-  double ee_dc;
+  units::feet_per_second_t ee_vel;
 };
 
 enum AlgalStates {

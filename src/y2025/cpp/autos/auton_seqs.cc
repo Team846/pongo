@@ -188,7 +188,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
   PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
       PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum, false),                 \
-          SEQUENCE(WAIT(1.75_s), CORAL_POS(kCoral_ScoreL4, false))),        \
+          SEQUENCE(WAIT(1.0_s), CORAL_POS(kCoral_ScoreL4, false))),         \
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum, true)),        \
@@ -223,8 +223,7 @@ SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC),
       SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(is_left_side ? 9 : 8),
       DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(is_left_side ? 8 : 9),
-      ALGAL_POS(kAlgae_L2Pick, false), WAIT{0.5_s}, DRIVE_TO_SOURCE(3PC),
+      DRIVE_SCORE_REEF_3PC(is_left_side ? 8 : 9), DRIVE_TO_SOURCE(3PC),
 }
 }
 {}

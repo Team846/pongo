@@ -28,7 +28,7 @@ struct ControlInputReadings {
   bool lock_right_reef;
   bool lock_net;
   bool auto_align;
-  bool auto_pick_used;
+  bool auto_pick;
 
   // Superstructure
   bool position_algal;

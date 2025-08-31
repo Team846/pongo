@@ -18,16 +18,19 @@ struct AlgalEEReadings {
 };
 
 struct AlgalEETarget {
-  double duty_cycle_;
-  bool use_back_spin = false;
+  units::feet_per_second_t velocity_;
+  bool use_back_spin_ = false;
 };
+
+using roller_pos_conv_t = units::unit_t<
+    units::compound_unit<units::feet, units::inverse<units::turn>>>;
 
 class AlgalEESubsystem
     : public frc846::robot::GenericSubsystem<AlgalEEReadings, AlgalEETarget> {
 public:
   AlgalEESubsystem();
 
-  AlgalEETarget ZeroTarget() const override { return {0.0}; }
+  AlgalEETarget ZeroTarget() const override { return {0.0_fps}; }
 
   frc846::control::config::MotorConstructionParameters GetCurrentConfig(
       frc846::control::config::MotorConstructionParameters original_config);
@@ -43,6 +46,11 @@ protected:
 
   frc846::control::HigherMotorController esc_1_;
   frc846::control::HigherMotorController esc_2_;
+
+  frc846::control::HMCHelper<units::feet> esc_helper_1_;
+  frc846::control::HMCHelper<units::feet> esc_helper_2_;
+
+  roller_pos_conv_t roller_reduction_ = 0.5_ft / 1_tr;
 
   bool piece_override_ = false;
 

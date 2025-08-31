@@ -32,3 +32,12 @@ LinearSubsystemTarget TelescopeSubsystem::ZeroTarget() const {
 }
 
 void TelescopeSubsystem::ExtendedSetup() {}
+
+void TelescopeSubsystem::UpdateLoad() {
+  if (GetReadings().position > GetPreferenceValue_unit_type<units::inch_t>(
+                                   "telescopel4_modifier_height"))
+    linear_esc_.SetLoad(GetPreferenceValue_unit_type<units::newton_meter_t>(
+        "telescopel4_load"));
+  else
+    linear_esc_.SetLoad(1_Nm);
+}

@@ -58,7 +58,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
           true}}.ToPtr());
 
   frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().auto_pick_used;
+    return container.control_input_.GetReadings().auto_pick;
   }}.OnTrue(frc2::InstantCommand([&] {
     container.control_input_.SetTarget({false, true});
   })

@@ -1,36 +1,36 @@
 #include "subsystems/hardware/algal/algal_ss.h"
 
-#define REGISTER_SETPOINT(name, height, angle, ee_dc)                       \
+#define REGISTER_SETPOINT(name, height, angle, ee_vel)                      \
   RegisterPreference(std::string("setpoints/") + name + "/height", height); \
   RegisterPreference(std::string("setpoints/") + name + "/angle", angle);   \
-  RegisterPreference(std::string("setpoints/") + name + "/ee_dc", ee_dc);
+  RegisterPreference(std::string("setpoints/") + name + "/ee_vel", ee_vel);
 
-#define GET_SETPOINT(name)                                    \
-  {.height = GetPreferenceValue_unit_type<units::inch_t>(     \
-       std::string("setpoints/") + name + "/height"),         \
-      .angle = GetPreferenceValue_unit_type<units::degree_t>( \
-          std::string("setpoints/") + name + "/angle"),       \
-      .ee_dc = GetPreferenceValue_double(                     \
-          std::string("setpoints/") + name + "/ee_dc")}
+#define GET_SETPOINT(name)                                              \
+  {.height = GetPreferenceValue_unit_type<units::inch_t>(               \
+       std::string("setpoints/") + name + "/height"),                   \
+      .angle = GetPreferenceValue_unit_type<units::degree_t>(           \
+          std::string("setpoints/") + name + "/angle"),                 \
+      .ee_vel = GetPreferenceValue_unit_type<units::feet_per_second_t>( \
+          std::string("setpoints/") + name + "/ee_vel")}
 
 AlgalSuperstructure::AlgalSuperstructure()
     : GenericSubsystem("algal_ss"),
       elevator(),
       algal_wrist(),
       algal_end_effector() {
-  REGISTER_SETPOINT("stow", 30_in, 0_deg, 0.1);
-  REGISTER_SETPOINT("processor", 29_in, 25_deg, 0.2);
-  REGISTER_SETPOINT("ground_intake", 29_in, 58_deg, 0.9);
-  REGISTER_SETPOINT("on_top_intake", 35_in, 58_deg, 0.9);
-  REGISTER_SETPOINT("net", 72_in, 0_deg, 0.2);
-  REGISTER_SETPOINT("net_inter", 35_in, 40_deg, 0.1);
-  REGISTER_SETPOINT("l2_pick", 41.5_in, 30_deg, 0.7);
-  REGISTER_SETPOINT("l3_pick", 50_in, 30_deg, 0.7);
+  REGISTER_SETPOINT("stow", 30_in, 0_deg, 9.2_fps);
+  REGISTER_SETPOINT("processor", 29_in, 25_deg, 18.35_fps);
+  REGISTER_SETPOINT("ground_intake", 29_in, 58_deg, 82.5_fps);
+  REGISTER_SETPOINT("on_top_intake", 35_in, 58_deg, 82.5_fps);
+  REGISTER_SETPOINT("net", 72_in, 0_deg, 18.35_fps);
+  REGISTER_SETPOINT("net_inter", 35_in, 40_deg, 9.2_fps);
+  REGISTER_SETPOINT("l2_pick", 41.5_in, 30_deg, 64.15_fps);
+  REGISTER_SETPOINT("l3_pick", 50_in, 30_deg, 64.15_fps);
 
-  REGISTER_SETPOINT("dinosaur_A", 34_in, 0_deg, -0.3);
-  REGISTER_SETPOINT("dinosaur_B", 45_in, 35_deg, 0.3);
+  REGISTER_SETPOINT("dinosaur_A", 34_in, 0_deg, -27.5);
+  REGISTER_SETPOINT("dinosaur_B", 45_in, 35_deg, 27.5);
 
-  RegisterPreference("score_dc", -0.18);
+  RegisterPreference("score_dc", -16.5_fps);
 
   RegisterPreference("init_elevator", true);
   RegisterPreference("init_wrist", true);
@@ -123,9 +123,11 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
 
   if (target.score)
-    algal_end_effector.SetTarget({GetPreferenceValue_double("score_dc"), true});
+    algal_end_effector.SetTarget(
+        {GetPreferenceValue_unit_type<units::feet_per_second_t>("score_dc"),
+            true});
   else
-    algal_end_effector.SetTarget({setpoint.ee_dc});
+    algal_end_effector.SetTarget({setpoint.ee_vel});
 
   if (target.state != last_state) {
     clearAdjustments();
