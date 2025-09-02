@@ -44,6 +44,8 @@ protected:
   frc846::control::HigherMotorController esc_1_;
   frc846::control::HigherMotorController esc_2_;
 
+  int l = 0;
+
   bool piece_override_ = false;
 
   AlgalEEReadings ReadFromHardware() override;

@@ -10,11 +10,14 @@ IclinSubsystem::IclinSubsystem(std::string name,
     : frc846::robot::GenericSubsystem<IclinReadings, IclinTarget>(name),
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       bldc(105_u_A, 1.8_u_A, 2.6_u_Nm, 5676_u_rpm),
-      lin_sys(bldc, 1, 214.85_u_rot / 262.5_u_in, 0.02_u_mps2, 5_u_kg, 22_u_N,
-          3_u_N / 5676_u_rpm, 20_u_ms),
+      lin_sys(bldc, 1, 214.85_u_rot / 262.5_u_in * 5.0 / 9.0, 0.02_u_mps2, 4.0_u_kg, 0_u_N,
+          0_u_N / 5676_u_rpm, 20_u_ms),
       icnor(lin_sys) {
   linear_esc_helper_.SetConversion(conversion);
   linear_esc_helper_.bind(&linear_esc_);
+  RegisterPreference("latency", 50);
+  RegisterPreference("projection_horizon", 3);
+  RegisterPreference("duty_cycle_output", 0.0);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -47,10 +50,10 @@ void IclinSubsystem::Setup() {
 
   icnor.setTolerance(lin_sys.toNative(0.25_u_in), lin_sys.toNative(0.4_u_in));
   icnor.setConstraints(
-      5000_u_rpm, 1_u_A * GetPreferenceValue_unit_type<units::ampere_t>(
+      5300_u_rpm, 1_u_A * GetPreferenceValue_unit_type<units::ampere_t>(
                               "motor_configs/smart_current_limit")
                               .to<double>());
-  icnor.setProjectionHorizon(2);
+  icnor.setProjectionHorizon(GetPreferenceValue_double("projection_horizon"));
 
   ExtendedSetup();
 }
@@ -102,10 +105,11 @@ void IclinSubsystem::WriteToHardware(IclinTarget target) {
       1_u_in / 1_u_s * linear_esc_helper_.GetVelocity().to<double>());
 
   cpos_as_native +=
-      cvel_as_native * 20_u_ms;  // TODO: better latency compensation
+      cvel_as_native * GetPreferenceValue_double("latency") * 1_u_ms;  // TODO: better latency compensation
 
   linear_esc_helper_.WriteDC(icnor.getOutput(
       tpos_as_native, tvel_as_native, cpos_as_native, cvel_as_native));
+      // linear_esc_helper_.WriteDC(GetPreferenceValue_double("duty_cycle_output"));
 }
 
 void IclinSubsystem::BrakeSubsystem() {
