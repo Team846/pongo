@@ -132,7 +132,7 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
         GetPreferenceValue_unit_type<units::feet_per_second_t>("kick_dc");
   }
 
-  // if (piece_override_) { target.velocity_ = 0.0_fps; }
+  if (piece_override_) { target.velocity_ = 0.0_fps; }
   if (target.use_back_spin_) {
     esc_helper_1_.WriteVelocityOnController(
         target.velocity_ +

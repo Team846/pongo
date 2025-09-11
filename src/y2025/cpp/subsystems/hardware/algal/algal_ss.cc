@@ -128,8 +128,9 @@ AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
 
 void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
-  bool coral_mode =
-      target.state == kAlgae_CoralPick || target.state == kAlgae_L1CoralScore;
+  bool coral_mode = target.cm;
+
+  Graph("coralmodething", coral_mode);
 
   if (target.score)
     (coral_mode) ? algal_end_effector.SetTarget(

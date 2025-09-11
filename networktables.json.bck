@@ -2670,5 +2670,61 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/coral_pick/height (in)",
+    "type": "double",
+    "value": 29.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/coral_pick/angle (deg)",
+    "type": "double",
+    "value": 80.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/coral_pick/ee_vel (fps)",
+    "type": "double",
+    "value": 64.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/l1_coral_score/height (in)",
+    "type": "double",
+    "value": 29.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/l1_coral_score/angle (deg)",
+    "type": "double",
+    "value": 60.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/setpoints/l1_coral_score/ee_vel (fps)",
+    "type": "double",
+    "value": -20.15,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_ss/score_coral_vel (fps)",
+    "type": "double",
+    "value": -16.5,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

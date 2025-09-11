@@ -19,6 +19,7 @@ enum LEDsState {
   kisCompletelyLinedUp,
   kLEDsHomingGyro,
   kLEDsHoming,
+  kLEDsCoralMode,
 };
 
 struct LEDsReadings {};

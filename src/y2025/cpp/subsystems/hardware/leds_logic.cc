@@ -75,7 +75,10 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
              container->coral_ss_.coral_end_effector.GetReadings().has_piece_ ||
              frc::DriverStation::IsTest()) {
     target.state = kLEDsHavePiece;
-  } else if (frc::DriverStation::IsTeleop()) {
+  } else if (container->control_input_.GetReadings().level_one) {
+    target.state = kLEDsCoralMode;
+  }
+  else if (frc::DriverStation::IsTeleop()) {
     target.state = kLEDsTeleop;
   }
 

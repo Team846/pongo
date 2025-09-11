@@ -80,6 +80,9 @@ void LEDsSubsystem::WriteToHardware(TLTGT target) {
     } else if (tgt->state == kisCompletelyLinedUp) {
       SetStrip(GREEN);
       Flash(MED_FLASH);
+    } else if (tgt->state == kLEDsCoralMode) {
+      SetStrip(PURPLE);
+      Flash(SLOW_FLASH);
     }
   } else if (auto* tgt = std::get_if<LEDsCoastingTarget>(&target)) {
     for (int i = 0; i < (int)(kLength * tgt->percent); i++) {
