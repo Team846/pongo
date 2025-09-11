@@ -31,7 +31,10 @@ AlgalEESubsystem::AlgalEESubsystem()
   RegisterPreference("kick_dc", -18.5_fps);
   // RegisterPreference("backspin_constant", -0.24);
   RegisterPreference("backspin_constant", -22_fps);
-  REGISTER_PIDF_CONFIG(0.00375, 0.0, 0.0, 0.0);
+  RegisterPreference("idle_speed_coral", -5.0_fps);
+  REGISTER_PIDF_CONFIG(0.0001, 0.0, 0.0, 0.0);
+
+  RegisterPreference("testthing", 0.4);
 
   esc_helper_1_.SetConversion(roller_reduction_);
   esc_helper_2_.SetConversion(roller_reduction_);
@@ -79,11 +82,13 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
+
   readings.has_piece_ =
       esc_2_.GetReverseLimitSwitchState() &&
       units::math::abs(esc_helper_2_.GetVelocity()) <=
           GetPreferenceValue_unit_type<units::feet_per_second_t>(
               "piece_thresh");
+
   if (piece_override_) readings.has_piece_ = false;
 
   Graph("readings/has_piece", readings.has_piece_);
@@ -95,14 +100,28 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   Graph("readings/error", target.velocity_ - esc_helper_2_.GetVelocity());
 
-  esc_1_.SetGains(GET_PIDF_GAINS());
+  Graph("readings/error_coral", target.velocity_ - esc_helper_1_.GetVelocity());
+
   esc_2_.SetGains(GET_PIDF_GAINS());
 
   // auto checkgains = frc846::control::base::MotorGains(GET_PIDF_GAINS());
 
   if (GetReadings().has_piece_ && target.velocity_ > 0.0_fps) {
-    target.velocity_ =
+   
+      target.velocity_ =
         GetPreferenceValue_unit_type<units::feet_per_second_t>("idle_speed");
+    
+  }
+  if (target.cm) {
+    // if (counter_ > 5) {
+    // target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>("idle_speed_coral");
+    // if(counter_ >= 10) counter_ = 0;
+    // } else {
+    //   target.velocity_ = 0_fps;
+
+    // }
+    // counter_++;
+    target.velocity_ = -5.0_fps;
   }
 
   if (units::math::abs(esc_helper_2_.GetVelocity()) <=
@@ -127,4 +146,6 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
     esc_helper_1_.WriteVelocityOnController(target.velocity_);
     esc_helper_2_.WriteVelocityOnController(target.velocity_);
   }
+  // esc_helper_1_.WriteDC((target.velocity_/80_fps).to<double>());
+  // esc_helper_2_.WriteDC((target.velocity_/80_fps).to<double>());
 }

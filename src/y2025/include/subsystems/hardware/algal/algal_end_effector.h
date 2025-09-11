@@ -20,6 +20,9 @@ struct AlgalEEReadings {
 struct AlgalEETarget {
   units::feet_per_second_t velocity_;
   bool use_back_spin_ = false;
+  bool coral_mode_ = false;
+  bool pick_mode = false;
+  bool cm = false;
 };
 
 using roller_pos_conv_t = units::unit_t<
@@ -53,6 +56,8 @@ protected:
   roller_pos_conv_t roller_reduction_ = 0.5_ft / 1_tr;
 
   bool piece_override_ = false;
+
+  double counter_ = 0;
 
   AlgalEEReadings ReadFromHardware() override;
 

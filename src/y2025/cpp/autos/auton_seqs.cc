@@ -26,6 +26,13 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
+#define LOG(log_message) \
+  INSTANT {              \
+    [&]() {              \
+      Log(log_message);  \
+    }                    \
+  }
+
 #define MAX_ACCEL_3PC 25_fps_sq
 #define MAX_DECEL_3PC 20_fps_sq
 #define MAX_VEL_3PC 15_fps
@@ -134,16 +141,13 @@ using FPT = frc846::math::FieldPoint;
     }                                                             \
   }
 
-#define SMART_LOCK_SOURCE()                                               \
-  frc2::ParallelDeadlineGroup {                                           \
-    WAIT_FOR_PIECE(), SEQUENCE {                                          \
-      frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},        \
-          frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)},    \
-          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s},                              \
-          PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
-          PARALLEL_DEADLINE(                                              \
-              GO_IN_SOURCE(3PC), CORAL_POS(kCoral_StowNoPiece, false)),   \
-    }                                                                     \
+#define SMART_LOCK_SOURCE()                                            \
+  frc2::ParallelDeadlineGroup {                                        \
+    WAIT_FOR_PIECE(), SEQUENCE {                                       \
+      frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},     \
+          frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)}, \
+          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s}, GO_IN_SOURCE(3PC),        \
+    }                                                                  \
   }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right, isRetry)          \

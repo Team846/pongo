@@ -55,10 +55,14 @@ protected:
     return {0_deg, false};
   }
 
+  virtual bool isAlgaeSubsystem() {return false;}
+
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController wrist_esc_;
   frc846::control::HMCHelper<units::degree> wrist_esc_helper_;
+
+  int counter_ = 0;
 
   WristReadings ReadFromHardware() override final;
 

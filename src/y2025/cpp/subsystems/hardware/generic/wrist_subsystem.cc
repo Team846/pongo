@@ -1,5 +1,7 @@
 #include "subsystems/hardware/generic/wrist_subsystem.h"
 
+#include <units/math.h>
+
 #include "subsystems/SubsystemHelper.h"
 
 WristSubsystem::WristSubsystem(std::string name,
@@ -72,15 +74,25 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/current_draw", wrist_esc_.GetCurrent());
 
   const auto [sensor_pos, is_valid] = GetSensorPos(abs_pos_deg);
-  if (is_valid &&
-      units::math::abs(
-          sensor_pos - (readings.position /* + encoder_offset_*/)) >
-          GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
-    // encoder_offset_ = sensor_pos - readings.position;
-    wrist_esc_helper_.SetPosition(sensor_pos);
+  if (!isAlgaeSubsystem()) {
+    if (is_valid &&
+        units::math::abs(
+            sensor_pos - (readings.position /* + encoder_offset_*/)) >
+            GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
+      // encoder_offset_ = sensor_pos - readings.position;
+      wrist_esc_helper_.SetPosition(sensor_pos);
+      Graph("readings/sensor_pos", sensor_pos);
+    }
+  } else {
+    if (counter_ > 25) {
+      Graph("readings/sensor_pos", units::math::fmod((-abs_pos_deg * (16_tr / 40_tr) + GetPreferenceValue_unit_type<units::degree_t>("encoder_offset")) -150_deg, 360_deg) + 150_deg + 149_deg);
+      wrist_esc_helper_.SetPosition(units::math::fmod((-abs_pos_deg *  (16_tr / 40_tr) + GetPreferenceValue_unit_type<units::degree_t>("encoder_offset")) -150_deg, 360_deg) + 150_deg + 149_deg);
+      counter_ = 0;
+    } else {
+      counter_++;
+    }
   }
 
-  Graph("readings/sensor_pos", sensor_pos);
   Graph("readings/sensor_pos_valid", is_valid);
 
   Graph("readings/encoder_offset", encoder_offset_);

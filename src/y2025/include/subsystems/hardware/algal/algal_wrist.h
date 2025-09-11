@@ -12,6 +12,8 @@ protected:
   void ExtendedSetup() override;
   std::pair<units::degree_t, bool> GetSensorPos(
       units::degree_t sensor_pos) override;
+  
+  bool isAlgaeSubsystem() override;
 
 private:
   static constexpr wrist_pos_conv_t encoder_reduction = 1_tr / 81_tr;

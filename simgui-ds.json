@@ -9,6 +9,11 @@
       "visible": true
     }
   },
+  "Keyboard 1 Settings": {
+    "window": {
+      "visible": true
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
@@ -45,15 +50,15 @@
         67,
         86,
         -1,
-        50,
-        51,
-        52,
-        53,
-        54,
-        55,
-        56,
-        57,
-        49,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
         -1
       ],
       "povConfig": [
@@ -82,12 +87,25 @@
         }
       ],
       "axisCount": 2,
-      "buttonCount": 4,
+      "buttonCount": 17,
       "buttonKeys": [
         77,
         44,
         46,
-        47
+        47,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        48,
+        45,
+        61,
+        59
       ],
       "povCount": 0
     },

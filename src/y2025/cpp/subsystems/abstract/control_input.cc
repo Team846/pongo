@@ -107,6 +107,7 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.position_algal = previous_readings_.position_algal;
 
   if (frc::DriverStation::IsDisabled()) ci_readings_.position_algal = false;
+  if (frc::DriverStation::IsDisabled()) ci_readings_.level_one = false;
 
   ci_readings_.override_autostow = op_readings.right_bumper;
 
@@ -147,6 +148,13 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   } else {
     if (no_algae_counter < 1000) no_algae_counter++;
   }
+
+  if (op_readings.back_button && !previous_operator_.back_button)
+    ci_readings_.level_one = !previous_readings_.level_one;
+  else
+    ci_readings_.level_one = previous_readings_.level_one;
+
+  Graph("checker", ci_readings_.level_one);
 
   ci_readings_.lock_net = dr_readings.lsb;
 
@@ -195,7 +203,9 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     ci_readings_.auto_pick = false;
 
   first_enable_exception = false;
-  if (op_readings.pov == frc846::robot::XboxPOV::kUp)
+  if (ci_readings_.level_one)
+    ci_readings_.algal_state = AlgalStates::kAlgae_L1CoralScore;
+  else if (op_readings.pov == frc846::robot::XboxPOV::kUp)
     ci_readings_.algal_state = AlgalStates::kAlgae_Net;
   else if (op_readings.pov == frc846::robot::XboxPOV::kRight)
     ci_readings_.algal_state = AlgalStates::kAlgae_L3Pick;
@@ -276,8 +286,6 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   if (ci_readings_.override_reef != previous_operator_keyboard_.eight_button) {
     coral_ss_->coral_end_effector.SetReefOverride(ci_readings_.override_reef);
   }
-
-  ci_readings_.camera_stream = op_readings.back_button;
 
   ci_readings_.flick = op_readings.lsb;
 

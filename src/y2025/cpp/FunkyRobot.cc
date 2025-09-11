@@ -1,6 +1,5 @@
 #include "FunkyRobot.h"
 
-#include <cameraserver/CameraServer.h>
 #include <frc/DSControlWord.h>
 #include <frc/Filesystem.h>
 #include <frc/RobotController.h>

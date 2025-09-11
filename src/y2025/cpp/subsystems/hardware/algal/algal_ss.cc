@@ -27,10 +27,15 @@ AlgalSuperstructure::AlgalSuperstructure()
   REGISTER_SETPOINT("l2_pick", 41.5_in, 30_deg, 64.15_fps);
   REGISTER_SETPOINT("l3_pick", 50_in, 30_deg, 64.15_fps);
 
+  REGISTER_SETPOINT("coral_pick", 29_in, 140_deg, -64.15_fps);
+  REGISTER_SETPOINT("l1_coral_score", 29_in, 60_deg, -9.2_fps);
+
   REGISTER_SETPOINT("dinosaur_A", 34_in, 0_deg, -27.5);
   REGISTER_SETPOINT("dinosaur_B", 45_in, 35_deg, 27.5);
 
   RegisterPreference("score_dc", -16.5_fps);
+
+  RegisterPreference("score_coral_vel", -16.5_fps);
 
   RegisterPreference("init_elevator", true);
   RegisterPreference("init_wrist", true);
@@ -75,6 +80,8 @@ AlgalSetpoint AlgalSuperstructure::getSetpoint(AlgalStates state) {
   case kAlgae_NetInter: return GET_SETPOINT("net_inter");
   case kAlgae_L2Pick: return GET_SETPOINT("l2_pick");
   case kAlgae_L3Pick: return GET_SETPOINT("l3_pick");
+  case kAlgae_CoralPick: return GET_SETPOINT("coral_pick");
+  case kAlgae_L1CoralScore: return GET_SETPOINT("l1_coral_score");
   default: return GET_SETPOINT("stow");
   }
 }
@@ -121,11 +128,20 @@ AlgalSSReadings AlgalSuperstructure::ReadFromHardware() {
 
 void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
+  bool coral_mode =
+      target.state == kAlgae_CoralPick || target.state == kAlgae_L1CoralScore;
 
   if (target.score)
-    algal_end_effector.SetTarget(
-        {GetPreferenceValue_unit_type<units::feet_per_second_t>("score_dc"),
-            true});
+    (coral_mode) ? algal_end_effector.SetTarget(
+                       {GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                            "score_coral_vel"),
+                           false, true})
+                 : algal_end_effector.SetTarget(
+                       {GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                            "score_dc"),
+                           true});
+  else if (coral_mode)
+    algal_end_effector.SetTarget({setpoint.ee_vel, false, true, target.state == kAlgae_L1CoralScore, true });
   else
     algal_end_effector.SetTarget({setpoint.ee_vel});
 
@@ -176,6 +192,15 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
       last_state = AlgalStates::kAlgae_Stow;
       elevator.SetTarget({setpoint.height + elevator_adjustment_});
     }
+  } else if (last_state == AlgalStates::kAlgae_CoralPick &&
+             last_state != target.state) {
+    algal_wrist.SetTarget({setpoint.angle});
+    if (hasReachedWrist(AlgalStates::kAlgae_Stow)) {
+      elevator.SetTarget({setpoint.height});
+    } else {
+      elevator.SetTarget({getSetpoint(AlgalStates::kAlgae_CoralPick).height});
+    }
+    algal_end_effector.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).ee_vel, false, false, true});
   } else {
     elevator.SetTarget({setpoint.height + elevator_adjustment_});
     algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});

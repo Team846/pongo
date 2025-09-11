@@ -76,7 +76,7 @@ struct ControlInputReadings {
   bool home_telescope;
   bool home_elevator;
 
-  bool camera_stream;
+  bool level_one;
 
   bool flick;
 };
