@@ -6,7 +6,9 @@ GPDSSCommand::GPDSSCommand(RobotContainer &container)
   AddRequirements({&container_.algal_ss_});
 }
 
-void GPDSSCommand::OnInit() {}
+void GPDSSCommand::OnInit() {
+  container_.algal_ss_.algal_end_effector.ClearHasPiece();
+}
 
 void GPDSSCommand::Periodic() {
   AlgalSSTarget algal_target{};

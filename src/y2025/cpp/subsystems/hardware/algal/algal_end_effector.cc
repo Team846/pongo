@@ -102,27 +102,44 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   Graph("readings/error_coral", target.velocity_ - esc_helper_1_.GetVelocity());
 
+  esc_1_.SetGains(GET_PIDF_GAINS());
   esc_2_.SetGains(GET_PIDF_GAINS());
+
+  target.coral_keep &= target.cmode;
 
   // auto checkgains = frc846::control::base::MotorGains(GET_PIDF_GAINS());
 
-  if (GetReadings().has_piece_ && target.velocity_ > 0.0_fps) {
-   
-      target.velocity_ =
+  if (GetReadings().has_piece_ && target.velocity_ > 0.0_fps &&
+      !target.coral_keep) {
+    target.velocity_ =
         GetPreferenceValue_unit_type<units::feet_per_second_t>("idle_speed");
-    
   }
-  if (target.cm) {
-    // if (counter_ > 5) {
-    // target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>("idle_speed_coral");
-    // if(counter_ >= 10) counter_ = 0;
-    // } else {
-    //   target.velocity_ = 0_fps;
 
-    // }
-    // counter_++;
-    target.velocity_ = -5.0_fps;
+  if (target.coral_keep) {
+    if (counter_ > 5) {
+      target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
+          "idle_speed_coral");
+      if (counter_ >= 10) counter_ = 0;
+    } else {
+      target.velocity_ = 0_fps;
+    }
+    counter_++;
   }
+
+  if (target.cmode && units::math::abs(target.velocity_) > 10_fps) {
+    if (esc_helper_2_.GetVelocity() < 2_fps) {
+      piece_have_counter_++;
+    } else {
+      piece_have_counter_ = 0;
+    }
+    if (piece_have_counter_ > 20) { has_coral_piece_ = true; }
+  }
+  if (!target.cmode) {
+    has_coral_piece_ = false;
+    piece_have_counter_ = 0;
+  }
+
+  if (target.cmode && has_coral_piece_) { target.velocity_ = 0_fps; }
 
   if (units::math::abs(esc_helper_2_.GetVelocity()) <=
           GetPreferenceValue_unit_type<units::feet_per_second_t>(

@@ -130,9 +130,9 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   AlgalSetpoint setpoint = getSetpoint(target.state);
   bool coral_mode = target.cm;
 
-  Graph("coralmodething", coral_mode);
+  Graph("is_coral_mode", coral_mode);
 
-  if (target.score)
+  if (target.score) {
     (coral_mode) ? algal_end_effector.SetTarget(
                        {GetPreferenceValue_unit_type<units::feet_per_second_t>(
                             "score_coral_vel"),
@@ -141,8 +141,10 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
                        {GetPreferenceValue_unit_type<units::feet_per_second_t>(
                             "score_dc"),
                            true});
-  else if (coral_mode)
-    algal_end_effector.SetTarget({setpoint.ee_vel, false, true, target.state == kAlgae_L1CoralScore, true });
+    if (coral_mode) algal_end_effector.ClearHasPiece();
+  } else if (coral_mode)
+    algal_end_effector.SetTarget(
+        {setpoint.ee_vel, false, target.cm, target.state != kAlgae_CoralPick});
   else
     algal_end_effector.SetTarget({setpoint.ee_vel});
 
@@ -201,7 +203,6 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
     } else {
       elevator.SetTarget({getSetpoint(AlgalStates::kAlgae_CoralPick).height});
     }
-    algal_end_effector.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).ee_vel, false, false, true});
   } else {
     elevator.SetTarget({setpoint.height + elevator_adjustment_});
     algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});

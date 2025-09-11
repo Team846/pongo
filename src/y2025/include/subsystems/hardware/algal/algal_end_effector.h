@@ -20,9 +20,8 @@ struct AlgalEEReadings {
 struct AlgalEETarget {
   units::feet_per_second_t velocity_;
   bool use_back_spin_ = false;
-  bool coral_mode_ = false;
-  bool pick_mode = false;
-  bool cm = false;
+  bool cmode = false;
+  bool coral_keep = false;
 };
 
 using roller_pos_conv_t = units::unit_t<
@@ -44,6 +43,8 @@ public:
 
   bool VerifyHardware() override;
 
+  void ClearHasPiece() { has_coral_piece_ = false; }
+
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
@@ -53,9 +54,15 @@ protected:
   frc846::control::HMCHelper<units::feet> esc_helper_1_;
   frc846::control::HMCHelper<units::feet> esc_helper_2_;
 
-  roller_pos_conv_t roller_reduction_ = 0.5_ft / 1_tr;
+  // roller_pos_conv_t roller_reduction_ = 2_in * M_PI / 3_tr;
+  // the above is the real value
+  roller_pos_conv_t roller_reduction_ =
+      0.5_ft / 1_tr;  // this is the fake previous value, TODO: fix
 
   bool piece_override_ = false;
+
+  bool has_coral_piece_ = false;
+  int piece_have_counter_ = 0;
 
   double counter_ = 0;
 
