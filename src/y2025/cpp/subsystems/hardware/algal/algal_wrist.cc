@@ -34,9 +34,7 @@ WristTarget AlgalWristSubsystem::ZeroTarget() const {
 
 void AlgalWristSubsystem::ExtendedSetup() {}
 
-bool AlgalWristSubsystem::isAlgaeSubsystem() {
-  return true;
-}
+bool AlgalWristSubsystem::isAlgaeSubsystem() { return true; }
 
 std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos(
     units::degree_t sensor_pos) {
@@ -54,5 +52,5 @@ std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos(
   //         GetPreferenceValue_unit_type<units::degrees_per_second_t>(
   //             "use_sensor_threshold") &&
   //     GetReadings().position < 30_deg*/};
-  return{0_deg, false};
+  return {0_deg, false};
 }

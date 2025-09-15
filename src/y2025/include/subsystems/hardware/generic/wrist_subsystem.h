@@ -55,7 +55,7 @@ protected:
     return {0_deg, false};
   }
 
-  virtual bool isAlgaeSubsystem() {return false;}
+  virtual bool isAlgaeSubsystem() { return false; }
 
   frc846::control::config::MotorConstructionParameters motor_configs_;
 

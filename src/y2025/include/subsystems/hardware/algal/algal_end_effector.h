@@ -45,6 +45,8 @@ public:
 
   void ClearHasPiece() { has_coral_piece_ = false; }
 
+  bool GetHasCoralPiece() const { return has_coral_piece_; }
+
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 

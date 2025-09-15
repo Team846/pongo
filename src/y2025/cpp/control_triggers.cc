@@ -78,6 +78,16 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
                   container.control_input_.SetTarget({false, false});
                 }).ToPtr()));
 
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().level_one;
+  }}.OnTrue(frc2::InstantCommand([&] {
+    container.control_input_.SetTarget({false, true});
+  })
+                .AndThen(frc2::WaitCommand(0.5_s).ToPtr())
+                .AndThen(frc2::InstantCommand([&] {
+                  container.control_input_.SetTarget({false, false});
+                }).ToPtr()));
+
   // frc2::Trigger{[&] {
   //   return container.control_input_.GetReadings().targeting_algae &&
   //          container.GPD_.GetReadings().gamepieces.size() != 0U &&

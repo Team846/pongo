@@ -11,7 +11,7 @@ AlgalEESubsystem::AlgalEESubsystem()
           .can_id = ports::algal_ss_::end_effector_::kEE1_CANID,
           .inverted = false,
           .brake_mode = false,
-          .motor_current_limit = 40_A,
+          .motor_current_limit = 22_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
           .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
@@ -32,6 +32,8 @@ AlgalEESubsystem::AlgalEESubsystem()
   // RegisterPreference("backspin_constant", -0.24);
   RegisterPreference("backspin_constant", -22_fps);
   RegisterPreference("idle_speed_coral", -5.0_fps);
+  RegisterPreference("coral_vel_thresh", 5_fps);
+  RegisterPreference("test1", false);
   REGISTER_PIDF_CONFIG(0.0001, 0.0, 0.0, 0.0);
 
   RegisterPreference("testthing", 0.4);
@@ -102,6 +104,9 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   Graph("readings/error_coral", target.velocity_ - esc_helper_1_.GetVelocity());
 
+  Graph("readings/vel1", esc_helper_1_.GetVelocity());
+  Graph("readings/vel2", esc_helper_2_.GetVelocity());
+
   esc_1_.SetGains(GET_PIDF_GAINS());
   esc_2_.SetGains(GET_PIDF_GAINS());
 
@@ -116,18 +121,22 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   }
 
   if (target.coral_keep) {
-    if (counter_ > 5) {
+    if (counter_ > 8) {
       target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
           "idle_speed_coral");
-      if (counter_ >= 10) counter_ = 0;
+      if (counter_ >= 30) counter_ = 0;
     } else {
-      target.velocity_ = 0_fps;
+      target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                             "idle_speed_coral") /
+                         3.0;
     }
     counter_++;
   }
 
   if (target.cmode && units::math::abs(target.velocity_) > 10_fps) {
-    if (esc_helper_2_.GetVelocity() < 2_fps) {
+    if (esc_helper_2_.GetVelocity() <
+        GetPreferenceValue_unit_type<units::feet_per_second_t>(
+            "coral_vel_thresh")) {
       piece_have_counter_++;
     } else {
       piece_have_counter_ = 0;

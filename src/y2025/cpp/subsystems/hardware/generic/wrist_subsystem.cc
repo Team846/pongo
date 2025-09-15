@@ -85,8 +85,20 @@ WristReadings WristSubsystem::ReadFromHardware() {
     }
   } else {
     if (counter_ > 25) {
-      Graph("readings/sensor_pos", units::math::fmod((-abs_pos_deg * (16_tr / 40_tr) + GetPreferenceValue_unit_type<units::degree_t>("encoder_offset")) -150_deg, 360_deg) + 150_deg + 149_deg);
-      wrist_esc_helper_.SetPosition(units::math::fmod((-abs_pos_deg *  (16_tr / 40_tr) + GetPreferenceValue_unit_type<units::degree_t>("encoder_offset")) -150_deg, 360_deg) + 150_deg + 149_deg);
+      Graph("readings/sensor_pos",
+          units::math::fmod((-abs_pos_deg * (16_tr / 40_tr) +
+                                GetPreferenceValue_unit_type<units::degree_t>(
+                                    "encoder_offset")) -
+                                150_deg,
+              360_deg) +
+              150_deg + 149_deg);
+      wrist_esc_helper_.SetPosition(
+          units::math::fmod((-abs_pos_deg * (16_tr / 40_tr) +
+                                GetPreferenceValue_unit_type<units::degree_t>(
+                                    "encoder_offset")) -
+                                150_deg,
+              360_deg) +
+          150_deg + 149_deg);
       counter_ = 0;
     } else {
       counter_++;

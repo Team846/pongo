@@ -12,7 +12,7 @@ protected:
   void ExtendedSetup() override;
   std::pair<units::degree_t, bool> GetSensorPos(
       units::degree_t sensor_pos) override;
-  
+
   bool isAlgaeSubsystem() override;
 
 private:
