@@ -7,6 +7,7 @@
 #include "commands/general/coral_position_command.h"
 #include "commands/teleop/complete_gpd_command.h"
 #include "commands/teleop/gpd_ss_command.h"
+#include "commands/teleop/l1_align.h"
 #include "commands/teleop/lock_gpd_command.h"
 #include "commands/teleop/lock_to_reef_command.h"
 #include "commands/teleop/net_auto_align.h"
@@ -25,13 +26,27 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }).ToPtr());
 
   frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().lock_left_reef;
+    return container.control_input_.GetReadings().lock_left_reef &&
+           !container.control_input_.GetReadings().level_one;
   }}.WhileTrue(ReefAutoAlignCommand{container, true, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
                    .ToPtr());
   frc2::Trigger{[&] {
-    return container.control_input_.GetReadings().lock_right_reef;
+    return container.control_input_.GetReadings().lock_right_reef &&
+           !container.control_input_.GetReadings().level_one;
   }}.WhileTrue(ReefAutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
+      10_fps_sq, container.control_input_.base_adj}
+                   .ToPtr());
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().lock_left_reef &&
+           container.control_input_.GetReadings().level_one;
+  }}.WhileTrue(L1AutoAlignCommand{container, true, 13_fps, 4_fps, 25_fps_sq,
+      10_fps_sq, container.control_input_.base_adj}
+                   .ToPtr());
+  frc2::Trigger{[&] {
+    return container.control_input_.GetReadings().lock_right_reef &&
+           container.control_input_.GetReadings().level_one;
+  }}.WhileTrue(L1AutoAlignCommand{container, false, 13_fps, 4_fps, 25_fps_sq,
       10_fps_sq, container.control_input_.base_adj}
                    .ToPtr());
 
