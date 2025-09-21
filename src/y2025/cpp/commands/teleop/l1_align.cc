@@ -21,7 +21,7 @@ L1AutoAlignCommand::L1AutoAlignCommand(RobotContainer& container, bool is_left,
               /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
                   max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelDeadlineGroup{
-                  frc2::WaitCommand{2.5_s},
+                  frc2::WaitCommand{1.5_s},
                   LockToReefCommand{container, is_left, base_adj},
                   L1PosCommand{container, false},
               },

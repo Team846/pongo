@@ -1,5 +1,6 @@
 #include "commands/teleop/lock_to_reef_command.h"
 
+#include "frc846/robot/swerve/wait_until_close.h"
 #include "reef.h"
 
 LockToReefCommand::LockToReefCommand(
@@ -39,7 +40,12 @@ LockToReefCommand::LockToReefCommand(
 
             if (ci_readings_.level_one) {
               ba[0] = -15_in;
-              ba[1] = -4_in;
+              if (lft) {
+                ba[0] -= 0.5_in;
+              } else {
+                ba[0] += 3.5_in;
+              }
+              ba[1] = -9.0_in;
             } else if (piece_counter_ >= 30 && lft) {
               ba[0] = -6_in;
             }
