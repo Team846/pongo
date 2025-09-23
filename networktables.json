@@ -2742,5 +2742,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/coral_vel_thresh (fps)",
+    "type": "double",
+    "value": 5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/test1",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

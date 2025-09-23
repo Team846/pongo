@@ -43,7 +43,7 @@ void FunkyRobot::OnInitialize() {
   // }
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
-  ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
+  ADD_AUTO_VARIANTS(L4PickNetPickAuto, "1CPNP");
   ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
   AddDefaultAuto("LEAVE", new LeaveAuto{container_, false, true});
 

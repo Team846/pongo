@@ -21,6 +21,14 @@ public:
       RobotContainer& container, bool is_blue_side, bool is_left_side);
 };
 
+class L4PickNetPickAuto
+    : public frc846::robot::GenericCommandGroup<RobotContainer,
+          L4PickNetPickAuto, frc2::SequentialCommandGroup> {
+public:
+  L4PickNetPickAuto(
+      RobotContainer& container, bool is_blue_side, bool is_left_side);
+};
+
 class OnePieceAndNetAuto
     : public frc846::robot::GenericCommandGroup<RobotContainer,
           OnePieceAndNetAuto, frc2::SequentialCommandGroup> {

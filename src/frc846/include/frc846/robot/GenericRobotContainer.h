@@ -93,6 +93,12 @@ public:
     }
   }
 
+  void ClearDefaultCommands() {
+    for (auto* subsystem : all_subsystems_) {
+      subsystem->ClearDefaultCommand();
+    }
+  }
+
   virtual void GroupAUpdateReadingsExtension() {};
   virtual void GroupBUpdateReadingsExtension() {};
   virtual void GroupAUpdateHardwareExtension() {};

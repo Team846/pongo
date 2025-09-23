@@ -16,7 +16,10 @@ ATCalculatorOutput AprilTagCalculator::calculate(ATCalculatorInput input) {
   double totalTagWeight = 0;
   double variance = 0;
 
-  std::vector<frc846::math::Line> sight_lines[constants_.cams];
+  std::vector<std::vector<frc846::math::Line>> sight_lines(constants_.cams);
+  for (size_t i = 0; i < constants_.cams; i++)
+    sight_lines.push_back({});
+
   int tagsSeen = 0;
 
   for (int i = 0; i < constants_.cams; i++) {

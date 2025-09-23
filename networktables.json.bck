@@ -2726,5 +2726,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/idle_speed_coral (fps)",
+    "type": "double",
+    "value": -5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/testthing",
+    "type": "double",
+    "value": 0.4,
+    "properties": {
+      "persistent": true
+    }
   }
 ]
