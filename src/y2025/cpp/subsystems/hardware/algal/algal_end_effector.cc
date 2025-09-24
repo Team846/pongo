@@ -169,9 +169,10 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
         GetPreferenceValue_unit_type<units::feet_per_second_t>(
             "backspin_constant"));
   } else {
-    esc_helper_1_.WriteVelocityOnController(target.velocity_);
     esc_helper_2_.WriteVelocityOnController(target.velocity_);
+    if (target.cmode || target.coral_keep)
+      esc_helper_1_.WriteVelocityOnController(0.0_fps);
+    else
+      esc_helper_1_.WriteVelocityOnController(target.velocity_);
   }
-  // esc_helper_1_.WriteDC((target.velocity_/80_fps).to<double>());
-  // esc_helper_2_.WriteDC((target.velocity_/80_fps).to<double>());
 }
