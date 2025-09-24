@@ -169,20 +169,9 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
                       target.state == AlgalStates::kAlgae_L1CoralScore;
 
   if (last_state == AlgalStates::kAlgae_Stow) {
-    if (target.state == AlgalStates::kAlgae_Net || GetReadings().has_piece) {
-      algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_NetInter).angle});
-      if (hasReachedWrist(AlgalStates::kAlgae_NetInter))
-        elevator.SetTarget({setpoint.height + elevator_adjustment_});
-      if (elevator.GetReadings().position >
-          getSetpoint(AlgalStates::kAlgae_NetInter).height)
-        algal_wrist.SetTarget({getSetpoint(AlgalStates::kAlgae_Stow).angle});
-      if (hasReachedElevator(target.state))
-        algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
-    } else {
-      elevator.SetTarget({setpoint.height + elevator_adjustment_});
-      if (hasReachedElevator(target.state))
-        algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
-    }
+    elevator.SetTarget({setpoint.height + elevator_adjustment_});
+    if (hasReachedElevator(target.state))
+      algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
   } else if (lastIsHigh && (target.state == AlgalStates::kAlgae_Stow)) {
     algal_wrist.SetTarget({setpoint.angle + wrist_adjustment_});
     if (hasReachedWrist(target.state))

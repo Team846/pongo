@@ -43,9 +43,8 @@ void FunkyRobot::OnInitialize() {
   // }
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
-  ADD_AUTO_VARIANTS(L4PickNetPickAuto, "1CPNP");
-  ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
-  AddDefaultAuto("LEAVE", new LeaveAuto{container_, false, true});
+  AddAuto("1CPNP/R", new L4PickNetPickAuto{container_, false, true});
+  AddDefaultAuto("1CPNP/B", new L4PickNetPickAuto{container_, true, true});
 
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",

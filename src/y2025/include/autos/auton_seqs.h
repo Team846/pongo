@@ -29,14 +29,6 @@ public:
       RobotContainer& container, bool is_blue_side, bool is_left_side);
 };
 
-class OnePieceAndNetAuto
-    : public frc846::robot::GenericCommandGroup<RobotContainer,
-          OnePieceAndNetAuto, frc2::SequentialCommandGroup> {
-public:
-  OnePieceAndNetAuto(
-      RobotContainer& container, bool is_blue_side, bool is_left_side);
-};
-
 class LeaveAuto : public frc846::robot::GenericCommandGroup<RobotContainer,
                       LeaveAuto, frc2::SequentialCommandGroup> {
 public:
