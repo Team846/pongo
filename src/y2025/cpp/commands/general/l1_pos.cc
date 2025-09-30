@@ -14,6 +14,7 @@ void L1PosCommand::Periodic() {
   algal_target.state = kAlgae_L1CoralScore;
   algal_target.score =
       container_.algal_ss_.hasReached(kAlgae_L1CoralScore) && score_;
+  algal_target.cm = true;
 
   container_.algal_ss_.SetTarget(algal_target);
 }

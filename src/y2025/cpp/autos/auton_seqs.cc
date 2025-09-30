@@ -253,7 +253,7 @@ SEQUENCE {
       PARALLEL_DEADLINE(DRIVE(1PC, 135_in, START_Y - 35_in, 0_deg, 0_fps),
           ALGAL_POS(kAlgae_Stow, false)),
       PARALLEL_DEADLINE(WAIT{0.75_s}, AIM(0_deg)),
-      DRIVE(1PCS, 110_in, START_Y + 16_in, 0_deg, 0_fps),
+      DRIVE(1PCS, 110_in, START_Y + 10_in, 0_deg, 0_fps),
       ALGAL_POS(kAlgae_Net, false), WAIT{0.5_s}, ALGAL_POS(kAlgae_Net, true),
       WAIT{1.0_s}, ALGAL_POS(kAlgae_Stow, false),
       DRIVE(1PCS, 100_in, START_Y - 40_in, 140_deg, 0_fps),
@@ -262,7 +262,7 @@ SEQUENCE {
       ALGAL_POS(kAlgae_L3Pick, false),
       DRIVE(3PC, 118.25_in, 208.5_in, 120_deg, 0_fps), WAIT4ALG(),
       DRIVE(1PCS, 50_in, START_Y - 40_in, 80_deg, 0_fps),
-      PARALLEL_DEADLINE(AIM(0_deg), ALGAL_POS(kAlgae_Stow, false))
+      ALGAL_POS(kAlgae_Stow, false)
 }
 }
 {}

@@ -124,7 +124,7 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
     if (counter_ > 8) {
       target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
           "idle_speed_coral");
-      if (counter_ >= 50) counter_ = 0;
+      if (counter_ >= 16) counter_ = 0;
     } else {
       target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
                              "idle_speed_coral") /
