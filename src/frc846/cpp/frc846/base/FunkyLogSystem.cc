@@ -1,7 +1,9 @@
 #include "frc846/base/FunkyLogSystem.h"
 
+#include <filesystem>
 #include <fstream>
 #include <future>
+#include <iostream>
 #include <string>
 #include <thread>
 
@@ -17,7 +19,35 @@ int FunkyLogSystem::gameState = 0;
 std::queue<LogMessage> FunkyLogSystem::messages{};
 
 void FunkyLogSystem::LogThread(int rateLimit, std::string logFileName) {
-  std::string logPath = "/home/lvuser/" + logFileName;
+  std::string logDir = "/home/lvuser/foresting";
+  std::filesystem::create_directories(logDir);
+
+  std::string logPath = logDir + "/" + logFileName;
+  std::ofstream log_out;
+  log_out.open(logPath, std::ios::trunc);
+
+  if (!log_out.is_open()) {
+    std::cerr << "[ERROR] Failed to open log file: " << logPath << std::endl;
+  }
+
+  try {
+    auto space_info = std::filesystem::space("/home/lvuser");
+    if (space_info.available < FunkyLogSystem::MIN_SPACE &&
+        FunkyLogSystem::gameState == 0) {
+      std::cerr << "[ERROR] Storage space low: "
+                << (space_info.available / 1024 / 1024) << "MB available. "
+                << "Clearing logs directory." << std::endl;
+      for (const auto& entry : std::filesystem::directory_iterator(logDir)) {
+        if (entry.path() != logPath) {
+          std::filesystem::remove_all(entry.path());
+        }
+      }
+    }
+  } catch (const std::filesystem::filesystem_error& e) {
+    std::cerr << "[ERROR] Failed to check disk space: " << e.what()
+              << std::endl;
+  }
+
   for (;;) {
     auto start_time = std::chrono::system_clock::now();
 
@@ -32,24 +62,32 @@ void FunkyLogSystem::LogThread(int rateLimit, std::string logFileName) {
       runningCharCounter += msg.char_count;
       if (runningCharCounter > rateLimit) { break; }
 
-      logBundle += msg.pack() + "\n";
+      logBundle += msg.pack() + '\n';
       FunkyLogSystem::messages.pop();
     }
 
     mtx.unlock();
 
     if (logBundle.size() > 1) {
-      std::ofstream log_out(
-          logPath, std::fstream::in | std::fstream::out | std::fstream::trunc);
+      if (!log_out.good()) {
+        log_out.close();
+        log_out.clear();
+        log_out.open(logPath, std::ios::app);
+        if (!log_out.is_open()) {
+          std::cerr << "[ERROR] Failed to reopen log file: " << logPath
+                    << std::endl;
+        }
+      }
       log_out << logBundle << std::endl;
-      log_out.close();
 
       server.AddMessage(Compression::compress(logBundle));
     }
 
-    std::this_thread::sleep_for(
-        std::chrono::milliseconds(500) -
-        (std::chrono::system_clock::now() - start_time));
+    auto elapsed = std::chrono::system_clock::now() - start_time;
+    auto target_duration = std::chrono::milliseconds(500);
+    if (elapsed < target_duration) {
+      std::this_thread::sleep_for(target_duration - elapsed);
+    }
   }
 }
 

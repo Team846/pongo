@@ -91,8 +91,10 @@ using FPT = frc846::math::FieldPoint;
 #define SOURCELOC MKPT(18_in, 49.5_in, 53.5_deg, 0_fps)
 #define SOURCELOC_INWARDS MKPT(-7.08_in, 32.69_in, 53.5_deg, 0_fps)
 
-#define FPC_EXPECTED_START_UF FPT{{50.5_in, 271.3_in}, 140_deg, 0_fps}
-#define SIM_EXP_START_UF FPT{{20_in, 20_in}, 0_deg, 0_fps}
+#define FPC_EXPECTED_START_UF \
+  FPT { {50.5_in, 271.3_in}, 140_deg, 0_fps }
+#define SIM_EXP_START_UF \
+  FPT { {20_in, 20_in}, 0_deg, 0_fps }
 
 #define FPC_SIM_START()                                                      \
   INSTANT {                                                                  \
@@ -206,11 +208,13 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
   PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
       PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum, false),                 \
-          SEQUENCE(WAIT(0.9_s), CORAL_POS(kCoral_ScoreL4, false))),         \
+          SEQUENCE(WAIT(0.8_s), CORAL_POS(kCoral_ScoreL4, false))),         \
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum, true)),        \
-      CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s}
+      CORAL_POS(kCoral_ScoreL4, true), WAIT {                               \
+    0.25_s                                                                  \
+  }
 
 #define __AUTO__(codeName, stringName)                                 \
   codeName::codeName(                                                  \

@@ -179,9 +179,9 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
     set_algal_state((ReefProvider::getClosestReefSide(curr_pose) % 2 == 0)
                         ? AlgalStates::kAlgae_L2Pick
                         : AlgalStates::kAlgae_L3Pick);
-  } else if ((((curr_pose[1] - mid_field_y < 70_in) && within_angle(0_deg)) ||
-                 ((curr_pose[1] - mid_field_y > 70_in) &&
-                     within_angle(180_deg))) &&
+  } else if ((units::math::abs(curr_pose[1] - mid_field_y) < 60.0_in) &&
+             (((curr_pose[0] < field_width / 2) && within_angle(0_deg)) ||
+                 ((curr_pose[0] > field_width / 2) && within_angle(180_deg))) &&
              ready_to_auto_pick) {
     set_algal_state(AlgalStates::kAlgae_Net);
   } else if ((units::math::abs(field_width - curr_pose[0]) < 50.0_in) &&
