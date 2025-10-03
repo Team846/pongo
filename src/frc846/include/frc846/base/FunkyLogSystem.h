@@ -71,7 +71,7 @@ public:
   }
 
 private:
-  static constexpr uintmax_t MIN_SPACE = 25 * 1024 * 1024;  // 25 MB in bytes
+  static uintmax_t MIN_SPACE;
 
   static void LogThread(int rateLimit, std::string logFileName);
 

@@ -11,6 +11,8 @@
 
 namespace frc846::base {
 
+uintmax_t FunkyLogSystem::MIN_SPACE = 25 * 1024 * 1024;  // 25mb in bytes
+
 LoggingServer FunkyLogSystem::server{};
 
 std::mutex FunkyLogSystem::mtx{};
@@ -19,27 +21,41 @@ int FunkyLogSystem::gameState = 0;
 std::queue<LogMessage> FunkyLogSystem::messages{};
 
 void FunkyLogSystem::LogThread(int rateLimit, std::string logFileName) {
-  std::string logDir = "/home/lvuser/foresting";
-  std::filesystem::create_directories(logDir);
+  std::filesystem::path logDir;
+#ifdef _WIN32
+  logDir = "C:/Users/Public/foresting";
+#elif __APPLE__
+  logDir = "/Users/Shared/foresting";
+#else
+  logDir = "/home/lvuser/foresting";
+#endif
 
-  std::string logPath = logDir + "/" + logFileName;
-  std::ofstream log_out;
-  log_out.open(logPath, std::ios::trunc);
+  std::filesystem::create_directories(logDir);
+  std::filesystem::path logPath = logDir / logFileName;
+
+  std::ofstream log_out(logPath, std::ios::trunc);
 
   if (!log_out.is_open()) {
     std::cerr << "[ERROR] Failed to open log file: " << logPath << std::endl;
   }
 
   try {
-    auto space_info = std::filesystem::space("/home/lvuser");
-    if (space_info.available < FunkyLogSystem::MIN_SPACE &&
-        FunkyLogSystem::gameState == 0) {
-      std::cerr << "[ERROR] Storage space low: "
+    auto space_info = std::filesystem::space(logDir.root_path());
+    if (space_info.available < FunkyLogSystem::MIN_SPACE) {
+      std::cerr << "[WARNING] Storage space low: "
                 << (space_info.available / 1024 / 1024) << "MB available. "
                 << "Clearing logs directory." << std::endl;
-      for (const auto& entry : std::filesystem::directory_iterator(logDir)) {
-        if (entry.path() != logPath) {
-          std::filesystem::remove_all(entry.path());
+      std::vector<std::filesystem::directory_entry> log_dirs;
+      for (auto& e : std::filesystem::directory_iterator(logDir)) {
+        if (e.is_regular_file() && e.path() != logPath) log_dirs.push_back(e);
+      }
+      if (log_dirs.size() > 50) {
+        std::sort(log_dirs.begin(), log_dirs.end(), [](auto& a, auto& b) {
+          return std::filesystem::last_write_time(a) <
+                 std::filesystem::last_write_time(b);
+        });
+        for (size_t i = 0; i < log_dirs.size() - 50; i++) {
+          std::filesystem::remove(log_dirs[i].path());
         }
       }
     }
@@ -83,11 +99,9 @@ void FunkyLogSystem::LogThread(int rateLimit, std::string logFileName) {
       server.AddMessage(Compression::compress(logBundle));
     }
 
-    auto elapsed = std::chrono::system_clock::now() - start_time;
-    auto target_duration = std::chrono::milliseconds(500);
-    if (elapsed < target_duration) {
-      std::this_thread::sleep_for(target_duration - elapsed);
-    }
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(500) -
+        (std::chrono::system_clock::now() - start_time));
   }
 }
 
