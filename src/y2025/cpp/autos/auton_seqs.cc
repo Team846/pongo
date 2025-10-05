@@ -141,13 +141,16 @@ using FPT = frc846::math::FieldPoint;
     }                                                             \
   }
 
-#define SMART_LOCK_SOURCE()                                            \
-  frc2::ParallelDeadlineGroup {                                        \
-    WAIT_FOR_PIECE(), SEQUENCE {                                       \
-      frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},     \
-          frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)}, \
-          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s}, GO_IN_SOURCE(3PC),        \
-    }                                                                  \
+#define SMART_LOCK_SOURCE()                                               \
+  frc2::ParallelDeadlineGroup {                                           \
+    WAIT_FOR_PIECE(), SEQUENCE {                                          \
+      frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},        \
+          frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)},    \
+          PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
+          CORAL_POS(kCoral_StowNoPiece, false),                           \
+          PARALLEL_DEADLINE(                                              \
+              GO_IN_SOURCE(3PC), CORAL_POS(kCoral_StowNoPiece, false)),   \
+    }                                                                     \
   }
 
 #define DRIVE_TO_REEF(auto_name, number_on_right, isRetry)          \
@@ -208,7 +211,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
   PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
       PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum, false),                 \
-          SEQUENCE(WAIT(0.8_s), CORAL_POS(kCoral_ScoreL4, false))),         \
+          SEQUENCE(WAIT(0.9_s), CORAL_POS(kCoral_ScoreL4, false))),         \
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum, true)),        \
