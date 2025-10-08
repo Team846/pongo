@@ -19,6 +19,8 @@ enum LEDsState {
   kisCompletelyLinedUp,
   kLEDsHomingGyro,
   kLEDsHoming,
+  kLEDsCoralMode,
+  kLEDsHasCoralAlgae,
 };
 
 struct LEDsReadings {};

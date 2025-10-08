@@ -26,6 +26,13 @@ using WAIT = frc2::WaitCommand;
 
 using FPT = frc846::math::FieldPoint;
 
+#define LOG(log_message) \
+  INSTANT {              \
+    [&]() {              \
+      Log(log_message);  \
+    }                    \
+  }
+
 #define MAX_ACCEL_3PC 25_fps_sq
 #define MAX_DECEL_3PC 20_fps_sq
 #define MAX_VEL_3PC 15_fps
@@ -139,8 +146,8 @@ using FPT = frc846::math::FieldPoint;
     WAIT_FOR_PIECE(), SEQUENCE {                                          \
       frc2::ParallelDeadlineGroup{WAIT{0.75_s}, LOCK_TO_SOURCE()},        \
           frc2::ParallelDeadlineGroup{WAIT{1.5_s}, GO_IN_SOURCE(3PC)},    \
-          DRIVE_TO_SOURCE(3PC), WAIT{0.5_s},                              \
           PARALLEL_DEADLINE(WAIT{0.13_s}, CORAL_POS(kCoral_FLICK, true)), \
+          CORAL_POS(kCoral_StowNoPiece, false),                           \
           PARALLEL_DEADLINE(                                              \
               GO_IN_SOURCE(3PC), CORAL_POS(kCoral_StowNoPiece, false)),   \
     }                                                                     \
@@ -157,6 +164,22 @@ using FPT = frc846::math::FieldPoint;
       if (frc::RobotBase::IsSimulation()) return false;                     \
       return container.coral_ss_.coral_end_effector.GetReadings().see_reef; \
     }                                                                       \
+  }
+
+#define WAIT4ALG()                                                            \
+  frc2::WaitUntilCommand {                                                    \
+    [&] {                                                                     \
+      if (frc::RobotBase::IsSimulation()) return true;                        \
+      return container.algal_ss_.algal_end_effector.GetReadings().has_piece_; \
+    }                                                                         \
+  }
+
+#define WAIT4NOC()                                                             \
+  frc2::WaitUntilCommand {                                                     \
+    [&] {                                                                      \
+      if (frc::RobotBase::IsSimulation()) return true;                         \
+      return !container.coral_ss_.coral_end_effector.GetReadings().has_piece_; \
+    }                                                                          \
   }
 
 #define WAIT4REEF_1PC()                                                     \
@@ -188,7 +211,7 @@ using FPT = frc846::math::FieldPoint;
 #define DRIVE_SCORE_REEF_3PC(reefNum)                                       \
   PARALLEL_DEADLINE(WAIT(0.125_s), CORAL_POS(kCoral_StowWithPiece, false)), \
       PARALLEL_DEADLINE(DRIVE_TO_REEF(3PC, reefNum, false),                 \
-          SEQUENCE(WAIT(1.75_s), CORAL_POS(kCoral_ScoreL4, false))),        \
+          SEQUENCE(WAIT(0.9_s), CORAL_POS(kCoral_ScoreL4, false))),         \
       CORAL_POS(kCoral_ScoreL4, false),                                     \
       PARALLEL_RACE(WAIT4REEF(), WAIT(0.75_s)),                             \
       PARALLEL_RACE(WAIT4REEF(), DRIVE_TO_REEF(3PC, reefNum, true)),        \
@@ -223,26 +246,30 @@ SEQUENCE {  // START(158.5_in - 73.25_in, START_Y, 180_deg),
   FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(11), DRIVE_TO_SOURCE(3PC),
       SMART_LOCK_SOURCE(), DRIVE_SCORE_REEF_3PC(is_left_side ? 9 : 8),
       DRIVE_TO_SOURCE(3PC), SMART_LOCK_SOURCE(),
-      DRIVE_SCORE_REEF_3PC(is_left_side ? 8 : 9),
-      ALGAL_POS(kAlgae_L2Pick, false), WAIT{0.5_s}, DRIVE_TO_SOURCE(3PC),
+      DRIVE_SCORE_REEF_3PC(is_left_side ? 8 : 9), DRIVE_TO_SOURCE(3PC),
 }
 }
 {}
 
-__AUTO__(OnePieceAndNetAuto, "1PCN")
+__AUTO__(L4PickNetPickAuto, "1CPNP")
 SEQUENCE {
-  START2(158.5_in, START_Y + 1.5_in, 180_deg), WAIT{0.5_s},
-      DRIVE(1PC, 158.5_in + 1.5_in, 231.975_in, 180_deg, 0_fps),
-      PARALLEL_DEADLINE(
-          CORAL_POS(kCoral_ScoreL4, false), ALGAL_POS(kAlgae_L2Pick, false)),
-      WAIT4REEF_1PC(), CORAL_POS(kCoral_ScoreL4, true), WAIT{0.25_s},
-      DRIVE(1PC, 158.5_in + 1.5_in, 229.75_in, 180_deg, 0_fps), WAIT{1.0_s},
-      CORAL_POS(kCoral_StowNoPiece, false), WAIT{1.0_s},
-      DRIVE(1PC, 135_in, START_Y - 35_in, 0_deg, 0_fps),
-      DRIVE(1PCS, 110_in, START_Y + 16_in, 0_deg, 0_fps),
+  FPC_SIM_START(), DRIVE_SCORE_REEF_3PC(0),
+      DRIVE(1PC, 158.5_in + 11.25_in, 229.75_in, 180_deg, 0_fps),
+      ALGAL_POS(kAlgae_L2Pick, false),
+      PARALLEL_DEADLINE(WAIT4ALG(), CORAL_POS(kCoral_StowNoPiece, false)),
+      PARALLEL_DEADLINE(DRIVE(1PC, 135_in, START_Y - 35_in, 0_deg, 0_fps),
+          ALGAL_POS(kAlgae_Stow, false)),
+      PARALLEL_DEADLINE(WAIT{0.75_s}, AIM(0_deg)),
+      DRIVE(1PCS, 110_in, START_Y + 10_in, 0_deg, 0_fps),
       ALGAL_POS(kAlgae_Net, false), WAIT{0.5_s}, ALGAL_POS(kAlgae_Net, true),
-      WAIT{1.0_s}, DRIVE(1PCS, 100_in, START_Y - 40_in, 0_deg, 0_fps),
-      ALGAL_POS(kAlgae_Stow, false), WAIT{4.0_s},
+      WAIT{1.0_s}, ALGAL_POS(kAlgae_Stow, false),
+      DRIVE(1PCS, 100_in, START_Y - 40_in, 140_deg, 0_fps),
+      PARALLEL_DEADLINE(WAIT{0.5_s}, AIM(140_deg)),
+      DRIVE(3PC, 90_in, 237.5_in, 140_deg, 0_fps),
+      ALGAL_POS(kAlgae_L3Pick, false),
+      DRIVE(3PC, 118.25_in, 208.5_in, 120_deg, 0_fps), WAIT4ALG(),
+      DRIVE(1PCS, 50_in, START_Y - 40_in, 80_deg, 0_fps),
+      ALGAL_POS(kAlgae_Stow, false)
 }
 }
 {}

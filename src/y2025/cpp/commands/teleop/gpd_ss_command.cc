@@ -6,7 +6,9 @@ GPDSSCommand::GPDSSCommand(RobotContainer &container)
   AddRequirements({&container_.algal_ss_});
 }
 
-void GPDSSCommand::OnInit() {}
+void GPDSSCommand::OnInit() {
+  container_.algal_ss_.algal_end_effector.ClearHasPiece();
+}
 
 void GPDSSCommand::Periodic() {
   AlgalSSTarget algal_target{};
@@ -17,7 +19,11 @@ void GPDSSCommand::Periodic() {
 
   // TODO: determine is_on_top
 
-  algal_target.state = kAlgae_GroundIntake;
+  algal_target.state = (container_.control_input_.GetReadings().level_one)
+                           ? kAlgae_CoralPick
+                           : kAlgae_GroundIntake;
+
+  // algal_target.score = true;
 
   container_.algal_ss_.SetTarget(algal_target);
 }

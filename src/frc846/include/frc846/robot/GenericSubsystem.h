@@ -29,6 +29,8 @@ public:
   virtual void UpdateHardware() = 0;
   virtual bool VerifyHardware() = 0;
   virtual void SetTargetZero() = 0;
+
+  virtual void ClearDefaultCommand() = 0;
 };
 
 // Base class for robot subsystems.
@@ -68,6 +70,8 @@ public:
     Log("Initializing subsystem (by parent)");
     init_ = true;
   }
+
+  void ClearDefaultCommand() override final { RemoveDefaultCommand(); }
 
 private:
   bool init_;

@@ -13,21 +13,24 @@ frc846::math::Vector3D AntiTippingCalculator::tele_cg_position_{
     robot_constants::telescope::pos_x, robot_constants::telescope::pos_y,
     robot_constants::base::height};
 
+// TODO: Fix
 void AntiTippingCalculator::SetElevatorHeight(units::inch_t height) {
-  if (height > robot_constants::elevator::min_height_off_base) {
+  if (height > robot_constants::elevator::height_cg) {
     elev_cg_position_[2] = height / 2.0;
   } else {
     elev_cg_position_[2] =
         ((robot_constants::elevator::elevator_weight *
-             robot_constants::elevator::min_height_off_base / 2.0) +
+             robot_constants::elevator::height_cg / 2.0) +
             (robot_constants::elevator::end_effector_weight * height)) /
         (robot_constants::elevator::elevator_weight +
             robot_constants::elevator::end_effector_weight);
   }
 }
 
+// TODO: Fix
 void AntiTippingCalculator::SetTelescopeHeight(units::inch_t height) {
-  tele_cg_position_[2] = height / 2.0;
+  tele_cg_position_[2] =
+      (height + robot_constants::telescope::height_cg_error) / 2.0;
 }
 
 frc846::math::Vector3D AntiTippingCalculator::CalculateRobotCG() {

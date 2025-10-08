@@ -28,7 +28,7 @@ struct ControlInputReadings {
   bool lock_right_reef;
   bool lock_net;
   bool auto_align;
-  bool auto_pick_used;
+  bool auto_pick;
 
   // Superstructure
   bool position_algal;
@@ -76,7 +76,7 @@ struct ControlInputReadings {
   bool home_telescope;
   bool home_elevator;
 
-  bool camera_stream;
+  bool level_one;
 
   bool flick;
 };

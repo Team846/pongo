@@ -11,22 +11,37 @@ AlgalEESubsystem::AlgalEESubsystem()
           .can_id = ports::algal_ss_::end_effector_::kEE1_CANID,
           .inverted = false,
           .brake_mode = false,
-          .motor_current_limit = 40_A,
+          .motor_current_limit = 22_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
           .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
-          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0},
+          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.0000062},
       },
       esc_1_{frc846::control::base::SPARK_MAX_NEO550,
           GetCurrentConfig(motor_configs_)},
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  RegisterPreference("idle_speed", 0.025);
-  RegisterPreference("piece_thresh", 2_tps);
+  // RegisterPreference("idle_speed", 0.025);
+  RegisterPreference("idle_speed", 2.3_fps);
+  // RegisterPreference("piece_thresh", 2_tps);
+  RegisterPreference("piece_thresh", 1.0_fps);
 
-  RegisterPreference("kick_dc", -0.2);
-  RegisterPreference("backspin_constant", -0.24);
+  // RegisterPreference("kick_dc", -0.2);
+  RegisterPreference("kick_dc", -18.5_fps);
+  // RegisterPreference("backspin_constant", -0.24);
+  RegisterPreference("backspin_constant", -22_fps);
+  RegisterPreference("idle_speed_coral", -5.0_fps);
+  RegisterPreference("coral_vel_thresh", 5_fps);
+  RegisterPreference("test1", false);
+  REGISTER_PIDF_CONFIG(0.0001, 0.0, 0.0, 0.0);
+
+  RegisterPreference("testthing", 0.4);
+
+  esc_helper_1_.SetConversion(roller_reduction_);
+  esc_helper_2_.SetConversion(roller_reduction_);
+  esc_helper_1_.bind(&esc_1_);
+  esc_helper_2_.bind(&esc_2_);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -69,11 +84,13 @@ bool AlgalEESubsystem::VerifyHardware() {
 
 AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
   AlgalEEReadings readings;
+
   readings.has_piece_ =
       esc_2_.GetReverseLimitSwitchState() &&
-      units::math::abs(esc_2_.GetVelocity()) <=
-          GetPreferenceValue_unit_type<units::turns_per_second_t>(
+      units::math::abs(esc_helper_2_.GetVelocity()) <=
+          GetPreferenceValue_unit_type<units::feet_per_second_t>(
               "piece_thresh");
+
   if (piece_override_) readings.has_piece_ = false;
 
   Graph("readings/has_piece", readings.has_piece_);
@@ -83,26 +100,79 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
 void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   // Graph("target/duty_cycle", target.duty_cycle_);
 
-  if (GetReadings().has_piece_ && target.duty_cycle_ > 0.0) {
-    target.duty_cycle_ = GetPreferenceValue_double("idle_speed");
+  Graph("readings/error", target.velocity_ - esc_helper_2_.GetVelocity());
+
+  Graph("readings/error_coral", target.velocity_ - esc_helper_1_.GetVelocity());
+
+  Graph("readings/vel1", esc_helper_1_.GetVelocity());
+  Graph("readings/vel2", esc_helper_2_.GetVelocity());
+
+  esc_1_.SetGains(GET_PIDF_GAINS());
+  esc_2_.SetGains(GET_PIDF_GAINS());
+
+  target.coral_keep &= target.cmode;
+
+  // auto checkgains = frc846::control::base::MotorGains(GET_PIDF_GAINS());
+
+  if (GetReadings().has_piece_ && target.velocity_ > 0.0_fps &&
+      !target.coral_keep) {
+    target.velocity_ =
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("idle_speed");
   }
 
-  if (units::math::abs(esc_2_.GetVelocity()) <=
-          GetPreferenceValue_unit_type<units::turns_per_second_t>(
+  if (target.coral_keep) {
+    if (counter_ > 8) {
+      target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
+          "idle_speed_coral");
+      if (counter_ >= 16) counter_ = 0;
+    } else {
+      target.velocity_ = GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                             "idle_speed_coral") /
+                         3.0;
+    }
+    counter_++;
+  }
+
+  if (target.cmode && units::math::abs(target.velocity_) > 10_fps) {
+    if (esc_helper_2_.GetVelocity() <
+        GetPreferenceValue_unit_type<units::feet_per_second_t>(
+            "coral_vel_thresh")) {
+      piece_have_counter_++;
+    } else {
+      piece_have_counter_ = 0;
+    }
+    if (piece_have_counter_ > 20) { has_coral_piece_ = true; }
+  }
+  if (!target.cmode) {
+    has_coral_piece_ = false;
+    piece_have_counter_ = 0;
+  }
+
+  if (target.cmode && has_coral_piece_) { target.velocity_ = 0_fps; }
+
+  if (units::math::abs(esc_helper_2_.GetVelocity()) <=
+          GetPreferenceValue_unit_type<units::feet_per_second_t>(
               "piece_thresh") &&
-      target.duty_cycle_ < 0.0) {
-    target.duty_cycle_ = GetPreferenceValue_double("kick_dc");
+      target.velocity_ < 0.0_fps) {
+    target.velocity_ =
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("kick_dc");
   }
 
-  if (piece_override_) { target.duty_cycle_ = 0.0; }
-
-  if (target.use_back_spin) {
-    esc_1_.WriteDC(
-        target.duty_cycle_ + GetPreferenceValue_double("backspin_constant"));
-    esc_2_.WriteDC(
-        target.duty_cycle_ - GetPreferenceValue_double("backspin_constant"));
+  if (piece_override_) { target.velocity_ = 0.0_fps; }
+  if (target.use_back_spin_) {
+    esc_helper_1_.WriteVelocityOnController(
+        target.velocity_ +
+        GetPreferenceValue_unit_type<units::feet_per_second_t>(
+            "backspin_constant"));
+    esc_helper_2_.WriteVelocityOnController(
+        target.velocity_ -
+        GetPreferenceValue_unit_type<units::feet_per_second_t>(
+            "backspin_constant"));
   } else {
-    esc_1_.WriteDC(target.duty_cycle_);
-    esc_2_.WriteDC(target.duty_cycle_);
+    esc_helper_2_.WriteVelocityOnController(target.velocity_);
+    if (target.cmode || target.coral_keep)
+      esc_helper_1_.WriteVelocityOnController(0.0_fps);
+    else
+      esc_helper_1_.WriteVelocityOnController(target.velocity_);
   }
 }

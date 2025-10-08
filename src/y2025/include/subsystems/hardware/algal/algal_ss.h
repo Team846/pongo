@@ -7,7 +7,7 @@
 struct AlgalSetpoint {
   units::inch_t height;
   units::degree_t angle;
-  double ee_dc;
+  units::feet_per_second_t ee_vel;
 };
 
 enum AlgalStates {
@@ -19,6 +19,8 @@ enum AlgalStates {
   kAlgae_NetInter,
   kAlgae_L2Pick,
   kAlgae_L3Pick,
+  kAlgae_CoralPick,
+  kAlgae_L1CoralScore,
   kAlgae_DINOSAUR_A,
   kAlgae_DINOSAUR_B,
 };
@@ -30,6 +32,7 @@ struct AlgalSSReadings {
 struct AlgalSSTarget {
   AlgalStates state;
   bool score;
+  bool cm = false;
 };
 
 class AlgalSuperstructure

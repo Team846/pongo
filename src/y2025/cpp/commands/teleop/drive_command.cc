@@ -160,50 +160,56 @@ void DriveCommand::Periodic() {
 
       auto line_vec = line_end.point - line_start.point;
       auto to_robot = current_pos - line_start.point;
-      double t =
-          (((to_robot).dot(line_vec)) / (line_vec.dot(line_vec))).to<double>();
+      double t = (to_robot.dot(line_vec) / line_vec.dot(line_vec)).to<double>();
 
       auto line_norm = frc846::math::Vector2D{-line_vec[1], line_vec[0]}.unit();
-      double cross_dist = to_robot.dot(line_norm).to<double>();
+      bool should_assist = should_flip
+                               ? (to_robot.dot(line_norm).to<double>() <= 0.0)
+                               : (to_robot.dot(line_norm).to<double>() >= 0.0);
 
-      bool should_assist =
-          should_flip ? (cross_dist <= 0.0) : (cross_dist >= 0.0);
+      auto error_vec =
+          line_start.point + line_vec * std::clamp(t, 0.0, 1.0) - current_pos;
+      bool use_coast =
+          error_vec.magnitude() <
+          container_.drivetrain_.GetPreferenceValue_unit_type<units::inch_t>(
+              "source_coast_threshold");
 
-      if (should_assist) {
-        t = std::clamp(t, 0.0, 1.0);
-        auto error_vec = line_start.point + line_vec * t - current_pos;
-        frc846::control::base::MotorGains gains{
-            -container_.drivetrain_.GetPreferenceValue_double(
-                "lock_gains/_kP") /
-                3.0,
-            0.0,
-            -container_.drivetrain_.GetPreferenceValue_double(
-                "lock_gains/_kD") /
-                3.0,
-            0.0};
+      frc846::math::VectorND<units::feet_per_second, 2> assist_vel{
+          0_fps, 0_fps};
+
+      if (should_assist && !use_coast) {
+        double kP = -container_.drivetrain_.GetPreferenceValue_double(
+                        "lock_gains/_kP") /
+                    3.0;
+        double kD = -container_.drivetrain_.GetPreferenceValue_double(
+                        "lock_gains/_kD") /
+                    3.0;
         auto current_vel =
             container_.drivetrain_.GetReadings().estimated_pose.velocity;
 
-        frc846::math::VectorND<units::feet_per_second, 2> correction_velocity{
-            gains.calculate(error_vec[0].to<double>(), 0.0,
-                current_vel[0].to<double>(), 0.0) *
-                1_fps,
-            gains.calculate(error_vec[1].to<double>(), 0.0,
-                current_vel[1].to<double>(), 0.0) *
+        assist_vel = {(kP * error_vec[0].to<double>() +
+                          kD * current_vel[0].to<double>()) *
+                          1_fps,
+            (kP * error_vec[1].to<double>() +
+                kD * current_vel[1].to<double>()) *
                 1_fps};
 
-        auto src_max_speed =
+      } else {
+        auto coast_speed =
             container_.drivetrain_
                 .GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                    "source_max_speed");
-        auto magnitude = correction_velocity.magnitude();
-        if (magnitude > src_max_speed) {
-          correction_velocity =
-              correction_velocity * (src_max_speed / magnitude);
-        }
-
-        target.velocity = target.velocity + correction_velocity;
+                    "source_coast_speed");
+        coast_speed = should_flip ? coast_speed : -coast_speed;
+        assist_vel = {line_norm[0].to<double>() * coast_speed,
+            line_norm[1].to<double>() * coast_speed};
       }
+      auto src_max_speed =
+          container_.drivetrain_
+              .GetPreferenceValue_unit_type<units::feet_per_second_t>(
+                  "source_max_speed");
+      auto vel_mag = assist_vel.magnitude();
+      if (vel_mag > src_max_speed) assist_vel *= (src_max_speed / vel_mag);
+      target.velocity = target.velocity + assist_vel;
     }
   }
 

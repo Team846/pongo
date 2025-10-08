@@ -18,16 +18,21 @@ struct AlgalEEReadings {
 };
 
 struct AlgalEETarget {
-  double duty_cycle_;
-  bool use_back_spin = false;
+  units::feet_per_second_t velocity_;
+  bool use_back_spin_ = false;
+  bool cmode = false;
+  bool coral_keep = false;
 };
+
+using roller_pos_conv_t = units::unit_t<
+    units::compound_unit<units::feet, units::inverse<units::turn>>>;
 
 class AlgalEESubsystem
     : public frc846::robot::GenericSubsystem<AlgalEEReadings, AlgalEETarget> {
 public:
   AlgalEESubsystem();
 
-  AlgalEETarget ZeroTarget() const override { return {0.0}; }
+  AlgalEETarget ZeroTarget() const override { return {0.0_fps}; }
 
   frc846::control::config::MotorConstructionParameters GetCurrentConfig(
       frc846::control::config::MotorConstructionParameters original_config);
@@ -38,13 +43,30 @@ public:
 
   bool VerifyHardware() override;
 
+  void ClearHasPiece() { has_coral_piece_ = false; }
+
+  bool GetHasCoralPiece() const { return has_coral_piece_; }
+
 protected:
   frc846::control::config::MotorConstructionParameters motor_configs_;
 
   frc846::control::HigherMotorController esc_1_;
   frc846::control::HigherMotorController esc_2_;
 
+  frc846::control::HMCHelper<units::feet> esc_helper_1_;
+  frc846::control::HMCHelper<units::feet> esc_helper_2_;
+
+  // roller_pos_conv_t roller_reduction_ = 2_in * M_PI / 3_tr;
+  // the above is the real value
+  roller_pos_conv_t roller_reduction_ =
+      0.5_ft / 1_tr;  // this is the fake previous value, TODO: fix
+
   bool piece_override_ = false;
+
+  bool has_coral_piece_ = false;
+  int piece_have_counter_ = 0;
+
+  double counter_ = 0;
 
   AlgalEEReadings ReadFromHardware() override;
 

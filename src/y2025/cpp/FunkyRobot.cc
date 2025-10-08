@@ -1,6 +1,5 @@
 #include "FunkyRobot.h"
 
-#include <cameraserver/CameraServer.h>
 #include <frc/DSControlWord.h>
 #include <frc/Filesystem.h>
 #include <frc/RobotController.h>
@@ -44,9 +43,8 @@ void FunkyRobot::OnInitialize() {
   // }
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
-  ADD_AUTO_VARIANTS(OnePieceAndNetAuto, "1PCN");
-  ADD_AUTO_VARIANTS(LeaveAuto, "LEAVE");
-  AddDefaultAuto("LEAVE", new LeaveAuto{container_, false, true});
+  AddAuto("1CPNP/R", new L4PickNetPickAuto{container_, false, true});
+  AddDefaultAuto("1CPNP/B", new L4PickNetPickAuto{container_, true, true});
 
   // // Add dashboard buttons
   frc::SmartDashboard::PutData("set_cancoder_offsets",
@@ -150,22 +148,22 @@ void FunkyRobot::OnPeriodic() {
 
   if (!home_switch_.Get() && !IsEnabled()) {
     container_.coral_ss_.telescope.HomeSubsystem(
-        robot_constants::elevator::min_height_off_base);
-    container_.algal_ss_.elevator.HomeSubsystem(
         robot_constants::telescope::min_height);
+    container_.algal_ss_.elevator.HomeSubsystem(
+        robot_constants::elevator::min_height_off_base);
     container_.climber_.ZeroClimber();
 
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
 
   if (container_.control_input_.GetReadings().home_elevator) {
-    container_.algal_ss_.elevator.HomeSubsystem(
+    container_.algal_ss_.elevator.StartHoming(
         robot_constants::elevator::min_height_off_base);
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
 
   if (container_.control_input_.GetReadings().home_telescope) {
-    container_.coral_ss_.telescope.HomeSubsystem(
+    container_.coral_ss_.telescope.StartHoming(
         robot_constants::telescope::min_height);
     homing_count_ = GetPreferenceValue_int("homing_flash_loops");
   }
@@ -201,6 +199,8 @@ void FunkyRobot::OnPeriodic() {
         (1.0 * coast_count_) / GetPreferenceValue_int("num_coasting_loops"));
   else
     LEDsLogic::UpdateLEDs(&container_);
+
+  if (isDisabled) { container_.control_input_.ZeroTarget(); }
 
   AntiTippingCalculator::SetTelescopeHeight(
       container_.coral_ss_.telescope.GetReadings().position);

@@ -17,7 +17,7 @@ TelescopeSubsystem::TelescopeSubsystem()
               .voltage_compensation = 12_V,
               .circuit_resistance =
                   robot_constants::coral_ss_::wire_resistance_base,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.0005}},
           262.5_in / 214.85_tr * 9.0 / 5.0,
           robot_constants::telescope::telescope_hall_effect) {
   REGISTER_PIDF_CONFIG(0.026, 0.0, -0.0015, 0.0295);
@@ -32,3 +32,12 @@ LinearSubsystemTarget TelescopeSubsystem::ZeroTarget() const {
 }
 
 void TelescopeSubsystem::ExtendedSetup() {}
+
+void TelescopeSubsystem::UpdateLoad() {
+  if (GetReadings().position > GetPreferenceValue_unit_type<units::inch_t>(
+                                   "telescopel4_modifier_height"))
+    linear_esc_.SetLoad(GetPreferenceValue_unit_type<units::newton_meter_t>(
+        "telescopel4_load"));
+  else
+    linear_esc_.SetLoad(1_Nm);
+}

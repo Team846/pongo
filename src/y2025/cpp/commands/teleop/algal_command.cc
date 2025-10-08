@@ -58,6 +58,8 @@ void AlgalCommand::Periodic() {
   else if (ci_readings.dec_a_wrist)
     container_.algal_ss_.adjustWrist(false);
 
+  algal_target.cm = container_.control_input_.GetReadings().level_one;
+
   container_.algal_ss_.SetTarget(algal_target);
 
   container_.algal_ss_.elevator.OverrideSoftLimits(

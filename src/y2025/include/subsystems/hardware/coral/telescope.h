@@ -11,5 +11,7 @@ public:
 protected:
   void ExtendedSetup() override;
 
+  void UpdateLoad() override;
+
 private:
 };

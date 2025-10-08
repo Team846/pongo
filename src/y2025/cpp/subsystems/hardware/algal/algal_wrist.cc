@@ -16,7 +16,7 @@ AlgalWristSubsystem::AlgalWristSubsystem()
               .smart_current_limit = 40_A,
               .voltage_compensation = 12_V,
               .circuit_resistance = robot_constants::algae_ss_::wire_resistance,
-              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{3.0}},
+              .rotational_inertia = frc846::wpilib::unit_kg_m_sq{0.005}},
           encoder_reduction * encoder_to_subsystem_reduction) {
   REGISTER_PIDF_CONFIG(0.005, 0.0, -0.0006, 0.0);
   REGISTER_SOFTLIMIT_CONFIG(true, 90_deg, 0_deg, 80_deg, 10_deg, 0.3);
@@ -25,7 +25,7 @@ AlgalWristSubsystem::AlgalWristSubsystem()
   RegisterPreference("flip_position_load_sign", true);
 
   RegisterPreference("use_sensor_threshold", 5_deg_per_s);
-  RegisterPreference("encoder_offset", 3.8_deg);
+  RegisterPreference("encoder_offset", -10.8_deg);
 }
 
 WristTarget AlgalWristSubsystem::ZeroTarget() const {
@@ -34,15 +34,23 @@ WristTarget AlgalWristSubsystem::ZeroTarget() const {
 
 void AlgalWristSubsystem::ExtendedSetup() {}
 
+bool AlgalWristSubsystem::isAlgaeSubsystem() { return true; }
+
 std::pair<units::degree_t, bool> AlgalWristSubsystem::GetSensorPos(
     units::degree_t sensor_pos) {
   units::degree_t raw_enc_pos =
       AlgalWristSubsystem::GetReadings().absolute_position;
-  if (raw_enc_pos > 120_deg) raw_enc_pos -= 360_deg;
-  return {-raw_enc_pos * encoder_to_subsystem_reduction +
-              GetPreferenceValue_unit_type<units::degree_t>("encoder_offset"),
-      true/*units::math::abs(AlgalWristSubsystem::GetReadings().velocity) <
-              GetPreferenceValue_unit_type<units::degrees_per_second_t>(
-                  "use_sensor_threshold") &&
-          GetReadings().position < 30_deg*/};
+  // if (raw_enc_pos > 180_deg) raw_enc_pos -= 360_deg;
+  // return {
+  //     ((-raw_enc_pos * (16_tr / 40_tr) +
+  //          GetPreferenceValue_unit_type<units::degree_t>("encoder_offset")) -
+  //             150_deg,
+  //         360_deg) +
+  //         150_deg + 149_deg,
+  //     true};
+  // true/*units::math::abs(AlgalWristSubsystem::GetReadings().velocity) <
+  //         GetPreferenceValue_unit_type<units::degrees_per_second_t>(
+  //             "use_sensor_threshold") &&
+  //     GetReadings().position < 30_deg*/};
+  return {0_deg, false};
 }

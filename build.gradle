@@ -37,8 +37,9 @@ deploy {
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = true
-
+def includeDesktopSupport = gradle.startParameter.taskNames.any { task ->
+    task.toLowerCase().contains('sim') ||  task.toLowerCase().contains('debug')
+}
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = true
 
@@ -107,6 +108,26 @@ model {
     //         wpi.cpp.deps.googleTest(it)
     //     }
     // }
+}
+
+task backupNetworkTables(type: Exec) {
+    println "Backing up Networktables..."
+    def timestamp = new Date().format('yyyyMMdd_HHmm')
+    def nt_backup_file = "nt_backups/networktables_${timestamp}.json.bck"
+    def backupFile = "networktables_.json.bck"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'scp', "lvuser@10.8.46.2:/home/lvuser/networktables.json", "./${nt_backup_file}"
+        commandLine 'cmd', '/c', 'scp', "lvuser@10.8.46.2:/home/lvuser/networktables.json", "./${backupFile}"
+    }
+    else {
+        commandLine 'sh', '-c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${nt_backup_file}"
+        commandLine 'sh', '-c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${backupFile}"
+    }
+    ignoreExitValue = true
+}
+
+tasks.matching { it.name.startsWith('deploy') }.all {
+    it.dependsOn backupNetworkTables
 }
 
 spotless {
