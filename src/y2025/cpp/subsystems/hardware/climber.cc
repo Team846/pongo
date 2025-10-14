@@ -48,7 +48,12 @@ bool ClimberSubsystem::VerifyHardware() {
 ClimberReadings ClimberSubsystem::ReadFromHardware() {
   Graph("readings/position", esc_helper_.GetPosition());
 
-  return {};
+  return {units::math::abs(esc_helper_.GetPosition() -
+                           GetPreferenceValue_unit_type<units::degree_t>(
+                               "limits/upper_limit")) < 2_deg ||
+          units::math::abs(esc_helper_.GetPosition() -
+                           GetPreferenceValue_unit_type<units::degree_t>(
+                               "limits/lower_limit")) < 2_deg};
 }
 
 void ClimberSubsystem::WriteToHardware(ClimberTarget target) {

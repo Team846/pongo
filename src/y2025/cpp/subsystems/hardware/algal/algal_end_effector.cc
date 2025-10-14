@@ -159,7 +159,10 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   }
 
   if (piece_override_) { target.velocity_ = 0.0_fps; }
-  if (target.use_back_spin_) {
+  if (target.super_mode) {
+    esc_helper_1_.WriteVelocityOnController(-40_fps);
+    esc_helper_2_.WriteVelocityOnController(-40_fps);
+  } else if (target.use_back_spin_) {
     esc_helper_1_.WriteVelocityOnController(
         target.velocity_ +
         GetPreferenceValue_unit_type<units::feet_per_second_t>(

@@ -33,6 +33,7 @@ struct AlgalSSTarget {
   AlgalStates state;
   bool score;
   bool cm = false;
+  bool super_mode = false;
 };
 
 class AlgalSuperstructure

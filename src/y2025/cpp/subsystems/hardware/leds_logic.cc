@@ -68,6 +68,8 @@ void LEDsLogic::UpdateLEDs(RobotContainer* container) {
       target.state = kisLinedUp;
     else
       target.state = kLEDsSequencing;
+  } else if (container->climber_.GetReadings().reached_limit_) {
+    target.state = kLEDsClimbed;
   } else if (container->control_input_.GetReadings().extend_climb ||
              container->control_input_.GetReadings().retract_climb) {
     target.state = kLEDsClimbing;

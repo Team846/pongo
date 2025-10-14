@@ -106,16 +106,8 @@ void DriveCommand::Periodic() {
 
   if (ci_readings_.auto_align) {
     units::degree_t target_angle = 1000_deg;
-    if (ci_readings_.algal_state == kAlgae_Net &&
-        container_.algal_ss_.algal_end_effector.GetReadings().has_piece_) {
-      target_angle = isBlue ? 180_deg : 0_deg;
-    } else if (ci_readings_.algal_state == kAlgae_Processor &&
-               container_.algal_ss_.algal_end_effector.GetReadings()
-                   .has_piece_) {
-      target_angle = isBlue ? -90_deg : 90_deg;
-    } else if (ci_readings_.coral_state == kCoral_StowNoPiece &&
-               !container_.coral_ss_.coral_end_effector.GetReadings()
-                    .has_piece_) {
+    if (ci_readings_.coral_state == kCoral_StowNoPiece &&
+        !container_.coral_ss_.coral_end_effector.GetReadings().has_piece_) {
       if (container_.drivetrain_.GetReadings().estimated_pose.position[0] >
           (frc846::math::FieldPoint::field_size_x / 2))
         target_angle = -54_deg;

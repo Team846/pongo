@@ -141,7 +141,7 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
                  : algal_end_effector.SetTarget(
                        {GetPreferenceValue_unit_type<units::feet_per_second_t>(
                             "score_dc"),
-                           true});
+                           true, false, false, target.super_mode});
   } else if (coral_mode)
     algal_end_effector.SetTarget(
         {setpoint.ee_vel, false, target.cm, target.state != kAlgae_CoralPick});
