@@ -50,10 +50,10 @@ ClimberReadings ClimberSubsystem::ReadFromHardware() {
 
   return {units::math::abs(esc_helper_.GetPosition() -
                            GetPreferenceValue_unit_type<units::degree_t>(
-                               "limits/upper_limit")) < 2_deg ||
+                               "limits/upper_limit")) < 6_deg ||
           units::math::abs(esc_helper_.GetPosition() -
                            GetPreferenceValue_unit_type<units::degree_t>(
-                               "limits/lower_limit")) < 2_deg};
+                               "limits/lower_limit")) < 6_deg};
 }
 
 void ClimberSubsystem::WriteToHardware(ClimberTarget target) {

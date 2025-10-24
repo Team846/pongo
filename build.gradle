@@ -112,16 +112,17 @@ model {
 
 task backupNetworkTables(type: Exec) {
     println "Backing up Networktables..."
-    def timestamp = new Date().format('yyyyMMdd_HHmm')
-    def nt_backup_file = "nt_backups/networktables_${timestamp}.json.bck"
-    def backupFile = "networktables_.json.bck"
+    def timestamp = new Date().format('MM_dd_HH_mm')
+    def nt_backup_file = "nt_backups/networktables_${timestamp}.json"
+    def backupFile = "networktables_.json.bck"   
+    doFirst {
+        new File("nt_backups").mkdirs()
+    }
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/c', 'scp', "lvuser@10.8.46.2:/home/lvuser/networktables.json", "./${nt_backup_file}"
-        commandLine 'cmd', '/c', 'scp', "lvuser@10.8.46.2:/home/lvuser/networktables.json", "./${backupFile}"
+        commandLine 'cmd', '/c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${nt_backup_file} && scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${backupFile}"
     }
     else {
-        commandLine 'sh', '-c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${nt_backup_file}"
-        commandLine 'sh', '-c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${backupFile}"
+        commandLine 'sh', '-c', "scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${nt_backup_file} && scp lvuser@10.8.46.2:/home/lvuser/networktables.json ./${backupFile}"
     }
     ignoreExitValue = true
 }

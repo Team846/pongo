@@ -133,15 +133,20 @@ void AlgalSuperstructure::WriteToHardware(AlgalSSTarget target) {
   Graph("is_coral_mode", coral_mode);
 
   if (target.score) {
-    if (coral_mode) algal_end_effector.ClearHasPiece();
-    (coral_mode) ? algal_end_effector.SetTarget(
-                       {GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                            "score_coral_vel"),
-                           false})
-                 : algal_end_effector.SetTarget(
-                       {GetPreferenceValue_unit_type<units::feet_per_second_t>(
-                            "score_dc"),
-                           true, false, false, target.super_mode});
+    if (coral_mode) {
+      algal_end_effector.ClearHasPiece();
+      algal_end_effector.SetTarget(
+          {GetPreferenceValue_unit_type<units::feet_per_second_t>(
+               "score_coral_vel"),
+              false});
+    } else if (target.state == kAlgae_Processor) {
+      algal_end_effector.SetTarget(
+          {GetPreferenceValue_unit_type<units::feet_per_second_t>("score_dc")});
+    } else {
+      algal_end_effector.SetTarget(
+          {GetPreferenceValue_unit_type<units::feet_per_second_t>("score_dc"),
+              true, false, false, target.super_mode});
+    }
   } else if (coral_mode)
     algal_end_effector.SetTarget(
         {setpoint.ee_vel, false, target.cm, target.state != kAlgae_CoralPick});
