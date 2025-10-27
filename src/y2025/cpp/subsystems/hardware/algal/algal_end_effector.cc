@@ -34,6 +34,9 @@ AlgalEESubsystem::AlgalEESubsystem()
   RegisterPreference("idle_speed_coral", -5.0_fps);
   RegisterPreference("coral_vel_thresh", 5_fps);
   RegisterPreference("test1", false);
+
+  RegisterPreference("max_eject", -40_fps);
+
   REGISTER_PIDF_CONFIG(0.0001, 0.0, 0.0, 0.0);
 
   RegisterPreference("testthing", 0.4);
@@ -107,8 +110,22 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   Graph("readings/vel1", esc_helper_1_.GetVelocity());
   Graph("readings/vel2", esc_helper_2_.GetVelocity());
 
-  esc_1_.SetGains(GET_PIDF_GAINS());
-  esc_2_.SetGains(GET_PIDF_GAINS());
+  frc846::control::base::MotorGains gains;
+  gains.kP = GetPreferenceValue_double("gains/_kP");
+  gains.kFF = GetPreferenceValue_double("gains/_kF");
+  gains.kD = 0.0;
+  gains.kI = 0.0;
+
+  pleasefixthis += 1;
+  if (pleasefixthis > 50) {
+    gains.kFF += 0.000003; 
+  } 
+  if (pleasefixthis == 100) {
+    pleasefixthis = 0;
+  }
+
+  esc_1_.SetGains(gains);
+  esc_2_.SetGains(gains);
 
   target.coral_keep &= target.cmode;
 
@@ -150,18 +167,18 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   if (target.cmode && has_coral_piece_) { target.velocity_ = 0_fps; }
 
-  if (units::math::abs(esc_helper_2_.GetVelocity()) <=
-          GetPreferenceValue_unit_type<units::feet_per_second_t>(
-              "piece_thresh") &&
-      target.velocity_ < 0.0_fps) {
-    target.velocity_ =
-        GetPreferenceValue_unit_type<units::feet_per_second_t>("kick_dc");
-  }
+  // if (units::math::abs(esc_helper_2_.GetVelocity()) <=
+  //         GetPreferenceValue_unit_type<units::feet_per_second_t>(
+  //             "piece_thresh") &&
+  //     target.velocity_ < 0.0_fps) {
+  //   target.velocity_ =
+  //       GetPreferenceValue_unit_type<units::feet_per_second_t>("kick_dc");
+  // }
 
   if (piece_override_) { target.velocity_ = 0.0_fps; }
   if (target.super_mode) {
-    esc_helper_1_.WriteVelocityOnController(-40_fps);
-    esc_helper_2_.WriteVelocityOnController(-40_fps);
+    esc_helper_1_.WriteVelocityOnController(GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
+    esc_helper_2_.WriteVelocityOnController(GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
   } else if (target.use_back_spin_) {
     esc_helper_1_.WriteVelocityOnController(
         target.velocity_ +

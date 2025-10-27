@@ -69,6 +69,8 @@ protected:
 
   double counter_ = 0;
 
+  int pleasefixthis = 0;
+
   AlgalEEReadings ReadFromHardware() override;
 
   void WriteToHardware(AlgalEETarget target) override;
