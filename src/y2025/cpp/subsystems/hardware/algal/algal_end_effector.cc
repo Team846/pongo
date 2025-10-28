@@ -117,12 +117,8 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   gains.kI = 0.0;
 
   pleasefixthis += 1;
-  if (pleasefixthis > 50) {
-    gains.kFF += 0.000003; 
-  } 
-  if (pleasefixthis == 100) {
-    pleasefixthis = 0;
-  }
+  if (pleasefixthis > 50) { gains.kFF += 0.000003; }
+  if (pleasefixthis == 100) { pleasefixthis = 0; }
 
   esc_1_.SetGains(gains);
   esc_2_.SetGains(gains);
@@ -177,8 +173,10 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
 
   if (piece_override_) { target.velocity_ = 0.0_fps; }
   if (target.super_mode) {
-    esc_helper_1_.WriteVelocityOnController(GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
-    esc_helper_2_.WriteVelocityOnController(GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
+    esc_helper_1_.WriteVelocityOnController(
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
+    esc_helper_2_.WriteVelocityOnController(
+        GetPreferenceValue_unit_type<units::feet_per_second_t>("max_eject"));
   } else if (target.use_back_spin_) {
     esc_helper_1_.WriteVelocityOnController(
         target.velocity_ +

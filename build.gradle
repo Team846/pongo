@@ -114,7 +114,7 @@ task backupNetworkTables(type: Exec) {
     println "Backing up Networktables..."
     def timestamp = new Date().format('MM_dd_HH_mm')
     def nt_backup_file = "nt_backups/networktables_${timestamp}.json"
-    def backupFile = "networktables_.json.bck"   
+    def backupFile = "networktables.json.bck"   
     doFirst {
         new File("nt_backups").mkdirs()
     }
