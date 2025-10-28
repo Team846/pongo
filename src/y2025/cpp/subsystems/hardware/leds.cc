@@ -70,6 +70,9 @@ void LEDsSubsystem::WriteToHardware(TLTGT target) {
     } else if (tgt->state == kLEDsTeleop) {
       SetStrip(ORANGE);
       Flash(SLOW_FLASH);
+    } else if (tgt->state == kLEDsClimbed) {
+      SetStrip(GREEN);
+      Flash(RAPID_FLASH);
     } else if (tgt->state == kLEDsClimbing) {
       SetStrip(LIGHT_BLUE);
       Flash(SLOW_FLASH);

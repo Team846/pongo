@@ -14,6 +14,7 @@ enum LEDsState {
   kLEDsSequencing,
   kLEDsTeleop,
   kLEDsClimbing,
+  kLEDsClimbed,
   kLEDsHavePiece,
   kisLinedUp,
   kisCompletelyLinedUp,

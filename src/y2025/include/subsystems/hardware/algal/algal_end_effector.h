@@ -22,6 +22,7 @@ struct AlgalEETarget {
   bool use_back_spin_ = false;
   bool cmode = false;
   bool coral_keep = false;
+  bool super_mode = false;
 };
 
 using roller_pos_conv_t = units::unit_t<
@@ -67,6 +68,8 @@ protected:
   int piece_have_counter_ = 0;
 
   double counter_ = 0;
+
+  int pleasefixthis = 0;
 
   AlgalEEReadings ReadFromHardware() override;
 

@@ -13,7 +13,9 @@
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericSubsystem.h"
 
-struct ClimberReadings {};
+struct ClimberReadings {
+  bool reached_limit_;
+};
 
 struct ClimberTarget {
   double duty_cycle_;

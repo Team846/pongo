@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -73.740234375,
+    "value": -72.158203125,
     "properties": {
       "persistent": true
     }
@@ -82,7 +82,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -128.3203125,
+    "value": -129.462890625,
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -78.92578125,
+    "value": -80.595703125,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -78.310546875,
+    "value": -79.27734375,
     "properties": {
       "persistent": true
     }
@@ -275,7 +275,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
     "type": "double",
-    "value": 0.98,
+    "value": 0.95,
     "properties": {
       "persistent": true
     }
@@ -1843,7 +1843,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_net/height (in)",
     "type": "double",
-    "value": 40.0,
+    "value": 72.0,
     "properties": {
       "persistent": true
     }
@@ -2547,7 +2547,7 @@
   {
     "name": "/Preferences/algal_end_effector/backspin_constant (fps)",
     "type": "double",
-    "value": -55.0,
+    "value": -50.0,
     "properties": {
       "persistent": true
     }
@@ -2667,7 +2667,7 @@
   {
     "name": "/Preferences/algal_ss/score_dc (fps)",
     "type": "double",
-    "value": -10.0,
+    "value": -60.0,
     "properties": {
       "persistent": true
     }
@@ -2788,6 +2788,14 @@
     "name": "/Preferences/algal_end_effector/coral_vel_thresh (fps)",
     "type": "double",
     "value": 5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/max_eject (fps)",
+    "type": "double",
+    "value": -40.0,
     "properties": {
       "persistent": true
     }
