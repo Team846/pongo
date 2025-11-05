@@ -4,12 +4,14 @@
 
 DisplacementTestCommand::DisplacementTestCommand(
     frc846::robot::swerve::DrivetrainSubsystem* drivetrain)
-    : drivetrain_(drivetrain) {
+    : frc846::base::Loggable("DisplacementTestCommand"),
+      drivetrain_(drivetrain) {
     AddRequirements({drivetrain_});
 
-    target_distance_ = 12_in;
+    target_distance_ = 12_in; //TODO how to make this a pref instead of hard coded?
 
 }
+
 
 void DisplacementTestCommand::Initialize() {
     timer_.Reset();
@@ -31,8 +33,8 @@ void DisplacementTestCommand::Execute() {
 bool DisplacementTestCommand::IsFinished() {
     auto pose = drivetrain_->GetReadings().pose;
     frc846::math::Vector2D current_pos{
-        (pose.position.x - start_pos_.x).to<units::inch_t>(), 
-        (pose.position.y - start_pos_.y).to<units::inch_t>()};
+        (pose.position[0] - start_pos_[0]), 
+        (pose.position[1] - start_pos_[1])};
 
     auto change = current_pos - start_pos_;
     units::inch_t distance_traveled = change.magnitude();
