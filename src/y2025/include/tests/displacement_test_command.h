@@ -25,6 +25,8 @@ class DisplacementTestCommand:
         frc846::math::Vector2D start_pos_;
 
         units::inch_t target_distance_;
+        units::unit_t<units::feet_per_second> drive_speed_;
+
     
                                 
 };
