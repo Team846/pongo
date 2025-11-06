@@ -87,6 +87,11 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("net_auto_align/prepoint", 65_in);
   RegisterPreference("net_auto_align/scorepoint", 35_in);
 
+  //for displacment_test_command
+  RegisterPreference("displacement_test/target_distance", 12_in);
+  RegisterPreference("displacement_test/duty_cycle", 0.2);
+  RegisterPreference("displacement_test/close_to_zero_velocity", 0.1_fps);
+
   odometry_.setConstants(
       {.forward_wheelbase_dim = configs.wheelbase_forward_dim,
           .horizontal_wheelbase_dim = configs.wheelbase_horizontal_dim});

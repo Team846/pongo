@@ -4,9 +4,7 @@
 DisplacementTestCommand::DisplacementTestCommand(
     frc846::robot::swerve::DrivetrainSubsystem* drivetrain)
     : frc846::base::Loggable("DisplacementTestCommand"),
-      drivetrain_(drivetrain),
-      target_distance_(12_in)        // default 12 inches
-    //   drive_speed_(0.2_fps)       
+      drivetrain_(drivetrain)    
 {
     AddRequirements({drivetrain_});
 }
@@ -21,7 +19,8 @@ void DisplacementTestCommand::Initialize() {
 
 void DisplacementTestCommand::Execute() {
 
-    drivetrain_->WriteToHardware(0.2);
+    double duty_cycle = drivetrain_->GetPreferenceValue_double("displacement_test/duty_cycle");
+    drivetrain_->WriteToHardware(duty_cycle);
 
     auto pose = drivetrain_->GetReadings().pose;
 
@@ -31,11 +30,11 @@ void DisplacementTestCommand::Execute() {
     };
     units::inch_t distance_traveled = delta.magnitude();
 
-    if (distance_traveled >= target_distance_)
+    if (distance_traveled >= drivetrain_->GetPreferenceValue_unit_type<units::inch_t>("displacement_test/target_distance"))
     {
         Log("target distance time", timer_.Get().value());
 
-        drivetrain_->WriteToHardware(-0.2);
+        drivetrain_->WriteToHardware(-1 * duty_cycle);
 
     }
 }
@@ -53,8 +52,8 @@ bool DisplacementTestCommand::IsFinished() {
     Log("distance", distance_traveled.value());
     Log("time", timer_.Get().value());
 
-
-    return (drivetrain_->GetReadings().pose.velocity.magnitude() < 0.1_fps) && (0_fps < drivetrain_->GetReadings().pose.velocity.magnitude());
+    return (drivetrain_->GetReadings().pose.velocity.magnitude() < GetPreferenceValue_unit_type<units::feet_per_second_t>("displacement_test/close_to_zero_velocity")) 
+            && (0_fps < drivetrain_->GetReadings().pose.velocity.magnitude());
 }
 
 void DisplacementTestCommand::End(bool interrupted) {

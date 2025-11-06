@@ -23,10 +23,6 @@ class DisplacementTestCommand:
         frc846::robot::swerve::DrivetrainSubsystem* drivetrain_;
         frc::Timer timer_;
         frc846::math::Vector2D start_pos_;
-
-        units::inch_t target_distance_;
-        double duty_cycle_;
-
     
                                 
 };
