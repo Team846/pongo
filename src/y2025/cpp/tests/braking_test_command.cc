@@ -21,14 +21,12 @@ void BrakingTestCommand::Initialize() {
 void BrakingTestCommand::Execute() {
     frc846::robot::swerve::DrivetrainOLControlTarget target;
 
-    // If still driving, set velocity to initial_speed_
     if (timer_.Get() < drive_time_) {
         target.velocity = {
             units::unit_t<units::feet_per_second>(initial_speed_),
             units::unit_t<units::feet_per_second>(0_fps)
         };
     } else {
-        // Stop driving after drive_time_
         target.velocity = {0_fps, 0_fps};
     }
 

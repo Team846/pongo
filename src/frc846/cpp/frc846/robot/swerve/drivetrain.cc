@@ -20,6 +20,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
         configs_.module_unique_configs[i], configs_.module_common_config};
   }
 
+
   RegisterPreference("steer_gains/_kP", 2.0);
   RegisterPreference("steer_gains/_kI", 0.0);
   RegisterPreference("steer_gains/_kD", 0.0);
@@ -508,6 +509,24 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
     modules_[i]->UpdateHardware();
 }
 
+void DrivetrainSubsystem::WriteToHardware(double duty_cycle) {
+  for (int i = 0; i < 4; i++) {
+    modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/_kP"),
+        GetPreferenceValue_double("steer_gains/_kI"),
+        GetPreferenceValue_double("steer_gains/_kD"),
+        GetPreferenceValue_double("steer_gains/_kF")});
+
+  }
+
+  SwerveModuleDutyCycleControlTarget duty_cycle_target_ = {duty_cycle, 0.0_deg};
+  for (int i = 0; i < 4; i++)
+  {
+    modules_[i]->WriteToHardware(duty_cycle_target_);
+  }
+
+  
+}
+
 void DrivetrainSubsystem::StartPathRecording(const std::string& filename) {
   path_logger_.StartRecording(filename);
 }
@@ -519,5 +538,7 @@ bool DrivetrainSubsystem::StopPathRecording() {
 bool DrivetrainSubsystem::IsPathRecording() const {
   return path_logger_.IsRecording();
 }
+
+
 
 }  // namespace frc846::robot::swerve

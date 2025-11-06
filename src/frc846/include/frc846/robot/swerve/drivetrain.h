@@ -9,12 +9,15 @@
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
+#include "frc846/robot/swerve/swerve_module.h"
 #include "frc846/robot/swerve/odometry/pose_estimator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
 #include "frc846/robot/swerve/path_logger.h"
 #include "frc846/robot/swerve/swerve_module.h"
 #include "studica/AHRS.h"
+#include "frc846/control/HMCHelper.h"
+#include "frc846/control/HigherMotorController.h"
 
 namespace frc846::robot::swerve {
 
@@ -59,6 +62,7 @@ struct DrivetrainOLControlTarget {
   units::degrees_per_second_t angular_velocity;
   units::feet_per_second_squared_t accel_clamp = -1_fps_sq;
   bool cut_excess_steering = false;
+  bool testing_thing = false;
 };
 
 using DrivetrainTarget = DrivetrainOLControlTarget;
@@ -77,6 +81,9 @@ public:
   void Setup() override;
 
   DrivetrainTarget ZeroTarget() const override;
+
+  void WriteToHardware(double duty_cycle);
+
 
   bool VerifyHardware() override;
 
@@ -155,6 +162,12 @@ private:
   frc846::math::Differentiator accel_y_diff{};
   frc846::math::Smoother accel_x_smooth{0.125};
   frc846::math::Smoother accel_y_smooth{0.125};
+
+
+
+  
+
+
 };
 
 }  // namespace frc846::robot::swerve

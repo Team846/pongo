@@ -26,6 +26,11 @@ struct SwerveModuleOLControlTarget {
   units::degree_t steer;
 };
 
+struct SwerveModuleDutyCycleControlTarget {
+  double duty_cycle_;
+  units::degree_t steer;
+};
+
 using SwerveModuleTarget = SwerveModuleOLControlTarget;
 
 struct SwerveModuleUniqueConfig {
@@ -90,6 +95,8 @@ public:
 
   void ZeroWithCANcoder();
 
+  void WriteToHardware(SwerveModuleDutyCycleControlTarget duty_cycle_target_);
+
   /*
   SetSteerGains()
 
@@ -114,7 +121,10 @@ private:
 
   SwerveModuleReadings ReadFromHardware() override;
 
+
+
   void WriteToHardware(SwerveModuleTarget target) override;
+
 
   /*
   calculateSteerPosition()
