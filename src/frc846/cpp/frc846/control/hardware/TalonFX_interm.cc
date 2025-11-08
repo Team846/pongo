@@ -4,6 +4,12 @@ namespace frc846::control::hardware {
 
 bool TalonFX_interm::VerifyConnected() { return talon_.IsAlive(); }
 
+bool TalonFX_interm::ResetHasOccured() { return talon_.HasResetOccurred(); }
+
+void TalonFX_interm::ClearFaults() {
+  last_error_ = getErrorCode(talon_.ClearStickyFaults());
+}
+
 TalonFX_interm::TalonFX_interm(
     int can_id, std::string_view bus, units::millisecond_t max_wait_time)
     : talon_(can_id, bus), max_wait_time_(max_wait_time) {}

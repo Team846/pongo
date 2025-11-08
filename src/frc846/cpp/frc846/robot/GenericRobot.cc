@@ -200,6 +200,12 @@ void GenericRobot::StartCompetition() {
       update_tick_counter_ = 0;
     }
 
+    // Check all ESCs
+    if (++check_escs_count_ >= 500) {
+      frc846::control::MotorMonkey::CheckAndHandleResets();
+      check_escs_count_ = 0;
+    }
+
     // Update graphs
     // Graph("time_remaining", frc::DriverStation::GetMatchTime().to<int>());
     // Graph("mode", static_cast<int>(mode));

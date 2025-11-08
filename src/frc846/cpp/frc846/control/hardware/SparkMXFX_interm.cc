@@ -29,6 +29,12 @@ bool SparkMXFX_interm::VerifyConnected() {
   return esc_->GetFirmwareVersion() != 0;
 }
 
+bool SparkMXFX_interm::ResetHasOccured() {
+  return esc_->GetStickyWarnings().hasReset;
+}
+
+void SparkMXFX_interm::ClearFaults() { set_last_error(esc_->ClearFaults()); }
+
 SparkMXFX_interm::SparkMXFX_interm(int can_id,
     units::millisecond_t max_wait_time, bool is_controller_spark_flex)
     : can_id_{can_id} {
@@ -190,6 +196,9 @@ void SparkMXFX_interm::EnableStatusFrames(
   if (vector_has(frames, config::StatusFrame::kAbsoluteFrame)) {
     configs.absoluteEncoder.SetSparkMaxDataPortConfig();
   }
+
+  // reset frame
+  configs.signals.WarningsAlwaysOn(false);
 
   APPLY_CONFIG_NO_RESET();
 }

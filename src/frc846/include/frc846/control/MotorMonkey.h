@@ -139,7 +139,13 @@ public:
   static std::string_view parseError(
       frc846::control::hardware::ControllerErrorCodes err);
 
+  static void ConfigureESC(size_t slot_id,
+      frc846::control::config::MotorConstructionParameters params,
+      bool first_time);
+
   static bool VerifyConnected();
+
+  static void CheckAndHandleResets();
 
 private:
   static void RecalculateMaxDraw();
@@ -160,6 +166,9 @@ private:
 
   static frc846::wpilib::unit_ohm
       circuit_resistance_registry[CONTROLLER_REGISTRY_SIZE];
+
+  static frc846::control::config::MotorConstructionParameters
+      config_registry_[CONTROLLER_REGISTRY_SIZE];
 
   static units::volt_t battery_voltage;
   static units::volt_t last_disabled_voltage;

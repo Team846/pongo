@@ -22,14 +22,10 @@ AlgalEESubsystem::AlgalEESubsystem()
       esc_2_{frc846::control::base::SPARK_MAX_NEO550,
           (GetCurrentConfig(GetModifiedConfig(motor_configs_,
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
-  // RegisterPreference("idle_speed", 0.025);
   RegisterPreference("idle_speed", 2.3_fps);
-  // RegisterPreference("piece_thresh", 2_tps);
   RegisterPreference("piece_thresh", 1.0_fps);
 
-  // RegisterPreference("kick_dc", -0.2);
   RegisterPreference("kick_dc", -18.5_fps);
-  // RegisterPreference("backspin_constant", -0.24);
   RegisterPreference("backspin_constant", -22_fps);
   RegisterPreference("idle_speed_coral", -5.0_fps);
   RegisterPreference("coral_vel_thresh", 5_fps);
@@ -101,31 +97,16 @@ AlgalEEReadings AlgalEESubsystem::ReadFromHardware() {
 }
 
 void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
-  // Graph("target/duty_cycle", target.duty_cycle_);
-
   Graph("readings/error", target.velocity_ - esc_helper_2_.GetVelocity());
-
   Graph("readings/error_coral", target.velocity_ - esc_helper_1_.GetVelocity());
 
   Graph("readings/vel1", esc_helper_1_.GetVelocity());
   Graph("readings/vel2", esc_helper_2_.GetVelocity());
 
-  frc846::control::base::MotorGains gains;
-  gains.kP = GetPreferenceValue_double("gains/_kP");
-  gains.kFF = GetPreferenceValue_double("gains/_kF");
-  gains.kD = 0.0;
-  gains.kI = 0.0;
-
-  pleasefixthis += 1;
-  if (pleasefixthis > 50) { gains.kFF += 0.000003; }
-  if (pleasefixthis == 100) { pleasefixthis = 0; }
-
-  esc_1_.SetGains(gains);
-  esc_2_.SetGains(gains);
+  esc_1_.SetGains(GET_PIDF_GAINS());
+  esc_2_.SetGains(GET_PIDF_GAINS());
 
   target.coral_keep &= target.cmode;
-
-  // auto checkgains = frc846::control::base::MotorGains(GET_PIDF_GAINS());
 
   if (GetReadings().has_piece_ && target.velocity_ > 0.0_fps &&
       !target.coral_keep) {
@@ -162,14 +143,6 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   }
 
   if (target.cmode && has_coral_piece_) { target.velocity_ = 0_fps; }
-
-  // if (units::math::abs(esc_helper_2_.GetVelocity()) <=
-  //         GetPreferenceValue_unit_type<units::feet_per_second_t>(
-  //             "piece_thresh") &&
-  //     target.velocity_ < 0.0_fps) {
-  //   target.velocity_ =
-  //       GetPreferenceValue_unit_type<units::feet_per_second_t>("kick_dc");
-  // }
 
   if (piece_override_) { target.velocity_ = 0.0_fps; }
   if (target.super_mode) {

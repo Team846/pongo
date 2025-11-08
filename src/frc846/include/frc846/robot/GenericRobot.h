@@ -55,6 +55,8 @@ private:
   std::unordered_map<std::string, frc2::Command*> autos_;
 
   int update_tick_counter_ = 0;
+
+  int check_escs_count_{0};
 };
 
 }  // namespace frc846::robot

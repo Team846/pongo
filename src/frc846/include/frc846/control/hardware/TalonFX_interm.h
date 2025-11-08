@@ -173,6 +173,23 @@ public:
   bool VerifyConnected() override;  // added
 
   /*
+  ResetHasOccured()
+
+  Checks the TalonFX for if it has reset.
+
+  @return boolean indicating whether the hardware has reset.
+  */
+  bool ResetHasOccured() override;
+
+  /*
+  ClearFaults()
+
+  Clears all faults from the hardware.
+
+  */
+  void ClearFaults() override;
+
+  /*
   GetVelocity()
 
   Gets the motor's current velocity.

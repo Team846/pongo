@@ -71,6 +71,9 @@ units::newton_meter_t MotorMonkey::load_registry[CONTROLLER_REGISTRY_SIZE]{};
 frc846::wpilib::unit_ohm
     MotorMonkey::circuit_resistance_registry[CONTROLLER_REGISTRY_SIZE]{};
 
+frc846::control::config::MotorConstructionParameters
+    MotorMonkey::config_registry_[CONTROLLER_REGISTRY_SIZE]{};
+
 units::volt_t MotorMonkey::battery_voltage{0_V};
 
 units::volt_t MotorMonkey::last_disabled_voltage{0_V};
@@ -327,6 +330,47 @@ bool MotorMonkey::VerifyConnected() {
   return true;
 }
 
+void MotorMonkey::ConfigureESC(size_t slot_id,
+    frc846::control::config::MotorConstructionParameters params,
+    bool first_time) {
+  frc846::control::hardware::IntermediateController* this_controller = nullptr;
+  this_controller = controller_registry[slot_id];
+
+  if (!first_time) {
+    SMART_RETRY(this_controller->SetGains(gains_registry[slot_id]), "SetGains");
+    LOG_IF_ERROR("SetGains");
+  }
+
+  SMART_RETRY(this_controller->SetInverted(params.inverted), "SetInverted");
+  LOG_IF_ERROR("SetInverted");
+
+  SMART_RETRY(
+      this_controller->SetNeutralMode(params.brake_mode), "SetNeutralMode");
+  LOG_IF_ERROR("SetNeutralMode");
+
+  SMART_RETRY(this_controller->SetCurrentLimit(params.motor_current_limit),
+      "SetCurrentLimit");
+  LOG_IF_ERROR("SetCurrentLimit");
+
+  SMART_RETRY(
+      this_controller->SetVoltageCompensation(params.voltage_compensation),
+      "SetSoftLimits");
+  LOG_IF_ERROR("SetVoltageCompensation")
+
+  this_controller->ClearFaults();
+}
+
+void MotorMonkey::CheckAndHandleResets() {
+  for (size_t i = 0; i < CONTROLLER_REGISTRY_SIZE; i++) {
+    if (controller_registry[i] != nullptr) {
+      if (controller_registry[i]->ResetHasOccured()) {
+        ConfigureESC(i, config_registry_[i], false);
+        loggable_.Warn("ESC has reset for slot ID {}", i);
+      }
+    }
+  }
+}
+
 size_t MotorMonkey::ConstructController(
     frc846::control::base::MotorMonkeyType type,
     frc846::control::config::MotorConstructionParameters params) {
@@ -336,6 +380,7 @@ size_t MotorMonkey::ConstructController(
   slot_id_to_type_[slot_id] = type;
   slot_id_to_sim_[slot_id] = false;
   circuit_resistance_registry[slot_id] = params.circuit_resistance;
+  config_registry_[slot_id] = params;
 
   frc846::control::hardware::IntermediateController* this_controller = nullptr;
 
@@ -372,21 +417,7 @@ size_t MotorMonkey::ConstructController(
 
   if (this_controller == nullptr) { return slot_id; }
 
-  SMART_RETRY(this_controller->SetInverted(params.inverted), "SetInverted");
-  LOG_IF_ERROR("SetInverted");
-
-  SMART_RETRY(
-      this_controller->SetNeutralMode(params.brake_mode), "SetNeutralMode");
-  LOG_IF_ERROR("SetNeutralMode");
-
-  SMART_RETRY(this_controller->SetCurrentLimit(params.motor_current_limit),
-      "SetCurrentLimit");
-  LOG_IF_ERROR("SetCurrentLimit");
-
-  SMART_RETRY(
-      this_controller->SetVoltageCompensation(params.voltage_compensation),
-      "SetSoftLimits");
-  LOG_IF_ERROR("SetVoltageCompensation")
+  ConfigureESC(slot_id, params, true);
 
   return slot_id;
 }

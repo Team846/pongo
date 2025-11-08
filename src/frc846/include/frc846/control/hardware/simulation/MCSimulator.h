@@ -36,6 +36,10 @@ public:
 
   bool VerifyConnected() override { return true; }
 
+  bool ResetHasOccured() override { return false; }
+
+  void ClearFaults() override {}
+
   frc846::control::hardware::ControllerErrorCodes GetLastErrorCode() override {
     return frc846::control::hardware::ControllerErrorCodes::kAllOK;
   }
