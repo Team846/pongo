@@ -15,18 +15,6 @@ LockToReefCommand::LockToReefCommand(
             int reef_target_pos = ReefProvider::getClosestReefSide(pos);
 
             auto ci_readings_ = cnt.control_input_.GetReadings();
-            // units::inch_t adj_rate =
-            //     cnt.drivetrain_.GetPreferenceValue_unit_type<units::inch_t>(
-            //         "lock_adj_rate");
-            // if (ci_readings_.rc_n_x) {
-            //   ba[0] -= adj_rate;
-            // } else if (ci_readings_.rc_p_x) {
-            //   ba[0] += adj_rate;
-            // } else if (ci_readings_.rc_n_y) {
-            //   ba[1] -= adj_rate;
-            // } else if (ci_readings_.rc_p_y) {
-            //   ba[1] += adj_rate;
-            // }
 
             auto target_pos = ReefProvider::getReefScoringLocations(true, false,
                 !(cnt.control_input_.GetReadings().coral_state ==

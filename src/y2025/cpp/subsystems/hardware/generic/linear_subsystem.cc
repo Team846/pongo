@@ -19,8 +19,6 @@ LinearSubsystem::LinearSubsystem(std::string name,
   RegisterPreference("homing_dc", -0.05);
   RegisterPreference("homing_thresh", 0.05_fps);
   RegisterPreference("homing_loops", 25);
-  // RegisterPreference("home_zero_height", 28.0_in);
-  // RegisterPreference("telescope_autohome_height", 27.0_in);
 }
 
 frc846::control::config::MotorConstructionParameters
@@ -50,10 +48,6 @@ void LinearSubsystem::Setup() {
   linear_esc_helper_.SetPosition(28.5_in);
 
   linear_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::inch_t));
-  // linear_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::inch_t));
-
-  // linear_esc_.ConfigForwardLimitSwitch(
-  //     false, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
 
   ExtendedSetup();
 }
@@ -88,15 +82,6 @@ LinearSubsystemReadings LinearSubsystem::ReadFromHardware() {
   Graph("readings/loops", GetPreferenceValue_int("homing_loops"));
 
   RHExtension();
-
-  // bool forward_limit = linear_esc_.GetForwardLimitSwitchState();
-
-  // Graph("readings/homing_sensor", forward_limit);
-
-  // if (forward_limit && !is_homed_) {
-  //   is_homed_ = true;
-  //   linear_esc_helper_.SetPosition(hall_effect_loc_);
-  // }
 
   return readings;
 }

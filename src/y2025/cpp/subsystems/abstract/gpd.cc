@@ -111,8 +111,6 @@ GPDReadings GPDSubsystem::ReadFromHardware() {
 
   int num_gps = readings.gamepieces.size();
 
-  // Graph("num_gps", num_gps);
-
   gp_spin_ += 5_deg;
 
 #ifndef _WIN32

@@ -147,7 +147,6 @@ CoralSSReadings CoralSuperstructure::ReadFromHardware() {
   } else {
     no_piece_chute_count_ = 0;
   }
-  Graph("no_piece_chute_count", no_piece_chute_count_);
 
   bool auto_flick_valid =
       GetPreferenceValue_bool("autoflick") &&

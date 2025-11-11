@@ -18,8 +18,6 @@ L1AutoAlignCommand::L1AutoAlignCommand(RobotContainer& container, bool is_left,
           frc2::SequentialCommandGroup{
               DriveToReefCommand{container, is_left, true, max_speed,
                   max_acceleration, max_deceleration},
-              /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
-                  max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelDeadlineGroup{
                   frc2::WaitCommand{0.875_s},
                   LockToReefCommand{container, is_left, base_adj},

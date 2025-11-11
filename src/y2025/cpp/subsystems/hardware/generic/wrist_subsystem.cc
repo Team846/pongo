@@ -43,7 +43,6 @@ void WristSubsystem::Setup() {
           frc846::control::config::StatusFrame::kAbsoluteFrame});
 
   wrist_esc_helper_.SetSoftLimits(GET_SOFTLIMITS(units::degree_t));
-  // wrist_esc_helper_.SetControllerSoftLimits(GET_SOFTLIMITS(units::degree_t));
 
   const auto [sensor_pos, is_valid] =
       GetSensorPos(GetReadings().absolute_position);
@@ -76,10 +75,8 @@ WristReadings WristSubsystem::ReadFromHardware() {
   const auto [sensor_pos, is_valid] = GetSensorPos(abs_pos_deg);
   if (!isAlgaeSubsystem()) {
     if (is_valid &&
-        units::math::abs(
-            sensor_pos - (readings.position /* + encoder_offset_*/)) >
+        units::math::abs(sensor_pos - (readings.position)) >
             GetPreferenceValue_unit_type<units::degree_t>("rezero_thresh")) {
-      // encoder_offset_ = sensor_pos - readings.position;
       wrist_esc_helper_.SetPosition(sensor_pos);
       Graph("readings/sensor_pos", sensor_pos);
     }
@@ -108,7 +105,6 @@ WristReadings WristSubsystem::ReadFromHardware() {
   Graph("readings/sensor_pos_valid", is_valid);
 
   Graph("readings/encoder_offset", encoder_offset_);
-  // readings.position += encoder_offset_;
   Graph("readings/position", readings.position);
   Graph("readings/error", GetTarget().position - readings.position);
 
@@ -128,8 +124,8 @@ void WristSubsystem::WriteToHardware(WristTarget target) {
   Graph("target/position", target.position);
 
   wrist_esc_.SetGains(GET_PIDF_GAINS());
-  Graph("target/raw_position", target.position /* - encoder_offset_*/);
-  wrist_esc_helper_.WritePosition(target.position /* - encoder_offset_*/);
+  Graph("target/raw_position", target.position);
+  wrist_esc_helper_.WritePosition(target.position);
 }
 
 void WristSubsystem::BrakeSubsystem() {
@@ -145,7 +141,6 @@ void WristSubsystem::SetEncoderOffset() {
     const auto [sensor_pos, is_valid] =
         GetSensorPos(GetReadings().absolute_position);
 
-    // encoder_offset_ = sensor_pos - GetReadings().position;
     wrist_esc_helper_.SetPosition(sensor_pos);
   }
 }

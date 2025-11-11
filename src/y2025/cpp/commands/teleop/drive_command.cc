@@ -20,25 +20,28 @@ void DriveCommand::Periodic() {
 
   container_.drivetrain_.SetTarget({target});
 
-  double translate_x = frc846::math::HorizontalDeadband(
-      ci_readings_.translate_x,
-      container_.control_input_.GetPreferenceValue_double(
-          "translation_deadband"),
-      1,
-      container_.control_input_.GetPreferenceValue_int("translation_exponent"),
-      1);
+  double translate_x =
+      frc846::math::HorizontalDeadband(ci_readings_.translate_x,
+          container_.control_input_.GetPreferenceValue_double(
+              "translation_deadband"),
+          1,
+          container_.control_input_.GetPreferenceValue_double(
+              "translation_exponent"),
+          1);
 
-  double translate_y = frc846::math::HorizontalDeadband(
-      ci_readings_.translate_y,
-      container_.control_input_.GetPreferenceValue_double(
-          "translation_deadband"),
-      1,
-      container_.control_input_.GetPreferenceValue_int("translation_exponent"),
-      1);
+  double translate_y =
+      frc846::math::HorizontalDeadband(ci_readings_.translate_y,
+          container_.control_input_.GetPreferenceValue_double(
+              "translation_deadband"),
+          1,
+          container_.control_input_.GetPreferenceValue_double(
+              "translation_exponent"),
+          1);
 
   double rotation = frc846::math::HorizontalDeadband(ci_readings_.rotation,
       container_.control_input_.GetPreferenceValue_double("rotation_deadband"),
-      1, container_.control_input_.GetPreferenceValue_int("rotation_exponent"),
+      1,
+      container_.control_input_.GetPreferenceValue_double("rotation_exponent"),
       1);
 
   units::feet_per_second_t max_speed =

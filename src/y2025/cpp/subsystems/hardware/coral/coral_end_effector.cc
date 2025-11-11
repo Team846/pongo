@@ -76,7 +76,6 @@ CoralEEReadings CoralEESubsystem::ReadFromHardware() {
 }
 
 void CoralEESubsystem::WriteToHardware(CoralEETarget target) {
-  // Graph("target/duty_cycle", target.duty_cycle_);
   if (GetReadings().has_piece_ && target.duty_cycle_ < 0.0)
     esc_.WriteDC(GetPreferenceValue_double("idle_speed"));
   else

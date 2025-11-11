@@ -24,18 +24,12 @@ AlgalEESubsystem::AlgalEESubsystem()
               ports::algal_ss_::end_effector_::kEE2_CANID, true)))} {
   RegisterPreference("idle_speed", 2.3_fps);
   RegisterPreference("piece_thresh", 1.0_fps);
-
-  RegisterPreference("kick_dc", -18.5_fps);
   RegisterPreference("backspin_constant", -22_fps);
   RegisterPreference("idle_speed_coral", -5.0_fps);
   RegisterPreference("coral_vel_thresh", 5_fps);
-  RegisterPreference("test1", false);
-
   RegisterPreference("max_eject", -40_fps);
 
   REGISTER_PIDF_CONFIG(0.0001, 0.0, 0.0, 0.0);
-
-  RegisterPreference("testthing", 0.4);
 
   esc_helper_1_.SetConversion(roller_reduction_);
   esc_helper_2_.SetConversion(roller_reduction_);

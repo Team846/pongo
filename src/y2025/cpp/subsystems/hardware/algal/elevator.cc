@@ -35,40 +35,6 @@ LinearSubsystemTarget ElevatorSubsystem::ZeroTarget() const {
   return LinearSubsystemTarget{0_in};
 }
 
-void ElevatorSubsystem::ExtendedSetup() {
-  // linear_esc_.ConfigReverseLimitSwitch(
-  //     true, frc846::control::base::LimitSwitchDefaultState::kNormallyOff);
-  // homing_counter_ = 0;
-}
+void ElevatorSubsystem::ExtendedSetup() {}
 
-void ElevatorSubsystem::RHExtension() {
-  // homing_counter_++;
-  // bool sensor_triggered = linear_esc_.GetReverseLimitSwitchState();
-  // Graph("elevator/homing_sensor", sensor_triggered);
-  // if (sensor_triggered &&
-  //     homing_counter_ > GetPreferenceValue_int("hall_effect_counter") &&
-  //     GetReadings().position < 34_in) {
-  //   linear_esc_helper_.SetPosition(
-  //       robot_constants::elevator::min_height_off_base +
-  //       GetPreferenceValue_unit_type<units::inch_t>("hall_effect_plus_height"));
-  //   homing_counter_ = 0;
-  // }
-
-  // if (GetTarget().position <
-  //         GetPreferenceValue_unit_type<units::inch_t>("sm_target_range") &&
-  //     units::math::abs(linear_esc_helper_.GetVelocity()) <
-  //         GetPreferenceValue_unit_type<units::feet_per_second_t>(
-  //             "sm_vel_thresh") &&
-  //     GetReadings().position > 29_in && GetReadings().position < 34_in &&
-  //     linear_esc_.GetCurrent() >
-  //         GetPreferenceValue_unit_type<units::ampere_t>("sm_current_thresh"))
-  //         {
-  //   safety_counter_ += 1;
-  //   if (safety_counter_ > GetPreferenceValue_int("sm_counter")) {
-  //     linear_esc_helper_.SetPosition(
-  //         robot_constants::elevator::min_height_off_base);
-  //   }
-  // } else {
-  //   safety_counter_ = 0;
-  // }
-}
+void ElevatorSubsystem::RHExtension() {}

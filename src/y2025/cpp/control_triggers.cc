@@ -102,7 +102,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
                 .AndThen(frc2::InstantCommand([&] {
                   container.control_input_.SetTarget({false, false});
                 }).ToPtr()));
-
+  // Assisted intake using GPD
   // frc2::Trigger{[&] {
   //   return container.control_input_.GetReadings().targeting_algae &&
   //          container.GPD_.GetReadings().gamepieces.size() != 0U &&

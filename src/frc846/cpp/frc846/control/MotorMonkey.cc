@@ -160,8 +160,6 @@ void MotorMonkey::Tick(bool disabled) {
     }
   }
 
-  // TODO: cleanup iostream
-
   units::ampere_t total_pred_draw = WriteMessages(max_draw_);
 
   loggable_.Graph("total_pred_draw", total_pred_draw);
@@ -182,16 +180,8 @@ void MotorMonkey::Tick(bool disabled) {
             dynamic_cast<simulation::MCSimulator*>(controller_registry[i]);
         sim->SetBatteryVoltage(battery_voltage);
         sim->SetLoad(load_registry[i]);
-        if (disabled) {
-          sim->WriteDC(0.0);
-          // std::cout << "MotorMonkey: Disabled, setting DC to 0.0" <<
-          // std::endl;
-        }
-
-        // std::cout << "MotorMonkey: Tick for slot ID " << i
-        //           << ", sim: " << (sim != nullptr) << std::endl;
+        if (disabled) { sim->WriteDC(0.0); }
         sim->Tick();
-        // std::cout << "--" << std::endl;
       } else {
         controller_registry[i]->Tick();
       }

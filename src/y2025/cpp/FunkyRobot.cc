@@ -25,22 +25,10 @@
 FunkyRobot::FunkyRobot() : GenericRobot{&container_} {
   RegisterPreference("num_coasting_loops", 1000);
   RegisterPreference("homing_flash_loops", 50);
-
-  // std::thread visionThread{[&]() {
-  //   VisionThread(&container_);
-  // }};
-  // visionThread.detach();
 }
 
 void FunkyRobot::OnInitialize() {
   Field::Setup();
-
-  // for (auto x : Field::getAllAutoData()) {
-  //   Log("Adding Auto: {}", x.name + "_red");
-  //   AddAuto(x.name + "_red", new GenericAuto{container_, x, false});
-  //   Log("Adding Auto: {}", x.name + "_blue");
-  //   AddAuto(x.name + "_blue", new GenericAuto{container_, x, true});
-  // }
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   AddAuto("1CPNP/R", new L4PickNetPickAuto{container_, false, true});
@@ -174,7 +162,6 @@ void FunkyRobot::OnPeriodic() {
     container_.coral_ss_.telescope.BrakeSubsystem();
     container_.climber_.BrakeSubsystem();
     container_.algal_ss_.algal_wrist.BrakeSubsystem();
-    // container_.coral_ss_.coral_wrist.BrakeSubsystem();
   }
   if (!coast_switch_.Get() && !IsEnabled()) {
     container_.algal_ss_.elevator.CoastSubsystem();
@@ -216,21 +203,6 @@ void FunkyRobot::OnPeriodic() {
 
 void FunkyRobot::InitTest() {
   container_.drivetrain_.SetDefaultCommand(DriveCommand{container_});
-  // container_.climber_.SetDefaultCommand(DinosaurClimberCommand{container_});
-
-  // frc2::Trigger start_dinosaur_a([] { return true; });
-  // start_dinosaur_a.WhileTrue(frc2::SequentialCommandGroup{
-  //     AlgalPositionCommand{container_, kAlgae_DINOSAUR_A, true},
-  //     frc2::WaitCommand{0.5_s},
-  //     AlgalPositionCommand{container_, kAlgae_DINOSAUR_B, true},
-  //     frc2::WaitCommand{0.5_s}}.Repeatedly());
-
-  // frc2::Trigger start_dinosaur_c([] { return true; });
-  // start_dinosaur_c.WhileTrue(frc2::SequentialCommandGroup{
-  //     CoralPositionCommand{container_, kCoral_DINOSAUR_A, true},
-  //     frc2::WaitCommand{0.5_s},
-  //     CoralPositionCommand{container_, kCoral_DINOSAUR_B, true},
-  //     frc2::WaitCommand{0.5_s}}.Repeatedly());
 }
 
 #ifndef RUNNING_FRC_TESTS

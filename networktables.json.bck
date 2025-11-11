@@ -74,7 +74,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -74.7,
+    "value": -72.158203125,
     "properties": {
       "persistent": true
     }
@@ -82,7 +82,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/FL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -128.67,
+    "value": -129.462890625,
     "properties": {
       "persistent": true
     }
@@ -90,7 +90,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BL/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -80.33203125,
+    "value": -80.595703125,
     "properties": {
       "persistent": true
     }
@@ -98,7 +98,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/BR/cancoder_offset_ (deg)",
     "type": "double",
-    "value": -79.013671875,
+    "value": -79.27734375,
     "properties": {
       "persistent": true
     }
@@ -252,7 +252,8 @@
     "type": "double",
     "value": 15.0,
     "properties": {
-      "persistent": true
+      "persistent": true,
+      "retained": true
     }
   },
   {
@@ -274,7 +275,7 @@
   {
     "name": "/Preferences/SwerveDrivetrain/odom_fudge_factor",
     "type": "double",
-    "value": 1.077,
+    "value": 0.95,
     "properties": {
       "persistent": true
     }
@@ -450,7 +451,7 @@
   {
     "name": "/Preferences/GPD/intake_to_cam_y (in)",
     "type": "double",
-    "value": 0.0,
+    "value": -20.0,
     "properties": {
       "persistent": true
     }
@@ -458,7 +459,7 @@
   {
     "name": "/Preferences/GPD/intake_to_cam_x (in)",
     "type": "double",
-    "value": -13.0,
+    "value": -8.0,
     "properties": {
       "persistent": true
     }
@@ -474,7 +475,7 @@
   {
     "name": "/Preferences/GPD/max_gp_diff (in)",
     "type": "double",
-    "value": 10.0,
+    "value": 6.0,
     "properties": {
       "persistent": true
     }
@@ -1122,7 +1123,7 @@
   {
     "name": "/Preferences/algal_wrist/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 50.0,
+    "value": 30.0,
     "properties": {
       "persistent": true
     }
@@ -1162,7 +1163,7 @@
   {
     "name": "/Preferences/algal_wrist/gains/_kD",
     "type": "double",
-    "value": -0.0006,
+    "value": -0.0004,
     "properties": {
       "persistent": true
     }
@@ -1210,7 +1211,7 @@
   {
     "name": "/Preferences/algal_wrist/limits/reduce_lower (deg)",
     "type": "double",
-    "value": 10.0,
+    "value": 80.0,
     "properties": {
       "persistent": true
     }
@@ -1250,7 +1251,7 @@
   {
     "name": "/Preferences/algal_wrist/encoder_offset (deg)",
     "type": "double",
-    "value": 3.8,
+    "value": -9.0,
     "properties": {
       "persistent": true
     }
@@ -1258,7 +1259,7 @@
   {
     "name": "/Preferences/algal_end_effector/motor_configs/current_limit (A)",
     "type": "double",
-    "value": 25.0,
+    "value": 17.0,
     "properties": {
       "persistent": true
     }
@@ -1298,7 +1299,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/angle (deg)",
     "type": "double",
-    "value": 9.0,
+    "value": 10.0,
     "properties": {
       "persistent": true
     }
@@ -1346,7 +1347,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/ground_intake/angle (deg)",
     "type": "double",
-    "value": 62.0,
+    "value": 56.0,
     "properties": {
       "persistent": true
     }
@@ -1354,7 +1355,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/ground_intake/ee_dc",
     "type": "double",
-    "value": 0.9,
+    "value": 1.0,
     "properties": {
       "persistent": true
     }
@@ -1378,7 +1379,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/on_top_intake/ee_dc",
     "type": "double",
-    "value": 0.9,
+    "value": 1.0,
     "properties": {
       "persistent": true
     }
@@ -1434,7 +1435,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l3_pick/height (in)",
     "type": "double",
-    "value": 47.5,
+    "value": 48.0,
     "properties": {
       "persistent": true
     }
@@ -1578,7 +1579,7 @@
   {
     "name": "/Preferences/climber/limits/upper_limit (deg)",
     "type": "double",
-    "value": 460.0,
+    "value": 270.0,
     "properties": {
       "persistent": true
     }
@@ -1586,7 +1587,7 @@
   {
     "name": "/Preferences/climber/limits/lower_limit (deg)",
     "type": "double",
-    "value": -255.0,
+    "value": -118.0,
     "properties": {
       "persistent": true
     }
@@ -1842,7 +1843,7 @@
   {
     "name": "/Preferences/coral_ss/setpoints/stow_net/height (in)",
     "type": "double",
-    "value": 40.0,
+    "value": 72.0,
     "properties": {
       "persistent": true
     }
@@ -2522,7 +2523,7 @@
   {
     "name": "/Preferences/algal_end_effector/idle_speed (fps)",
     "type": "double",
-    "value": 6.875,
+    "value": 10.0,
     "properties": {
       "persistent": true
     }
@@ -2538,7 +2539,7 @@
   {
     "name": "/Preferences/algal_end_effector/kick_dc (fps)",
     "type": "double",
-    "value": -30.0,
+    "value": -80.0,
     "properties": {
       "persistent": true
     }
@@ -2546,7 +2547,7 @@
   {
     "name": "/Preferences/algal_end_effector/backspin_constant (fps)",
     "type": "double",
-    "value": -55.0,
+    "value": -50.0,
     "properties": {
       "persistent": true
     }
@@ -2554,7 +2555,7 @@
   {
     "name": "/Preferences/algal_end_effector/gains/_kP",
     "type": "double",
-    "value": 0.0001,
+    "value": 3e-05,
     "properties": {
       "persistent": true
     }
@@ -2586,7 +2587,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/stow/ee_vel (fps)",
     "type": "double",
-    "value": 5.0,
+    "value": 7.75,
     "properties": {
       "persistent": true
     }
@@ -2666,7 +2667,39 @@
   {
     "name": "/Preferences/algal_ss/score_dc (fps)",
     "type": "double",
-    "value": -49.5,
+    "value": -60.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/latency",
+    "type": "int",
+    "value": 0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/projection_horizon",
+    "type": "int",
+    "value": 1,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/telescope/duty_cycle_output",
+    "type": "double",
+    "value": 0.03,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/coral_ss/has_peicething",
+    "type": "boolean",
+    "value": false,
     "properties": {
       "persistent": true
     }
@@ -2674,7 +2707,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/coral_pick/height (in)",
     "type": "double",
-    "value": 29.0,
+    "value": 35.0,
     "properties": {
       "persistent": true
     }
@@ -2682,7 +2715,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/coral_pick/angle (deg)",
     "type": "double",
-    "value": 80.0,
+    "value": 135.0,
     "properties": {
       "persistent": true
     }
@@ -2690,7 +2723,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/coral_pick/ee_vel (fps)",
     "type": "double",
-    "value": 64.15,
+    "value": -30.0,
     "properties": {
       "persistent": true
     }
@@ -2698,7 +2731,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l1_coral_score/height (in)",
     "type": "double",
-    "value": 29.0,
+    "value": 31.5,
     "properties": {
       "persistent": true
     }
@@ -2706,7 +2739,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l1_coral_score/angle (deg)",
     "type": "double",
-    "value": 60.0,
+    "value": 50.0,
     "properties": {
       "persistent": true
     }
@@ -2714,7 +2747,7 @@
   {
     "name": "/Preferences/algal_ss/setpoints/l1_coral_score/ee_vel (fps)",
     "type": "double",
-    "value": -20.15,
+    "value": -9.2,
     "properties": {
       "persistent": true
     }
@@ -2722,15 +2755,7 @@
   {
     "name": "/Preferences/algal_ss/score_coral_vel (fps)",
     "type": "double",
-    "value": -16.5,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Preferences/algal_end_effector/idle_speed_coral (fps)",
-    "type": "double",
-    "value": -5.0,
+    "value": 40.0,
     "properties": {
       "persistent": true
     }
@@ -2738,7 +2763,39 @@
   {
     "name": "/Preferences/algal_end_effector/testthing",
     "type": "double",
-    "value": 0.4,
+    "value": -0.4,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/idle_speed_coral (fps)",
+    "type": "double",
+    "value": -8.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/test1",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/coral_vel_thresh (fps)",
+    "type": "double",
+    "value": 5.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/algal_end_effector/max_eject (fps)",
+    "type": "double",
+    "value": -40.0,
     "properties": {
       "persistent": true
     }

@@ -19,8 +19,6 @@ ReefAutoAutoAlignCommand::ReefAutoAutoAlignCommand(RobotContainer& container,
                   getModifiedPrePose(
                       numberOnRight, blueSide, leftSide, isRetry),
                   13_fps, 25_fps_sq, 10_fps_sq},
-              /*DriveToReefCommand{&(container.drivetrain_), is_left, false,
-                  max_speed, max_acceleration, max_deceleration},*/
               frc2::ParallelRaceGroup{
                   frc2::WaitUntilCommand{[&] {
                     return !frc::RobotBase::IsSimulation() &&

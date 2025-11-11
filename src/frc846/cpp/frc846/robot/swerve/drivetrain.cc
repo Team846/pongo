@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "frc/RobotBase.h"
+#include "frc/RobotController.h"
 #include "frc846/math/constants.h"
 #include "frc846/math/fieldpoints.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
@@ -444,14 +445,13 @@ DrivetrainSubsystem::accelClampHelper(
 
   double max_accel_corr_factor =
       (winding_res /
-          (configs_.module_common_config.avg_resistance + winding_res))
+          (configs_.module_common_config.avg_resistance + winding_res) *
+          (frc::RobotController::GetBatteryVoltage() / 12_V))
           .to<double>();
 
   units::feet_per_second_t accel_buffer =
       accel_clamp / (max_accel_corr_factor * configs_.max_accel) *
       (motor_specs.free_speed * configs_.module_common_config.drive_reduction);
-
-  // TODO: batt voltage compensation
 
   auto delta =
       velocity.magnitude() - GetReadings().estimated_pose.velocity.magnitude();

@@ -2,8 +2,6 @@
 
 #include <units/math.h>
 
-#include <iostream>
-
 #include "frc846/control/calculators/CurrentTorqueCalculator.h"
 #include "frc846/control/calculators/VelocityPositionEstimator.h"
 
@@ -20,8 +18,6 @@ MCSimulator::MCSimulator(frc846::control::base::MotorSpecs specs,
       std::chrono::system_clock::now().time_since_epoch());
 }
 
-// TODO: cleanup iostream
-
 void MCSimulator::Tick() {
   double duty_cycle = 0.0;
   if (auto* dc = std::get_if<double>(&control_message)) {
@@ -31,20 +27,10 @@ void MCSimulator::Tick() {
     duty_cycle = gains.calculate((vel->to<double>() - velocity_.to<double>()),
         0.0, 0.0, vel->to<double>());
   } else if (auto* pos = std::get_if<units::radian_t>(&control_message)) {
-    // std::cout << "Error: " << (pos->to<double>() - position_.to<double>())
-    //           << std::endl;
-    // std::cout << "Gains: " << gains.kP << ", " << gains.kI << ", " <<
-    // gains.kD
-    //           << ", " << gains.kFF << std::endl;
     duty_cycle = gains.calculate((pos->to<double>() - position_.to<double>()),
         0.0, velocity_.to<double>(), load_.to<double>());
   }
   duty_cycle = std::clamp(duty_cycle, -1.0, 1.0);
-
-  // std::cout << "Duty Cycle: " << duty_cycle << std::endl;
-  // std::cout << "Velocity: " << velocity_.to<double>()
-  //           << " rad/s, Position: " << position_.to<double>() << " rad"
-  //           << std::endl;
 
   pred_current_ = frc846::control::calculators::CurrentTorqueCalculator::
       predict_current_draw(
@@ -53,8 +39,6 @@ void MCSimulator::Tick() {
   pred_current_ = units::math::min(
       units::math::max(pred_current_, -current_limit_), current_limit_);
 
-  // std::cout << "Predicted Current: " << pred_current_.to<double>() << " A"
-  //           << std::endl;
   if (std::fabs(duty_cycle) < 0.03 && pred_current_ < 0_A && !brake_mode_)
     pred_current_ = 0_A;
 
@@ -68,15 +52,11 @@ void MCSimulator::Tick() {
 
   loop_time = units::math::min(loop_time, 30_ms);
 
-  // std::cout << "Loop Time: " << loop_time.to<double>() << " ms" << std::endl;
-
   units::radians_per_second_t new_velocity =
       frc846::control::calculators::VelocityPositionEstimator::predict_velocity(
           velocity_, duty_cycle, loop_time, current_limit_, load_, friction_mag,
           rotational_inertia_, specs, circuit_resistance_, brake_mode_);
-  // new_velocity =
-  //     units::radians_per_second_t{std::clamp(new_velocity.to<double>(),
-  //         (-specs.free_speed).to<double>(), specs.free_speed.to<double>())};
+
   units::radians_per_second_t avg_velocity = (velocity_ + new_velocity) / 2.0;
 
   position_ =

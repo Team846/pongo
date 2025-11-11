@@ -49,23 +49,5 @@ std::pair<frc846::math::FieldPoint, bool> DriveToReefCommand::GetTargetPoint() {
       target_pos.velocity = 0.0_fps;
     }
   }
-  //   units::inch_t reef_drive_subtract =
-  //       (drivetrain_->GetPreferenceValue_unit_type<units::inch_t>(
-  //           "lock_drive_early"));
-  //   target_pos.point =
-  //       cpos + (target_pos.point -
-  //       cpos).AddToMagnitude(-reef_drive_subtract);
-
-  //   if ((target_pos.point - start_point_).magnitude() <= reef_drive_subtract)
-  //   {
-  //     target_pos.point = start_point_;
-  //   }
-
-  //   target_pos.velocity =
-  //       drivetrain_->GetPreferenceValue_unit_type<units::feet_per_second_t>(
-  //           "lock_drive_fvel");
-
-  // if (is_pre_point_) { target_pos.velocity = 2_fps; }
-
   return {target_pos, true};
 }
