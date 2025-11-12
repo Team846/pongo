@@ -1,28 +1,32 @@
 #pragma once
 
-#include <frc2/command/CommandHelper.h>
-#include <frc2/command/Command.h>
+#include "frc846/robot/GenericCommand.h"
+#include "frc846/robot/swerve/drivetrain.h"
+#include "subsystems/robot_container.h"
 #include <frc/Timer.h>
 
-#include "frc846/base/Loggable.h"
-#include "frc846/robot/swerve/drivetrain.h"
+class DisplacementTestCommand
+    : public frc846::robot::GenericCommand<RobotContainer, DisplacementTestCommand> {
+ public:
+  DisplacementTestCommand(RobotContainer& container,
+                          frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
 
-class DisplacementTestCommand: 
-        public frc2::CommandHelper<frc2::Command, DisplacementTestCommand>,
-        public frc846::base::Loggable {
-    
-    public:
-      DisplacementTestCommand(frc846::robot::swerve::DrivetrainSubsystem* drivetrain);
+  void OnInit() override;
+  void Periodic() override;
+  void OnEnd(bool interrupted) override;
+  bool IsFinished() override;
 
-      void Initialize() override;
-      void Execute() override;
-      void End(bool interrupted) override;
-      bool IsFinished() override;
+ private:
+  frc846::robot::swerve::DrivetrainSubsystem* drivetrain_;
 
-    private:
-        frc846::robot::swerve::DrivetrainSubsystem* drivetrain_;
-        frc::Timer timer_;
-        frc846::math::Vector2D start_pos_;
-    
-                                
+  frc::Timer timer_;
+  frc::Timer accel_timer_;
+  frc::Timer brake_timer_;
+  frc::Timer distance_timer_;
+
+  frc846::math::Vector2D start_pos_;
+
+  bool accel_logged_ = false;
+  bool brake_logged_ = false;
+  bool distance_logged_ = false;
 };

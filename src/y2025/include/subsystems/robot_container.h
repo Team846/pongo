@@ -8,6 +8,7 @@
 #include "subsystems/hardware/climber.h"
 #include "subsystems/hardware/coral/coral_ss.h"
 #include "subsystems/hardware/leds.h"
+#include "tests/displacement_test_command.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
@@ -85,4 +86,6 @@ public:
   // void
   // GroupBUpdateReadingsExtension() override { /*algal_ss_.UpdateReadings();*/
   // }
+
+  
 };

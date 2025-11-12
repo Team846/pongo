@@ -16,6 +16,9 @@
 #include "frc846/robot/swerve/drive_to_point_command.h"
 #include "frc846/robot/swerve/lock_to_point_command.h"
 #include "reef.h"
+#include "tests/displacement_test_command.h"
+#include "frc/RobotBase.h"
+
 
 void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   frc2::Trigger drivetrain_zero_bearing_trigger{[&] {
@@ -103,11 +106,16 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
                   container.control_input_.SetTarget({false, false});
                 }).ToPtr()));
 
+  frc2::Trigger{[&] {
+      auto readings = container.control_input_.GetReadings();
+      return readings.run_displacement_test;
+  }}.OnTrue(DisplacementTestCommand{container, &container.drivetrain_}.ToPtr());//TODO fix what buttons these are supposed to be
+
   // frc2::Trigger{[&] {
   //   return container.control_input_.GetReadings().targeting_algae &&
   //          container.GPD_.GetReadings().gamepieces.size() != 0U &&
   //          !container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
-  // }}.OnTrue(LockGPDCommand{container}.Until([&] {
+  // }}.OnTrue(LockGPDCommand{container}.Until([&] {c
   //   return !container.control_input_.GetReadings().targeting_algae ||
   //          container.algal_ss_.algal_end_effector.GetReadings().has_piece_;
   // }));

@@ -79,6 +79,9 @@ struct ControlInputReadings {
   bool level_one;
 
   bool flick;
+
+  bool run_displacement_test;
+
 };
 
 struct ControlInputTarget {
