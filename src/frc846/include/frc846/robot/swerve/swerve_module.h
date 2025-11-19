@@ -24,6 +24,8 @@ struct SwerveModuleReadings {
 struct SwerveModuleOLControlTarget {
   units::feet_per_second_t drive;
   units::degree_t steer;
+  bool test = false;
+  double duty_cycle = 0.0;
 };
 
 using SwerveModuleTarget = SwerveModuleOLControlTarget;
@@ -89,6 +91,8 @@ public:
   void SetCANCoderOffset(units::degree_t offset);
 
   void ZeroWithCANcoder();
+
+  // void WriteToHardware(SwerveModuleDutyCycleControlTarget duty_cycle_target_);
 
   /*
   SetSteerGains()

@@ -1,5 +1,7 @@
 #include "subsystems/abstract/control_input.h"
 
+#include <frc/RobotBase.h>
+
 #include "field.h"
 #include "reef.h"
 
@@ -80,6 +82,11 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
   frc846::robot::GenericControllerReadings op_keyboard_readings{
       operator_keyboard_};
 
+  ci_readings_.run_displacement_test = dr_readings.a_button &&
+                                       dr_readings.b_button &&
+                                       frc::DriverStation::IsTestEnabled();
+
+  Graph("rundisplacementtest", ci_readings_.run_displacement_test);
   ci_readings_.zero_bearing = dr_readings.back_button;
   ci_readings_.translate_x = dr_readings.left_stick_x;
   ci_readings_.translate_y = dr_readings.left_stick_y;

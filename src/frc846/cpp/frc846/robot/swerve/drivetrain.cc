@@ -86,6 +86,11 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainConfigs configs)
   RegisterPreference("net_auto_align/prepoint", 65_in);
   RegisterPreference("net_auto_align/scorepoint", 35_in);
 
+  // for displacment_test_command
+  RegisterPreference("displacement_test/target_distance", 12_in);
+  RegisterPreference("displacement_test/duty_cycle", 0.2);
+  RegisterPreference("displacement_test/close_to_zero_velocity", 0.1_fps);
+
   odometry_.setConstants(
       {.forward_wheelbase_dim = configs.wheelbase_forward_dim,
           .horizontal_wheelbase_dim = configs.wheelbase_horizontal_dim});
@@ -488,6 +493,7 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
         GetPreferenceValue_double("steer_gains/_kF")});
   }
 
+  if (!target.test_mode) {
   // Graph("target/ol/velocity_x", target.velocity[0]);
   // Graph("target/ol/velocity_y", target.velocity[1]);
   // Graph("target/ol/angular_velocity", target.angular_velocity);
@@ -503,10 +509,36 @@ void DrivetrainSubsystem::WriteToHardware(DrivetrainTarget target) {
       target.cut_excess_steering ? cut_angular_vel : target.angular_velocity,
       target.cut_excess_steering,
       GetPreferenceValue_unit_type<units::feet_per_second_t>("max_speed"));
-
+  } else {
+    for (int i = 0; i < 4; i++) {
+     modules_[i]->SetTarget(SwerveModuleOLControlTarget{0.0_fps, 0.0_deg, true, target.duty_cycle});
+     if (i == 3 || i == 2)
+     {
+      modules_[i]->SetTarget(SwerveModuleOLControlTarget{0.0_fps, 0.0_deg, true, -target.duty_cycle});
+     }
+    }
+  }
   for (int i = 0; i < 4; i++)
     modules_[i]->UpdateHardware();
 }
+
+// void DrivetrainSubsystem::WriteToHardware(double duty_cycle) {
+//   for (int i = 0; i < 4; i++) {
+//     modules_[i]->SetSteerGains({GetPreferenceValue_double("steer_gains/_kP"),
+//         GetPreferenceValue_double("steer_gains/_kI"),
+//         GetPreferenceValue_double("steer_gains/_kD"),
+//         GetPreferenceValue_double("steer_gains/_kF")});
+//   }
+
+//   SwerveModuleDutyCycleControlTarget duty_cycle_target_ = {duty_cycle, 0.0_deg};
+//   for (int i = 0; i < 4; i++) {
+//     modules_[i]->WriteToHardware(duty_cycle_target_);
+//   }
+
+//   for (int i = 0; i < 4; i++) {
+//     modules_[i]->UpdateHardware();
+//   }
+// }
 
 void DrivetrainSubsystem::StartPathRecording(const std::string& filename) {
   path_logger_.StartRecording(filename);

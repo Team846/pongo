@@ -38,7 +38,7 @@ public:
 
   void AddAuto(std::string name, frc2::Command* command);
   void AddDefaultAuto(std::string name, frc2::Command* command);
-
+  void AddTest(std::string name, frc2::Command* command);
   static std::string GetSelectedAuto() { return auto_chooser_.GetSelected(); }
 
 private:
@@ -51,8 +51,13 @@ private:
   GenericRobotContainer* generic_robot_container_;
 
   frc2::Command* auto_command_ = nullptr;
+  frc2::Command* test_command_ = nullptr;
+
   static frc::SendableChooser<std::string> auto_chooser_;
+  static frc::SendableChooser<std::string> test_chooser_;
+
   std::unordered_map<std::string, frc2::Command*> autos_;
+  std::unordered_map<std::string, frc2::Command*> tests_;
 
   int update_tick_counter_ = 0;
 };

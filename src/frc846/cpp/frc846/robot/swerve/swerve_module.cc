@@ -158,9 +158,9 @@ SwerveModuleReadings SwerveModuleSubsystem::ReadFromHardware() {
 }
 
 void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
-  // Graph("target/drive_target", target.drive);
-  // Graph("target/steer_target", target.steer);
-
+  if (target.test) {
+    drive_helper_.WriteDC(target.duty_cycle);
+  } else {
   auto [steer_dir, invert_drive] =
       calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
@@ -195,12 +195,22 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   Graph("target/drive_dc", drive_duty_cycle);
 
   drive_helper_.WriteDC(drive_duty_cycle);
-
   if (std::abs(drive_duty_cycle) > 0.002 || last_rezero < 50) {
     steer_helper_.WritePositionOnController(steer_dir);
     last_rezero += 1;
   }
+  }
 }
+
+// void SwerveModuleSubsystem::WriteToHardware(
+//   SwerveModuleDutyCycleControlTarget duty_cycle_target_) {
+//   drive_helper_.WriteDC(0.2);
+//   Graph("test1", true);
+//   if (std::abs(duty_cycle_target_.duty_cycle_) > 0.002 || last_rezero < 50) {
+//     steer_helper_.WritePositionOnController(duty_cycle_target_.steer);
+//     last_rezero += 1;
+//   }
+// }
 
 std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
     units::degree_t target_norm, units::degree_t current) {

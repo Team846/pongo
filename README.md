@@ -173,6 +173,7 @@ To undo the going back:
 
 ## CppCheck Warnings
 ```
+src/y2025/cpp/commands/tests/braking_test_command.cc:26:26: warning: Variable 'target_velocity' is assigned a value that is never used. [unreadVariable]
 src/frc846/cpp/frc846/math/collection.cc:25:0: warning: The function 'VerticalDeadband' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:52:0: warning: The function 'CoterminalSum' is never used. [unusedFunction]
 src/frc846/cpp/frc846/math/collection.cc:65:0: warning: The function 'modulo' is never used. [unusedFunction]

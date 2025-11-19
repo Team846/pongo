@@ -4,6 +4,8 @@
 #include <units/acceleration.h>
 #include <units/angular_acceleration.h>
 
+#include "frc846/control/HMCHelper.h"
+#include "frc846/control/HigherMotorController.h"
 #include "frc846/math/Differentiator.h"
 #include "frc846/math/Smoother.h"
 #include "frc846/robot/GenericSubsystem.h"
@@ -59,6 +61,8 @@ struct DrivetrainOLControlTarget {
   units::degrees_per_second_t angular_velocity;
   units::feet_per_second_squared_t accel_clamp = -1_fps_sq;
   bool cut_excess_steering = false;
+  bool test_mode = false;
+  double duty_cycle = 0.0;
 };
 
 using DrivetrainTarget = DrivetrainOLControlTarget;
@@ -77,6 +81,8 @@ public:
   void Setup() override;
 
   DrivetrainTarget ZeroTarget() const override;
+
+  void WriteToHardware(double duty_cycle);
 
   bool VerifyHardware() override;
 

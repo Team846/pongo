@@ -44,6 +44,7 @@ void FunkyRobot::OnInitialize() {
 
   ADD_AUTO_VARIANTS(FourAndPickAuto, "5PC");
   AddAuto("1CPNP/R", new L4PickNetPickAuto{container_, false, true});
+
   AddDefaultAuto("1CPNP/B", new L4PickNetPickAuto{container_, true, true});
 
   // // Add dashboard buttons

@@ -125,7 +125,9 @@
     "__node_handle": "cpp",
     "__split_buffer": "cpp",
     "__tree": "cpp",
-    "__verbose_abort": "cpp"
+    "__verbose_abort": "cpp",
+    "__debug": "cpp",
+    "__threading_support": "cpp"
   },
   "wpilib.useWindbgX": true,
   "C_Cpp.errorSquiggles": "enabled",

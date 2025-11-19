@@ -21,6 +21,7 @@
 
 namespace frc846::robot {
 frc::SendableChooser<std::string> GenericRobot::auto_chooser_;
+frc::SendableChooser<std::string> GenericRobot::test_chooser_;
 
 GenericRobot::GenericRobot(GenericRobotContainer* container)
     : frc846::base::Loggable{"Robot"}, generic_robot_container_{container} {
@@ -162,10 +163,10 @@ void GenericRobot::StartCompetition() {
       } else if (mode == Mode::kTest) {
         OnEnable();
         // Cancel auto command and setup Test defaults/triggers
-        if (auto_command_ != nullptr) {
+        if (test_command_ != nullptr) {
           Log("Cancelling auto command");
-          auto_command_->Cancel();
-          auto_command_ = nullptr;
+          test_command_->Cancel();
+          test_command_ = nullptr;
         }
 
         Log("Setting up test default/triggers");
@@ -252,6 +253,13 @@ void GenericRobot::AddDefaultAuto(std::string name, frc2::Command* command) {
   auto_chooser_.SetDefaultOption(name, name);
   autos_[name] = command;
   frc::SmartDashboard::PutData(&auto_chooser_);
+  frc::SmartDashboard::UpdateValues();
+}
+
+void GenericRobot::AddTest(std::string name, frc2::Command* command) {
+  test_chooser_.AddOption(name, name);
+  tests_[name] = command;
+  frc::SmartDashboard::PutData(&test_chooser_);
   frc::SmartDashboard::UpdateValues();
 }
 
