@@ -14,6 +14,10 @@ void DisplacementTestCommand::OnInit() {
   timer_.Start();
   start_pos_ = drivetrain_->GetReadings().pose.position;
 
+  accel_timer_.Reset();
+  brake_timer_.Reset();
+  distance_timer_.Reset(); //TODO only use one timer
+
   accel_logged_ = false;
   brake_logged_ = false;
   distance_logged_ = false;
@@ -36,13 +40,16 @@ void DisplacementTestCommand::Periodic() {
   // acceleration
   if (!accel_logged_) {
     drivetrain_->WriteToHardware(duty_cycle);
-    timer_.Start();
+    if (!accel_timer_.IsRunning()) accel_timer_.Start();
     
     if (vel >= target_velocity) {
       accel_logged_ = true;
-      Log("Acceleration done", timer_.Get().value());
+      accel_timer_.Stop();
+      Log("Acceleration done", accel_timer_.Get().value());
 
       drivetrain_->WriteToHardware(0.0);
+      distance_timer_.Reset();
+      distance_timer_.Start();
     }
     return;
   }
@@ -50,10 +57,14 @@ void DisplacementTestCommand::Periodic() {
   // displacement
   if (accel_logged_ && !distance_logged_) {
     drivetrain_->WriteToHardware(0.0);
+
     if (distance_traveled >= target_distance) {
       distance_logged_ = true;
-      Log("Displacement done", timer_.Get().value());
+      distance_timer_.Stop();
+      Log("Displacement done", distance_timer_.Get().value());
 
+      brake_timer_.Reset();
+      brake_timer_.Start();
       drivetrain_->WriteToHardware(-duty_cycle);
     }
     return;
@@ -65,7 +76,8 @@ void DisplacementTestCommand::Periodic() {
 
     if (vel <= 0.01) {
       brake_logged_ = true;
-      Log("Braking done", timer_.Get().value());
+      brake_timer_.Stop();
+      Log("Braking done", brake_timer_.Get().value());
 
       drivetrain_->WriteToHardware(0.0);
     }
