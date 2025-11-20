@@ -161,6 +161,8 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
   if (target.test) {
     drive_helper_.WriteDC(target.duty_cycle);
   } else {
+
+
   auto [steer_dir, invert_drive] =
       calculateSteerPosition(target.steer, GetReadings().steer_pos);
 
@@ -211,6 +213,13 @@ void SwerveModuleSubsystem::WriteToHardware(SwerveModuleTarget target) {
 //     last_rezero += 1;
 //   }
 // }
+}
+
+void SwerveModuleSubsystem::WriteToHardware(SwerveModuleDutyCycleControlTarget duty_cycle_target_) 
+{
+  drive_helper_.WriteDC(duty_cycle_target_.duty_cycle_);
+  steer_helper_.WritePositionOnController(duty_cycle_target_.steer);
+}
 
 std::pair<units::degree_t, bool> SwerveModuleSubsystem::calculateSteerPosition(
     units::degree_t target_norm, units::degree_t current) {

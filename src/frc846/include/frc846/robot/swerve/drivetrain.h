@@ -11,12 +11,15 @@
 #include "frc846/robot/GenericSubsystem.h"
 #include "frc846/robot/calculators/AprilTagCalculator.h"
 #include "frc846/robot/swerve/control/swerve_ol_calculator.h"
+#include "frc846/robot/swerve/swerve_module.h"
 #include "frc846/robot/swerve/odometry/pose_estimator.h"
 #include "frc846/robot/swerve/odometry/swerve_odometry_calculator.h"
 #include "frc846/robot/swerve/odometry/swerve_pose.h"
 #include "frc846/robot/swerve/path_logger.h"
 #include "frc846/robot/swerve/swerve_module.h"
 #include "studica/AHRS.h"
+#include "frc846/control/HMCHelper.h"
+#include "frc846/control/HigherMotorController.h"
 
 namespace frc846::robot::swerve {
 
@@ -63,6 +66,7 @@ struct DrivetrainOLControlTarget {
   bool cut_excess_steering = false;
   bool test_mode = false;
   double duty_cycle = 0.0;
+  bool testing_thing = false;
 };
 
 using DrivetrainTarget = DrivetrainOLControlTarget;
@@ -161,6 +165,12 @@ private:
   frc846::math::Differentiator accel_y_diff{};
   frc846::math::Smoother accel_x_smooth{0.125};
   frc846::math::Smoother accel_y_smooth{0.125};
+
+
+
+  
+
+
 };
 
 }  // namespace frc846::robot::swerve
