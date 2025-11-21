@@ -84,9 +84,7 @@ void AlgalEESubsystem::WriteToHardware(AlgalEETarget target) {
   // Graph("target/duty_cycle", target.duty_cycle_);
 
   if (GetReadings().has_piece_ && target.duty_cycle_ > 0.0) {
-    if (l > 5) {
-      target.duty_cycle_ = GetPreferenceValue_double("idle_speed");
-    }
+    if (l > 5) { target.duty_cycle_ = GetPreferenceValue_double("idle_speed"); }
     l += 1;
   } else {
     l = 0;

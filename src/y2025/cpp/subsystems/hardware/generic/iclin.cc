@@ -10,8 +10,8 @@ IclinSubsystem::IclinSubsystem(std::string name,
     : frc846::robot::GenericSubsystem<IclinReadings, IclinTarget>(name),
       linear_esc_(mmtype, GetCurrentConfig(motor_configs_)),
       bldc(105_u_A, 1.8_u_A, 2.6_u_Nm, 5676_u_rpm),
-      lin_sys(bldc, 1, 214.85_u_rot / 262.5_u_in * 5.0 / 9.0, 0.02_u_mps2, 4.0_u_kg, 0_u_N,
-          0_u_N / 5676_u_rpm, 20_u_ms),
+      lin_sys(bldc, 1, 214.85_u_rot / 262.5_u_in * 5.0 / 9.0, 0.02_u_mps2,
+          4.0_u_kg, 0_u_N, 0_u_N / 5676_u_rpm, 20_u_ms),
       icnor(lin_sys) {
   linear_esc_helper_.SetConversion(conversion);
   linear_esc_helper_.bind(&linear_esc_);
@@ -104,12 +104,12 @@ void IclinSubsystem::WriteToHardware(IclinTarget target) {
   radps_t cvel_as_native = lin_sys.toNative(
       1_u_in / 1_u_s * linear_esc_helper_.GetVelocity().to<double>());
 
-  cpos_as_native +=
-      cvel_as_native * GetPreferenceValue_double("latency") * 1_u_ms;  // TODO: better latency compensation
+  cpos_as_native += cvel_as_native * GetPreferenceValue_double("latency") *
+                    1_u_ms;  // TODO: better latency compensation
 
   linear_esc_helper_.WriteDC(icnor.getOutput(
       tpos_as_native, tvel_as_native, cpos_as_native, cvel_as_native));
-      // linear_esc_helper_.WriteDC(GetPreferenceValue_double("duty_cycle_output"));
+  // linear_esc_helper_.WriteDC(GetPreferenceValue_double("duty_cycle_output"));
 }
 
 void IclinSubsystem::BrakeSubsystem() {

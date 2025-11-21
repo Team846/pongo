@@ -9,7 +9,7 @@ plugins {
 import org.apache.tools.ant.taskdefs.condition.Os
 
 def pdcsuGroup = "tr"
-def pdcsuReleaseNumber = "02"
+def pdcsuReleaseNumber = "05"
 def pdcsuVersion = pdcsuGroup + "_" + pdcsuReleaseNumber
 
 def pdcsuFolder = file("src/pdcsu_${pdcsuGroup}${pdcsuReleaseNumber}")
@@ -74,8 +74,9 @@ deploy {
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
-// Set this to true to enable desktop support.
-def includeDesktopSupport = false
+def includeDesktopSupport = gradle.startParameter.taskNames.any { task ->
+    task.toLowerCase().contains('sim') ||  task.toLowerCase().contains('debug')
+}
 
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = true
