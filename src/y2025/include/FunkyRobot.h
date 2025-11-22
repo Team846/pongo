@@ -6,7 +6,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include "autos/GenericAuto.h"
 #include "frc846/robot/GenericRobot.h"
 #include "subsystems/robot_container.h"
 
@@ -40,7 +39,7 @@ private:
 
     while (true) {
       if (cvSink.GrabFrame(mat) != 0) {
-        if (container->control_input_.GetReadings().camera_stream)
+        if (false)  // container->control_input_.GetReadings().camera_stream)
           outputStream.PutFrame(mat);
       } else {
         outputStream.NotifyError(cvSink.GetError());
