@@ -29,4 +29,8 @@ struct ports {
   struct leds_ {
     static constexpr int kLEDStrip1 = 6;
   };
+
+  struct ictest_ {
+    static constexpr int kMotor_CANID = 14;
+  };
 };
