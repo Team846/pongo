@@ -129,6 +129,7 @@ private:
   frc846::control::base::MotorMonkeyType motor_types_;
 
   frc846::control::config::MotorConstructionParameters drive_params_;
+  frc846::control::config::MotorConstructionParameters steer_params_;
 
   frc846::control::HigherMotorController drive_;
   frc846::control::HigherMotorController steer_;

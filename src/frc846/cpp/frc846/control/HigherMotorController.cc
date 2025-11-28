@@ -6,13 +6,13 @@
 namespace frc846::control {
 
 HigherMotorController::HigherMotorController(
-    frc846::control::base::MotorMonkeyType mmtype,
-    frc846::control::config::MotorConstructionParameters params)
-    : mmtype_(mmtype), constr_params_(params) {}
+    frc846::control::base::MotorMonkeyType mmtype)
+    : mmtype_(mmtype) {}
 
-void HigherMotorController::Setup() {
-  slot_id_ = frc846::control::MotorMonkey::ConstructController(
-      mmtype_, constr_params_);
+void HigherMotorController::Setup(
+    frc846::control::config::MotorConstructionParameters params) {
+  constr_params_ = params;
+  slot_id_ = frc846::control::MotorMonkey::ConstructController(mmtype_, params);
 }
 
 void HigherMotorController::SetNeutralMode(bool brake) {

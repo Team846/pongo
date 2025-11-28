@@ -39,4 +39,6 @@ private:
   frc846::control::config::MotorConstructionParameters motor_configs_;
   frc846::control::HigherMotorController esc_;
   std::unique_ptr<pdcsu::control::ICNORPositionControl> icnor_controller_;
+  std::unique_ptr<pdcsu::util::DefArmSys> angular_sys_;
+  std::shared_ptr<pdcsu::control::ICNORLearner> icnor_learner_;
 };

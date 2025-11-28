@@ -35,7 +35,7 @@ public:
     RegisterSubsystemGroupAB({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
-    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    RegisterSubsystemGroupAB({{&drivetrain_, false}});  // drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
     RegisterSubsystemGroupA({{&ictest_, ictest_init}});

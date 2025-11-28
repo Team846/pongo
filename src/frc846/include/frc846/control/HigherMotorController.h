@@ -22,11 +22,10 @@ motors.
 */
 class HigherMotorController {
 public:
-  HigherMotorController(frc846::control::base::MotorMonkeyType mmtype,
-      frc846::control::config::MotorConstructionParameters params);
+  HigherMotorController(frc846::control::base::MotorMonkeyType mmtype);
 
   // Sets up the motor. Gets a slot ID from MotorMonkey.
-  void Setup();
+  void Setup(frc846::control::config::MotorConstructionParameters params);
 
   void SetGains(frc846::control::base::MotorGains gains);
 

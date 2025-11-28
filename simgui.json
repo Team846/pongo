@@ -139,7 +139,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": -46,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -170,7 +170,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -187,6 +190,19 @@
       "window": {
         "visible": false
       }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 314
+        }
+      ]
     }
   }
 }

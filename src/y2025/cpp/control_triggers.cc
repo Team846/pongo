@@ -21,7 +21,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }};
   ictest_x_button_trigger.OnTrue(frc2::InstantCommand([&] {
     ICTestTarget target;
-    target.pos = units::degree_t(units::radian_t(-10.0));
+    target.pos = units::degree_t(units::degree_t(-10.0));
     container.ictest_.SetTarget(target);
   }).ToPtr());
 
@@ -30,7 +30,7 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   }};
   ictest_y_button_trigger.OnTrue(frc2::InstantCommand([&] {
     ICTestTarget target;
-    target.pos = units::degree_t(units::radian_t(10.0));
+    target.pos = units::degree_t(units::degree_t(10.0));
     container.ictest_.SetTarget(target);
   }).ToPtr());
 }

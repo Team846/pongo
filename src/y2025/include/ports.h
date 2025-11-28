@@ -31,6 +31,6 @@ struct ports {
   };
 
   struct ictest_ {
-    static constexpr int kMotor_CANID = 14;
+    static constexpr int kMotor_CANID = 17;
   };
 };

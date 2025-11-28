@@ -17,9 +17,9 @@ SwerveModuleSubsystem::SwerveModuleSubsystem(Loggable& parent,
       avg_resistance_{common_config.avg_resistance},
       motor_types_{common_config.motor_types},
       drive_params_{getMotorParams(unique_config, common_config).first},
-      drive_{common_config.motor_types, drive_params_},
-      steer_{common_config.motor_types,
-          getMotorParams(unique_config, common_config).second},
+      steer_params_{getMotorParams(unique_config, common_config).second},
+      drive_{common_config.motor_types},
+      steer_{common_config.motor_types},
       cancoder_{unique_config.cancoder_id, common_config.bus},
       steer_load_factor_{common_config.steer_load_factor} {
   drive_helper_.SetConversion(common_config.drive_reduction);
@@ -61,14 +61,14 @@ SwerveModuleSubsystem::getMotorParams(SwerveModuleUniqueConfig unique_config,
 }
 
 void SwerveModuleSubsystem::Setup() {
-  drive_.Setup();
+  drive_.Setup(drive_params_);
   drive_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame},
       20_ms, 5_ms, 5_ms, 20_ms);
   drive_helper_.SetPosition(0_ft);
 
-  steer_.Setup();
+  steer_.Setup(steer_params_);
   steer_.EnableStatusFrames(
       {frc846::control::config::StatusFrame::kPositionFrame,
           frc846::control::config::StatusFrame::kVelocityFrame},
