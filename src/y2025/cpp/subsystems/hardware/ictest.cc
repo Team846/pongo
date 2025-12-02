@@ -2,10 +2,14 @@
 
 #include <frc/Filesystem.h>
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <string>
 
 #include "frc846/control/base/motor_specs.h"
+#include "frc846/wpilib/time.h"
 #include "frc846/wpilib/units.h"
 #include "pdcsu.h"
 #include "ports.h"
@@ -17,7 +21,9 @@ using namespace pdcsu::util;
 using namespace pdcsu::units;
 
 ICTestSubsystem::ICTestSubsystem()
-    : GenericSubsystem("ictest"), esc_{base::SPARK_MAX_NEO} {
+    : GenericSubsystem("ictest"),
+      esc_{base::SPARK_MAX_NEO},
+      max_vel_radps_(0.0) {
   RegisterPreference("motor_current_limit", 40_A);
   RegisterPreference("smart_current_limit", 30_A);
   RegisterPreference("voltage_compensation", 12_V);
@@ -26,6 +32,8 @@ ICTestSubsystem::ICTestSubsystem()
   RegisterPreference("friction", 0.04);
   RegisterPreference("num_motors", 1);
   RegisterPreference("viscous_damping", 0.0);
+
+  RegisterPreference("ipg", 0.2);
 }
 
 ICTestSubsystem::~ICTestSubsystem() = default;
@@ -64,7 +72,7 @@ void ICTestSubsystem::Setup() {
       volt_t(motor_configs_.voltage_compensation.value()));
 
   int num_motors = GetPreferenceValue_int("num_motors");
-  scalar_t gear_ratio = scalar_t(0.33);
+  scalar_t gear_ratio = scalar_t(32.2335987);
   kgm2_t inertia = kgm2_t(motor_configs_.rotational_inertia.value());
   nm_t friction =
       nm_t(motor_specs.stall_torque.value() * motor_configs_.friction);
@@ -86,16 +94,25 @@ void ICTestSubsystem::Setup() {
 
   icnor_controller_ = std::make_unique<ICNORPositionControl>(*angular_sys_);
 
-  icnor_controller_->setConstraints(
-      radps_t(motor_specs.free_speed.value() * 0.85),
+  double free_speed_rpm = motor_specs.free_speed.value();
+  double free_speed_radps = free_speed_rpm * (2.0 * M_PI / 60.0);
+
+  icnor_controller_->setConstraints(radps_t(free_speed_radps * 0.95),
       amp_t(motor_configs_.smart_current_limit.value()));
 
-  icnor_controller_->setProjectionHorizon(3);
+  icnor_controller_->setTolerance(0.6_u_rad, 1.2_u_rad);
 
-  // Create and attach ICNOR learner
+  icnor_controller_->setProjectionHorizon(1);
+
+  icnor_controller_->setDesaturationThresh(20.0_u_rad);
+
+  max_vel_radps_ = free_speed_radps;
+
   std::string learner_path =
       frc::filesystem::GetDeployDirectory() + "/ictest.iclearn";
   icnor_learner_ = std::make_shared<ICNORLearner>(learner_path);
+  icnor_learner_->enableAutoSave(true);
+  icnor_learner_->setAutoSaveStride(10);
   icnor_controller_->attachLearner(icnor_learner_);
 }
 
@@ -120,8 +137,8 @@ ICTestReadings ICTestSubsystem::ReadFromHardware() {
   radian_t pos_real = angular_sys_->toReal(radian_t(pos_native.value()));
   radps_t vel_real = angular_sys_->toReal(radps_t(vel_native.value()));
 
-  ICTestReadings readings{units::degree_t(pos_real.value()),
-      units::degrees_per_second_t(vel_real.value())};
+  ICTestReadings readings{units::radian_t(pos_real.value()),
+      units::radians_per_second_t(vel_real.value())};
 
   Graph("position", readings.pos);
   Graph("velocity", readings.vel);
@@ -132,17 +149,38 @@ ICTestReadings ICTestSubsystem::ReadFromHardware() {
 void ICTestSubsystem::WriteToHardware(ICTestTarget target) {
   if (!icnor_controller_ || !angular_sys_) { return; }
 
+  units::second_t current_time = frc846::wpilib::CurrentFPGATime();
   auto pos_native = esc_.GetPosition();
   auto vel_native = esc_.GetVelocity();
   radian_t current_pos_native = radian_t(pos_native.value());
   radps_t current_vel_native = radps_t(vel_native.value());
 
-  radian_t target_pos_real = radian_t(target.pos.value());
+  radian_t target_pos_real = degree_t(target.pos.value());
   radian_t target_pos_native = angular_sys_->toNative(target_pos_real);
+  Graph("target_pos", target_pos_native.value());
   radps_t target_vel_native = 0_u_radps;
 
   double output = icnor_controller_->getOutput(target_pos_native,
       target_vel_native, current_pos_native, current_vel_native);
 
+  output *= GetPreferenceValue_double("ipg");
+  //   if (u_abs(target_pos_native - current_pos_native) < 20_u_rad) {
+  //     output *=
+  //         (u_abs(target_pos_native - current_pos_native) / 20_u_rad).value();
+  //   }
+
+  Graph("icerror", units::degree_t(units::radian_t(
+                       (target_pos_native - current_pos_native).value())));
+  Graph("output", output);
+  Graph("icnor/has_valid_solution",
+      icnor_controller_->hasValidSolution() ? 1.0 : 0.0);
+  Graph("icnor/tstar", icnor_controller_->getTstar());
+  Graph("icnor/zeta", icnor_controller_->getZeta());
+  Graph("icnor/alpha", icnor_controller_->getAlpha());
+  Graph("icnor/beta", icnor_controller_->getBeta());
+  Graph("icnor/gamma", icnor_controller_->getGamma());
+
   esc_.WriteDC(output);
+
+  Graph("esc_pos", units::degree_t(esc_.GetPosition()));
 }

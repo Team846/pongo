@@ -2,12 +2,15 @@
 
 #include <units/angle.h>
 #include <units/angular_velocity.h>
+#include <units/time.h>
 
+#include <deque>
 #include <memory>
 
 #include "frc846/control/HigherMotorController.h"
 #include "frc846/robot/GenericRobot.h"
 #include "frc846/robot/GenericSubsystem.h"
+#include "frc846/wpilib/time.h"
 #include "pdcsu.h"
 
 struct ICTestReadings {
@@ -41,4 +44,6 @@ private:
   std::unique_ptr<pdcsu::control::ICNORPositionControl> icnor_controller_;
   std::unique_ptr<pdcsu::util::DefArmSys> angular_sys_;
   std::shared_ptr<pdcsu::control::ICNORLearner> icnor_learner_;
+
+  double max_vel_radps_;
 };
