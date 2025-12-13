@@ -104,7 +104,7 @@ void ICTestSubsystem::Setup() {
 
   icnor_controller_->setProjectionHorizon(1);
 
-  icnor_controller_->setDesaturationThresh(20.0_u_rad);
+  icnor_controller_->setDesaturationThresh(10.0_u_rad);
 
   max_vel_radps_ = free_speed_radps;
 
