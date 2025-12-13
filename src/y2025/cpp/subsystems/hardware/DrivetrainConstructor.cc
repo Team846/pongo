@@ -28,7 +28,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   TODO: Set these values during season
   */
 
-  configs.navX_connection_mode = studica::AHRS::NavXComType::kUSB1;
+  configs.navX_connection_mode = studica::AHRS::NavXComType::kMXP_SPI;
 
   units::inch_t wheel_diameter = 4_in;
 
@@ -42,11 +42,11 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   unsigned int num_connectors_BL = 2;
   unsigned int num_connectors_BR = 2;
 
-  double drive_gear_ratio = 6.75;
+  double drive_gear_ratio = 8.16;
   frc846::robot::swerve::drive_conv_unit drive_reduction =
       (frc846::math::constants::pi * wheel_diameter) /
       (drive_gear_ratio * 1_tr);
-  frc846::robot::swerve::steer_conv_unit steer_reduction = 7_tr / 150_tr;
+  frc846::robot::swerve::steer_conv_unit steer_reduction = 1_tr / 12.8_tr;
 
   configs.wheelbase_forward_dim = robot_constants::base::wheelbase_y;
   configs.wheelbase_horizontal_dim = robot_constants::base::wheelbase_x;

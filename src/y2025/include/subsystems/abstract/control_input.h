@@ -14,10 +14,6 @@ struct ControlInputReadings {
   double rotation;
 
   bool zero_bearing;
-
-  // ICTest controls
-  bool ictest_x_button;
-  bool ictest_y_button;
 };
 
 struct ControlInputTarget {

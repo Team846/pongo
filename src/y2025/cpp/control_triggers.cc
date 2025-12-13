@@ -15,22 +15,4 @@ void ControlTriggerInitializer::InitTeleopTriggers(RobotContainer& container) {
   drivetrain_zero_bearing_trigger.WhileTrue(frc2::InstantCommand([&] {
     container.drivetrain_.ZeroBearing();
   }).ToPtr());
-
-  frc2::Trigger ictest_x_button_trigger{[&] {
-    return container.control_input_.GetReadings().ictest_x_button;
-  }};
-  ictest_x_button_trigger.OnTrue(frc2::InstantCommand([&] {
-    ICTestTarget target;
-    target.pos = units::degree_t(units::degree_t(-50.0));
-    container.ictest_.SetTarget(target);
-  }).ToPtr());
-
-  frc2::Trigger ictest_y_button_trigger{[&] {
-    return container.control_input_.GetReadings().ictest_y_button;
-  }};
-  ictest_y_button_trigger.OnTrue(frc2::InstantCommand([&] {
-    ICTestTarget target;
-    target.pos = units::degree_t(units::degree_t(10.0));
-    container.ictest_.SetTarget(target);
-  }).ToPtr());
 }
