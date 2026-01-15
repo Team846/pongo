@@ -79,6 +79,8 @@ struct ControlInputReadings {
   bool level_one;
 
   bool flick;
+
+  double shooter_thing;
 };
 
 struct ControlInputTarget {

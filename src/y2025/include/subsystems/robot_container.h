@@ -8,6 +8,7 @@
 #include "subsystems/hardware/climber.h"
 #include "subsystems/hardware/coral/coral_ss.h"
 #include "subsystems/hardware/leds.h"
+#include "subsystems/hardware/shooter.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
@@ -22,37 +23,41 @@ public:
   CoralSuperstructure coral_ss_{};
   AlgalSuperstructure algal_ss_{};
 
+  ShooterSubsystem shooter_{};
+
   ControlInputSubsystem control_input_{&coral_ss_, &algal_ss_, &drivetrain_};
 
   ClimberSubsystem climber_{};
 
   RobotContainer() {
-    RegisterPreference("init_drivetrain", true);
-    RegisterPreference("init_leds", true);
-    RegisterPreference("init_gpd", true);
+    // RegisterPreference("init_drivetrain", true);
+    // RegisterPreference("init_leds", true);
+    // RegisterPreference("init_gpd", true);
 
-    RegisterPreference("init_coral_ss", true);
-    RegisterPreference("init_algal_ss", true);
-    RegisterPreference("init_climber", false);
+    // RegisterPreference("init_coral_ss", true);
+    // RegisterPreference("init_algal_ss", true);
+    // RegisterPreference("init_climber", false);
 
-    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
-    bool leds_init = (GetPreferenceValue_bool("init_leds"));
-    bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
+    // bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    // bool leds_init = (GetPreferenceValue_bool("init_leds"));
+    // bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
-    bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
-    bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
-    bool climber_init = (GetPreferenceValue_bool("init_climber"));
+    // bool coral_ss_init = (GetPreferenceValue_bool("init_coral_ss"));
+    // bool algal_ss_init = (GetPreferenceValue_bool("init_algal_ss"));
+    // bool climber_init = (GetPreferenceValue_bool("init_climber"));
 
     RegisterSubsystemGroupAB({{&control_input_, true}});
-    RegisterSubsystemGroupA({{&leds_, leds_init}});
+    // RegisterSubsystemGroupA({{&leds_, leds_init}});
 
-    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
-    RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
+    // RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    // RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
 
     // TODO: undo
     // NVM // Superstructures not necessary - updated with extensions
-    RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
-    RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+    // RegisterSubsystemGroupA({{&coral_ss_, coral_ss_init}});
+    // RegisterSubsystemGroupB({{&algal_ss_, algal_ss_init}});
+
+    RegisterSubsystemGroupAB({{&shooter_, true}});
 
     // if (coral_ss_init) {
     //   coral_ss_.Init();
@@ -65,7 +70,7 @@ public:
     // }
 
     // TODO: undo
-    RegisterSubsystemGroupB({{&climber_, climber_init}});
+    // RegisterSubsystemGroupB({{&climber_, climber_init}});
   }
 
   // void GroupAUpdateHardwareExtension() override {

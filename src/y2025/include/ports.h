@@ -58,4 +58,9 @@ struct ports {
   struct climber_ {
     static constexpr int kClimber_CANID = 26;
   };
+
+  struct proto_ {
+    static constexpr int kProtoMotor1_CANID = 54;
+    static constexpr int kProtoMotor2_CANID = 55;
+  };
 };
