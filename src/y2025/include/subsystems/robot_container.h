@@ -23,14 +23,14 @@ public:
     RegisterPreference("init_leds", true);
     RegisterPreference("init_gpd", true);
 
-    bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
+    // bool drivetrain_init = (GetPreferenceValue_bool("init_drivetrain"));
     bool leds_init = (GetPreferenceValue_bool("init_leds"));
     bool gpd_init = (GetPreferenceValue_bool("init_gpd"));
 
     RegisterSubsystemGroupAB({{&control_input_, true}});
     RegisterSubsystemGroupA({{&leds_, leds_init}});
 
-    RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
+    // RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
   }
 };
