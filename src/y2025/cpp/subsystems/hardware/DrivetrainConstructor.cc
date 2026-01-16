@@ -127,7 +127,7 @@ DrivetrainConstructor::getDrivetrainConfigs() {
   };
   frc846::control::config::MotorConstructionParameters steer_params{
       .can_id = 999,  // overriden by unique config
-      .inverted = false,
+      .inverted = true,
       .brake_mode = false,
       .motor_current_limit = GetPreferenceValue_unit_type<units::ampere_t>(
           "steer_motor_current_limit"),

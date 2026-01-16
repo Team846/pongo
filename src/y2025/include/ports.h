@@ -11,19 +11,19 @@ struct ports {
 
   struct drivetrain_ {
     static constexpr int kFLDrive_CANID = 1;
-    static constexpr int kFRDrive_CANID = 7;
+    static constexpr int kFRDrive_CANID = 3;
     static constexpr int kBRDrive_CANID = 5;
-    static constexpr int kBLDrive_CANID = 3;
+    static constexpr int kBLDrive_CANID = 7;
 
-    static constexpr int kFRSteer_CANID = 8;
-    static constexpr int kFLSteer_CANID = 2;
+    static constexpr int kFRSteer_CANID = 2;
+    static constexpr int kFLSteer_CANID = 4;
     static constexpr int kBRSteer_CANID = 6;
-    static constexpr int kBLSteer_CANID = 4;
+    static constexpr int kBLSteer_CANID = 8;
 
     static constexpr int kFLCANCoder_CANID = 9;
-    static constexpr int kFRCANCoder_CANID = 12;
+    static constexpr int kFRCANCoder_CANID = 10;
     static constexpr int kBRCANCoder_CANID = 11;
-    static constexpr int kBLCANCoder_CANID = 10;
+    static constexpr int kBLCANCoder_CANID = 12;
   };
 
   struct leds_ {
