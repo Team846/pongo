@@ -5,6 +5,7 @@
 #include "subsystems/abstract/gpd.h"
 #include "subsystems/hardware/DrivetrainConstructor.h"
 #include "subsystems/hardware/leds.h"
+#include "subsystems/hardware/shooter.h"
 
 class RobotContainer : public frc846::robot::GenericRobotContainer {
 public:
@@ -17,6 +18,8 @@ public:
   GPDSubsystem GPD_{&drivetrain_};
 
   ControlInputSubsystem control_input_{&drivetrain_};
+
+  ShooterSubsystem shooter_{};
 
   RobotContainer() {
     RegisterPreference("init_drivetrain", true);
@@ -32,5 +35,7 @@ public:
 
     // RegisterSubsystemGroupAB({{&drivetrain_, drivetrain_init}});
     RegisterSubsystemGroupAB({{&GPD_, gpd_init}});
+
+    RegisterSubsystemGroupAB({{&shooter_, true}});
   }
 };

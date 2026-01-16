@@ -61,6 +61,10 @@ ControlInputReadings ControlInputSubsystem::UpdateWithInput() {
 
   ci_readings_.rotation = -dr_readings.right_stick_x;
 
+  ci_readings_.thirty_percent_trigger = op_readings.a_button;
+  ci_readings_.sixty_percent_trigger = op_readings.b_button;
+  ci_readings_.eightyfive_percent_trigger = op_readings.x_button;
+
   previous_driver_ = dr_readings;
   previous_operator_ = op_readings;
   previous_operator_keyboard_ = op_keyboard_readings;

@@ -14,6 +14,11 @@ struct ControlInputReadings {
   double rotation;
 
   bool zero_bearing;
+
+  // Proto
+  bool thirty_percent_trigger;
+  bool sixty_percent_trigger;
+  bool eightyfive_percent_trigger;
 };
 
 struct ControlInputTarget {
