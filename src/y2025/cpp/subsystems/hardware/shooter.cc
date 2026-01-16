@@ -7,17 +7,25 @@
 
 ShooterSubsystem::ShooterSubsystem()
     : GenericSubsystem("shooter"),
-      motor_configs_{.can_id = ports::proto_::kProtoMotor1_CANID,
+      motor_configs_1_{.can_id = ports::proto_::kProtoMotor1_CANID,
           .inverted = false,
-          .brake_mode = true,
+          .brake_mode = false,
           .motor_current_limit = 40_A,
           .smart_current_limit = 30_A,
           .voltage_compensation = 12_V,
           .circuit_resistance = robot_constants::climber_::wire_resistance,
           .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
-      esc_1_{frc846::control::base::SPARK_MAX_VORTEX, motor_configs_},
-      esc_2_{frc846::control::base::SPARK_MAX_VORTEX, GetModifiedConfig(motor_configs_,
-              ports::proto_::kProtoMotor2_CANID, true)} {
+        motor_configs_2_{.can_id = ports::proto_::kProtoMotor2_CANID,
+          .inverted = true,
+          .brake_mode = false,
+          .motor_current_limit = 40_A,
+          .smart_current_limit = 30_A,
+          .voltage_compensation = 12_V,
+          .circuit_resistance = robot_constants::climber_::wire_resistance,
+          .rotational_inertia = frc846::wpilib::unit_kg_m_sq{1.0}},
+
+      esc_1_{frc846::control::base::SPARK_MAX_VORTEX, motor_configs_1_},
+      esc_2_{frc846::control::base::SPARK_MAX_VORTEX, motor_configs_2_} {
   esc_helper_1_.bind(&esc_1_);
   esc_helper_2_.bind(&esc_2_);
   esc_helper_1_.SetConversion(1_tr / 2_tr);
@@ -56,12 +64,11 @@ bool ShooterSubsystem::VerifyHardware() {
   return ok;
 }
 
-ShooterReadings ShooterSubsystem::ReadFromHardware() {
-}
+ShooterReadings ShooterSubsystem::ReadFromHardware() {}
 
 void ShooterSubsystem::WriteToHardware(ShooterTarget target) {
   Graph("target/dc", target.duty_cycle_);
 
-  esc_helper_1_.WriteDC(GetPreferenceValue_double("write_dc"));
-  esc_helper_2_.WriteDC(GetPreferenceValue_double("write_dc"));
+  esc_helper_1_.WriteDC(target.duty_cycle_);
+  esc_helper_2_.WriteDC(target.duty_cycle_);
 }

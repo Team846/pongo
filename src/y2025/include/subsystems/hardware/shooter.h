@@ -39,7 +39,8 @@ public:
   void ZeroClimber();
 
 protected:
-  frc846::control::config::MotorConstructionParameters motor_configs_;
+  frc846::control::config::MotorConstructionParameters motor_configs_1_;
+  frc846::control::config::MotorConstructionParameters motor_configs_2_;
 
   frc846::control::HigherMotorController esc_1_;
   frc846::control::HigherMotorController esc_2_;
@@ -50,13 +51,3 @@ protected:
 
   void WriteToHardware(ShooterTarget target) override;
 };
-
-inline frc846::control::config::MotorConstructionParameters GetModifiedConfig(
-    frc846::control::config::MotorConstructionParameters original_config,
-    int can_id, bool inverted) {
-  frc846::control::config::MotorConstructionParameters modifiedConfig =
-      original_config;
-  modifiedConfig.can_id = can_id;
-  modifiedConfig.inverted = inverted;
-  return modifiedConfig;
-}

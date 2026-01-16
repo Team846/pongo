@@ -38,7 +38,8 @@ void DriveCommand::Periodic() {
 
   double rotation = frc846::math::HorizontalDeadband(ci_readings_.rotation,
       container_.control_input_.GetPreferenceValue_double("rotation_deadband"),
-      1, container_.control_input_.GetPreferenceValue_int("rotation_exponent"),
+      1,
+      container_.control_input_.GetPreferenceValue_int("rotation_exponent"),
       1);
 
   units::feet_per_second_t max_speed =
@@ -94,7 +95,8 @@ void DriveCommand::Periodic() {
     }
 
     target.velocity =
-        vel_rc.rotate(container_.drivetrain_.GetReadings().pose.bearing, true);
+        vel_rc.rotate(container_.drivetrain_.GetReadings().pose.bearing,
+        true);
   }
 
   target.angular_velocity = rotation * max_omega;
@@ -152,15 +154,18 @@ void DriveCommand::Periodic() {
 
       auto line_vec = line_end.point - line_start.point;
       auto to_robot = current_pos - line_start.point;
-      double t = (to_robot.dot(line_vec) / line_vec.dot(line_vec)).to<double>();
+      double t = (to_robot.dot(line_vec) /
+      line_vec.dot(line_vec)).to<double>();
 
-      auto line_norm = frc846::math::Vector2D{-line_vec[1], line_vec[0]}.unit();
-      bool should_assist = should_flip
-                               ? (to_robot.dot(line_norm).to<double>() <= 0.0)
-                               : (to_robot.dot(line_norm).to<double>() >= 0.0);
+      auto line_norm = frc846::math::Vector2D{-line_vec[1],
+      line_vec[0]}.unit(); bool should_assist = should_flip
+                               ? (to_robot.dot(line_norm).to<double>() <=
+                               0.0) : (to_robot.dot(line_norm).to<double>()
+                               >= 0.0);
 
       auto error_vec =
-          line_start.point + line_vec * std::clamp(t, 0.0, 1.0) - current_pos;
+          line_start.point + line_vec * std::clamp(t, 0.0, 1.0) -
+          current_pos;
       bool use_coast =
           error_vec.magnitude() <
           container_.drivetrain_.GetPreferenceValue_unit_type<units::inch_t>(
@@ -205,7 +210,10 @@ void DriveCommand::Periodic() {
     }
   }
 
-  container_.drivetrain_.SetTarget({target});
+  // container_.drivetrain_.SetTarget({target});
+
+  container_.shooter_.SetTarget(
+      {container_.control_input_.GetReadings().translate_y});
 }
 
 void DriveCommand::OnEnd(bool interrupted) {}
